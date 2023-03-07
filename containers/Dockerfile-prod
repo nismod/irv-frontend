@@ -4,26 +4,28 @@
 FROM node:18 AS builder
 WORKDIR /app
 
-COPY frontend/package.json .
-COPY frontend/package-lock.json .
+# install npm packages -- do this before copying everything else
+# to enable more efficient caching by docker (we don't reinstall packages when
+# we've only changed application code)
+COPY package.json package-lock.json ./
 RUN npm ci
-
-COPY frontend .
+COPY public public
+COPY src src
+COPY index.html tsconfig.json tsconfig.vite.json vite.config.ts ./
+# build to static site
 RUN npm run build
 
 # stage 2 of 2
 FROM nginx:alpine
-# add package containing htpasswd utility
-RUN apk update && apk add apache2-utils
 WORKDIR /usr/share/nginx/html
 # remove default nginx static assets
 RUN rm -rf ./*
 # copy in static assets from builder stage
-COPY --from=builder /app/build* .
+COPY --from=builder /app/build .
 # and copy in the nginx config...
 # delete conf.d as it will contain default.conf which will conflict
 RUN rm -rf /etc/nginx/conf.d
-COPY nginx/prod /etc/nginx
+COPY containers/nginx/prod /etc/nginx
 # SSL Certs mounted externally
 
 # containers run nginx with global directives and daemon off
