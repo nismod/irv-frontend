@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useParams } from 'react-router';
 
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
@@ -17,7 +18,9 @@ const MapPageLayout = () => {
   return isMobile ? <MapPageMobileLayout /> : <MapPageDesktopLayout />;
 };
 
-export const MapPage: FC<{ view: string }> = ({ view }) => {
+export const MapPage: FC = () => {
+  const { view } = useParams();
+
   useSyncRecoilState(viewState, view);
 
   return (

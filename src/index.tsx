@@ -1,6 +1,6 @@
-import React from 'react';
 import { render } from 'react-dom';
+import { RouterProvider } from 'react-router-dom';
 
-import { App } from './App';
+import { router } from './router';
 
-render(<App />, document.getElementById('root'));
+render(<RouterProvider router={router} />, document.getElementById('root'));
