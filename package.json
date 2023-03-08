@@ -13,7 +13,6 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.122",
     "@mui/material": "^5.11.12",
-    "@mui/styles": "^5.11.12",
     "@react-hook/debounce": "^4.0.0",
     "@turf/bbox": "^6.5.0",
     "@turf/bbox-polygon": "^6.5.0",

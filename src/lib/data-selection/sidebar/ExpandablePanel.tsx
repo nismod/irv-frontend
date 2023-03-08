@@ -8,8 +8,8 @@ import {
   AccordionDetails as MuiAccordionDetails,
   AccordionSummary as MuiAccordionSummary,
   Typography,
+  styled,
 } from '@mui/material';
-import { styled } from '@mui/styles';
 import { FC, ReactChild } from 'react';
 
 export const Accordion = styled(MuiAccordion)({
