@@ -5,6 +5,7 @@ import { useFetch } from 'use-http';
 import { BoundingBox, NominatimBoundingBox, nominatimToAppBoundingBox } from '@/lib/bounding-box';
 
 export interface PlaceSearchResult {
+  placeId: number;
   label: string;
   latitude: number;
   longitude: number;
@@ -12,6 +13,7 @@ export interface PlaceSearchResult {
 }
 
 interface NominatimSearchResult {
+  place_id: number;
   display_name: string;
   lat: string;
   lon: string;
@@ -20,6 +22,7 @@ interface NominatimSearchResult {
 
 function processNominatimData(data: NominatimSearchResult[]): PlaceSearchResult[] {
   return data?.map((x) => ({
+    placeId: x.place_id,
     label: x.display_name,
     latitude: parseFloat(x.lat),
     longitude: parseFloat(x.lon),
@@ -51,7 +54,7 @@ export function usePlaceSearch(searchValue: string) {
     }
   }, [searchValue, debouncedGet]);
 
-  const searchResults: any[] = processNominatimData(data) ?? [];
+  const searchResults: PlaceSearchResult[] = processNominatimData(data) ?? [];
 
   return {
     loading,
