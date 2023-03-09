@@ -31,7 +31,10 @@ const ToolbarLink = styled(Link)({
   padding: '0 3px 1px 3px',
   margin: '0 9px -10px 9px',
   borderBottom: '6px solid transparent',
-  '&:hover,&:focus,&:active,&.active': {
+  '&:hover,&:focus': {
+    borderBottomColor: '#ffffffbc',
+  },
+  '&:active,&.active': {
     borderBottomColor: '#ffffff',
   },
 });
@@ -92,7 +95,7 @@ const MobileNavContent = () => {
         <Menu />
       </IconButton>
 
-      <ToolbarNavLink exact to="/" onClick={closeDrawer}>
+      <ToolbarNavLink to="/" onClick={closeDrawer}>
         G-SRAT
       </ToolbarNavLink>
 
@@ -101,7 +104,7 @@ const MobileNavContent = () => {
       <MobileDrawer open={drawerOpen} onClose={closeDrawer}>
         <Toolbar /> {/* Prevents app bar from concealing content*/}
         <List>
-          <ListItem component={DrawerNavLink} exact to="/" onClick={closeDrawer}>
+          <ListItem component={DrawerNavLink} to="/" onClick={closeDrawer}>
             Home
           </ListItem>
           {navItems.map(({ to, title }) => (
@@ -117,9 +120,7 @@ const MobileNavContent = () => {
 
 const DesktopNavContent = () => (
   <>
-    <ToolbarNavLink exact to="/">
-      G-SRAT
-    </ToolbarNavLink>
+    <ToolbarNavLink to="/">G-SRAT</ToolbarNavLink>
 
     {navItems.map(({ to, title }) => (
       <ToolbarNavLink key={to} to={to}>

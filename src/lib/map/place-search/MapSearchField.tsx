@@ -18,7 +18,13 @@ export const MapSearchField = ({ onSelectedResult }) => {
       selectOnFocus
       loading={loading}
       options={loading ? [] : searchResults}
-      getOptionLabel={(option) => (typeof option === 'string' ? option : option.label)}
+      renderOption={(props, option) => {
+        return (
+          <li {...props} key={option.placeId}>
+            {option.label}
+          </li>
+        );
+      }}
       open={searchResultsOpen}
       onOpen={() => setSearchResultsOpen(true)}
       onClose={() => setSearchResultsOpen(false)}
