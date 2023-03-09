@@ -1,5 +1,10 @@
 module.exports = {
-  extends: ['react-app', 'eslint:recommended', 'eslint-config-prettier'],
+  extends: [
+    'react-app',
+    'eslint:recommended',
+    'eslint-config-prettier',
+    'plugin:storybook/recommended',
+  ],
   rules: {
     'react/prop-types': 'off',
     'no-unused-vars': 'off',
