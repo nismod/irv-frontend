@@ -1,6 +1,7 @@
 import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import buffer from '@turf/buffer';
+import { GeoJSON } from 'geojson';
 
 /**
  * 2D bbox format as defined in GeoJSON, turf etc:
@@ -34,6 +35,10 @@ export function nominatimToAppBoundingBox(nominatimBoundingBox: NominatimBoundin
     nominatimBoundingBox[3],
     nominatimBoundingBox[1],
   ];
+}
+
+export function geoJsonToAppBoundingBox(geoJson: GeoJSON): BoundingBox {
+  return bbox(geoJson) as BoundingBox;
 }
 
 export function extendBbox(boundingBox: BoundingBox, kilometers: number): BoundingBox {
