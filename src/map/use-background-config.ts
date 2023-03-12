@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { useMemo } from 'react';
 
 import { BACKGROUNDS, BACKGROUND_ATTRIBUTIONS, BackgroundName } from '@/config/backgrounds';
 
@@ -6,7 +7,7 @@ function visible(isVisible: boolean): 'visible' | 'none' {
   return isVisible ? 'visible' : 'none';
 }
 
-const makeBackgroundConfig = _.memoize((background: BackgroundName) => {
+function makeBackgroundConfig(background: BackgroundName) {
   return {
     version: 8,
     sources: _.mapValues(BACKGROUNDS, (b) => b.source),
@@ -14,10 +15,10 @@ const makeBackgroundConfig = _.memoize((background: BackgroundName) => {
       _.merge(b.layer, { layout: { visibility: visible(background === b.id) } }),
     ),
   };
-});
+}
 
 export function useBackgroundConfig(background: BackgroundName) {
-  return makeBackgroundConfig(background);
+  return useMemo(() => makeBackgroundConfig(background), [background]);
 }
 
 export function useBackgroundAttribution(background: BackgroundName) {
