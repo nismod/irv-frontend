@@ -9,6 +9,9 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import 'react-spring-bottom-sheet/dist/style.css';
 import './index.css';
 
+import { QueryClientProvider } from 'react-query';
+
+import { queryClient } from './query-client';
 import { router } from './router';
 
 export const App = () => {
@@ -17,7 +20,9 @@ export const App = () => {
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <RouterProvider router={router} />
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </RecoilRoot>

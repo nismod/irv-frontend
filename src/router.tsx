@@ -1,6 +1,7 @@
 import { redirect } from 'react-router';
 import { createBrowserRouter } from 'react-router-dom';
 
+import { downloadsRoute } from './modules/downloads/downloads-routes';
 import { DataPage } from './pages/DataPage';
 import { IntroPage } from './pages/IntroPage';
 import { TermsPage } from './pages/TermsPage';
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
         path: '/terms-of-use',
         element: <TermsPage />,
       },
+      downloadsRoute,
     ],
   },
 ]);

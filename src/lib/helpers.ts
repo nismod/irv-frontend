@@ -206,3 +206,5 @@ export function cartesian(...a: any[][]) {
 export function eventPreventDefault(e) {
   e.preventDefault();
 }
+
+export type Unrequired<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
