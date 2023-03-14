@@ -9,11 +9,11 @@ export const [useAllRegions, fetchAllRegions] = makeQueryAndPrefetch(
 );
 
 export const [useRegionById, fetchRegionById] = makeQueryAndPrefetch(
-  (id: string) => ['RegionById', id],
-  (id: string) =>
+  ({ regionId }: { regionId: string }) => ['RegionById', regionId],
+  ({ regionId }) =>
     ({ signal }) =>
       cancelOnAbort(
-        autopkgClient.boundaries.getBoundaryByNameV1BoundariesNameGet({ name: id }),
+        autopkgClient.boundaries.getBoundaryByNameV1BoundariesNameGet({ name: regionId }),
         signal,
       ),
 );

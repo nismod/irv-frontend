@@ -7,7 +7,7 @@ import { LoaderData } from '@/lib/react/react-router';
 import { fetchAllRegions } from '../data/regions';
 
 export const allRegionsLoader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
-  regions: await fetchAllRegions(signal),
+  regions: await fetchAllRegions({}, signal),
 });
 
 type AllRegionsLoaderData = LoaderData<typeof allRegionsLoader>;

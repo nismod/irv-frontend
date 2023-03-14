@@ -17,9 +17,9 @@ export const singleRegionLoader = async ({
   params: { regionId },
 }: LoaderFunctionArgs) => {
   return defer({
-    region: await fetchRegionById(signal, regionId),
-    datasets: fetchAllDatasets(signal),
-    pkg: fetchPackageByRegion(signal, regionId),
+    region: await fetchRegionById({ regionId }, signal),
+    datasets: fetchAllDatasets({}, signal),
+    pkg: fetchPackageByRegion({ regionId }, signal),
   });
 };
 

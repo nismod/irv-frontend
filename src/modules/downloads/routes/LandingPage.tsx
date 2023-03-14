@@ -10,7 +10,7 @@ import { RegionSearch } from '../components/RegionSearch';
 import { fetchAllRegions } from '../data/regions';
 
 export const landingPageLoader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
-  regions: await fetchAllRegions(signal),
+  regions: await fetchAllRegions({}, signal),
 });
 
 export type LandingPageData = LoaderData<typeof landingPageLoader>;
