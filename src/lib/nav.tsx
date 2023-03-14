@@ -14,9 +14,8 @@ export const AppNavLink = withProps(MuiLink<typeof RouterNavLink>, {
 });
 
 export const BackLink = (props: Unrequired<ComponentProps<typeof AppLink>, 'to'>) => {
-  const {
-    state: { from = '..' },
-  } = useLocation();
+  const { state } = useLocation();
+  const { from = '..' } = state ?? {};
 
   return <AppLink to={from} {...props} />;
 };
