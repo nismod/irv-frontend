@@ -1,7 +1,7 @@
 import { ZoomOutMap } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { Boundary } from '@nismod/irv-autopkg-client';
 import { DeckGL, GeoJsonLayer, MapViewState } from 'deck.gl/typed';
+import { Geometry } from 'geojson';
 import { useCallback, useState } from 'react';
 import { MapContext, StaticMap } from 'react-map-gl';
 
@@ -53,15 +53,17 @@ function useViewState(initialViewStateFn: () => MapViewState) {
 }
 
 export function RegionMap({
-  region,
+  regionGeometry,
+  regionEnvelope,
   width,
   height,
 }: {
-  region: Boundary;
+  regionGeometry: Geometry;
+  regionEnvelope: Geometry;
   width: number;
   height: number;
 }) {
-  const boundingBox = geoJsonToAppBoundingBox(region.envelope);
+  const boundingBox = geoJsonToAppBoundingBox(regionEnvelope);
   const enlarged = extendBbox(boundingBox, 100);
   const { viewState, setViewState, initialViewState } = useViewState(() =>
     getBoundingBoxViewState(enlarged, width, height),
@@ -84,7 +86,7 @@ export function RegionMap({
         controller={true}
         layers={[
           new GeoJsonLayer({
-            data: region.geometry,
+            data: regionGeometry,
             stroked: true,
             getLineColor: [150, 150, 255],
             getLineWidth: 3,

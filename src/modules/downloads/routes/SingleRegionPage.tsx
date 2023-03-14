@@ -61,7 +61,12 @@ export const SingleRegionPage = () => {
     <Container>
       <BackLink>&larr; Back</BackLink>
       <h2>{region.name_long}</h2>
-      <RegionMap region={region} width={600} height={300} />
+      <RegionMap
+        regionGeometry={region.geometry}
+        regionEnvelope={region.envelope}
+        width={600}
+        height={300}
+      />
       <h2>Package</h2>
       <Suspense fallback={<Skeleton variant="rectangular" height={600} width={500} />}>
         <Await
