@@ -1,4 +1,4 @@
-import { Container, List, Skeleton, Stack } from '@mui/material';
+import { Container, Skeleton, Stack } from '@mui/material';
 import { Boundary, Package, Processor } from '@nismod/irv-autopkg-client';
 import { range } from 'lodash';
 import { Suspense } from 'react';
@@ -6,11 +6,11 @@ import { Await, LoaderFunctionArgs, defer, useLoaderData } from 'react-router-do
 
 import { BackLink } from '@/lib/nav';
 
-import { DataProcessorItem } from '../components/DataProcessorItem';
 import { RegionMap } from '../components/RegionMap';
 import { fetchAllDatasets } from '../data/datasets';
 import { fetchPackageByRegion } from '../data/packages';
 import { fetchRegionById } from '../data/regions';
+import { DatasetsList } from '../sections/datasets/DatasetsList';
 
 export const singleRegionLoader = async ({
   request: { signal },
@@ -31,31 +31,6 @@ type SingleRegionLoaderData = {
 
 export const SingleRegionPage = () => {
   const { region, datasets, pkg } = useLoaderData() as SingleRegionLoaderData;
-
-  function renderDatasets(datasets: Processor[]) {
-    return (
-      <>
-        <List sx={{ width: '100%', maxWidth: 360 }}>
-          {datasets.map((ds) => (
-            <Suspense
-              key={ds.name}
-              fallback={<DataProcessorItem processor={ds} pkg={null} packageLoading={true} />}
-            >
-              <Await
-                resolve={pkg}
-                errorElement={
-                  <DataProcessorItem processor={ds} pkg={null} packageLoading={false} />
-                }
-                children={(resolvedPackage) => (
-                  <DataProcessorItem processor={ds} pkg={resolvedPackage} packageLoading={false} />
-                )}
-              />
-            </Suspense>
-          ))}
-        </List>
-      </>
-    );
-  }
 
   return (
     <Container>
@@ -84,7 +59,10 @@ export const SingleRegionPage = () => {
       </Suspense>
       <h2>Datasets</h2>
       <Suspense fallback={<DatasetsSkeleton />}>
-        <Await resolve={datasets} children={renderDatasets} />
+        <Await
+          resolve={datasets}
+          children={(datasets) => <DatasetsList datasets={datasets} region={region} />}
+        />
       </Suspense>
     </Container>
   );
