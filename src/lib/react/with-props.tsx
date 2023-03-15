@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ComponentType, FC, useMemo } from 'react';
+import { ComponentType, FC, memo } from 'react';
 
 /**
  * Apply a set of props to a component, but still enable user to override the props later. Props are merged recursively.
@@ -15,10 +15,11 @@ export function withProps<P, AppliedT extends Partial<P>>(
   applyProps: AppliedT,
   displayName: string = 'WithProps',
 ): FC<Omit<P, keyof AppliedT> & Partial<AppliedT>> {
-  const WithProps: FC<Omit<P, keyof AppliedT> & Partial<AppliedT>> = (props) => {
-    const mergedProps = useMemo(() => _.merge({}, applyProps, props), [props]);
+  const WithProps: FC<Omit<P, keyof AppliedT> & Partial<AppliedT>> = memo((props) => {
+    const mergedProps = _.merge({}, applyProps, props);
+
     return <ComponentClass {...(mergedProps as any)} />;
-  };
+  });
   WithProps.displayName = displayName;
 
   return WithProps;
