@@ -82,6 +82,8 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
     "lint": "eslint .",
     "lint-watch": "esw --watch --changed --ext .ts --ext .tsx --color --clear",
     "format": "prettier --write .",
