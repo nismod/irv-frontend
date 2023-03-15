@@ -2,6 +2,7 @@ import { Container, Skeleton, Stack } from '@mui/material';
 import { Boundary, Package, Processor } from '@nismod/irv-autopkg-client';
 import { range } from 'lodash';
 import { Suspense } from 'react';
+import ReactJson from 'react-json-view';
 import { Await, LoaderFunctionArgs, defer, useLoaderData } from 'react-router-dom';
 
 import { BackLink } from '@/lib/nav';
@@ -43,17 +44,12 @@ export const SingleRegionPage = () => {
         height={300}
       />
       <h2>Package</h2>
-      <Suspense fallback={<Skeleton variant="rectangular" height={600} width={500} />}>
+      <Suspense fallback={<Skeleton variant="rectangular" height={800} width={600} />}>
         <Await
           resolve={pkg}
           errorElement={'No package generated so far.'}
-          children={(resPkg) => (
-            <>
-              <p>{resPkg.uri}</p>
-              <pre style={{ maxWidth: '700px', maxHeight: '600px', overflowY: 'scroll' }}>
-                {JSON.stringify(resPkg.datapackage, null, 4)}
-              </pre>
-            </>
+          children={(resPkg: Package) => (
+            <ReactJson src={resPkg} style={{ height: 800, width: 600, overflow: 'auto' }} />
           )}
         />
       </Suspense>
