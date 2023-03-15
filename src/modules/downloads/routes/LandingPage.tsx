@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Container, Stack, Typography } from '@mui/material';
+import { Box, Container, Stack, Typography } from '@mui/material';
 import { BoundarySummary } from '@nismod/irv-autopkg-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { AppLink } from '@/lib/nav';
 import { LoaderData } from '@/lib/react/react-router';
 
 import { RegionSearch } from '../components/RegionSearch';
+import { ResponsiveProgress } from '../components/ResponsiveProgress';
 import { fetchAllRegions } from '../data/regions';
 
 export const landingPageLoader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
@@ -73,7 +74,7 @@ function RegionSection({ regions }: Pick<LandingPageData, 'regions'>) {
       <Box>
         {selectedRegion && (
           <Typography>
-            <CircularProgress color="info" size="1em" /> Loading country data...
+            <ResponsiveProgress color="inherit" /> Loading country data...
           </Typography>
         )}
       </Box>
