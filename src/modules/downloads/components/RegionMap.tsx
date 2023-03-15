@@ -1,7 +1,7 @@
 import { ZoomOutMap } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { DeckGL, GeoJsonLayer, MapViewState } from 'deck.gl/typed';
-import { Geometry } from 'geojson';
+import { MultiPolygon, Polygon } from 'geojson';
 import { useCallback, useState } from 'react';
 import { MapContext, StaticMap } from 'react-map-gl';
 
@@ -58,8 +58,8 @@ export function RegionMap({
   width,
   height,
 }: {
-  regionGeometry: Geometry;
-  regionEnvelope: Geometry;
+  regionGeometry: MultiPolygon;
+  regionEnvelope: Polygon;
   width: number;
   height: number;
 }) {

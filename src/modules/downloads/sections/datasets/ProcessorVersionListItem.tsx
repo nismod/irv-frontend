@@ -1,5 +1,5 @@
 import { ListItem, ListItemText } from '@mui/material';
-import { Boundary, ProcessorVersion } from '@nismod/irv-autopkg-client';
+import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 
 import { DatasetStatusIndicator } from './DatasetStatusIndicator';
 
@@ -7,18 +7,18 @@ export function ProcessorVersionListItem({
   processorVersion,
   boundary,
 }: {
-  processorVersion: ProcessorVersion;
+  processorVersion: ProcessorVersionMetadata;
   boundary: Boundary;
 }) {
-  const meta = processorVersion.processor;
+  const meta = processorVersion;
   return (
     <ListItem>
       <ListItemText
-        primary={`[Dataset Title] ${meta.dataset}`}
+        primary={`[Dataset Title] ${meta.data_title}`}
         secondary={`[Dataset Description] ${meta.description}`}
         sx={{ flexGrow: 1 }}
       >
-        {meta.dataset} ({meta.version})
+        {meta.data_title_long} ({meta.version})
       </ListItemText>
 
       <DatasetStatusIndicator boundary={boundary} processorVersion={processorVersion} />

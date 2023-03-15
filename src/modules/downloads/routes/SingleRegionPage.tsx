@@ -1,5 +1,6 @@
 import { Container, Skeleton, Stack } from '@mui/material';
 import { Boundary, Package, Processor } from '@nismod/irv-autopkg-client';
+import { MultiPolygon, Polygon } from 'geojson';
 import { range } from 'lodash';
 import { Suspense } from 'react';
 import ReactJson from 'react-json-view';
@@ -38,8 +39,8 @@ export const SingleRegionPage = () => {
       <BackLink>&larr; Back</BackLink>
       <h2>{region.name_long}</h2>
       <RegionMap
-        regionGeometry={region.geometry}
-        regionEnvelope={region.envelope}
+        regionGeometry={region.geometry as MultiPolygon}
+        regionEnvelope={region.envelope as Polygon}
         width={600}
         height={300}
       />

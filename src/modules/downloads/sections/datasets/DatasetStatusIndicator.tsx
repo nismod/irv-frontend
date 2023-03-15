@@ -1,5 +1,5 @@
 import { Chip, CircularProgress } from '@mui/material';
-import { Boundary, ProcessorVersion } from '@nismod/irv-autopkg-client';
+import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 import { useMemo } from 'react';
 
 import { usePackageByRegion } from '../../data/packages';
@@ -9,7 +9,7 @@ export function DatasetStatusIndicator({
   processorVersion: pv,
 }: {
   boundary: Boundary;
-  processorVersion: ProcessorVersion;
+  processorVersion: ProcessorVersionMetadata;
 }) {
   const {
     data: pkg,
@@ -20,9 +20,7 @@ export function DatasetStatusIndicator({
     () =>
       !isStatusLoading &&
       !isError &&
-      pkg.datapackage.resources.find(
-        (x) => `${x.name}.${(x as any).version}` === pv.processor.name,
-      ),
+      pkg.datapackage.resources.find((x) => `${x.name}.${(x as any).version}` === pv.name),
     [isStatusLoading, isError, pkg, pv],
   );
 
