@@ -1,4 +1,7 @@
 node_modules
 
+# env files
+.env
+
 # local development proxy config
 dev-proxy/proxy-table.json
