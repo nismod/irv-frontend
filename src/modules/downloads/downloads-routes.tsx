@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router';
+import { RouteObject, redirect } from 'react-router';
 
 export const downloadsRoute: RouteObject = {
   path: '/downloads',
@@ -16,7 +16,25 @@ export const downloadsRoute: RouteObject = {
         },
         {
           path: ':regionId',
-          lazy: () => import('./routes/regions/region-id'),
+          children: [
+            {
+              index: true,
+              lazy: () => import('./routes/regions/region-id'),
+            },
+            {
+              path: 'packages',
+              children: [
+                {
+                  index: true,
+                  loader: () => redirect('..'),
+                },
+                {
+                  path: ':pvId',
+                  lazy: () => import('./routes/regions/packages/package-id'),
+                },
+              ],
+            },
+          ],
         },
       ],
     },

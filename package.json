@@ -80,6 +80,7 @@
     "storybook": "^7.0.0-rc.4",
     "typescript": "^5.0.2",
     "vite": "^4.2.0",
+    "vite-plugin-rewrite-all": "^1.0.1",
     "vite-plugin-svgr": "^2.4.0",
     "vite-tsconfig-paths": "^4.0.7"
   },
