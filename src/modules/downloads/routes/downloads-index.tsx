@@ -1,14 +1,11 @@
 import { Box, Container, Stack, Typography } from '@mui/material';
-import { BoundarySummary } from '@nismod/irv-autopkg-client';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
+import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 
 import { AppLink } from '@/lib/nav';
 import { LoaderData } from '@/lib/react/react-router';
 
-import { RegionSearch } from '../components/RegionSearch';
-import { ResponsiveProgress } from '../components/ResponsiveProgress';
 import { fetchAllRegions } from '../data/regions';
+import { RegionSearchNavigation } from '../sections/RegionSearchNavigation';
 
 export const loader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
   regions: await fetchAllRegions({}, signal),
@@ -44,44 +41,9 @@ function DownloadsIntroText() {
 }
 
 function RegionSection({ regions }: Pick<LandingPageData, 'regions'>) {
-  const navigate = useNavigate();
-
-  const [selectedRegion, setSelectedRegion] = useState<BoundarySummary>(null);
-  const selectedRegionRef = useRef<BoundarySummary>(null);
-
-  const handleRegionSelected = useCallback((reg: BoundarySummary) => {
-    setSelectedRegion(reg);
-    selectedRegionRef.current = reg;
-  }, []);
-
-  useEffect(() => {
-    if (selectedRegion != null) {
-      setTimeout(() => {
-        if (selectedRegionRef.current != null) {
-          navigate(`/downloads/regions/${selectedRegionRef.current.name}`, {
-            state: { from: '/downloads' },
-          });
-        }
-      }, 500);
-    }
-  }, [selectedRegion, selectedRegionRef, navigate]);
-
   return (
     <Stack direction="column">
-      <Box width="200px">
-        <RegionSearch
-          regions={regions}
-          selectedRegion={selectedRegion}
-          onSelectedRegion={handleRegionSelected}
-        />
-      </Box>
-      <Box>
-        {selectedRegion && (
-          <Typography>
-            <ResponsiveProgress color="inherit" /> Loading country data...
-          </Typography>
-        )}
-      </Box>
+      <RegionSearchNavigation regions={regions} />
       <Typography textAlign="center">
         Or <AppLink to="regions">browse all countries</AppLink>
       </Typography>

@@ -19,6 +19,7 @@ export const RegionSearch = ({
       renderInput={(params) => <TextField {...params} label="Select country" />}
       disablePortal
       autoHighlight
+      clearOnEscape
     />
   );
 };

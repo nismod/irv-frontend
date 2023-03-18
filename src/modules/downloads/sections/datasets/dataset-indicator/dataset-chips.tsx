@@ -1,20 +1,17 @@
 import { Error } from '@mui/icons-material';
 import { Chip } from '@mui/material';
-import { JobProgress, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
-import { FC } from 'react';
+import { JobProgress } from '@nismod/irv-autopkg-client';
+import { ComponentProps, ElementType, FC } from 'react';
 
-import { withProps } from '@/lib/react/with-props';
+import { eventStopPropagation } from '@/lib/helpers';
 
 import { ResponsiveProgress } from '@/modules/downloads/components/ResponsiveProgress';
 
 import { DatasetStatus } from './status-logic/dataset-status';
-import { DataResource } from './status-logic/package-data';
 
-export const StyledChip = withProps(Chip, {
-  sx: {
-    minWidth: '130px',
-  },
-});
+export const StyledChip: typeof Chip = <T extends ElementType<any>>(
+  props: ComponentProps<typeof Chip<T>>,
+) => <Chip<T> sx={{ minWidth: '130px' }} {...props} />;
 
 export const InfoChip: FC<{ status: DatasetStatus.Loading | DatasetStatus.Unknown }> = ({
   status,
@@ -22,7 +19,6 @@ export const InfoChip: FC<{ status: DatasetStatus.Loading | DatasetStatus.Unknow
   const isLoading = status === DatasetStatus.Loading;
   return (
     <StyledChip
-      disabled={true}
       icon={isLoading ? <ResponsiveProgress color="inherit" /> : <Error />}
       label={isLoading ? 'LOADING' : 'ERROR'}
       title={
@@ -31,6 +27,8 @@ export const InfoChip: FC<{ status: DatasetStatus.Loading | DatasetStatus.Unknow
           : 'An unexpected error has occurred, please try later'
       }
       color="default"
+      onClick={eventStopPropagation}
+      clickable={false}
     />
   );
 };
@@ -61,13 +59,8 @@ export const ProcessingInfoChip: FC<{
             : 'Processing dataset...'
           : 'Dataset in queue for processing...'
       }
+      onClick={eventStopPropagation}
+      clickable={false}
     />
   );
-};
-
-export const DownloadChip: FC<{
-  resource: DataResource;
-  pv: ProcessorVersionMetadata;
-}> = ({ resource, pv }) => {
-  return <StyledChip color="success" label="READY" title={`Download data for ${pv.data_title}`} />;
 };

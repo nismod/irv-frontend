@@ -10,24 +10,24 @@ import {
   moveJobToCompletedTransaction,
   useJobById,
 } from '../../../data/jobs';
-import { fetchPackageByRegion, usePackageByRegion } from '../../../data/packages';
+import { fetchPackageByRegion } from '../../../data/packages';
+import { usePackageData } from '../use-package-data';
+import { DownloadChip } from './DownloadChip';
 import { RequestChip } from './RequestChip';
-import { DownloadChip, InfoChip, ProcessingInfoChip } from './dataset-chips';
+import { InfoChip, ProcessingInfoChip } from './dataset-chips';
 import { DatasetStatus, computeDatasetStatus } from './status-logic/dataset-status';
 import { ComputeJobStatusResult, JobStatusType, computeJobStatus } from './status-logic/job-status';
-import {
-  ComputePackageDataResult,
-  PackageDataStatus,
-  computePackageData,
-} from './status-logic/package-data';
+import { ComputePackageDataResult, PackageDataStatus } from './status-logic/package-data';
 import { QueryStatusResult, computeQueryStatus } from './status-logic/query-status';
 
 export function DatasetStatusIndicator({
   boundary,
   processorVersion: pv,
+  onGoToDownload,
 }: {
   boundary: Boundary;
   processorVersion: ProcessorVersionMetadata;
+  onGoToDownload: () => void;
 }) {
   const pvFullName = pv.name;
 
@@ -70,34 +70,8 @@ export function DatasetStatusIndicator({
   }
 
   if (dataStatus === DatasetStatus.Ready) {
-    return <DownloadChip resource={dataResource} pv={pv} />;
+    return <DownloadChip resource={dataResource} pv={pv} onGoToDownload={onGoToDownload} />;
   }
-}
-
-function usePackageData(boundaryName: string, pvName: string) {
-  const { status, error, data } = usePackageByRegion(
-    {
-      regionId: boundaryName,
-    },
-    {
-      refetchOnWindowFocus: false,
-      retry: 0,
-    },
-  );
-  const packageQueryObj = useObjectMemo({ status, error, data });
-
-  return useMemo(
-    () =>
-      computeQueryStatus(packageQueryObj, pvName, computePackageData, (error) => {
-        if (error.status === 404) {
-          return {
-            status: PackageDataStatus.Unavailable,
-            data: null,
-          };
-        }
-      }),
-    [packageQueryObj, pvName],
-  );
 }
 
 function useSubmittedJobData(boundaryName: string, pvName: string, refetchInterval = 10_000) {

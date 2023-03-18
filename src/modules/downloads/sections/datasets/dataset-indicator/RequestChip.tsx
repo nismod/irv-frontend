@@ -63,7 +63,10 @@ export const RequestChip: FC<{
           : `Request ${pv.data_title}`
       }
       label={previousFailed ? 'FAILED' : 'PREPARE'}
-      onClick={handleSubmitJob}
+      onClick={(e) => {
+        handleSubmitJob();
+        e.stopPropagation();
+      }}
     />
   );
 };
