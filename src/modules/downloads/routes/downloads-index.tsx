@@ -10,13 +10,15 @@ import { RegionSearch } from '../components/RegionSearch';
 import { ResponsiveProgress } from '../components/ResponsiveProgress';
 import { fetchAllRegions } from '../data/regions';
 
-export const landingPageLoader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
+export const loader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
   regions: await fetchAllRegions({}, signal),
 });
 
-export type LandingPageData = LoaderData<typeof landingPageLoader>;
+loader.displayName = 'landingPageLoader';
 
-export const LandingPage = () => {
+export type LandingPageData = LoaderData<typeof loader>;
+
+export const Component = () => {
   const { regions } = useLoaderData() as LandingPageData;
 
   return (
@@ -34,6 +36,8 @@ export const LandingPage = () => {
     </Container>
   );
 };
+
+Component.displayName = 'LandingPage';
 
 function DownloadsIntroText() {
   return <Typography>Some intro text here</Typography>;

@@ -8,16 +8,13 @@ import { Await, LoaderFunctionArgs, defer, useLoaderData } from 'react-router-do
 
 import { BackLink } from '@/lib/nav';
 
-import { RegionMap } from '../components/RegionMap';
-import { fetchAllDatasets } from '../data/datasets';
-import { fetchPackageByRegion } from '../data/packages';
-import { fetchRegionById } from '../data/regions';
-import { DatasetsList } from '../sections/datasets/DatasetsList';
+import { RegionMap } from '../../components/RegionMap';
+import { fetchAllDatasets } from '../../data/datasets';
+import { fetchPackageByRegion } from '../../data/packages';
+import { fetchRegionById } from '../../data/regions';
+import { DatasetsList } from '../../sections/datasets/DatasetsList';
 
-export const singleRegionLoader = async ({
-  request: { signal },
-  params: { regionId },
-}: LoaderFunctionArgs) => {
+export const loader = async ({ request: { signal }, params: { regionId } }: LoaderFunctionArgs) => {
   return defer({
     region: await fetchRegionById({ regionId }, signal),
     datasets: fetchAllDatasets({}, signal),
@@ -25,13 +22,15 @@ export const singleRegionLoader = async ({
   });
 };
 
+loader.displayName = 'singleRegionLoader';
+
 type SingleRegionLoaderData = {
   region: Boundary;
   datasets: Promise<Processor[]>;
   pkg: Promise<Package>;
 };
 
-export const SingleRegionPage = () => {
+export const Component = () => {
   const { region, datasets, pkg } = useLoaderData() as SingleRegionLoaderData;
 
   return (
@@ -64,6 +63,8 @@ export const SingleRegionPage = () => {
     </Container>
   );
 };
+
+Component.displayName = 'SingleRegionPage';
 
 function DatasetsSkeleton() {
   return (

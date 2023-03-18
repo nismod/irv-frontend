@@ -1,29 +1,22 @@
 import { RouteObject } from 'react-router';
 
-import { AllRegionsPage, allRegionsLoader } from './routes/AllRegionsPage';
-import { LandingPage, landingPageLoader } from './routes/LandingPage';
-import { SingleRegionPage, singleRegionLoader } from './routes/SingleRegionPage';
-
 export const downloadsRoute: RouteObject = {
   path: '/downloads',
   children: [
     {
       index: true,
-      loader: landingPageLoader,
-      element: <LandingPage />,
+      lazy: () => import('./routes/downloads-index'),
     },
     {
       path: 'regions',
       children: [
         {
           index: true,
-          loader: allRegionsLoader,
-          element: <AllRegionsPage />,
+          lazy: () => import('./routes/regions/regions-index'),
         },
         {
           path: ':regionId',
-          loader: singleRegionLoader,
-          element: <SingleRegionPage />,
+          lazy: () => import('./routes/regions/region-id'),
         },
       ],
     },

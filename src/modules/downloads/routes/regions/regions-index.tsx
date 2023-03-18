@@ -4,15 +4,17 @@ import { LoaderFunctionArgs, Link as RouterLink, useLoaderData } from 'react-rou
 import { AppLink } from '@/lib/nav';
 import { LoaderData } from '@/lib/react/react-router';
 
-import { fetchAllRegions } from '../data/regions';
+import { fetchAllRegions } from '../../data/regions';
 
-export const allRegionsLoader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
+export const loader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
   regions: await fetchAllRegions({}, signal),
 });
 
-type AllRegionsLoaderData = LoaderData<typeof allRegionsLoader>;
+loader.displayName = 'allRegionsLoader';
 
-export const AllRegionsPage = () => {
+type AllRegionsLoaderData = LoaderData<typeof loader>;
+
+export const Component = () => {
   const { regions } = useLoaderData() as AllRegionsLoaderData;
 
   return (
@@ -30,3 +32,5 @@ export const AllRegionsPage = () => {
     </Container>
   );
 };
+
+Component.displayName = 'AllRegionsRoute';
