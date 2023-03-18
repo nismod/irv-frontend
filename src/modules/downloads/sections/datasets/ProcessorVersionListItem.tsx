@@ -1,7 +1,7 @@
 import { ListItem, ListItemText } from '@mui/material';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 
-import { DatasetStatusIndicator } from './DatasetStatusIndicator';
+import { DatasetStatusIndicator } from './dataset-indicator/DatasetStatusIndicator';
 
 export function ProcessorVersionListItem({
   processorVersion,

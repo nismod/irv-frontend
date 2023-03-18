@@ -1,4 +1,5 @@
-import { QueryClient, QueryFunction, QueryKey, useQuery } from 'react-query';
+import { QueryClient, QueryFunction, QueryKey, UseQueryOptions, useQuery } from 'react-query';
+import { Simplify } from 'type-fest';
 
 export const queryClient = new QueryClient();
 
@@ -8,10 +9,15 @@ export function makeQueryAndPrefetch<
   TResult,
 >(keyFn: (args: TArgs) => TQueryKey, makeFetcher: (args: TArgs) => QueryFunction<TResult>) {
   return [
-    (args: TArgs, ...reactQueryOptions: any) => {
-      return useQuery(keyFn(args), makeFetcher(args), ...reactQueryOptions);
+    (
+      args: TArgs,
+      reactQueryOptions?: Simplify<
+        Omit<UseQueryOptions<TResult, unknown, TResult, QueryKey>, 'queryKey' | 'queryFn'>
+      >,
+    ) => {
+      return useQuery(keyFn(args), makeFetcher(args), reactQueryOptions);
     },
-    (args: TArgs, signal: AbortSignal) => {
+    (args: TArgs, signal?: AbortSignal) => {
       const key = keyFn(args);
 
       signal?.addEventListener('abort', () => {
