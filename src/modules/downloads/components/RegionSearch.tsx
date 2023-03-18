@@ -18,6 +18,7 @@ export const RegionSearch = ({
       getOptionLabel={(o) => o.name_long}
       renderInput={(params) => <TextField {...params} label="Select country" />}
       disablePortal
+      autoHighlight
     />
   );
 };
