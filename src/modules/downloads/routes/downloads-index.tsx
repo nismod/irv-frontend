@@ -6,7 +6,7 @@ import { LoaderData } from '@/lib/react/react-router';
 
 import { CenteredLayout } from '../components/CenteredLayout';
 import { fetchAllRegions } from '../data/regions';
-import { mdxComponents } from '../mdx-components';
+import { mdxComponents } from '../markdown';
 import DownloadsIntroText from '../sections/DownloadsIntroText.mdx';
 import { RegionSearchNavigation } from '../sections/RegionSearchNavigation';
 

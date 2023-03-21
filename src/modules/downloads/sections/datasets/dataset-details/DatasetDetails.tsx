@@ -1,8 +1,13 @@
-import { Box, List, ListItem, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 import Markdown from 'markdown-to-jsx';
-import ReactJson from 'react-json-view';
+import prettyBytes from 'pretty-bytes';
 import { Link } from 'react-router-dom';
+
+import { AppLink } from '@/lib/nav';
+import { H3 } from '@/lib/ui/mui/typography';
+
+import { mdToJsxOverrides } from '@/modules/downloads/markdown';
 
 import { PackageDataStatus } from '../dataset-indicator/status-logic/package-data';
 import { usePackageData } from '../use-package-data';
@@ -18,7 +23,6 @@ export function DatasetDetails({
 
   return (
     <Box p={2}>
-      <ReactJson src={meta} collapsed={true} />
       <Box py={1}>
         <Typography variant="h3">Downloads</Typography>
         <Typography variant="subtitle1" color="GrayText">
@@ -26,21 +30,42 @@ export function DatasetDetails({
         </Typography>
         {status === PackageDataStatus.Available ? (
           <>
+            <Typography variant="subtitle1" color="GrayText">
+              Total size: {prettyBytes(data.bytes)}
+            </Typography>
             <DownloadsList paths={data.path} />
-            <ReactJson src={data} collapsed={true} />
           </>
         ) : (
           <Typography>No data yet.</Typography>
         )}
       </Box>
       <Box py={1}>
-        <Typography variant="h3">Summary</Typography>
-        <Typography sx={{ hyphens: 'auto' }}>
-          <Markdown>{meta.data_summary}</Markdown>
-        </Typography>
-        <Typography variant="h3">Citation</Typography>
-        <Markdown>{meta.data_citation}</Markdown>
-        <Typography variant="h3"></Typography>
+        {meta.data_summary && (
+          <>
+            <H3>Summary</H3>
+            <Typography sx={{ hyphens: 'auto' }}>
+              <MarkdownSection>{meta.data_summary}</MarkdownSection>
+            </Typography>
+          </>
+        )}
+        {meta.data_citation && (
+          <>
+            <H3>Citation</H3>
+            <MarkdownSection>{meta.data_citation}</MarkdownSection>
+          </>
+        )}
+        <H3>Authors</H3>
+        <p>{meta.data_author}</p>
+        {meta.data_license && (
+          <>
+            <H3>License</H3>
+            <Typography>
+              <Link to={meta.data_license.path} target="_blank">
+                {meta.data_license?.title}
+              </Link>
+            </Typography>
+          </>
+        )}
       </Box>
     </Box>
   );
@@ -49,16 +74,20 @@ export function DatasetDetails({
 function DownloadsList({ paths }: { paths: string[] | string }) {
   const pathList = Array.isArray(paths) ? paths : [paths];
   return (
-    <List>
-      {pathList.map((p) => (
-        <ListItem key={p}>
-          <Typography fontSize="12px" color="inherit">
-            <Link color="inherit" to={p}>
-              {p.substring(p.lastIndexOf('/') + 1)}
-            </Link>
-          </Typography>
-        </ListItem>
-      ))}
-    </List>
+    <Box maxHeight="500px" overflow="auto">
+      <Typography fontSize="14px" color="inherit">
+        <ol>
+          {pathList.map((p) => (
+            <li key={p}>
+              <AppLink to={p}>{p.substring(p.lastIndexOf('/') + 1)}</AppLink>
+            </li>
+          ))}
+        </ol>
+      </Typography>
+    </Box>
   );
+}
+
+function MarkdownSection({ children }) {
+  return <Markdown options={{ overrides: mdToJsxOverrides }}>{children}</Markdown>;
 }
