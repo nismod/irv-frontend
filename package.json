@@ -14,7 +14,7 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.123",
     "@mui/material": "^5.11.13",
-    "@nismod/irv-autopkg-client": "^0.2.7",
+    "@nismod/irv-autopkg-client": "^0.2.7-dev",
     "@react-hook/debounce": "^4.0.0",
     "@recoiljs/refine": "^0.1.1",
     "@turf/bbox": "^6.5.0",

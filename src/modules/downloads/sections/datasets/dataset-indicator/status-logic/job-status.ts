@@ -1,18 +1,5 @@
-import { JobProgress } from '@nismod/irv-autopkg-client';
+import { JobProgress, JobStateEnum } from '@nismod/irv-autopkg-client';
 
-/**
- * Backend (Celery) job/job-group status values
- * https://docs.celeryq.dev/en/latest/userguide/tasks.html#built-in-states
- * EXECUTING is a custom state added to our backend
- */
-export type BackendJobStatus =
-  | 'PENDING'
-  | 'STARTED'
-  | 'EXECUTING'
-  | 'SUCCESS'
-  | 'FAILURE'
-  | 'RETRY'
-  | 'REVOKED';
 
 export type JobResult = any;
 
@@ -20,12 +7,13 @@ export enum JobStatusType {
   Queued = 'queued',
   Processing = 'processing',
   Failed = 'failed',
+  Skipped = 'skipped',
   Success = 'success',
 }
 
 export type ComputeJobStatusResult =
   | {
-      status: JobStatusType.Queued | JobStatusType.Failed;
+      status: JobStatusType.Queued | JobStatusType.Failed | JobStatusType.Skipped;
       data: null;
     }
   | {
@@ -39,7 +27,7 @@ export type ComputeJobStatusResult =
  */
 export interface IJobStatus {
   processor_name: string;
-  job_status: string;
+  job_status: JobStateEnum;
   job_progress?: JobProgress;
   job_result?: any;
 }
@@ -58,30 +46,37 @@ export function computeJobStatus(
 ): ComputeJobStatusResult {
   const pvJob = jobGroupStatus.job_group_processors.find((j) => j.processor_name === pvFullName);
 
-  const status: BackendJobStatus | null = pvJob?.job_status as BackendJobStatus;
+  const status: JobStateEnum | null = pvJob?.job_status;
 
-  if (pvJob == null || status === 'PENDING') {
+  if (pvJob == null || status === JobStateEnum.PENDING) {
     return {
       status: JobStatusType.Queued,
       data: null,
     };
   }
 
-  if (['STARTED', 'EXECUTING', 'RETRY'].includes(status)) {
+  if ([JobStateEnum.EXECUTING, JobStateEnum.RETRY].includes(status)) {
     return {
       status: JobStatusType.Processing,
       data: pvJob,
     };
   }
 
-  if (['FAILURE', 'REVOKED'].includes(status)) {
+  if ([JobStateEnum.FAILURE, JobStateEnum.REVOKED].includes(status)) {
     return {
       status: JobStatusType.Failed,
       data: null,
     };
   }
 
-  if (status === 'SUCCESS') {
+  if(status === JobStateEnum.SKIPPED) {
+    return {
+      status: JobStatusType.Skipped,
+      data: null
+    }
+  }
+
+  if (status === JobStateEnum.SUCCESS) {
     return {
       status: JobStatusType.Success,
       data: pvJob,

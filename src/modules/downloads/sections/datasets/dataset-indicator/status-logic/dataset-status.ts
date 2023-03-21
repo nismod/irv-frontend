@@ -14,6 +14,7 @@ export enum DatasetStatus {
   Queued = 'queued', // data is queued for processing
   Processing = 'processing', // data is processing
   ProcessingFailed = 'processing-failed', // data processing failed, can request again
+  ProcessingSkipped = 'processing-skipped', // data processing skipped, another job running
   ProcessingSuccess = 'processing-success', // data processing succeeded, package being uploaded
   Ready = 'ready', // data is ready for download
 }
@@ -48,6 +49,10 @@ export function computeDatasetStatus(
 
     if (jobStat === JobStatusType.Processing) {
       return DatasetStatus.Processing;
+    }
+
+    if (jobStat === JobStatusType.Skipped) {
+      return DatasetStatus.ProcessingSkipped;
     }
 
     if (jobStat === JobStatusType.Failed) {

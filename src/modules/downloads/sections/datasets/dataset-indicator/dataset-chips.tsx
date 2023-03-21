@@ -34,30 +34,47 @@ export const InfoChip: FC<{ status: DatasetStatus.Loading | DatasetStatus.Unknow
 };
 
 export const ProcessingInfoChip: FC<{
-  status: DatasetStatus.Queued | DatasetStatus.Processing | DatasetStatus.ProcessingSuccess;
+  status: DatasetStatus.Queued | DatasetStatus.Processing;
   progress: JobProgress | null;
 }> = ({ status, progress }) => {
   const isProcessing = status === DatasetStatus.Processing;
-  const isSuccess = status === DatasetStatus.ProcessingSuccess;
   return (
     <StyledChip
       icon={
         <ResponsiveProgress
           color={isProcessing ? 'primary' : 'inherit'}
           value={isProcessing ? progress?.percent_complete : undefined}
-          variant={!isSuccess && isProcessing && progress != null ? 'determinate' : 'indeterminate'}
+          variant={isProcessing && progress != null ? 'determinate' : 'indeterminate'}
         />
       }
-      color={isSuccess ? 'success' : 'primary'}
-      label={isSuccess ? 'SUCCESS' : isProcessing ? 'PROCESSING' : 'QUEUED'}
+      color="primary"
+      label={isProcessing ? 'PROCESSING' : 'QUEUED'}
       title={
-        isSuccess
-          ? 'Successfully processed, finalizing data packge...'
-          : isProcessing
+        isProcessing
           ? progress != null
             ? `Processing dataset - ${progress.percent_complete}% done`
             : 'Processing dataset...'
           : 'Dataset in queue for processing...'
+      }
+      onClick={eventStopPropagation}
+      clickable={false}
+    />
+  );
+};
+
+export const SuccessChip: FC<{
+  status: DatasetStatus.ProcessingSuccess | DatasetStatus.ProcessingSkipped;
+}> = ({ status }) => {
+  const isSuccess = status === DatasetStatus.ProcessingSuccess;
+  return (
+    <StyledChip
+      icon={<ResponsiveProgress color="inherit" variant="indeterminate" />}
+      color={isSuccess ? 'success' : 'primary'}
+      label={isSuccess ? 'SUCCESS' : 'PROCESSING'}
+      title={
+        isSuccess
+          ? 'Successfully processed, finalizing data package...'
+          : 'Dataset already requested by another user, waiting for the processing to finish...'
       }
       onClick={eventStopPropagation}
       clickable={false}

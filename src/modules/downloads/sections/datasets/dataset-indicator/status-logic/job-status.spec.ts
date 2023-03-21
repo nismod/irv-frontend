@@ -3,26 +3,22 @@
  * - ignore job_group_status altogether, look at job_status only
  * - when a processor is expected to exist in the job group but isn't there, assume PENDING
  * - the rest is according to Celery status list:
- * - STARTED EXECUTING and RETRY - data is being processed, can query job_progress
+ * - EXECUTING and RETRY - data is being processed, can query job_progress
  * - PENDING - data is queued for processing
  * - FAILURE and REVOKED - processing failed and needs to be requested again if the users wants that
+ * - SKIPPED - job was skipped because there was another job for that processor. Wait until that completes
  * - SUCCESS - processing succeeded, data should be available in /packages
  */
 
+import { JobStateEnum } from '@nismod/irv-autopkg-client';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import {
-  BackendJobStatus,
-  IJobGroupStatus,
-  IJobStatus,
-  JobStatusType,
-  computeJobStatus,
-} from './job-status';
+import { IJobGroupStatus, IJobStatus, JobStatusType, computeJobStatus } from './job-status';
 
 function makeAnotherProcessorJob(pvName: string): IJobStatus {
   return {
     processor_name: pvName,
-    job_status: 'EXECUTING',
+    job_status: JobStateEnum.EXECUTING,
     job_progress: {
       current_task: 'something',
       percent_complete: 50,
@@ -46,7 +42,7 @@ describe('Compute state of job group status data', () => {
       job_group_processors: [
         SOME_OTHER_JOB,
         {
-          job_status: 'PENDING',
+          job_status: JobStateEnum.PENDING,
           processor_name: PV_NAME,
           job_progress: null,
           job_result: null,
@@ -65,7 +61,7 @@ describe('Compute state of job group status data', () => {
       job_group_processors: [
         SOME_OTHER_JOB,
         {
-          job_status: 'PENDING',
+          job_status: JobStateEnum.PENDING,
           processor_name: 'Some text not equal to processor name',
           job_progress: null,
           job_result: null,
@@ -79,9 +75,9 @@ describe('Compute state of job group status data', () => {
     expect(data).toBe(null);
   });
 
-  it.each(['STARTED', 'EXECUTING', 'RETRY'])(
-    'returns status:processing and job data for job_status STARTED, EXECUTING and RETRY',
-    (job_status: BackendJobStatus) => {
+  it.each([JobStateEnum.EXECUTING, JobStateEnum.RETRY])(
+    'returns status:processing and job data for job_status EXECUTING and RETRY',
+    (job_status: JobStateEnum) => {
       const JOB = {
         processor_name: PV_NAME,
         job_status,
@@ -103,9 +99,9 @@ describe('Compute state of job group status data', () => {
     },
   );
 
-  it.each(['FAILURE', 'REVOKED'])(
+  it.each([JobStateEnum.FAILURE, JobStateEnum.REVOKED])(
     'returns status:failed for job_status FAILURE and REVOKED',
-    (job_status: BackendJobStatus) => {
+    (job_status: JobStateEnum) => {
       const STOPPED_JOB: IJobGroupStatus = {
         job_group_processors: [
           SOME_OTHER_JOB,
@@ -125,10 +121,29 @@ describe('Compute state of job group status data', () => {
     },
   );
 
+  it('returns status:skipped and no data for job_status SKIPPED', () => {
+    const SKIPPED_JOB: IJobGroupStatus = {
+      job_group_processors: [
+        SOME_OTHER_JOB,
+        {
+          processor_name: PV_NAME,
+          job_status: JobStateEnum.SKIPPED,
+          job_progress: null,
+          job_result: {},
+        },
+      ],
+    };
+
+    const { status, data } = computeJobStatus(SKIPPED_JOB, PV_NAME);
+
+    expect(status).toBe(JobStatusType.Skipped);
+    expect(data).toBe(null);
+  });
+
   it('returns status:success and job data for job_status SUCCESS', () => {
     const JOB = {
       processor_name: PV_NAME,
-      job_status: 'SUCCESS',
+      job_status: JobStateEnum.SUCCESS,
       job_progress: null,
       job_result: {},
     };

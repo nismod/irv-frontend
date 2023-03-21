@@ -141,3 +141,26 @@ export function usePruneOldJobs() {
     }
   }, [submittedJobs, completeJob]);
 }
+
+export function usePruneJobsBeforeLast() {
+  const submittedJobs = useRecoilValue(submittedJobsState);
+
+  const completeJob = useMoveJobToCompleted();
+
+  useEffect(() => {
+    const idSet = new Set();
+
+    const jobsReversed = [...submittedJobs];
+    jobsReversed.reverse();
+
+    for (const job of jobsReversed) {
+      const key = `${job.boundaryName}@@${job.processors.join('--')}`;
+
+      if (idSet.has(key)) {
+        completeJob(job.jobId);
+      } else {
+        idSet.add(key);
+      }
+    }
+  }, [submittedJobs, completeJob]);
+}

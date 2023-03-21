@@ -20,6 +20,7 @@ describe('compute dataset status', () => {
     [JobStatusType.Queued, QueryResultStatus.Loading],
     [JobStatusType.Processing, QueryResultStatus.Loading],
     [JobStatusType.Failed, QueryResultStatus.Loading],
+    [JobStatusType.Skipped, QueryResultStatus.Loading],
     [JobStatusType.Success, QueryResultStatus.Loading],
   ])('returns status:loading if any query is loading', (jobStatus, pkgStatus) => {
     const status = computeDatasetStatus(jobStatus, pkgStatus);
@@ -28,13 +29,14 @@ describe('compute dataset status', () => {
   });
 
   it.each([
-    [QueryResultStatus.Idle],
-    [QueryResultStatus.Loading],
-    [QueryResultStatus.QueryError],
-    [JobStatusType.Queued],
-    [JobStatusType.Processing],
-    [JobStatusType.Failed],
-    [JobStatusType.Success],
+    QueryResultStatus.Idle,
+    QueryResultStatus.Loading,
+    QueryResultStatus.QueryError,
+    JobStatusType.Queued,
+    JobStatusType.Processing,
+    JobStatusType.Failed,
+    JobStatusType.Skipped,
+    JobStatusType.Success,
   ])('throws if package query is idle', (jobStatus: JobQueryStatus) => {
     expect(() => {
       computeDatasetStatus(jobStatus, QueryResultStatus.Idle);
@@ -81,6 +83,7 @@ describe('compute dataset status', () => {
     JobStatusType.Queued,
     JobStatusType.Processing,
     JobStatusType.Failed,
+    JobStatusType.Skipped,
     JobStatusType.Success,
   ] as const)('returns status: ready when package available and job not loading', (jobStatus) => {
     const status = computeDatasetStatus(jobStatus, PackageDataStatus.Available);
@@ -100,6 +103,14 @@ describe('compute dataset status', () => {
     (packageStatus) => {
       const status = computeDatasetStatus(JobStatusType.Processing, packageStatus);
       expect(status).toBe(DatasetStatus.Processing);
+    },
+  );
+
+  it.each([QueryResultStatus.QueryError, PackageDataStatus.Unavailable])(
+    'returns status:processing-skipped when job is skipped and package query errored or data is unavailable',
+    (packageStatus) => {
+      const status = computeDatasetStatus(JobStatusType.Skipped, packageStatus);
+      expect(status).toBe(DatasetStatus.ProcessingSkipped);
     },
   );
 
