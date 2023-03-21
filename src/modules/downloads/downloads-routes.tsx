@@ -1,7 +1,10 @@
 import { RouteObject, redirect } from 'react-router';
 
+import { DownloadsRoot } from './routes/downloads-root';
+
 export const downloadsRoute: RouteObject = {
   path: '/downloads',
+  element: <DownloadsRoot />,
   children: [
     {
       index: true,

@@ -1,14 +1,14 @@
 import { Boundary, JobStatus, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 import { useEffect, useMemo, useState } from 'react';
-import { useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 import { inlist } from '@/lib/helpers';
 import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 
 import {
   lastSubmittedJobByParamsState,
-  moveJobToCompletedTransaction,
   useJobById,
+  useMoveJobToCompleted,
 } from '../../../data/jobs';
 import { fetchPackageByRegion } from '../../../data/packages';
 import { usePackageData } from '../use-package-data';
@@ -115,7 +115,7 @@ function useCompleteJob(
   packageStatus: QueryStatusResult<ComputePackageDataResult>['status'],
   boundaryName: string,
 ) {
-  const completeJob = useRecoilTransaction_UNSTABLE(moveJobToCompletedTransaction, []);
+  const completeJob = useMoveJobToCompleted();
 
   const jobId = (jobResult.data as JobStatus)?.job_id;
   const jobStatus = jobResult.status;
