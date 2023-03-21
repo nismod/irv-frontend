@@ -1,11 +1,42 @@
 import { Box, Collapse, ListItemButton, ListItemText, Stack } from '@mui/material';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
-import { useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { atomFamily, useRecoilState } from 'recoil';
 
 import { firstNonEmptyString } from '@/lib/helpers';
 
+import { globalStyleVariables } from '@/theme';
+
 import { DatasetDetails } from './dataset-details/DatasetDetails';
 import { DatasetStatusIndicator } from './dataset-indicator/DatasetStatusIndicator';
+
+const expandedDatasetByRegionState = atomFamily<string | null, string>({
+  key: 'expandedDatasetByRegion',
+  default: null,
+});
+
+function useOpen(boundaryName: string, processorVersion: string) {
+  const [expandedDataset, setExpandedDataset] = useRecoilState(
+    expandedDatasetByRegionState(boundaryName),
+  );
+
+  const open = expandedDataset === processorVersion;
+
+  const setOpen = useCallback(
+    (newOpen: boolean) => {
+      if (newOpen) {
+        setExpandedDataset(processorVersion);
+      } else {
+        if (open) {
+          setExpandedDataset(null);
+        }
+      }
+    },
+    [open, setExpandedDataset, processorVersion],
+  );
+
+  return [open, setOpen] as const;
+}
 
 export function ProcessorVersionListItem({
   processorVersion,
@@ -16,7 +47,9 @@ export function ProcessorVersionListItem({
 }) {
   const meta = processorVersion;
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useOpen(boundary.name, processorVersion.name);
+
+  const listItemRef = useRef<HTMLDivElement>();
 
   const title = firstNonEmptyString(
     meta.data_title,
@@ -28,9 +61,14 @@ export function ProcessorVersionListItem({
   return (
     <>
       <ListItemButton
-        onClick={() => setOpen((o) => !o)}
+        ref={listItemRef}
+        onClick={() => setOpen(!open)}
         disableRipple
-        sx={{ flexDirection: 'column', borderTop: '1px solid gainsboro' }}
+        sx={{
+          flexDirection: 'column',
+          borderTop: '1px solid gainsboro',
+          scrollMarginTop: globalStyleVariables.navbarHeight,
+        }}
       >
         <Stack
           mb={1}
@@ -52,11 +90,34 @@ export function ProcessorVersionListItem({
         </Stack>
         <ListItemText secondary={`${meta.description}`} sx={{ textAlign: 'left', width: '100%' }} />
       </ListItemButton>
-      <Collapse in={open}>
+      <Collapse
+        in={open}
+        onTransitionEnd={() => {
+          if (open && listItemRef.current) {
+            scrollIntoViewIfNeeded(listItemRef.current);
+          }
+        }}
+      >
         <Box sx={{ minHeight: '200px' }} bgcolor="#fafafa">
           <DatasetDetails meta={meta} boundary={boundary} />
         </Box>
       </Collapse>
     </>
   );
+}
+
+/**
+ * Simple function to scroll into view if the list item is not visible
+ * Relies on the nav bar height to prevent element being obscured
+ */
+function scrollIntoViewIfNeeded(elem: HTMLElement) {
+  const { top } = elem.getBoundingClientRect();
+
+  if (top < globalStyleVariables.navbarHeight) {
+    elem.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'start',
+    });
+  }
 }
