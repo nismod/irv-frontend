@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
+import { qrcode } from 'vite-plugin-qrcode';
 import pluginRewriteAll from 'vite-plugin-rewrite-all';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
@@ -27,13 +28,22 @@ try {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), viteTsconfigPaths(), svgrPlugin(), pluginRewriteAll()],
+  plugins: [
+    react(),
+    viteTsconfigPaths(),
+    svgrPlugin(),
+    pluginRewriteAll(),
+    qrcode({
+      filter: (url) => url.startsWith('http://192'),
+    }),
+  ],
   build: {
     outDir: 'build',
   },
   server: {
     open: true,
     proxy: devProxy,
+    host: '0.0.0.0',
   },
   test: {},
 });
