@@ -43,7 +43,7 @@ export function DatasetDetails({
         {meta.data_summary && (
           <>
             <H3>Summary</H3>
-            <Typography sx={{ hyphens: 'auto' }}>
+            <Typography sx={{ hyphens: 'auto' }} component="div">
               <MarkdownSection>{meta.data_summary}</MarkdownSection>
             </Typography>
           </>
@@ -74,16 +74,14 @@ export function DatasetDetails({
 function DownloadsList({ paths }: { paths: string[] | string }) {
   const pathList = Array.isArray(paths) ? paths : [paths];
   return (
-    <Box maxHeight="500px" overflow="auto">
-      <Typography fontSize="14px" color="inherit">
-        <ol>
-          {pathList.map((p) => (
-            <li key={p}>
-              <AppLink to={p}>{p.substring(p.lastIndexOf('/') + 1)}</AppLink>
-            </li>
-          ))}
-        </ol>
-      </Typography>
+    <Box maxHeight="500px" sx={{ overflowY: 'auto' }}>
+      <ol style={{ fontSize: '14px' }}>
+        {pathList.map((p) => (
+          <li key={p}>
+            <AppLink to={p}>{p.substring(p.lastIndexOf('/') + 1)}</AppLink>
+          </li>
+        ))}
+      </ol>
     </Box>
   );
 }
