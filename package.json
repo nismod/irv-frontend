@@ -35,6 +35,7 @@
     "react-json-view": "^1.21.3",
     "react-map-gl": "^5.3.21",
     "react-query": "^3.39.3",
+    "react-resize-detector": "^8.0.4",
     "react-router-dom": "^6.9.0",
     "react-spring-bottom-sheet": "^3.4.1",
     "react-string-replace": "^1.1.0",

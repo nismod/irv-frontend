@@ -1,7 +1,6 @@
-import { List, ListItem, Typography } from '@mui/material';
+import { Box, List, ListItem, Typography } from '@mui/material';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
-import { compiler } from 'markdown-to-jsx';
-import { useMemo } from 'react';
+import Markdown from 'markdown-to-jsx';
 import ReactJson from 'react-json-view';
 import { Link } from 'react-router-dom';
 
@@ -17,21 +16,33 @@ export function DatasetDetails({
 }) {
   const { status, data } = usePackageData(boundary.name, meta.name);
 
-  const summary = useMemo(() => compiler(meta.data_summary), [meta.data_summary]);
   return (
-    <>
-      <Typography variant="h3">Downloads</Typography>
-      {status === PackageDataStatus.Available ? (
-        <>
-          <DownloadsList paths={data.path} />
-          <ReactJson src={data} collapsed={true} />
-        </>
-      ) : (
-        <Typography>No data yet.</Typography>
-      )}
-      <Typography variant="h3">Summary</Typography>
-      <Typography>{summary}</Typography>
-    </>
+    <Box p={2}>
+      <ReactJson src={meta} collapsed={true} />
+      <Box py={1}>
+        <Typography variant="h3">Downloads</Typography>
+        <Typography variant="subtitle1" color="GrayText">
+          Format: {meta.data_formats.join(', ')}
+        </Typography>
+        {status === PackageDataStatus.Available ? (
+          <>
+            <DownloadsList paths={data.path} />
+            <ReactJson src={data} collapsed={true} />
+          </>
+        ) : (
+          <Typography>No data yet.</Typography>
+        )}
+      </Box>
+      <Box py={1}>
+        <Typography variant="h3">Summary</Typography>
+        <Typography sx={{ hyphens: 'auto' }}>
+          <Markdown>{meta.data_summary}</Markdown>
+        </Typography>
+        <Typography variant="h3">Citation</Typography>
+        <Markdown>{meta.data_citation}</Markdown>
+        <Typography variant="h3"></Typography>
+      </Box>
+    </Box>
   );
 }
 
@@ -41,7 +52,11 @@ function DownloadsList({ paths }: { paths: string[] | string }) {
     <List>
       {pathList.map((p) => (
         <ListItem key={p}>
-          <Link to={p}>{p.substring(p.lastIndexOf('/') + 1)}</Link>
+          <Typography fontSize="12px" color="inherit">
+            <Link color="inherit" to={p}>
+              {p.substring(p.lastIndexOf('/') + 1)}
+            </Link>
+          </Typography>
         </ListItem>
       ))}
     </List>

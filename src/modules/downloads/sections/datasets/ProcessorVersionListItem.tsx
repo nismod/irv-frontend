@@ -30,28 +30,30 @@ export function ProcessorVersionListItem({
       <ListItemButton
         onClick={() => setOpen((o) => !o)}
         disableRipple
-        sx={{ flexDirection: 'column' }}
+        sx={{ flexDirection: 'column', borderTop: '1px solid gainsboro' }}
       >
         <Stack
           mb={1}
           width="100%"
-          direction="row"
-          spacing={2}
-          alignItems="center"
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={{ xs: 1, sm: 2 }}
+          alignItems={{ xs: 'start', sm: 'center' }}
           justifyContent="space-between"
         >
           <ListItemText primary={title} sx={{ flexGrow: 1 }} />
 
-          <DatasetStatusIndicator
-            boundary={boundary}
-            processorVersion={processorVersion}
-            onGoToDownload={() => setOpen(true)}
-          />
+          <Box alignSelf={{ xs: 'end', sm: 'center' }}>
+            <DatasetStatusIndicator
+              boundary={boundary}
+              processorVersion={processorVersion}
+              onGoToDownload={() => setOpen(true)}
+            />
+          </Box>
         </Stack>
         <ListItemText secondary={`${meta.description}`} sx={{ textAlign: 'left', width: '100%' }} />
       </ListItemButton>
       <Collapse in={open}>
-        <Box sx={{ minHeight: '200px' }} bgcolor="gainsboro">
+        <Box sx={{ minHeight: '200px' }} bgcolor="#fafafa">
           <DatasetDetails meta={meta} boundary={boundary} />
         </Box>
       </Collapse>

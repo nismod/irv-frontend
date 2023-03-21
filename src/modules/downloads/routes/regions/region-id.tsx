@@ -1,4 +1,4 @@
-import { Container, Skeleton, Stack } from '@mui/material';
+import { Box, Skeleton, Stack, Typography } from '@mui/material';
 import { Boundary, Processor } from '@nismod/irv-autopkg-client';
 import { MultiPolygon, Polygon } from 'geojson';
 import { range } from 'lodash';
@@ -7,6 +7,7 @@ import { Await, LoaderFunctionArgs, defer, useLoaderData } from 'react-router-do
 
 import { BackLink } from '@/lib/nav';
 
+import { CenteredLayout } from '../../components/CenteredLayout';
 import { RegionMap } from '../../components/RegionMap';
 import { fetchAllDatasets } from '../../data/datasets';
 import { fetchRegionById } from '../../data/regions';
@@ -30,23 +31,25 @@ export const Component = () => {
   const { region, datasets } = useLoaderData() as SingleRegionLoaderData;
 
   return (
-    <Container>
+    <CenteredLayout>
       <BackLink>&larr; Back</BackLink>
-      <h2>{region.name_long}</h2>
+      <Typography variant="h2">{region.name_long}</Typography>
       <RegionMap
         regionGeometry={region.geometry as MultiPolygon}
         regionEnvelope={region.envelope as Polygon}
-        width={600}
+        width="100%"
         height={300}
       />
-      <h2>Datasets</h2>
-      <Suspense fallback={<DatasetsSkeleton />}>
-        <Await
-          resolve={datasets}
-          children={(datasets) => <DatasetsList datasets={datasets} region={region} />}
-        />
-      </Suspense>
-    </Container>
+      <Box mt={5}>
+        <Typography variant="h3">Datasets</Typography>
+        <Suspense fallback={<DatasetsSkeleton />}>
+          <Await
+            resolve={datasets}
+            children={(datasets) => <DatasetsList datasets={datasets} region={region} />}
+          />
+        </Suspense>
+      </Box>
+    </CenteredLayout>
   );
 };
 
@@ -54,7 +57,7 @@ Component.displayName = 'SingleRegionPage';
 
 function DatasetsSkeleton() {
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column" spacing={1}>
       {range(5).map((x) => (
         <Skeleton key={x} animation="wave" variant="rectangular" height={100} />
       ))}

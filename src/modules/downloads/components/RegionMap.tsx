@@ -1,9 +1,10 @@
 import { ZoomOutMap } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
 import { DeckGL, GeoJsonLayer, MapViewState } from 'deck.gl/typed';
 import { MultiPolygon, Polygon } from 'geojson';
 import { useCallback, useState } from 'react';
 import { MapContext, StaticMap } from 'react-map-gl';
+import { useResizeDetector } from 'react-resize-detector';
 
 import { extendBbox, geoJsonToAppBoundingBox } from '@/lib/bounding-box';
 import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
@@ -55,6 +56,33 @@ function useViewState(initialViewStateFn: () => MapViewState) {
 export function RegionMap({
   regionGeometry,
   regionEnvelope,
+  width: responsiveWidth,
+  height: responsiveHeight,
+}: {
+  regionGeometry: MultiPolygon;
+  regionEnvelope: Polygon;
+  width: BoxProps['width'];
+  height: BoxProps['height'];
+}) {
+  const { width, height, ref: containerRef } = useResizeDetector();
+
+  return (
+    <Box ref={containerRef} height={responsiveHeight} width={responsiveWidth} position="relative">
+      {width != null && (
+        <RegionMapImpl
+          regionGeometry={regionGeometry}
+          regionEnvelope={regionEnvelope}
+          width={width}
+          height={height}
+        />
+      )}
+    </Box>
+  );
+}
+
+function RegionMapImpl({
+  regionGeometry,
+  regionEnvelope,
   width,
   height,
 }: {
@@ -77,42 +105,40 @@ export function RegionMap({
   const backgroundAttrib = useBackgroundAttribution('satellite');
 
   return (
-    <Box height={height} width={width} position="relative">
-      <DeckGL
-        width={width}
-        height={height}
-        viewState={viewState}
-        onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
-        controller={true}
-        layers={[
-          new GeoJsonLayer({
-            data: regionGeometry,
-            stroked: true,
-            getLineColor: [150, 150, 255],
-            getLineWidth: 3,
-            lineWidthUnits: 'pixels',
-            filled: true,
-            getFillColor: [150, 150, 255, 100],
-          }),
-        ]}
-        ContextProvider={MapContext.Provider as any}
-      >
-        <StaticMap mapStyle={backgroundStyle} />
-        <MapHud>
-          <MapHudRegion position="top-right">
-            <MapHudButton
-              disabled={!viewStateChanged}
-              title="Reset view"
-              onClick={() => setViewState({ ...viewState, ...initialViewState })}
-            >
-              <ZoomOutMap />
-            </MapHudButton>
-          </MapHudRegion>
-          <MapHudRegion position="bottom-right">
-            <MapHudAttributionControl customAttribution={backgroundAttrib} />
-          </MapHudRegion>
-        </MapHud>
-      </DeckGL>
-    </Box>
+    <DeckGL
+      width="100%"
+      height="100%"
+      viewState={viewState}
+      onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
+      controller={true}
+      layers={[
+        new GeoJsonLayer({
+          data: regionGeometry,
+          stroked: true,
+          getLineColor: [150, 150, 255],
+          getLineWidth: 3,
+          lineWidthUnits: 'pixels',
+          filled: true,
+          getFillColor: [150, 150, 255, 100],
+        }),
+      ]}
+      ContextProvider={MapContext.Provider as any}
+    >
+      <StaticMap mapStyle={backgroundStyle} />
+      <MapHud>
+        <MapHudRegion position="top-right">
+          <MapHudButton
+            disabled={!viewStateChanged}
+            title="Reset view"
+            onClick={() => setViewState({ ...viewState, ...initialViewState })}
+          >
+            <ZoomOutMap />
+          </MapHudButton>
+        </MapHudRegion>
+        <MapHudRegion position="bottom-right">
+          <MapHudAttributionControl customAttribution={backgroundAttrib} compact={true} />
+        </MapHudRegion>
+      </MapHud>
+    </DeckGL>
   );
 }
