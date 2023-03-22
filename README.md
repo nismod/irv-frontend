@@ -2,7 +2,7 @@
 
 React app served through NGINX.
 
-## Installing dependencies
+## Installing dependencies for development
 
 This package's dependencies include packages in the `@nismod` scope, which are published through the GitHub npm package repository.
 
@@ -26,10 +26,20 @@ In order to install the project's dependencies:
 
 See `./containers` for Docker configuration.
 
-For example, to build and run the container :
+As described in the section above, the GitHub NPM registry auth token needs to be available during build so that dependencies from the `@nismod` scope can be installed.
+
+The `Dockerfiles` are set up to accept a [Docker secret](https://docs.docker.com/engine/swarm/secrets/) named `GH_TOKEN`. This can be passed using a path to a local file that contains the token. For steps to obtain a token, see the previous section.
+
+Note that passing `--secret` during build is a [Docker BuildKit](https://docs.docker.com/build/buildkit/) feature, hence the need to install [docker buildx](https://github.com/docker/buildx) for building locally, and to pass the `DOCKER_BUILDKIT=1` variable before the `docker build` command.
+
+For example, to build and run the container (replace `/PATH/TO/TOKEN`):
 
 ```bash
-docker build -f containers/Dockerfile-dev -t ghcr.io/nismod/gri-web-server:0.19-dev .
+DOCKER_BUILDKIT=1 docker build \
+   --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
+   -f containers/Dockerfile-dev \
+   -t ghcr.io/nismod/gri-web-server:0.19-dev .
+
 docker run -p 8080:80 ghcr.io/nismod/gri-web-server:0.19-dev
 ```
 
@@ -38,10 +48,14 @@ Then visit http://localhost:8080
 And to build and push an update to the container registry manually:
 
 - Log in to the container registry, see https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
-- Build and push the production container
+- Build and push the production container (replace `/PATH/TO/TOKEN`)
 
 ```bash
-docker build -f containers/Dockerfile-prod -t ghcr.io/nismod/gri-web-server:0.19 .
+DOCKER_BUILDKIT=1 docker build \
+   --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
+   -f containers/Dockerfile-prod \
+   -t ghcr.io/nismod/gri-web-server:0.19 .
+
 docker push ghcr.io/nismod/gri-web-server:0.19
 ```
 
