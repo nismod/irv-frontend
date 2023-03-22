@@ -5,10 +5,10 @@ name: Create and publish Docker image to GHCR
 on:
   push:
     branches:
-      - main
+      - develop
 
 env:
-  VERSION: 0.20
+  VERSION: 0.20-dev
   REGISTRY: ghcr.io
   IMAGE_NAME: nismod/gri-web-server
 
@@ -20,7 +20,7 @@ jobs:
       registry: ${{ env.REGISTRY }}
       registry-user: ${{ github.actor }}
       image-name: ${{ env.IMAGE_NAME }}
-      dockerfile-path: containers/Dockerfile-prod
+      dockerfile-path: containers/Dockerfile-dev
     secrets: inherit
     permissions:
       contents: read
