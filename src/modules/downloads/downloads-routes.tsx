@@ -15,6 +15,10 @@ export const downloadsRoute: RouteObject = {
       children: [
         {
           index: true,
+          handle: {
+            // see @lib/nav.tsx
+            pathBasedScroll: true,
+          },
           lazy: () => import('./routes/regions/regions-index'),
         },
         {

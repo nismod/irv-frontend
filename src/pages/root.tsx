@@ -2,6 +2,8 @@ import { Error } from '@mui/icons-material';
 import { Box, Container, Typography } from '@mui/material';
 import { Outlet, useRouteError } from 'react-router-dom';
 
+import { CustomScrollRestoration } from '@/lib/nav';
+
 import { Nav } from '@/Nav';
 import { globalStyleVariables } from '@/theme';
 
@@ -24,6 +26,7 @@ const RootLayout = ({ children }) => {
 
 export const RootRoute = () => (
   <RootLayout>
+    <CustomScrollRestoration />
     <Outlet />
   </RootLayout>
 );
