@@ -41,4 +41,11 @@ export const BACKGROUNDS = makeConfig([
   },
 ]);
 
+export const BACKGROUND_ATTRIBUTIONS: Record<keyof typeof BACKGROUNDS, string> = {
+  light:
+    'Background map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, style &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  satellite:
+    'Satellite imagery: <a href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</a> by <a href="https://eox.at">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2020)',
+};
+
 export type BackgroundName = keyof typeof BACKGROUNDS;

@@ -105,6 +105,11 @@ function useSetInteractionGroupState(
   });
 }
 
+/**
+ * Default picking radius used in case ther eis no interactions groups defined
+ */
+const DEFAULT_PICKING_RADIUS = 8;
+
 export function useInteractions(
   viewLayers: ViewLayer[],
   lookupViewForDeck: (deckLayerId: string) => string,
@@ -120,9 +125,10 @@ export function useInteractions(
     [interactionGroups],
   );
 
-  const primaryGroup = interactionGroups[0].id;
+  const primaryGroup = interactionGroups[0]?.id;
   // TODO: improve the choice of pickingRadius to return, so that it's not dependent on group order
-  const primaryGroupPickingRadius = interactionGroupLookup[primaryGroup].pickingRadius;
+  const primaryGroupPickingRadius =
+    (primaryGroup && interactionGroupLookup[primaryGroup].pickingRadius) ?? DEFAULT_PICKING_RADIUS;
 
   const interactiveLayers = useMemo(
     () => viewLayers.filter((x) => x.interactionGroup),

@@ -1,0 +1,27 @@
+# Build and Push to GHCR
+
+name: Create and publish Docker image to GHCR
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  VERSION: 0.20-dev
+  REGISTRY: ghcr.io
+  IMAGE_NAME: nismod/gri-web-server
+
+jobs:
+  build-and-push-image:
+    uses: .github/workflows/build_publish.yml
+    with:
+      version: ${{ env.VERSION }}
+      registry: ${{ env.REGISTRY }}
+      registry-user: ${{ github.actor }}
+      image-name: ${{ env.IMAGE_NAME }}
+      dockerfile-path: containers/Dockerfile-dev
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write

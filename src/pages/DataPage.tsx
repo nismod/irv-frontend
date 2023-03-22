@@ -11,11 +11,8 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import ScrollToTop from '@/lib/react/ScrollToTop';
-
 export const DataPage = () => (
   <article>
-    <ScrollToTop />
     <Typography variant="h1">About G-SRAT, Data Sources and Access</Typography>
 
     <Typography variant="h2">Disclaimer</Typography>

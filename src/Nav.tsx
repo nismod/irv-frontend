@@ -72,6 +72,10 @@ const navItems = [
     to: '/data',
     title: 'About',
   },
+  {
+    to: '/downloads',
+    title: 'Downloads',
+  },
 ];
 
 const drawerWidth = 240;

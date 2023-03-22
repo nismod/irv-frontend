@@ -1,4 +1,9 @@
 node_modules
+build
+bundle-analyse.html
+
+# env files
+.env
 
 # local development proxy config
 dev-proxy/proxy-table.json

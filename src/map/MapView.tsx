@@ -8,6 +8,11 @@ import { DataMapTooltip } from '@/lib/data-map/DataMapTooltip';
 import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
 import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
+import {
+  MapHudAttributionControl,
+  MapHudNavigationControl,
+  MapHudScaleControl,
+} from '@/lib/map/hud/mapbox-controls';
 import { MapSearch } from '@/lib/map/place-search/MapSearch';
 import { PlaceSearchResult } from '@/lib/map/place-search/use-place-search';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
@@ -49,27 +54,22 @@ const AppPlaceSearch = () => {
   return <MapSearch onSelectedResult={handleSelectedSearchResult} />;
 };
 
-const AppNavigationControl = withProps(NavigationControl, {
+const AppNavigationControl = withProps(MapHudNavigationControl, {
   showCompass: false,
   capturePointerMove: true,
-  style: {
-    position: 'static', // override default position:absolute to play well with the layout
-  },
 });
 
-const AppScaleControl = withProps(ScaleControl, {
+const AppScaleControl = withProps(MapHudScaleControl, {
   maxWidth: 100,
   unit: 'metric',
-  style: { position: 'static' }, // override default position:absolute to play well with the layout
   capturePointerMove: true,
 });
 
-const AppAttributionControl = withProps(AttributionControl, {
+const AppAttributionControl = withProps(MapHudAttributionControl, {
   customAttribution:
     'Background map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, style &copy; <a href="https://carto.com/attributions">CARTO</a>. Satellite imagery: <a href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</a> by <a href="https://eox.at">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2020)',
   compact: true,
   capturePointerMove: true,
-  style: { position: 'static' }, // override default position:absolute to play well with the layout
 });
 
 const MapHudDesktopLayout = () => {

@@ -1,9 +1,25 @@
 import { createTheme } from '@mui/material';
 
+declare module '@mui/material/styles' {
+  interface Palette {
+    map: Palette['primary'];
+  }
+
+  interface PaletteOptions {
+    map: PaletteOptions['primary'];
+  }
+}
+
 export const theme = createTheme({
   palette: {
     primary: {
       main: '#3f51b5',
+    },
+    map: {
+      main: '#ffffff',
+      dark: '#aaaaaa',
+      light: '#aaaaaa',
+      contrastText: '#000000',
     },
   },
   components: {

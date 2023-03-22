@@ -206,3 +206,20 @@ export function cartesian(...a: any[][]) {
 export function eventPreventDefault(e) {
   e.preventDefault();
 }
+
+export function eventStopPropagation(e) {
+  e.stopPropagation();
+}
+
+export type Unrequired<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+/**
+ * Equivalent of array.includes(val) but with type guard and automatic const type treatment of array
+ */
+export const inlist = <T, const ElemT extends T>(val: T, arr: ReadonlyArray<ElemT>): val is ElemT =>
+  arr.includes(val as ElemT);
+
+
+export function firstNonEmptyString(...args: (string | null | undefined)[]): string {
+  return args.find(x => x != null && x !== '') ?? '';
+}
