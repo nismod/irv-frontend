@@ -16,9 +16,6 @@ on:
       dockerfile-path:
         type: string
         required: true
-    secrets:
-      GITHUB_TOKEN:
-        required: true
 
 jobs:
   build-and-push-image:
