@@ -38,9 +38,9 @@ For example, to build and run the container (replace `/PATH/TO/TOKEN`):
 DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-dev \
-   -t ghcr.io/nismod/gri-web-server:0.19-dev .
+   -t ghcr.io/nismod/gri-web-server:0.20-dev .
 
-docker run -p 8080:80 ghcr.io/nismod/gri-web-server:0.19-dev
+docker run -p 8080:80 ghcr.io/nismod/gri-web-server:0.20-dev
 ```
 
 Then visit http://localhost:8080
@@ -54,9 +54,9 @@ And to build and push an update to the container registry manually:
 DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-prod \
-   -t ghcr.io/nismod/gri-web-server:0.19 .
+   -t ghcr.io/nismod/gri-web-server:0.20 .
 
-docker push ghcr.io/nismod/gri-web-server:0.19
+docker push ghcr.io/nismod/gri-web-server:0.20
 ```
 
 See https://github.com/nismod/infra-risk-vis/ for `docker-compose.yml` and how the frontend
