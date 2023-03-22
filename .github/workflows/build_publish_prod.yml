@@ -7,19 +7,14 @@ on:
     branches:
       - main
 
-env:
-  VERSION: 0.20
-  REGISTRY: ghcr.io
-  IMAGE_NAME: nismod/gri-web-server
-
 jobs:
   build-and-push-image:
     uses: ./.github/workflows/build_publish.yml
     with:
-      version: ${{ env.VERSION }}
-      registry: ${{ env.REGISTRY }}
+      version: 0.20
+      registry: ghcr.io
       registry-user: ${{ github.actor }}
-      image-name: ${{ env.IMAGE_NAME }}
+      image-name: nismod/gri-web-server
       dockerfile-path: containers/Dockerfile-prod
     secrets: inherit
     permissions:
