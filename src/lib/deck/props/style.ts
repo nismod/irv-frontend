@@ -90,12 +90,34 @@ export function pointRadius(zoom, level: ScaleLevel = 2): Partial<PointStyleProp
   };
 }
 
-// export type Color = [number, number, number, number?];
+/**
+ * GeoJsonLayer icon style props
+ */
+export type IconStyleProps = Pick<
+  GeoJsonLayerProps,
+  'iconSizeUnits' | 'getIconSize' | 'iconSizeMinPixels' | 'iconSizeMaxPixels'
+>;
+
+/**
+ * deck.gl prop factory for GeojsonLayer icon size props
+ */
+export function iconSize(zoom: number, level: ScaleLevel = 2): Partial<IconStyleProps> {
+  const { getPointRadius, pointRadiusMinPixels, pointRadiusMaxPixels } = pointSizeLevels[level];
+
+  return {
+    iconSizeUnits: 'meters',
+    getIconSize: getPointRadius * 2,
+    iconSizeMinPixels: pointRadiusMinPixels * 2,
+    iconSizeMaxPixels: pointRadiusMaxPixels * 2,
+  };
+}
+
 export type GetColor = Accessor<Color, Feature>;
 
 const COLOR_PROPS = {
   fill: 'getFillColor',
   stroke: 'getLineColor',
+  icon: 'getIconColor',
 } as const;
 
 type ColorPropNameMap = typeof COLOR_PROPS;
@@ -129,6 +151,11 @@ export const fillColor = (getColor: GetColor) => vectorColor('fill', getColor);
  * deck.gl prop factory for vector stroke color props
  */
 export const strokeColor = (getColor: GetColor) => vectorColor('stroke', getColor);
+
+/**
+ * deck.gl prop factory for vector icon color props
+ */
+export const iconColor = (getColor: GetColor) => vectorColor('icon', getColor);
 
 /**
  * deck.gl prop factory for vector border stroke/color props
