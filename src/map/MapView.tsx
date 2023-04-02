@@ -1,6 +1,12 @@
 import { Suspense, useCallback, useEffect } from 'react';
-import { AttributionControl, NavigationControl, ScaleControl, StaticMap } from 'react-map-gl';
-import { atom, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
+import { StaticMap } from 'react-map-gl';
+import {
+  atom,
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from 'recoil';
 
 import { BoundingBox } from '@/lib/bounding-box';
 import { DataMap } from '@/lib/data-map/DataMap';
@@ -18,10 +24,10 @@ import { PlaceSearchResult } from '@/lib/map/place-search/use-place-search';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { withProps } from '@/lib/react/with-props';
 
-import { mapViewConfig } from '@/config/map-view';
 import { interactionGroupsState } from '@/state/layers/interaction-groups';
 import { viewLayersFlatState } from '@/state/layers/view-layers-flat';
 import { useSaveViewLayers, viewLayersParamsState } from '@/state/layers/view-layers-params';
+import { mapViewStateState, useSyncMapUrl } from '@/state/map-view/map-view-state';
 import { globalStyleVariables } from '@/theme';
 import { useIsMobile } from '@/use-is-mobile';
 
@@ -35,11 +41,6 @@ export const mapFitBoundsState = atom<BoundingBox>({
   key: 'mapFitBoundsState',
   default: null,
 });
-
-const INITIAL_VIEW_STATE = {
-  ...mapViewConfig.initialViewState,
-  ...mapViewConfig.viewLimits,
-};
 
 const AppPlaceSearch = () => {
   const setFitBounds = useSetRecoilState(mapFitBoundsState);
@@ -112,6 +113,9 @@ const MapHudMobileLayout = () => {
 };
 
 const MapViewContent = () => {
+  const [viewState, setViewState] = useRecoilState(mapViewStateState);
+  useSyncMapUrl();
+
   const background = useRecoilValue(backgroundState);
   const viewLayers = useRecoilValue(viewLayersFlatState);
   const saveViewLayers = useSaveViewLayers();
@@ -138,7 +142,8 @@ const MapViewContent = () => {
 
   return (
     <DataMap
-      initialViewState={INITIAL_VIEW_STATE}
+      viewState={viewState}
+      onViewState={setViewState}
       viewLayers={viewLayers}
       viewLayersParams={viewLayersParams}
       interactionGroups={interactionGroups}
