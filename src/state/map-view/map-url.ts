@@ -1,11 +1,30 @@
 import { number } from '@recoiljs/refine';
-import { useEffect } from 'react';
-import { atom, useRecoilValue, useSetRecoilState } from 'recoil';
-import { urlSyncEffect } from 'recoil-sync';
-
-import { useThrottledCallback } from '@/lib/hooks/use-throttled-callback';
+import { DefaultValue, atom } from 'recoil';
+import { WriteAtom, urlSyncEffect } from 'recoil-sync';
 
 import { mapViewConfig } from '@/config/map-view';
+
+/**
+ * Makes a recoil-sync write function that saves a number with up to `maximumFractionDigits`
+ */
+function makeWriteNumber(itemKey: string, maximumFractionDigits: number) {
+  const writeNumber: WriteAtom<number> = ({ write, reset }, x) => {
+    if (x instanceof DefaultValue) {
+      reset(itemKey);
+    } else {
+      write(
+        itemKey,
+        +x.toLocaleString(undefined, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits,
+          useGrouping: false,
+        }),
+      );
+    }
+  };
+
+  return writeNumber;
+}
 
 export const mapZoomUrlState = atom({
   key: 'mapZoomUrl',
@@ -15,6 +34,7 @@ export const mapZoomUrlState = atom({
       storeKey: 'url-json',
       itemKey: 'z',
       refine: number(),
+      write: makeWriteNumber('z', 2),
       syncDefault: true,
     }),
   ],
@@ -28,6 +48,7 @@ export const mapLonUrlState = atom({
       storeKey: 'url-json',
       itemKey: 'x',
       refine: number(),
+      write: makeWriteNumber('x', 5),
       syncDefault: true,
     }),
   ],
@@ -41,18 +62,8 @@ export const mapLatUrlState = atom({
       storeKey: 'url-json',
       itemKey: 'y',
       refine: number(),
+      write: makeWriteNumber('y', 5),
       syncDefault: true,
     }),
   ],
 });
-
-export function useSyncMapUrlAtom(coordState, coordUrlState, ms) {
-  const coord = useRecoilValue(coordState);
-  const setUrlCoord = useSetRecoilState(coordUrlState);
-
-  const setUrlThrottled = useThrottledCallback(setUrlCoord, ms);
-
-  useEffect(() => {
-    setUrlThrottled(coord);
-  }, [coord, setUrlThrottled]);
-}

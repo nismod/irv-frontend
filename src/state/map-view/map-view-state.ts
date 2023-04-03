@@ -1,9 +1,11 @@
 import _ from 'lodash';
 import { DefaultValue, atom, selector } from 'recoil';
 
+import { useSyncStateThrottled } from '@/lib/recoil/sync-state-throttled';
+
 import { mapViewConfig } from '@/config/map-view';
 
-import { mapLatUrlState, mapLonUrlState, mapZoomUrlState, useSyncMapUrlAtom } from './map-url';
+import { mapLatUrlState, mapLonUrlState, mapZoomUrlState } from './map-url';
 
 const mapLatState = atom({ key: 'mapLat', default: mapLatUrlState });
 const mapLonState = atom({ key: 'mapLon', default: mapLonUrlState });
@@ -50,7 +52,7 @@ export const mapViewStateState = selector({
 });
 
 export function useSyncMapUrl() {
-  useSyncMapUrlAtom(mapLatState, mapLatUrlState, 2000);
-  useSyncMapUrlAtom(mapLonState, mapLonUrlState, 2000);
-  useSyncMapUrlAtom(mapZoomState, mapZoomUrlState, 2000);
+  useSyncStateThrottled(mapLatState, mapLatUrlState, 2000);
+  useSyncStateThrottled(mapLonState, mapLonUrlState, 2000);
+  useSyncStateThrottled(mapZoomState, mapZoomUrlState, 2000);
 }
