@@ -37,7 +37,6 @@ export const CustomScrollRestoration = () => {
     <ScrollRestoration
       getKey={(location, matches) => {
         const lastMatch = matches[matches.length - 1];
-        console.log(lastMatch);
 
         const { handle = {} } = lastMatch;
         const { pathBasedScroll = false } = handle as any;
