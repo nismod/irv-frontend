@@ -3,9 +3,11 @@ import _ from 'lodash';
 import { FC, ReactElement } from 'react';
 import { atomFamily, selectorFamily, useRecoilValue } from 'recoil';
 
-import { Layer, Section, SidebarRoot } from '@/lib/data-selection/sidebar/components';
-import { getParentPath } from '@/lib/data-selection/sidebar/paths';
+import { Layer } from '@/lib/data-selection/sidebar/Layer';
+import { Section } from '@/lib/data-selection/sidebar/Section';
+import { SidebarRoot } from '@/lib/data-selection/sidebar/root';
 import { EnforceSingleChild } from '@/lib/data-selection/sidebar/single-child';
+import { getParentPath } from '@/lib/paths/paths';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
