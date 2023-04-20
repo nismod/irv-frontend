@@ -19,11 +19,13 @@ export const router = createBrowserRouter([
       },
       {
         path: '/view',
-        loader: () => redirect('/view/hazard'),
-      },
-      {
-        path: '/view/:view',
-        element: <MapPage />,
+        children: [
+          { index: true, loader: () => redirect('/view/hazard') },
+          {
+            path: ':view',
+            element: <MapPage />,
+          },
+        ],
       },
       {
         path: '/data',
