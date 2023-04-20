@@ -8,6 +8,7 @@ module.exports = {
   rules: {
     'react/prop-types': 'off',
     'no-unused-vars': 'off',
+    'no-redeclare': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
     eqeqeq: ['warn', 'smart'],
     'react-hooks/exhaustive-deps': [

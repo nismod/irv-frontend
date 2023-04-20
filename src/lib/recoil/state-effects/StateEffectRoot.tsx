@@ -1,32 +1,32 @@
-import { RecoilState, RecoilValue, RecoilValueReadOnly } from 'recoil';
+import { RecoilValueReadOnly } from 'recoil';
 
-import { StateEffect } from './types';
-import { useStateEffect, useStateLayoutEffect } from './use-state-effect';
+import { EffectHookType, StateEffect, StateEffectAsync } from './types';
+import { useStateEffectAsync, useStateEffectAtomic } from './use-state-effect';
 
-/**
- * A component that wraps a state effect to prevent a parent from being unnecessarily re-rendered
- */
 export const StateEffectRoot = <T,>({
   state,
   effect,
+  hookType = 'effect',
 }: {
   state: RecoilValueReadOnly<T>;
   effect: StateEffect<T>;
+  hookType?: EffectHookType;
 }) => {
-  useStateEffect(state, effect);
+  useStateEffectAtomic(state, effect, hookType);
+
   return null;
 };
 
-/**
- * A component that wraps a state layout effect to prevent a parent from being unnecessarily re-rendered
- */
-export const StateLayoutEffectRoot = <T,>({
+export const StateEffectRootAsync = <T,>({
   state,
   effect,
+  hookType = 'effect',
 }: {
   state: RecoilValueReadOnly<T>;
-  effect: StateEffect<T>;
+  effect: StateEffectAsync<T>;
+  hookType?: EffectHookType;
 }) => {
-  useStateLayoutEffect(state, effect);
+  useStateEffectAsync(state, effect, hookType);
+
   return null;
 };

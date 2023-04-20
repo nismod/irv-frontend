@@ -1,13 +1,18 @@
 import { FC, createContext, useContext, useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { RecoilStateFamily } from '../recoil/types';
 import { PathContext, getSubPath, usePath } from './paths';
 
-export const PathChildrenStateContext = createContext<RecoilStateFamily<string[], string>>(null);
+interface PathChildrenStateContextValue {
+  childrenState: RecoilStateFamily<string[], string>;
+  childrenLoadingState: RecoilStateFamily<boolean, string>;
+}
+
+export const PathChildrenStateContext = createContext<PathChildrenStateContextValue>(null);
 
 export function usePathChildrenState(path: string) {
-  const pathChildrenState = useContext(PathChildrenStateContext);
+  const pathChildrenState = useContext(PathChildrenStateContext).childrenState;
   return useRecoilState(pathChildrenState(path));
 }
 
@@ -19,7 +24,8 @@ function removeValueFromArray(val: string) {
 }
 
 function useRegisterChild(parentPath: string, subPath: string) {
-  const [, setPathChildren] = usePathChildrenState(parentPath);
+  const pathChildrenState = useContext(PathChildrenStateContext).childrenState;
+  const setPathChildren = useSetRecoilState(pathChildrenState(parentPath));
 
   useEffect(() => {
     setPathChildren(addValueToArray(subPath));
@@ -27,7 +33,33 @@ function useRegisterChild(parentPath: string, subPath: string) {
     return () => {
       setPathChildren(removeValueFromArray(subPath));
     };
-  }, [subPath, setPathChildren]);
+  }, [subPath, setPathChildren, parentPath]);
+}
+
+export function PathChildrenStart() {
+  const path = usePath();
+
+  const pathChildrenLoadingState = useContext(PathChildrenStateContext).childrenLoadingState;
+  const setPathChildrenLoading = useSetRecoilState(pathChildrenLoadingState(path));
+
+  useEffect(() => {
+    setPathChildrenLoading(true);
+  });
+
+  return null;
+}
+
+export function PathChildrenEnd() {
+  const path = usePath();
+
+  const pathChildrenLoadingState = useContext(PathChildrenStateContext).childrenLoadingState;
+  const setPathChildrenLoading = useSetRecoilState(pathChildrenLoadingState(path));
+
+  useEffect(() => {
+    setPathChildrenLoading(false);
+  });
+
+  return null;
 }
 
 export const SubPath: FC<{ path: string }> = ({ path, children }) => {
@@ -35,5 +67,11 @@ export const SubPath: FC<{ path: string }> = ({ path, children }) => {
   const subPath = getSubPath(parentPath, path);
 
   useRegisterChild(parentPath, path);
-  return <PathContext.Provider value={subPath}>{children}</PathContext.Provider>;
+  return (
+    <PathContext.Provider value={subPath}>
+      <PathChildrenStart />
+      {children}
+      <PathChildrenEnd />
+    </PathContext.Provider>
+  );
 };

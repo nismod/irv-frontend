@@ -1,52 +1,59 @@
 import { useEffect, useLayoutEffect } from 'react';
-import {
-  RecoilState,
-  RecoilValue,
-  RecoilValueReadOnly,
-  useRecoilCallback,
-  useRecoilValue,
-} from 'recoil';
+import { RecoilValueReadOnly, useRecoilCallback, useRecoilValue } from 'recoil';
 
+import { useConditionalHook } from '@/lib/hooks/use-conditional-hook';
 import { usePrevious } from '@/lib/hooks/use-previous';
 
-import { StateEffect } from './types';
+import { EffectHookType, StateEffect, StateEffectAsync, StateLogicCallback } from './types';
 
-function useStateEffectImpl<T>(state: RecoilValue<T>, effect: StateEffect<T>) {
-  const stateValue = useRecoilValue(state);
-
-  const previousStateValue = usePrevious(stateValue);
-
-  const cb = useRecoilCallback(
+export function useStateLogicAtomicCallback<T>(effect: StateEffect<T>) {
+  return useRecoilCallback(
     ({ transact_UNSTABLE }) =>
       (newValue: T, previousValue: T) => {
         transact_UNSTABLE((ops) => effect(ops, newValue, previousValue));
       },
     [effect],
   );
-
-  return [stateValue, previousStateValue, cb] as const;
 }
 
-/**
- * Run a state effect when a piece of state changes.
- * A state effect can modify other pieces of state.
- * @param state the recoil state to watch
- * @param effect the state effect to run when the state changes
- */
-export function useStateEffect<T>(state: RecoilValueReadOnly<T>, effect: StateEffect<T>) {
-  const [stateValue, previousStateValue, cb] = useStateEffectImpl(state, effect);
-
-  useEffect(() => cb(stateValue, previousStateValue), [cb, stateValue, previousStateValue]);
+export function useStateLogicAsyncCallback<T>(effect: StateEffectAsync<T>) {
+  return useRecoilCallback(
+    (ops) => (newValue: T, previousValue: T) => effect(ops, newValue, previousValue),
+    [effect],
+  );
 }
 
-/**
- * Run a state layout effect when a piece of state changes.
- * A state effect can modify other pieces of state.
- * @param state the recoil state to watch
- * @param effect the state effect to run when the state changes
- */
-export function useStateLayoutEffect<T>(state: RecoilValueReadOnly<T>, effect: StateEffect<T>) {
-  const [stateValue, previousStateValue, cb] = useStateEffectImpl(state, effect);
+export function useStateEffect<T>(
+  state: RecoilValueReadOnly<T>,
+  stateLogicCallback: StateLogicCallback<T>,
+  hookType: EffectHookType,
+) {
+  const stateValue = useRecoilValue(state);
+  const previousStateValue = usePrevious(stateValue);
 
-  useLayoutEffect(() => cb(stateValue, previousStateValue), [cb, stateValue, previousStateValue]);
+  const useSomeEffect = useConditionalHook(hookType === 'effect', useEffect, useLayoutEffect);
+  useSomeEffect(
+    () => stateLogicCallback(stateValue, previousStateValue),
+    [stateLogicCallback, stateValue, previousStateValue],
+  );
+}
+
+export function useStateEffectAtomic<T>(
+  state: RecoilValueReadOnly<T>,
+  effect: StateEffect<T>,
+  hookType: EffectHookType = 'effect',
+) {
+  const cb = useStateLogicAtomicCallback(effect);
+
+  useStateEffect(state, cb, hookType);
+}
+
+export function useStateEffectAsync<T>(
+  state: RecoilValueReadOnly<T>,
+  effect: StateEffectAsync<T>,
+  hookType: EffectHookType = 'layoutEffect',
+) {
+  const cb = useStateLogicAsyncCallback(effect);
+
+  useStateEffect(state, cb, hookType);
 }
