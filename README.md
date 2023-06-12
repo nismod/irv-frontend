@@ -72,9 +72,9 @@ And to build and push an update to the container registry manually:
 DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-prod \
-   -t ghcr.io/nismod/gri-web-server:0.20 .
+   -t ghcr.io/nismod/irv-frontend:0.20 .
 
-docker push ghcr.io/nismod/gri-web-server:0.20
+docker push ghcr.io/nismod/irv-frontend:0.20
 ```
 
 See https://github.com/nismod/infra-risk-vis/ for `docker-compose.yml` and how
