@@ -16,9 +16,7 @@ export const MapBoundsFitter: FC<MapBoundsFitterProps> = ({ boundingBox }) => {
   useChangeEffect(
     () => {
       if (boundingBox != null) {
-        const deckBbox = appToDeckBoundingBox(boundingBox);
-        const viewport = new WebMercatorViewport({ width: 800, height: 600 });
-        const { latitude, longitude, zoom } = viewport.fitBounds(deckBbox, { padding: 20 });
+        const { latitude, longitude, zoom } = getBoundingBoxViewState(boundingBox);
 
         setViewState({
           ...viewState,
@@ -37,3 +35,15 @@ export const MapBoundsFitter: FC<MapBoundsFitterProps> = ({ boundingBox }) => {
 
   return null;
 };
+
+export function getBoundingBoxViewState(
+  boundingBox: BoundingBox,
+  viewportWidth = 800,
+  viewportHeight = 600,
+) {
+  const deckBbox = appToDeckBoundingBox(boundingBox);
+  const viewport = new WebMercatorViewport({ width: viewportWidth, height: viewportHeight });
+  const { latitude, longitude, zoom } = viewport.fitBounds(deckBbox, { padding: 20 });
+
+  return { latitude, longitude, zoom };
+}

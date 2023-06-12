@@ -5,13 +5,14 @@ import DeckGL, {
   MapView,
   MapViewState,
 } from 'deck.gl/typed';
-import { FC, Provider, createContext, useRef, useState } from 'react';
+import { FC, Provider, createContext, useRef } from 'react';
 
 import { useTriggerMemo } from '../hooks/use-trigger-memo';
 import { MapContextProviderWithLimits } from './MapContextProviderWithLimits';
 
 interface DeckMapProps {
-  initialViewState: any;
+  viewState: MapViewState;
+  onViewState: (vs: MapViewState) => void;
   layersFunction: ({ zoom }) => any[];
   dataLoadTrigger?: number;
   onHover: any;
@@ -26,7 +27,8 @@ export const ViewStateContext = createContext<{
 }>(null);
 
 export const DeckMap: FC<DeckMapProps> = ({
-  initialViewState,
+  viewState,
+  onViewState,
   layersFunction,
   dataLoadTrigger,
   onHover,
@@ -35,8 +37,6 @@ export const DeckMap: FC<DeckMapProps> = ({
   pickingRadius,
   children,
 }) => {
-  const [viewState, setViewState] = useState<any>(initialViewState);
-
   const deckRef = useRef<DeckGLRef>();
 
   const zoom = viewState.zoom;
@@ -48,7 +48,7 @@ export const DeckMap: FC<DeckMapProps> = ({
   );
 
   return (
-    <ViewStateContext.Provider value={{ viewState, setViewState }}>
+    <ViewStateContext.Provider value={{ viewState, setViewState: onViewState }}>
       <DeckGL
         ref={deckRef}
         style={{
@@ -70,7 +70,7 @@ export const DeckMap: FC<DeckMapProps> = ({
           }),
         ]}
         viewState={viewState}
-        onViewStateChange={({ viewState }) => setViewState(viewState)}
+        onViewStateChange={({ viewState }) => onViewState(viewState as MapViewState)}
         layers={layers}
         layerFilter={layerRenderFilter}
         onHover={(info, event) =>

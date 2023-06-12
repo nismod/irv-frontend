@@ -10,12 +10,8 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import ScrollToTop from '@/lib/react/ScrollToTop';
-
 export const TermsPage = () => (
   <article>
-    <ScrollToTop />
-
     <p>This page contains the following documents:</p>
     <ul>
       <li>

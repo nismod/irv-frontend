@@ -7,8 +7,8 @@ WORKDIR /app
 # install npm packages -- do this before copying everything else
 # to enable more efficient caching by docker (we don't reinstall packages when
 # we've only changed application code)
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json package-lock.json .npmrc ./
+RUN --mount=type=secret,id=GH_TOKEN GH_NPM_AUTH=$(cat /run/secrets/GH_TOKEN) npm ci
 COPY public public
 COPY src src
 COPY index.html tsconfig.json tsconfig.vite.json vite.config.ts ./

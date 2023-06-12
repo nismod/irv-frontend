@@ -1,4 +1,6 @@
-import { FC, ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
+
+import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 
 import { GradientLegend } from './GradientLegend';
 import { useRasterColorMapValues } from './use-color-map-values';
@@ -29,26 +31,28 @@ export const RasterLegend: FC<{
   description?: string;
   colorMap: RasterColorMap;
   getValueLabel: (x: any) => ReactNode | string;
-}> = ({
-  label,
-  description,
-  colorMap: { scheme, range, rangeTruncated = [false, false] },
-  getValueLabel,
-}) => {
-  const colorMapValues = useRasterColorMapValues(scheme, range);
+}> = React.memo(
+  ({
+    label,
+    description,
+    colorMap: { scheme, range, rangeTruncated = [false, false] as [boolean, boolean] },
+    getValueLabel,
+  }) => {
+    const colorMapValues = useRasterColorMapValues(scheme, range);
 
-  const colorMap = {
-    colorMapValues,
-    rangeTruncated,
-  };
+    const colorMap = useObjectMemo({
+      colorMapValues,
+      rangeTruncated,
+    });
 
-  return (
-    <GradientLegend
-      label={label}
-      description={description}
-      range={range}
-      colorMap={colorMap}
-      getValueLabel={getValueLabel}
-    />
-  );
-};
+    return (
+      <GradientLegend
+        label={label}
+        description={description}
+        range={range}
+        colorMap={colorMap}
+        getValueLabel={getValueLabel}
+      />
+    );
+  },
+);

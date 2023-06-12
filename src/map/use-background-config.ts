@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { useMemo } from 'react';
 
-import { BACKGROUNDS, BackgroundName } from '@/config/backgrounds';
+import { BACKGROUNDS, BACKGROUND_ATTRIBUTIONS, BackgroundName } from '@/config/backgrounds';
 
 function visible(isVisible: boolean): 'visible' | 'none' {
   return isVisible ? 'visible' : 'none';
@@ -19,4 +19,8 @@ function makeBackgroundConfig(background: BackgroundName) {
 
 export function useBackgroundConfig(background: BackgroundName) {
   return useMemo(() => makeBackgroundConfig(background), [background]);
+}
+
+export function useBackgroundAttribution(background: BackgroundName) {
+  return BACKGROUND_ATTRIBUTIONS[background];
 }

@@ -6,5 +6,9 @@
   "/api": {
     "target": "https://global.infrastructureresilience.org",
     "changeOrigin": true
+  },
+  "/extract": {
+    "target": "https://global.infrastructureresilience.org",
+    "changeOrigin": true
   }
 }

@@ -9,17 +9,29 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import 'react-spring-bottom-sheet/dist/style.css';
 import './index.css';
 
+import { QueryClientProvider } from 'react-query';
+import { RecoilURLSyncJSON } from 'recoil-sync';
+
+import { RecoilLocalStorageSync } from '@/lib/recoil/sync-stores/RecoilLocalStorageSync';
+
+import { queryClient } from './query-client';
 import { router } from './router';
 
 export const App = () => {
   return (
     <RecoilRoot>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </StyledEngineProvider>
+      <RecoilLocalStorageSync storeKey="local-storage">
+        <RecoilURLSyncJSON storeKey="url-json" location={{ part: 'queryParams' }}>
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <QueryClientProvider client={queryClient}>
+                <RouterProvider router={router} />
+              </QueryClientProvider>
+            </ThemeProvider>
+          </StyledEngineProvider>
+        </RecoilURLSyncJSON>
+      </RecoilLocalStorageSync>
     </RecoilRoot>
   );
 };

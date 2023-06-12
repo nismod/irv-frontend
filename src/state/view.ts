@@ -1,5 +1,8 @@
 // import _ from 'lodash';
+
+import { string } from '@recoiljs/refine';
 import { atom } from 'recoil';
+import { syncEffect } from 'recoil-sync';
 
 import { StateEffect } from '@/lib/recoil/state-effects/types';
 
@@ -11,7 +14,13 @@ export type ViewType = 'hazard' | 'exposure' | 'vulnerability' | 'risk';
 
 export const viewState = atom<ViewType>({
   key: 'viewState',
-  default: 'hazard',
+  effects: [
+    syncEffect({
+      storeKey: 'map-view-route',
+      itemKey: 'view',
+      refine: string(),
+    }),
+  ],
 });
 
 export const viewStateEffect: StateEffect<string> = ({ get, set }, view, previousView) => {

@@ -12,5 +12,12 @@
     "pathRewrite": {
       "^/api": "/"
     }
+  },
+  "/extract": {
+    "target": "https://localhost:9999",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/extract": "/"
+    }
   }
 }

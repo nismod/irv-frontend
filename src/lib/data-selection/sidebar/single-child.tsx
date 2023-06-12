@@ -1,12 +1,10 @@
 import { useCallback, useContext, useEffect } from 'react';
 import { useRecoilCallback } from 'recoil';
 
-import {
-  VisibilityStateContext,
-  usePathChildrenState,
-  useVisibilityState,
-} from '@/lib/data-selection/sidebar/components';
-import { getSubPath, usePath } from '@/lib/data-selection/sidebar/paths';
+import { getSubPath, usePath } from '@/lib/paths/paths';
+import { usePathChildrenState } from '@/lib/paths/sub-path';
+
+import { VisibilityStateContext, useVisibilityState } from './context';
 
 const ChildVisibilityWatcher = ({ childPath, onVisibility }) => {
   const [visible] = useVisibilityState(childPath);

@@ -1,14 +1,13 @@
 import { FC } from 'react';
-import { useParams } from 'react-router';
 
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
-import { useSyncRecoilState } from '@/lib/recoil/sync-state';
 
 import { InitData } from '@/InitData';
 import { viewState, viewStateEffect } from '@/state/view';
 import { useIsMobile } from '@/use-is-mobile';
 
+import { MapViewRouteSync } from './MapViewRouteSync';
 import { MapPageDesktopLayout } from './layouts/MapPageDesktopLayout';
 import { MapPageMobileLayout } from './layouts/mobile/MapPageMobileLayout';
 
@@ -19,15 +18,13 @@ const MapPageLayout = () => {
 };
 
 export const MapPage: FC = () => {
-  const { view } = useParams();
-
-  useSyncRecoilState(viewState, view);
-
   return (
     <ErrorBoundary message="There was a problem displaying this page.">
-      <InitData />
-      <StateEffectRoot state={viewState} effect={viewStateEffect} />
-      <MapPageLayout />
+      <MapViewRouteSync>
+        <InitData />
+        <StateEffectRoot state={viewState} effect={viewStateEffect} />
+        <MapPageLayout />
+      </MapViewRouteSync>
     </ErrorBoundary>
   );
 };

@@ -2,8 +2,6 @@ import { Divider, Grid, Paper, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 
-import ScrollToTop from '@/lib/react/ScrollToTop';
-
 const HeadingBox = styled(Paper)(({ theme }) => ({
   backgroundColor: 'rgba(0, 92, 97, 0.3)',
   color: '#fff',
@@ -22,7 +20,6 @@ export const IntroPage = () => {
   return (
     <div className="home">
       <article>
-        <ScrollToTop />
         <Grid container columnSpacing={8} rowSpacing={4}>
           <Grid item md={6} sx={{ width: '100%' }}>
             <HeadingBox sx={{ mt: -2, pt: 8 }}>
