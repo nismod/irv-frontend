@@ -11,11 +11,11 @@ jobs:
   build-and-push-image:
     uses: ./.github/workflows/build_publish.yml
     with:
-      version: 0.20-dev
+      version: 0.20-rc
       registry: ghcr.io
       registry-user: ${{ github.actor }}
       image-name: nismod/irv-frontend
-      dockerfile-path: containers/Dockerfile-dev
+      dockerfile-path: containers/Dockerfile-prod
     secrets: inherit
     permissions:
       contents: read
