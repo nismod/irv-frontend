@@ -55,7 +55,6 @@ export default defineConfig({
     outDir: 'build',
   },
   server: {
-    open: true,
     proxy: devProxy,
     host: '0.0.0.0',
   },
