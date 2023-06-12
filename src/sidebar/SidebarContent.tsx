@@ -3,10 +3,12 @@ import _ from 'lodash';
 import { FC, ReactElement } from 'react';
 import { atomFamily, selectorFamily, useRecoilValue } from 'recoil';
 
-import { Layer, Section, SidebarRoot } from '@/lib/data-selection/sidebar/components';
-import { getParentPath } from '@/lib/data-selection/sidebar/paths';
+import { Layer } from '@/lib/data-selection/sidebar/Layer';
+import { Section } from '@/lib/data-selection/sidebar/Section';
+import { SidebarRoot } from '@/lib/data-selection/sidebar/root';
 import { EnforceSingleChild } from '@/lib/data-selection/sidebar/single-child';
-import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
+import { getParentPath } from '@/lib/paths/paths';
+import { StateEffectRootAsync } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
 import { ViewType, viewState } from '@/state/view';
@@ -29,6 +31,7 @@ import { HdiControl } from './sections/vulnerability/HdiControl';
 import { TravelTimeControl } from './sections/vulnerability/TravelTimeControl';
 import { WdpaControls } from './sections/vulnerability/WdpaControl';
 import { DataNotice } from './ui/DataNotice';
+import { SidebarUrlStateSyncRoot, defaultSectionVisibilitySyncEffect } from './url-state';
 
 const viewLabels = {
   hazard: 'Hazard',
@@ -39,17 +42,22 @@ const viewLabels = {
 
 export const sidebarVisibilityToggleState = atomFamily({
   key: 'sidebarVisibilityToggleState',
-  default: false,
+  effects: (path: string) => [defaultSectionVisibilitySyncEffect(path)],
 });
 
 export const sidebarExpandedState = atomFamily({
   key: 'sidebarExpandedState',
-  default: false,
+  default: sidebarVisibilityToggleState,
 });
 
-export const sidebarPathChildrenState = atomFamily({
+export const sidebarPathChildrenState = atomFamily<string[], string>({
   key: 'sidebarPathChildrenState',
   default: () => [],
+});
+
+export const sidebarPathChildrenLoadingState = atomFamily<boolean, string>({
+  key: 'sidebarPathChildrenLoadingState',
+  default: true,
 });
 
 export const sidebarPathVisibilityState: RecoilStateFamily<boolean, string> = selectorFamily<
@@ -238,7 +246,9 @@ const VIEW_TRANSITIONS: Record<ViewType, any> = {
   },
 };
 
-const viewTransitionEffect = ({ set }, newView) => {
+const viewTransitionEffect = ({ set }, newView, previousView) => {
+  if (newView === previousView) return;
+
   const { showPaths = [], hideRest = false } = VIEW_TRANSITIONS[newView].enter;
 
   for (const path of showPaths) {
@@ -246,7 +256,8 @@ const viewTransitionEffect = ({ set }, newView) => {
     set(sidebarVisibilityToggleState(path), true);
   }
 
-  if (hideRest) {
+  // hide other sections, but only if we're transitioning from a previous view
+  if (previousView != null && hideRest) {
     const hidePaths = _.difference(TOP_LEVEL_SECTIONS, showPaths);
 
     for (const path of hidePaths) {
@@ -280,8 +291,10 @@ export const SidebarContent: FC<{}> = () => {
       visibilityState={sidebarVisibilityToggleState}
       expandedState={sidebarExpandedState}
       pathChildrenState={sidebarPathChildrenState}
+      pathChildrenLoadingState={sidebarPathChildrenLoadingState}
     >
-      <StateEffectRoot state={viewState} effect={viewTransitionEffect} />
+      <SidebarUrlStateSyncRoot />
+      <StateEffectRootAsync state={viewState} effect={viewTransitionEffect} hookType="effect" />
       <Stack
         sx={{
           '& > :first-of-type': {

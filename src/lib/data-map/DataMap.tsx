@@ -1,5 +1,6 @@
+import { MapViewState } from 'deck.gl/typed';
 import _ from 'lodash';
-import { FC, ReactNode, useCallback, useEffect, useMemo } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
 
 import { usePrevious } from '@/lib/hooks/use-previous';
 import { useTrackingRef } from '@/lib/hooks/use-tracking-ref';
@@ -10,7 +11,8 @@ import { useInteractions } from './interactions/use-interactions';
 import { ViewLayer, ViewLayerParams } from './view-layers';
 
 export interface DataMapProps {
-  initialViewState: any;
+  viewState: MapViewState;
+  onViewState: (vs: MapViewState) => void;
   viewLayers: ViewLayer[];
   viewLayersParams: Record<string, ViewLayerParams>;
   interactionGroups: any;
@@ -22,7 +24,8 @@ function lookupViewForDeck(deckLayerId: string) {
 }
 
 export const DataMap: FC<DataMapProps> = ({
-  initialViewState,
+  viewState,
+  onViewState,
   viewLayers,
   viewLayersParams,
   interactionGroups,
@@ -86,7 +89,8 @@ export const DataMap: FC<DataMapProps> = ({
 
   return (
     <DeckMap
-      initialViewState={initialViewState}
+      viewState={viewState}
+      onViewState={onViewState}
       layersFunction={deckLayersFunction}
       dataLoadTrigger={dataLoadTrigger}
       onHover={onHover}
