@@ -7,6 +7,7 @@ COPY package.json package-lock.json .npmrc ./
 RUN --mount=type=secret,id=GH_TOKEN GH_NPM_AUTH=$(cat /run/secrets/GH_TOKEN) npm ci
 COPY public public
 COPY index.html tsconfig.json tsconfig.vite.json vite.config.ts ./
+COPY dev-proxy/proxy-table.json ./dev-proxy/
 
 # run dev server
 CMD [ "npm", "start" ]
