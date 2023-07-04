@@ -6,4 +6,4 @@ bundle-analyse.html
 .env
 
 # local development proxy config
-dev-proxy/proxy-table.json
+dev-proxy/proxy-table.ts
