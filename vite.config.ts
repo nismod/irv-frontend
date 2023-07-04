@@ -16,11 +16,18 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
  * You can copy and rename one of the included examples.
  * See https://vitejs.dev/config/server-options.html#server-proxy for syntax
  */
+
+function apiRewrite (path) {
+    // Rewrite the path for the backend API, stripping the leading /api
+    return path.replace(/^\/api/, '')
+}
+
 let devProxy;
 try {
   devProxy = JSON.parse(
     fs.readFileSync(path.resolve(__dirname, 'dev-proxy/proxy-table.json')).toString(),
   );
+  devProxy["/api"].rewrite = apiRewrite
 } catch (err) {
   if (err.code === 'ENOENT') {
     // no dev proxy config, do nothing
@@ -56,7 +63,7 @@ export default defineConfig({
   },
   server: {
     proxy: devProxy,
-    host: '0.0.0.0',
+    host: '0.0.0.0', // listen on all network interfaces
   },
   test: {},
 });
