@@ -6,37 +6,23 @@
 
 /*
  * The hostnames that follow are docker service names, and so to resolve to
- * containers, the vite server must belong to the docker network (see README).
+ * containers. If using this setup, the vite server must belong to the docker
+ * network containing the backend services (see ./README.md).
  */
 
 export const devProxy = {
   "/vector": {
-    target: {
-      protocol: "http",
-      host: "vector-tileserver",
-      port: "8080"
-    },
-    secure: false,
+    target: "http://vector-tileserver:8080",
     changeOrigin: true,
     rewrite: (path) => path.replace(/^\/vector/, ""),
   },
   "/api": {
-    target: {
-      protocol: "http",
-      host: "backend",
-      port: "8888"
-    },
-    secure: false,
+    target: "http://backend:8888",
     changeOrigin: true,
     rewrite: (path) => path.replace(/^\/api/, ""),
   },
   "/extract": {
-    target: {
-      protocol: "http",
-      host: "irv-autopkg-api",
-      port: "8000"
-    },
-    secure: false,
+    target: "http:/irv-autopkg-api:8000",
     changeOrigin: true,
     rewrite: (path) => path.replace(/^\/extract/, ""),
   }

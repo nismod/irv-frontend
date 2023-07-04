@@ -6,24 +6,15 @@
 
 export const devProxy = {
   "/vector": {
-    target: {
-      protocol: "https",
-      host: "global.infrastructureresilience.org",
-    },
+    target: "https://global.infrastructureresilience.org:443",
     changeOrigin: true,
   },
   "/api": {
-    target: {
-      protocol: "https",
-      host: "global.infrastructureresilience.org",
-    },
+    target: "https://global.infrastructureresilience.org:443",
     changeOrigin: true,
   },
   "/extract": {
-    target: {
-      protocol: "https",
-      host: "global.infrastructureresilience.org",
-    },
+    target: "https://global.infrastructureresilience.org:443",
     changeOrigin: true,
   }
 };
