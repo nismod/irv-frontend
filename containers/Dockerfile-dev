@@ -10,4 +10,4 @@ COPY index.html tsconfig.json tsconfig.vite.json vite.config.ts ./
 COPY dev-proxy/proxy-table.json ./dev-proxy/
 
 # run dev server
-CMD [ "npm", "start" ]
+CMD [ "npx", "vite", "--debug" ]
