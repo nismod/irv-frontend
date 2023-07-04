@@ -12,29 +12,11 @@ import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 /**
- * To set up a development proxy, create and edit the file dev-proxy/proxy-table.json
+ * To set up a development proxy, create and edit the file dev-proxy/proxy-table.ts
  * You can copy and rename one of the included examples.
  * See https://vitejs.dev/config/server-options.html#server-proxy for syntax
  */
-
-function apiRewrite (path) {
-    // Rewrite the path for the backend API, stripping the leading /api
-    return path.replace(/^\/api/, '')
-}
-
-let devProxy;
-try {
-  devProxy = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, 'dev-proxy/proxy-table.json')).toString(),
-  );
-  devProxy["/api"].rewrite = apiRewrite
-} catch (err) {
-  if (err.code === 'ENOENT') {
-    // no dev proxy config, do nothing
-  } else {
-    console.error('Invalid JSON file: dev-proxy/proxy-table.json');
-  }
-}
+import { devProxy } from './dev-proxy/proxy-table'
 
 // https://vitejs.dev/config/
 export default defineConfig({
