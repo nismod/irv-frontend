@@ -7,3 +7,5 @@ bundle-analyse.html
 
 # local development proxy config
 dev-proxy/proxy-table.ts
+
+.vscode
