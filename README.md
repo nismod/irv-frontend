@@ -52,7 +52,7 @@ BuildKit](https://docs.docker.com/build/buildkit/) feature, hence the need to
 install [docker buildx](https://github.com/docker/buildx) for building locally,
 and to pass the `DOCKER_BUILDKIT=1` variable before the `docker build` command.
 
-For example, to build and run the container (replace `/PATH/TO/TOKEN`, but not
+For example, to build the container (replace `/PATH/TO/TOKEN`, but not
 `GH_TOKEN`):
 
 ```bash
@@ -60,8 +60,17 @@ DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-dev \
    -t ghcr.io/nismod/irv-frontend:0.20-dev .
+```
 
+To run:
+```bash
 docker run -it -p 5173:5173 -v $(pwd)/src:/app/src ghcr.io/nismod/irv-frontend:0.20-dev
+```
+
+Or to run inside an infra-risk-vis network (allowing DNS resolution for
+connection to the backend services via the vite reverse proxy):
+```bash
+docker run -it -p 5173:5173 -v $(pwd)/src:/app/src --network infra-risk-vis_default ghcr.io/nismod/irv-frontend:0.20-dev
 ```
 
 Then visit http://localhost:5173
