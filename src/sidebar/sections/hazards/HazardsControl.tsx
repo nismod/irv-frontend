@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
+import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { HazardType } from '@/config/hazards/metadata';
 import { DataNotice } from '@/sidebar/ui/DataNotice';
@@ -34,7 +35,7 @@ const EnsureHazardData = ({ type }) => {
 
 const HazardControl = ({ type, children }) => {
   return (
-    <>
+    <ErrorBoundary message="There was a problem loading configuration for this layer">
       {/* Wrap the data init and usage in separate Suspenses to prevent deadlock */}
       <Suspense fallback={null}>
         <InitHazardData type={type} />
@@ -45,7 +46,7 @@ const HazardControl = ({ type, children }) => {
         <Stack spacing={3}>{children}</Stack>
       </DataGroup>
     </Suspense>
-    </>
+    </ErrorBoundary>
   );
 };
 
