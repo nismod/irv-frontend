@@ -4,6 +4,7 @@ import { FC, Suspense } from 'react';
 
 import { usePath } from '@/lib/paths/paths';
 import { SubPath } from '@/lib/paths/sub-path';
+import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { VisibilityToggle } from './VisibilityToggle';
 import { Accordion, AccordionDetails, AccordionSummary, AccordionTitle } from './accordion';
@@ -18,11 +19,15 @@ interface LayerProps {
   disabled?: boolean;
   unmountOnHide?: boolean;
 }
-export const Layer: FC<{ path: string } & LayerProps> = ({ path, ...otherProps }) => {
+export const Layer: FC<{ path: string } & LayerProps> = ({ path, children, ...otherProps }) => {
   return (
     <SubPath path={path}>
-      <Suspense fallback="Loading layer data...">
-        <LayerImpl {...otherProps} />
+      <Suspense fallback="Loading layer section...">
+        <LayerImpl {...otherProps}>
+          <ErrorBoundary message="There was a problem loading this section">
+            <Suspense fallback="Loading layer data...">{children}</Suspense>
+          </ErrorBoundary>
+        </LayerImpl>
       </Suspense>
     </SubPath>
   );

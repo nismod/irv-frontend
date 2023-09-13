@@ -40,12 +40,12 @@ const HazardControl = ({ type, children }) => {
       <Suspense fallback={null}>
         <InitHazardData type={type} />
       </Suspense>
-    <Suspense fallback="Loading data...">
-      <EnsureHazardData type={type} />
-      <DataGroup group={type}>
-        <Stack spacing={3}>{children}</Stack>
-      </DataGroup>
-    </Suspense>
+      <Suspense fallback="Loading data...">
+        <EnsureHazardData type={type} />
+        <DataGroup group={type}>
+          <Stack spacing={3}>{children}</Stack>
+        </DataGroup>
+      </Suspense>
     </ErrorBoundary>
   );
 };
