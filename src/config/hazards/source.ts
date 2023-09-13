@@ -14,6 +14,9 @@ export function getHazardDataPath({ hazardType, hazardParams, metric }: HazardSo
   if (hazardType === 'earthquake') {
     const { rp, medium } = hazardParams;
     path = `earthquake/${rp}/${medium}`;
+  } else if (hazardType === 'cyclone_iris') {
+    const { rp, ssp, epoch } = hazardParams;
+    path = `${hazardType}/${epoch}/${rp}/${ssp}`;
   } else {
     const { rp, rcp, epoch, gcm } = hazardParams;
     const sanitisedRcp = rcp?.replace('.', 'x');
