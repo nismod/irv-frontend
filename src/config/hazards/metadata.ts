@@ -30,11 +30,11 @@ export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
   },
   cyclone: {
     scheme: 'reds',
-    range: [0, 75],
+    range: [0, 90],
   },
   cyclone_iris: {
     scheme: 'reds',
-    range: [0, 75], //TODO: whats the maximum value?
+    range: [0, 90],
   },
   extreme_heat: {
     scheme: 'reds',
