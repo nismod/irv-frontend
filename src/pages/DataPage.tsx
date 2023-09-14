@@ -150,7 +150,7 @@ export const DataPage = () => (
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell>Tropical Cyclones</TableCell>
+            <TableCell>Tropical Cyclones (STORM)</TableCell>
             <TableCell>
               STORM Tropical Cyclone Maximum Windspeeds,{' '}
               <a href="https://data.4tu.nl/articles/dataset/STORM_tropical_cyclone_wind_speed_return_periods/12705164/3">
@@ -177,6 +177,10 @@ export const DataPage = () => (
               climate change datasets. 1 in 10 to 1 in 10,000 year return periods at 10 km
               resolution. Baseline and RCP 8.5 climate scenarios. Current and future (2050) epochs.
             </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Tropical Cyclones (IRIS)</TableCell>
+            <TableCell></TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Seismic Risk</TableCell>
