@@ -8,8 +8,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import React from 'react';
 import { Link } from 'react-router-dom';
+
+import { ExtLink } from '@/lib/nav';
 
 export const DataPage = () => (
   <article>
@@ -180,7 +181,22 @@ export const DataPage = () => (
           </TableRow>
           <TableRow>
             <TableCell>Tropical Cyclones (IRIS)</TableCell>
-            <TableCell></TableCell>
+            <TableCell>
+              <ExtLink href="https://www.imperial.ac.uk/grantham/research/climate-science/modelling-tropical-cyclones/">
+                IRIS tropical cyclone model
+              </ExtLink>
+            </TableCell>
+            <TableCell>
+              Sparks, N. & Toumi, R. IRIS: The Imperial College Storm Model [Manuscript submitted
+              for publication].
+            </TableCell>
+            <TableCell>CC BY 4.0</TableCell>
+            <TableCell>
+              Tropical cyclone maximum wind speeds (in m/s) generated using the IRIS tropical
+              cyclone model. Wind speeds available from 1 in 10 to 1 in 1,000 year return periods at
+              1/10 degree spatial resolution. Present (2020) and future (2050) epochs, with
+              SSP1-2.6, SSP2-4.5 and SSP5-8.5 future scenarios.
+            </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Seismic Risk</TableCell>

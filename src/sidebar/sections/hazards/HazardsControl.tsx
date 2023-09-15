@@ -91,7 +91,10 @@ export const CycloneControl = () => {
 export const CycloneIrisControl = () => {
   return (
     <HazardControl type="cyclone_iris">
-      <DataNotice>IRIS data notice (TODO)</DataNotice>
+      <DataNotice>
+        Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods, from
+        Sparks and Toumi [Manuscript submitted for publication].
+      </DataNotice>
       <ReturnPeriodControl
         valueLabelDisplay="auto"
         showMarkLabelsFor={[10, 50, 100, 500, 1000, 5000, 10000]}
