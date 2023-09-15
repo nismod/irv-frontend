@@ -1,6 +1,7 @@
 import { BitmapLayerProps } from 'deck.gl/typed';
 
 import { bitmapLayer, tileLayer } from './base';
+import { Tileset2DCentered } from './tileset-2d-centered';
 
 function getBoundsForTile(tileProps) {
   const {
@@ -12,6 +13,7 @@ function getBoundsForTile(tileProps) {
 
 export function rasterTileLayer(bitmapProps: Partial<BitmapLayerProps>, ...props) {
   return tileLayer(props, {
+    TilesetClass: Tileset2DCentered,
     renderSubLayers: (tileProps) =>
       bitmapLayer(
         tileProps,
