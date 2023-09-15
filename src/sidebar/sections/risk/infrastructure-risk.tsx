@@ -22,7 +22,7 @@ import {
   damageSourceState,
   syncHazardsWithDamageSourceStateEffect,
 } from '@/state/data-selection/damage-mapping/damage-map';
-import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/adaptations';
+import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
 import { hideExposure, syncExposure } from './population-exposure';
 
