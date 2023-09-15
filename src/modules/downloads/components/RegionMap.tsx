@@ -1,19 +1,20 @@
 import { ZoomOutMap } from '@mui/icons-material';
 import { Box, BoxProps } from '@mui/material';
-import { DeckGL, GeoJsonLayer, MapViewState } from 'deck.gl/typed';
+import { GeoJsonLayer, MapViewState } from 'deck.gl/typed';
 import { MultiPolygon, Polygon } from 'geojson';
-import { useCallback, useState } from 'react';
-import { MapContext, StaticMap } from 'react-map-gl';
+import { Suspense, useCallback, useState } from 'react';
+import { Map } from 'react-map-gl/maplibre';
 import { useResizeDetector } from 'react-resize-detector';
 
 import { extendBbox, geoJsonToAppBoundingBox } from '@/lib/bounding-box';
+import { DeckGLOverlay } from '@/lib/map/DeckGLOverlay';
 import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudButton } from '@/lib/map/hud/MapHudButton';
 import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
 import { MapHudAttributionControl } from '@/lib/map/hud/mapbox-controls';
 
-import { useBackgroundAttribution, useBackgroundConfig } from '@/map/use-background-config';
+import { useBackgroundAttribution, useBasemapStyle } from '@/map/use-basemap-style';
 
 function compareViewStateWithInitial(viewState: any, initialViewState: any) {
   for (const key of Object.keys(initialViewState)) {
@@ -69,12 +70,14 @@ export function RegionMap({
   return (
     <Box ref={containerRef} height={responsiveHeight} width={responsiveWidth} position="relative">
       {width != null && (
-        <RegionMapImpl
-          regionGeometry={regionGeometry}
-          regionEnvelope={regionEnvelope}
-          width={width}
-          height={height}
-        />
+        <Suspense fallback={null}>
+          <RegionMapImpl
+            regionGeometry={regionGeometry}
+            regionEnvelope={regionEnvelope}
+            width={width}
+            height={height}
+          />
+        </Suspense>
       )}
     </Box>
   );
@@ -91,40 +94,41 @@ function RegionMapImpl({
   width: number;
   height: number;
 }) {
-  const boundingBox = geoJsonToAppBoundingBox(regionEnvelope);
-  const enlarged = extendBbox(boundingBox, 100);
-  const { viewState, setViewState, initialViewState } = useViewState(() =>
-    getBoundingBoxViewState(enlarged, width, height),
-  );
+  const { viewState, setViewState, initialViewState } = useViewState(() => {
+    const boundingBox = geoJsonToAppBoundingBox(regionEnvelope);
+    const enlarged = extendBbox(boundingBox, 100);
+
+    return getBoundingBoxViewState(enlarged, width, height);
+  });
+
   const viewStateChanged =
     viewState == null || initialViewState == null
       ? false
       : compareViewStateWithInitial(viewState, initialViewState);
 
-  const backgroundStyle = useBackgroundConfig('satellite');
+  const { mapStyle } = useBasemapStyle('satellite', false);
   const backgroundAttrib = useBackgroundAttribution('satellite');
 
   return (
-    <DeckGL
-      width="100%"
-      height="100%"
-      viewState={viewState}
-      onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
-      controller={true}
-      layers={[
-        new GeoJsonLayer({
-          data: regionGeometry,
-          stroked: true,
-          getLineColor: [150, 150, 255],
-          getLineWidth: 3,
-          lineWidthUnits: 'pixels',
-          filled: true,
-          getFillColor: [150, 150, 255, 100],
-        }),
-      ]}
-      ContextProvider={MapContext.Provider as any}
+    <Map
+      {...viewState}
+      onMove={({ viewState }) => setViewState(viewState)}
+      mapStyle={mapStyle}
+      attributionControl={false}
     >
-      <StaticMap mapStyle={backgroundStyle} />
+      <DeckGLOverlay
+        layers={[
+          new GeoJsonLayer({
+            data: regionGeometry,
+            stroked: true,
+            getLineColor: [150, 150, 255],
+            getLineWidth: 3,
+            lineWidthUnits: 'pixels',
+            filled: true,
+            getFillColor: [150, 150, 255, 100],
+          }),
+        ]}
+      />
       <MapHud>
         <MapHudRegion position="top-right">
           <MapHudButton
@@ -139,6 +143,6 @@ function RegionMapImpl({
           <MapHudAttributionControl customAttribution={backgroundAttrib} compact={true} />
         </MapHudRegion>
       </MapHud>
-    </DeckGL>
+    </Map>
   );
 }

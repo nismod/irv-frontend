@@ -1,5 +1,6 @@
+import type { MapboxOverlay } from '@deck.gl/mapbox/typed';
 import { readPixelsToArray } from '@luma.gl/core';
-import { Deck, DeckGLRef, PickingInfo } from 'deck.gl/typed';
+import { PickingInfo } from 'deck.gl/typed';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useRecoilCallback, useSetRecoilState } from 'recoil';
@@ -152,7 +153,7 @@ export function useInteractions(
   }, [activeGroups, setAllowedGroupLayers]);
 
   const onHover = useCallback(
-    (info: any, deck: Deck) => {
+    (info: any, deck: MapboxOverlay) => {
       const { x, y } = info;
 
       for (const [groupName, layers] of Object.entries(activeGroups)) {
@@ -193,7 +194,7 @@ export function useInteractions(
   );
 
   const onClick = useCallback(
-    (info: any, deck: DeckGLRef) => {
+    (info: any, deck: MapboxOverlay) => {
       const { x, y } = info;
       for (const [groupName, viewLayers] of Object.entries(activeGroups)) {
         const viewLayerIds = viewLayers.map((layer) => layer.id);

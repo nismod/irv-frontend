@@ -1,6 +1,5 @@
-import { PropsOf } from '@emotion/react';
 import { Box, Stack } from '@mui/material';
-import React, { FC } from 'react';
+import React, { ComponentProps, FC } from 'react';
 
 import { eventPreventDefault } from '@/lib/helpers';
 
@@ -37,8 +36,8 @@ const hudRegions = {
 
 export interface MapHudProps {
   position: keyof typeof hudRegions;
-  style?: PropsOf<typeof Box>['style'];
-  StackProps?: PropsOf<typeof Stack>;
+  style?: ComponentProps<typeof Box>['style'];
+  StackProps?: ComponentProps<typeof Stack>;
 }
 export const MapHudRegion: FC<MapHudProps> = ({ position, style = {}, StackProps, children }) => {
   const { style: defaultRegionStyle, justifyContent } = hudRegions[position];

@@ -1,4 +1,4 @@
-import { AttributionControl, NavigationControl, ScaleControl } from 'react-map-gl';
+import { AttributionControl, NavigationControl, ScaleControl } from 'react-map-gl/maplibre';
 
 import { withProps } from '@/lib/react/with-props';
 

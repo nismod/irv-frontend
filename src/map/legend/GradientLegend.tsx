@@ -1,5 +1,5 @@
 import { Box, Fade, Tooltip, Typography } from '@mui/material';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, memo } from 'react';
 
 import { RasterColorMapValues } from './RasterLegend';
 
@@ -54,39 +54,35 @@ export interface GradientLegendProps {
   getValueLabel: (x: any) => ReactNode | string;
 }
 
-export const GradientLegend: FC<GradientLegendProps> = ({
-  label,
-  description,
-  range,
-  colorMap,
-  getValueLabel,
-}) => (
-  <Box mb={2}>
-    <Box mb={1}>
-      <Typography variant="body1">{label}</Typography>
-      {description && <Typography variant="body2">{description}</Typography>}
+export const GradientLegend: FC<GradientLegendProps> = memo(
+  ({ label, description, range, colorMap, getValueLabel }) => (
+    <Box mb={2}>
+      <Box mb={1}>
+        <Typography variant="body1">{label}</Typography>
+        {description && <Typography variant="body2">{description}</Typography>}
+      </Box>
+      <Box
+        height={legendHeight + 2}
+        width={256}
+        bgcolor="#ccc"
+        display="flex"
+        flexDirection="row"
+        border="1px solid gray"
+      >
+        {colorMap && <LegendGradient colorMap={colorMap} getValueLabel={getValueLabel} />}
+      </Box>
+      <Box height={10} position="relative">
+        {colorMap && (
+          <>
+            <Box position="absolute" left={0}>
+              <Typography>{getValueLabel(range[0])}</Typography>
+            </Box>
+            <Box position="absolute" right={0}>
+              <Typography>{getValueLabel(range[1])}</Typography>
+            </Box>
+          </>
+        )}
+      </Box>
     </Box>
-    <Box
-      height={legendHeight + 2}
-      width={256}
-      bgcolor="#ccc"
-      display="flex"
-      flexDirection="row"
-      border="1px solid gray"
-    >
-      {colorMap && <LegendGradient colorMap={colorMap} getValueLabel={getValueLabel} />}
-    </Box>
-    <Box height={10} position="relative">
-      {colorMap && (
-        <>
-          <Box position="absolute" left={0}>
-            <Typography>{getValueLabel(range[0])}</Typography>
-          </Box>
-          <Box position="absolute" right={0}>
-            <Typography>{getValueLabel(range[1])}</Typography>
-          </Box>
-        </>
-      )}
-    </Box>
-  </Box>
+  ),
 );

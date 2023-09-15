@@ -20,14 +20,19 @@ export const VectorLegend: FC<{ colorMap: ColorMap; legendFormatConfig: FormatCo
     [fieldSpec, getValueFormatted],
   );
 
+  const colorMapProp = useMemo(
+    () => ({
+      colorMapValues,
+      rangeTruncated: [false, false] as [boolean, boolean],
+    }),
+    [colorMapValues],
+  );
+
   return (
     <GradientLegend
       label={label}
       range={colorSpec.range}
-      colorMap={{
-        colorMapValues,
-        rangeTruncated: [false, false],
-      }}
+      colorMap={colorMapProp}
       getValueLabel={getValueLabel}
     />
   );

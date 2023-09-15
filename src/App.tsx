@@ -5,7 +5,7 @@ import { RecoilRoot } from 'recoil';
 
 import { theme } from './theme';
 
-import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import 'react-spring-bottom-sheet/dist/style.css';
 import './index.css';
 
