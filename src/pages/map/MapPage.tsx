@@ -3,7 +3,6 @@ import { FC } from 'react';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
 
-import { InitData } from '@/InitData';
 import { viewState, viewStateEffect } from '@/state/view';
 import { useIsMobile } from '@/use-is-mobile';
 
@@ -21,7 +20,6 @@ export const MapPage: FC = () => {
   return (
     <ErrorBoundary message="There was a problem displaying this page.">
       <MapViewRouteSync>
-        <InitData />
         <StateEffectRoot state={viewState} effect={viewStateEffect} />
         <MapPageLayout />
       </MapViewRouteSync>

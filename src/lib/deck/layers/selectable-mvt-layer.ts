@@ -1,6 +1,7 @@
 import { geoJsonLayer, mvtLayer } from './base';
 import { DataLoaderOptions, dataLoaderLayer } from './data-loader-layer';
 import { TileSelectionLayerOptions, tileSelectionLayer } from './tile-selection-layer';
+import { Tileset2DCentered } from './tileset-2d-centered';
 
 interface SelectableMvtLayerOptions {
   selectionOptions: TileSelectionLayerOptions;
@@ -13,6 +14,7 @@ export function selectableMvtLayer(
 ) {
   return mvtLayer(
     {
+      TilesetClass: Tileset2DCentered,
       binary: false,
       autoHighlight: true,
       highlightColor: [0, 255, 255, 255],

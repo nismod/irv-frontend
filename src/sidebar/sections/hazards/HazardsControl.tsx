@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
+import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { HazardType } from '@/config/hazards/metadata';
 import { DataNotice } from '@/sidebar/ui/DataNotice';
@@ -14,12 +15,18 @@ import { ReturnPeriodControl } from '@/sidebar/ui/params/ReturnPeriodControl';
 import { hazardDomainsConfigState } from '@/state/data-domains/hazards';
 import { paramsConfigState, useLoadParamsConfig } from '@/state/data-params';
 
+/**
+ * Takes the config for the specified hazard type and loads all the param domains/dependencies from the backend
+ */
 export const InitHazardData = ({ type }: { type: HazardType }) => {
   useLoadParamsConfig(hazardDomainsConfigState(type), type);
 
   return null;
 };
 
+/**
+ *  Ensures the config for the specified data param group has been loaded
+ */
 const EnsureHazardData = ({ type }) => {
   useRecoilValue(paramsConfigState(type));
 
@@ -28,12 +35,18 @@ const EnsureHazardData = ({ type }) => {
 
 const HazardControl = ({ type, children }) => {
   return (
-    <Suspense fallback="Loading data...">
-      <EnsureHazardData type={type} />
-      <DataGroup group={type}>
-        <Stack spacing={3}>{children}</Stack>
-      </DataGroup>
-    </Suspense>
+    <ErrorBoundary message="There was a problem loading configuration for this layer">
+      {/* Wrap the data init and usage in separate Suspenses to prevent deadlock */}
+      <Suspense fallback={null}>
+        <InitHazardData type={type} />
+      </Suspense>
+      <Suspense fallback="Loading data...">
+        <EnsureHazardData type={type} />
+        <DataGroup group={type}>
+          <Stack spacing={3}>{children}</Stack>
+        </DataGroup>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

@@ -11,6 +11,7 @@
     "@emotion/styled": "^11.10.6",
     "@loaders.gl/core": "^3.4.14",
     "@loaders.gl/wkt": "^3.4.14",
+    "@math.gl/core": "^3.6.3",
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.123",
     "@mui/material": "^5.11.13",
