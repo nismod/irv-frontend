@@ -1,4 +1,4 @@
-import { Link as MuiLink } from '@mui/material';
+import { LinkProps, Link as MuiLink } from '@mui/material';
 import { ComponentProps } from 'react';
 import {
   Link as RouterLink,
@@ -9,6 +9,10 @@ import {
 
 import { Unrequired } from './helpers';
 import { withProps } from './react/with-props';
+
+export const ExtLink = ({ ...props }: Omit<LinkProps<'a'>, 'component'>) => {
+  return <MuiLink target="_blank" rel="noopener noreferrer" {...props} />;
+};
 
 export const AppLink = withProps(MuiLink<typeof RouterLink>, {
   component: RouterLink,
