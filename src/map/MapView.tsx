@@ -1,5 +1,4 @@
 import { Suspense, useCallback, useEffect } from 'react';
-import { StaticMap } from 'react-map-gl';
 import {
   atom,
   useRecoilState,
@@ -9,6 +8,7 @@ import {
 } from 'recoil';
 
 import { BoundingBox } from '@/lib/bounding-box';
+import { BaseMap } from '@/lib/data-map/BaseMap';
 import { DataMap } from '@/lib/data-map/DataMap';
 import { DataMapTooltip } from '@/lib/data-map/DataMapTooltip';
 import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
@@ -32,10 +32,10 @@ import { globalStyleVariables } from '@/theme';
 import { useIsMobile } from '@/use-is-mobile';
 
 import { MapLayerSelection } from './layers/MapLayerSelection';
-import { backgroundState } from './layers/layers-state';
+import { backgroundState, showLabelsState } from './layers/layers-state';
 import { MapLegend } from './legend/MapLegend';
 import { TooltipContent } from './tooltip/TooltipContent';
-import { useBackgroundConfig } from './use-background-config';
+import { useBasemapStyle } from './use-basemap-style';
 
 export const mapFitBoundsState = atom<BoundingBox>({
   key: 'mapFitBoundsState',
@@ -57,20 +57,17 @@ const AppPlaceSearch = () => {
 
 const AppNavigationControl = withProps(MapHudNavigationControl, {
   showCompass: false,
-  capturePointerMove: true,
 });
 
 const AppScaleControl = withProps(MapHudScaleControl, {
   maxWidth: 100,
   unit: 'metric',
-  capturePointerMove: true,
 });
 
 const AppAttributionControl = withProps(MapHudAttributionControl, {
   customAttribution:
     'Background map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, style &copy; <a href="https://carto.com/attributions">CARTO</a>. Satellite imagery: <a href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</a> by <a href="https://eox.at">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2020)',
   compact: true,
-  capturePointerMove: true,
 });
 
 const MapHudDesktopLayout = () => {
@@ -117,6 +114,9 @@ const MapViewContent = () => {
   useSyncMapUrl();
 
   const background = useRecoilValue(backgroundState);
+  const showLabels = useRecoilValue(showLabelsState);
+  const { mapStyle, firstLabelId } = useBasemapStyle(background, showLabels);
+
   const viewLayers = useRecoilValue(viewLayersFlatState);
   const saveViewLayers = useSaveViewLayers();
 
@@ -127,8 +127,6 @@ const MapViewContent = () => {
   const viewLayersParams = useRecoilValue(viewLayersParamsState);
 
   const interactionGroups = useRecoilValue(interactionGroupsState);
-
-  const backgroundStyle = useBackgroundConfig(background);
 
   const fitBounds = useRecoilValue(mapFitBoundsState);
 
@@ -141,20 +139,19 @@ const MapViewContent = () => {
   const isMobile = useIsMobile();
 
   return (
-    <DataMap
-      viewState={viewState}
-      onViewState={setViewState}
-      viewLayers={viewLayers}
-      viewLayersParams={viewLayersParams}
-      interactionGroups={interactionGroups}
-    >
-      <StaticMap mapStyle={backgroundStyle} attributionControl={false} />
+    <BaseMap mapStyle={mapStyle} viewState={viewState} onViewState={setViewState}>
+      <DataMap
+        beforeId={firstLabelId}
+        viewLayers={viewLayers}
+        viewLayersParams={viewLayersParams}
+        interactionGroups={interactionGroups}
+      />
       <MapBoundsFitter boundingBox={fitBounds} />
       <DataMapTooltip>
         <TooltipContent />
       </DataMapTooltip>
       {isMobile ? <MapHudMobileLayout /> : <MapHudDesktopLayout />}
-    </DataMap>
+    </BaseMap>
   );
 };
 

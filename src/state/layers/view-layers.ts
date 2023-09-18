@@ -1,11 +1,7 @@
 import { selector } from 'recoil';
 
-import { ViewLayer, viewOnlyLayer } from '@/lib/data-map/view-layers';
+import { ViewLayer } from '@/lib/data-map/view-layers';
 import { ConfigTree } from '@/lib/nested-config/config-tree';
-
-import { labelsLayer } from '@/config/deck-layers/labels-layer';
-import { showLabelsState } from '@/map/layers/layers-state';
-import { isRetinaState } from '@/state/is-retina';
 
 import { buildingDensityLayerState } from './data-layers/building-density';
 import { hazardLayerState } from './data-layers/hazards';
@@ -32,9 +28,6 @@ import { featureBoundingBoxLayerState } from './ui-layers/feature-bbox';
 export const viewLayersState = selector<ConfigTree<ViewLayer>>({
   key: 'viewLayersState',
   get: ({ get }) => {
-    const showLabels = get(showLabelsState);
-    const isRetina = get(isRetinaState);
-
     return [
       /**
        * Data layers
@@ -62,15 +55,6 @@ export const viewLayersState = selector<ConfigTree<ViewLayer>>({
        */
 
       get(featureBoundingBoxLayerState),
-
-      showLabels && [
-        // basemap labels
-        viewOnlyLayer('labels', () => labelsLayer(isRetina)),
-      ],
-
-      /**
-       * CAUTION: for some reason, vector layers put here are obscured by the 'labels' semi-transparent raster layer
-       */
     ];
   },
 });
