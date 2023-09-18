@@ -17,6 +17,7 @@ import { BuildingDensityControl } from './sections/buildings/BuildingDensityCont
 import {
   CoastalControl,
   CycloneControl,
+  CycloneIrisControl,
   DroughtControl,
   EarthquakeControl,
   ExtremeHeatControl,
@@ -98,8 +99,11 @@ const HazardsSection = () => (
     <Layer path="coastal" title="Coastal Flooding">
       <CoastalControl />
     </Layer>
-    <Layer path="cyclone" title="Tropical Cyclones">
+    <Layer path="cyclone" title="Tropical Cyclones (STORM)">
       <CycloneControl />
+    </Layer>
+    <Layer path="cyclone_iris" title="Tropical Cyclones (IRIS)">
+      <CycloneIrisControl />
     </Layer>
     <Layer path="extreme_heat" title="Extreme Heat">
       <ExtremeHeatControl />

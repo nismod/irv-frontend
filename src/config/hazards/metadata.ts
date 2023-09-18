@@ -9,12 +9,13 @@ export const HAZARD_TYPES = [
   'fluvial',
   'coastal',
   'cyclone',
+  'cyclone_iris',
   'extreme_heat',
   'earthquake',
   'drought',
 ] as const;
 
-export type HazardType = typeof HAZARD_TYPES[number];
+export type HazardType = (typeof HAZARD_TYPES)[number];
 
 export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
   fluvial: {
@@ -29,7 +30,11 @@ export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
   },
   cyclone: {
     scheme: 'reds',
-    range: [0, 75],
+    range: [0, 90],
+  },
+  cyclone_iris: {
+    scheme: 'reds',
+    range: [0, 90],
   },
   extreme_heat: {
     scheme: 'reds',
@@ -55,7 +60,11 @@ export interface HazardMetadata {
 
 export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
   cyclone: {
-    label: 'Cyclones',
+    label: 'Cyclones (STORM)',
+    formatValue: makeValueFormat('_m/s', { maximumFractionDigits: 1 }),
+  },
+  cyclone_iris: {
+    label: 'Cyclones (IRIS)',
     formatValue: makeValueFormat('_m/s', { maximumFractionDigits: 1 }),
   },
   fluvial: {
@@ -90,6 +99,7 @@ const hazardOrdering = makeOrderingCheck<HazardType>();
 export const HAZARDS_MAP_ORDER = hazardOrdering([
   'earthquake',
   'cyclone',
+  'cyclone_iris',
   'drought',
   'extreme_heat',
   'fluvial',
@@ -100,6 +110,7 @@ export const HAZARDS_UI_ORDER = hazardOrdering([
   'fluvial',
   'coastal',
   'cyclone',
+  'cyclone_iris',
   'drought',
   'extreme_heat',
   'earthquake',

@@ -52,6 +52,16 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
       rcp: ['epoch'],
     },
   },
+  cyclone_iris: {
+    defaults: {
+      rp: 10,
+      epoch: 2020,
+      ssp: 'constant',
+    },
+    dependencies: {
+      ssp: ['epoch'],
+    },
+  },
   extreme_heat: {
     defaults: {
       epoch: 'baseline',

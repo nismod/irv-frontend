@@ -12,6 +12,7 @@ import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { GCMControl } from '@/sidebar/ui/params/GCMControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
 import { ReturnPeriodControl } from '@/sidebar/ui/params/ReturnPeriodControl';
+import { SSPControl } from '@/sidebar/ui/params/SSPControl';
 import { hazardDomainsConfigState } from '@/state/data-domains/hazards';
 import { paramsConfigState, useLoadParamsConfig } from '@/state/data-params';
 
@@ -96,6 +97,25 @@ export const CycloneControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
+    </HazardControl>
+  );
+};
+
+export const CycloneIrisControl = () => {
+  return (
+    <HazardControl type="cyclone_iris">
+      <DataNotice>
+        Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods, from
+        Sparks and Toumi [Manuscript submitted for publication].
+      </DataNotice>
+      <ReturnPeriodControl
+        valueLabelDisplay="auto"
+        showMarkLabelsFor={[10, 50, 100, 500, 1000, 5000, 10000]}
+      />
+      <InputRow>
+        <EpochControl />
+        <SSPControl />
+      </InputRow>
     </HazardControl>
   );
 };
