@@ -16,7 +16,13 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
  * You can copy and rename one of the included examples.
  * See https://vitejs.dev/config/server-options.html#server-proxy for syntax
  */
-import { devProxy } from './dev-proxy/proxy-table'
+const proxyTable = await import('./dev-proxy/proxy-table').catch((err) => {
+    console.error(err);
+    console.log("Fallback to empty proxy table");
+    return {devProxy: {}}
+});
+const devProxy = proxyTable.devProxy;
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
