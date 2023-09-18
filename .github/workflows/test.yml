@@ -1,0 +1,24 @@
+name: Run tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://npm.pkg.github.com'
+          cache: 'npm'
+      - run: npm ci --ignore-scripts
+        env:
+          GH_NPM_AUTH: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm run build
+      - run: npm test
