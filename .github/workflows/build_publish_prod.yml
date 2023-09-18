@@ -3,15 +3,14 @@
 name: Create and publish Docker image to GHCR
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   build-and-push-image:
     uses: ./.github/workflows/build_publish.yml
     with:
-      version: '0.21'
+      version: ${{ github.ref_name }}
       registry: ghcr.io
       registry-user: ${{ github.actor }}
       image-name: nismod/irv-frontend
