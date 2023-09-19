@@ -202,13 +202,6 @@ const RiskSection = () => (
   </Section>
 );
 
-// const VIEW_SECTIONS: Record<ViewType, ComponentType> = {
-//   hazard: HazardsSection,
-//   exposure: ExposureSection,
-//   vulnerability: VulnerabilitySection,
-//   risk: RiskSection,
-// };
-
 const TOP_LEVEL_SECTIONS = ['hazards', 'exposure', 'vulnerability', 'risk'];
 
 const VIEW_TRANSITIONS: Record<ViewType, any> = {
