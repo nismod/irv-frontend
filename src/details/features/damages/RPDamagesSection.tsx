@@ -1,9 +1,8 @@
 import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { ReturnPeriodDamage } from '@nismod/irv-api-client';
 import _ from 'lodash';
 import { selector, useRecoilValue } from 'recoil';
-
-import { ReturnPeriodDamage } from '@/lib/api-client';
 
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
 import {

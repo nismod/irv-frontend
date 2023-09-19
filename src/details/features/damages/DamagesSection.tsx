@@ -1,7 +1,7 @@
+import { FeatureOut } from '@nismod/irv-api-client';
 import _ from 'lodash';
 import { atom, selector, waitForAll } from 'recoil';
 
-import { FeatureOut } from '@/lib/api-client';
 import { DataParamGroupConfig, ParamGroup } from '@/lib/controls/data-params';
 import { cartesian } from '@/lib/helpers';
 import { useSyncRecoilState } from '@/lib/recoil/sync-state';

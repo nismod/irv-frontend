@@ -1,6 +1,5 @@
+import { FeatureOut } from '@nismod/irv-api-client';
 import { selectorFamily } from 'recoil';
-
-import { FeatureOut } from '@/lib/api-client';
 
 import { apiClient } from '@/api-client';
 
