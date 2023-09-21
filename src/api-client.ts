@@ -1,6 +1,5 @@
+import { ApiClient } from '@nismod/irv-api-client';
 import { AutoPkgClient } from '@nismod/irv-autopkg-client';
-
-import { ApiClient } from './lib/api-client';
 
 type CancelablePromise<T> = Promise<T> & { cancel: () => void };
 

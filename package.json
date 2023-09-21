@@ -15,6 +15,7 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.123",
     "@mui/material": "^5.11.13",
+    "@nismod/irv-api-client": "^0.8.0",
     "@nismod/irv-autopkg-client": "^0.2.7-dev",
     "@react-hook/debounce": "^4.0.0",
     "@recoiljs/refine": "^0.1.1",
@@ -80,7 +81,6 @@
     "eslint-plugin-storybook": "^0.6.11",
     "eslint-watch": "^8.0.0",
     "npm-check-updates": "^16.7.12",
-    "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.8.4",
     "prop-types": "^15.8.1",
     "rollup-plugin-visualizer": "^5.9.0",
@@ -102,7 +102,6 @@
     "lint": "eslint .",
     "lint-watch": "esw --watch --changed --ext .ts --ext .tsx --color --clear",
     "format": "prettier --write .",
-    "generate-client": "openapi --input http://localhost:3000/api/openapi.json --output ./src/lib/api-client --client fetch --name ApiClient --useOptions",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

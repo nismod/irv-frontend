@@ -1,10 +1,9 @@
 import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { ExpectedDamage } from '@nismod/irv-api-client';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import { selector, useRecoilValue } from 'recoil';
-
-import { ExpectedDamage } from '@/lib/api-client';
 
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
 import { DamageTable } from './DamageTable';
