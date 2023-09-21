@@ -8,7 +8,6 @@ import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 import { apiFeatureQuery } from '@/state/queries';
 
 import { ButtonPlacement, DownloadButton } from './DownloadButton';
-// import { AdaptationSection } from './adaptation/AdaptationSection';
 import { DamagesSection } from './damages/DamagesSection';
 import { DetailsComponentType } from './detail-components';
 
@@ -106,7 +105,6 @@ export const ExtendedAssetDetails: FC<ExtendedAssetDetailsProps> = ({
               {showRiskSection && (
                 <>
                   <DamagesSection fd={featureDetails} />
-                  {/* <AdaptationSection fd={featureDetails} /> */}
                 </>
               )}
               <details className="feature-details-debug">

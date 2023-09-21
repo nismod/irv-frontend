@@ -101,11 +101,6 @@ export function getAssetDataAccessor(layer: string, fieldSpec: FieldSpec) {
      * return period damages are loaded dynamically from the features API
      */
     return extraProperty(dataLoaderManager.getDataLoader(layer, fieldSpec));
-  } else if (fieldGroup === 'adaptation') {
-    /**
-     * adaptation option values are loaded dynamically from the features API
-     */
-    return extraProperty(dataLoaderManager.getDataLoader(layer, fieldSpec));
   } else {
     /**
      * for any other fields, assume it's a property contained in the vector features
