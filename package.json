@@ -81,7 +81,6 @@
     "eslint-plugin-storybook": "^0.6.11",
     "eslint-watch": "^8.0.0",
     "npm-check-updates": "^16.7.12",
-    "openapi-typescript-codegen": "^0.23.0",
     "prettier": "^2.8.4",
     "prop-types": "^15.8.1",
     "rollup-plugin-visualizer": "^5.9.0",
@@ -103,7 +102,6 @@
     "lint": "eslint .",
     "lint-watch": "esw --watch --changed --ext .ts --ext .tsx --color --clear",
     "format": "prettier --write .",
-    "generate-client": "openapi --input http://localhost:3000/api/openapi.json --output ./src/lib/api-client --client fetch --name ApiClient --useOptions",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
