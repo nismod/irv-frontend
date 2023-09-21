@@ -9,3 +9,4 @@ bundle-analyse.html
 dev-proxy/proxy-table.ts
 
 .vscode
+.local
