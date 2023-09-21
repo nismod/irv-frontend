@@ -6,9 +6,9 @@ import { usePath } from '@/lib/paths/paths';
 import { SubPath } from '@/lib/paths/sub-path';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
-import { VisibilityToggle } from './VisibilityToggle';
 import { Accordion, AccordionDetails, AccordionSummary, AccordionTitle } from './accordion';
 import { useExpandedState, useVisibilityState } from './context';
+import { VisibilityToggle } from './VisibilityToggle';
 
 const CharacterIcon = styled(Icon)({
   lineHeight: 1,

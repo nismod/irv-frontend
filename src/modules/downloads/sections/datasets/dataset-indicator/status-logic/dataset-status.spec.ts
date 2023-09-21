@@ -1,6 +1,6 @@
 import { ArgumentsType, describe, expect, it } from 'vitest';
 
-import { DatasetStatus, JobQueryStatus, computeDatasetStatus } from './dataset-status';
+import { computeDatasetStatus, DatasetStatus, JobQueryStatus } from './dataset-status';
 import { JobStatusType } from './job-status';
 import { PackageDataStatus } from './package-data';
 import { QueryResultStatus } from './query-status';

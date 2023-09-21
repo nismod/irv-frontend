@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { formatAbbreviations } from '@/lib/react/format-abbreviations';
 
-import { HAZARDS_METADATA, HAZARD_COLOR_MAPS, HazardType } from '@/config/hazards/metadata';
+import { HAZARD_COLOR_MAPS, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 
 import { RasterLegend } from '../RasterLegend';
 

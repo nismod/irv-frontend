@@ -1,8 +1,8 @@
-import { FC, createContext, useContext, useEffect } from 'react';
+import { createContext, FC, useContext, useEffect } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { RecoilStateFamily } from '../recoil/types';
-import { PathContext, getSubPath, usePath } from './paths';
+import { getSubPath, PathContext, usePath } from './paths';
 
 interface PathChildrenStateContextValue {
   childrenState: RecoilStateFamily<string[], string>;

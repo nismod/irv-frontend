@@ -1,4 +1,4 @@
-import { RouteObject, redirect } from 'react-router';
+import { redirect, RouteObject } from 'react-router';
 
 import { DownloadsRoot } from './routes/downloads-root';
 

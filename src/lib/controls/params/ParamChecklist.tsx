@@ -4,7 +4,7 @@ import { PropsWithChildren, ReactElement, useMemo } from 'react';
 
 import { fromKeys } from '@/lib/helpers';
 
-import { ValueLabel, getValueLabel } from './value-label';
+import { getValueLabel, ValueLabel } from './value-label';
 
 interface ParamChecklistProps<K extends string> {
   title?: string;

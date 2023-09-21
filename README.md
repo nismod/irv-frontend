@@ -13,26 +13,26 @@ Token to install.
 In order to install the project's dependencies:
 
 - Create a [GitHub Personal Access Token
-   (classic)][https://github.com/settings/tokens/new] with the `read:packages`
-   permission selected. It's recommended to set an expiration date for the token
-   and repeat this process when the token expires.
+  (classic)][https://github.com/settings/tokens/new] with the `read:packages`
+  permission selected. It's recommended to set an expiration date for the token
+  and repeat this process when the token expires.
 
 If using `npm` natively rather than in a docker container, then:
 
 - Copy the token and instruct npm to [use it when authenticating to the GitHub
-   registry][https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token].
-   To do this on Linux:
+  registry][https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token].
+  To do this on Linux:
 
-   1. Create an `.npmrc` file if one doesn't already exist in your home directory (`~/.npmrc`)
-   2. Place the following line in the file:
+  1.  Create an `.npmrc` file if one doesn't already exist in your home directory (`~/.npmrc`)
+  2.  Place the following line in the file:
 
-   ```
-   //npm.pkg.github.com/:_authToken=TOKENHERE
-   ```
+  ```
+  //npm.pkg.github.com/:_authToken=TOKENHERE
+  ```
 
 - When you run `npm install` to install dependencies, things should already
-   work. This repo contains an `.npmrc` file that specifies how packages should
-   be accessed for the `@nismod` scope.
+  work. This repo contains an `.npmrc` file that specifies how packages should
+  be accessed for the `@nismod` scope.
 
 ## Containers
 
@@ -63,12 +63,14 @@ DOCKER_BUILDKIT=1 docker build \
 ```
 
 To run:
+
 ```bash
 docker run -it -p 5173:5173 -v $(pwd)/src:/app/src ghcr.io/nismod/irv-frontend:0.20-dev
 ```
 
 Or to run inside an infra-risk-vis network (allowing DNS resolution for
 connection to the backend services via the vite reverse proxy):
+
 ```bash
 docker run -it -p 5173:5173 -v $(pwd)/src:/app/src --network infra-risk-vis_default ghcr.io/nismod/irv-frontend:0.20-dev
 ```

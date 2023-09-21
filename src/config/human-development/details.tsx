@@ -5,9 +5,9 @@ import { DataItem } from '@/lib/ui/data-display/DataItem';
 
 import {
   DetailHeader,
-  DetailSubheader,
   DetailsComponentProps,
   DetailsComponentType,
+  DetailSubheader,
 } from '@/details/features/detail-components';
 
 import { HdiRegionLevel } from './metadata';

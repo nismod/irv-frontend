@@ -3,8 +3,7 @@ import React from 'react';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 import { dataColorMap } from '@/lib/deck/props/color-map';
-import { border, lineStyle, pointRadius } from '@/lib/deck/props/style';
-import { fillColor, strokeColor } from '@/lib/deck/props/style';
+import { border, fillColor, lineStyle, pointRadius, strokeColor } from '@/lib/deck/props/style';
 
 import { assetViewLayer } from '@/config/assets/asset-view-layer';
 import { assetDataAccessFunction } from '@/config/assets/data-access';
@@ -14,7 +13,7 @@ import { VectorHoverDescription } from '@/map/tooltip/VectorHoverDescription';
 
 import { AssetViewLayerCustomFunction } from '../assets/asset-view-layer';
 import { INFRASTRUCTURE_LAYER_DETAILS } from './details';
-import { NETWORKS_METADATA, NetworkLayerType } from './metadata';
+import { NetworkLayerType, NETWORKS_METADATA } from './metadata';
 
 const roadColor = {
   road_edges_motorway: INFRASTRUCTURE_COLORS.roads_motorway.css,

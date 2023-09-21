@@ -3,7 +3,7 @@
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { PluginOption, defineConfig } from 'vite';
+import { defineConfig, PluginOption } from 'vite';
 import { qrcode } from 'vite-plugin-qrcode';
 import pluginRewriteAll from 'vite-plugin-rewrite-all';
 import svgrPlugin from 'vite-plugin-svgr';

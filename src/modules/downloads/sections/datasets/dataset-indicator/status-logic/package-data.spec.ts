@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { IPackage, PackageDataStatus, computePackageData } from './package-data';
+import { computePackageData, IPackage, PackageDataStatus } from './package-data';
 
 describe('Compute package data status', () => {
   const PV_NAME = 'processor.version';

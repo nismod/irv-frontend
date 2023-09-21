@@ -6,15 +6,15 @@ import { selector, useRecoilValue } from 'recoil';
 
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
 import {
-  QUIRKY_FIELDS_MAPPING,
   buildOrdering,
   featureState,
   hazardDataParamsState,
   orderDamages,
+  QUIRKY_FIELDS_MAPPING,
 } from './DamagesSection';
-import { RPDamageTable } from './RPDamageTable';
-import { ReturnPeriodDamageChart } from './ReturnPeriodDamageChart';
 import { EpochSelect, selectedEpochState, selectedHazardState } from './param-controls';
+import { ReturnPeriodDamageChart } from './ReturnPeriodDamageChart';
+import { RPDamageTable } from './RPDamageTable';
 
 function getRPDamageKey({ hazard, rcp, epoch, rp }) {
   return `${hazard}__rcp_${rcp}__epoch_${epoch}__rp_${rp}__conf_None`;
@@ -36,8 +36,9 @@ interface RPDamageCell {
 }
 
 function getRPDamageObject(d: ReturnPeriodDamage): RPDamageCell {
-  let { hazard, epoch, rcp } = _.mapValues(QUIRKY_FIELDS_MAPPING, (fn, key) =>
-    fn?.(d[key].toString()),
+  let { hazard, epoch, rcp } = _.mapValues(
+    QUIRKY_FIELDS_MAPPING,
+    (fn, key) => fn?.(d[key].toString()),
   );
 
   return {

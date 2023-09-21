@@ -3,7 +3,7 @@ import { makeColorConfig } from '@/lib/helpers';
 
 export const PROTECTED_AREA_TYPES = ['land', 'marine'] as const;
 
-export type ProtectedAreaType = typeof PROTECTED_AREA_TYPES[number];
+export type ProtectedAreaType = (typeof PROTECTED_AREA_TYPES)[number];
 
 export const PROTECTED_AREA_LABELS: ValueLabel<ProtectedAreaType>[] = [
   {

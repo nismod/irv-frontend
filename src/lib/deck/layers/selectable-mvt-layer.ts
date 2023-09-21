@@ -1,6 +1,6 @@
 import { geoJsonLayer, mvtLayer } from './base';
-import { DataLoaderOptions, dataLoaderLayer } from './data-loader-layer';
-import { TileSelectionLayerOptions, tileSelectionLayer } from './tile-selection-layer';
+import { dataLoaderLayer, DataLoaderOptions } from './data-loader-layer';
+import { tileSelectionLayer, TileSelectionLayerOptions } from './tile-selection-layer';
 import { Tileset2DCentered } from './tileset-2d-centered';
 
 interface SelectableMvtLayerOptions {

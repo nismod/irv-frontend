@@ -5,16 +5,16 @@
  */
 
 export const devProxy = {
-  "/vector": {
-    target: "https://global.infrastructureresilience.org:443",
+  '/vector': {
+    target: 'https://global.infrastructureresilience.org:443',
     changeOrigin: true,
   },
-  "/api": {
-    target: "https://global.infrastructureresilience.org:443",
+  '/api': {
+    target: 'https://global.infrastructureresilience.org:443',
     changeOrigin: true,
   },
-  "/extract": {
-    target: "https://global.infrastructureresilience.org:443",
+  '/extract': {
+    target: 'https://global.infrastructureresilience.org:443',
     changeOrigin: true,
-  }
+  },
 };

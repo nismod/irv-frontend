@@ -7,8 +7,8 @@ import {
   Accordion as MuiAccordion,
   AccordionDetails as MuiAccordionDetails,
   AccordionSummary as MuiAccordionSummary,
-  Typography,
   styled,
+  Typography,
 } from '@mui/material';
 import { FC, ReactChild } from 'react';
 

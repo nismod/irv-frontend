@@ -1,4 +1,4 @@
-import { RecoilValueReadOnly, atom, selector } from 'recoil';
+import { atom, RecoilValueReadOnly, selector } from 'recoil';
 
 function firstElem<T>(options: T) {
   return options?.[0];

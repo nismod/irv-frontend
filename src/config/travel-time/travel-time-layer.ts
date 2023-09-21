@@ -12,7 +12,7 @@ import { SOURCES } from '../sources';
 
 export const TRAVELTIME_TYPES = ['motorized', 'walking'] as const;
 
-export type TraveltimeType = typeof TRAVELTIME_TYPES[number];
+export type TraveltimeType = (typeof TRAVELTIME_TYPES)[number];
 
 // dataset has American spelling - change to British
 function makeBritish(type) {

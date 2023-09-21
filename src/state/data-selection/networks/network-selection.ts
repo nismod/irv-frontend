@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import { TransactionInterface_UNSTABLE, atom, selector } from 'recoil';
+import { atom, selector, TransactionInterface_UNSTABLE } from 'recoil';
 
 import {
-  CheckboxTreeState,
   buildTreeConfig,
+  CheckboxTreeState,
   recalculateCheckboxStates,
 } from '@/lib/controls/checkbox-tree/CheckboxTree';
 

@@ -1,6 +1,6 @@
 import { number } from '@recoiljs/refine';
-import { DefaultValue, atom } from 'recoil';
-import { WriteAtom, urlSyncEffect } from 'recoil-sync';
+import { atom, DefaultValue } from 'recoil';
+import { urlSyncEffect, WriteAtom } from 'recoil-sync';
 
 import { mapViewConfig } from '@/config/map-view';
 

@@ -4,8 +4,8 @@ import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 
 import { usePackageByRegion } from '../../data/packages';
 import {
-  PackageDataStatus,
   computePackageData,
+  PackageDataStatus,
 } from './dataset-indicator/status-logic/package-data';
 import { computeQueryStatus } from './dataset-indicator/status-logic/query-status';
 

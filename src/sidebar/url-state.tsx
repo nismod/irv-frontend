@@ -1,6 +1,6 @@
 import { bool, dict, lazy, union } from '@recoiljs/refine';
 import { Suspense, useContext } from 'react';
-import { GetRecoilValue, atom, selector, useRecoilValue } from 'recoil';
+import { atom, GetRecoilValue, selector, useRecoilValue } from 'recoil';
 import { syncEffect, urlSyncEffect } from 'recoil-sync';
 
 import { getSubPath } from '@/lib/paths/paths';

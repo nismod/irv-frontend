@@ -13,7 +13,7 @@
 import { JobStateEnum } from '@nismod/irv-autopkg-client';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { IJobGroupStatus, IJobStatus, JobStatusType, computeJobStatus } from './job-status';
+import { computeJobStatus, IJobGroupStatus, IJobStatus, JobStatusType } from './job-status';
 
 function makeAnotherProcessorJob(pvName: string): IJobStatus {
   return {
