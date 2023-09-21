@@ -2,6 +2,10 @@
 
 React app served through NGINX.
 
+## Setting up Husky
+
+When running `npm install` in development, the `prepare` script should be run automatically. This will set up the Husky git hooks. The `pre-commit` hook is used to run linting and formatting on staged files using `lint-staged`.
+
 ## Installing dependencies for development
 
 This package's dependencies include packages in the `@nismod` scope, which are
