@@ -3,7 +3,7 @@ import { FormControl, FormLabel } from '@mui/material';
 import { CustomNumberSlider } from '@/lib/controls/CustomSlider';
 
 import { useDataGroup } from '../../../lib/data-selection/DataGroup';
-import { DataParam } from '../../../lib/data-selection/DataParam';
+import { DataParam } from '../DataParam';
 
 export const ReturnPeriodControl = ({ ...otherProps }) => {
   const group = useDataGroup();

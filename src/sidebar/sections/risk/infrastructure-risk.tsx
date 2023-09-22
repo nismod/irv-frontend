@@ -5,7 +5,6 @@ import { atom, useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } f
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { DataGroup } from '@/lib/data-selection/DataGroup';
-import { DataParam } from '@/lib/data-selection/DataParam';
 import { makeOptions } from '@/lib/helpers';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { StateEffect } from '@/lib/recoil/state-effects/types';
@@ -13,6 +12,7 @@ import { StateEffect } from '@/lib/recoil/state-effects/types';
 import { HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
 import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { DataParam } from '@/sidebar/ui/DataParam';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';

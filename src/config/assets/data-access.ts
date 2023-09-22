@@ -1,8 +1,9 @@
-import { dataLoaderManager } from '@/lib/data-loader/data-loader-manager';
 import { FieldSpec } from '@/lib/data-map/view-layers';
 import { extraProperty, featureProperty } from '@/lib/deck/props/data-source';
 import { withTriggers } from '@/lib/deck/props/getters';
 import { sumOrNone } from '@/lib/helpers';
+
+import { dataLoaderManager } from '@/data-loader-manager';
 
 import { HAZARD_TYPES, HazardType } from '../hazards/metadata';
 

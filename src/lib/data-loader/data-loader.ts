@@ -1,6 +1,6 @@
-import { FieldSpec } from '@/lib/data-map/view-layers';
+import { ApiClient } from '@nismod/irv-api-client';
 
-import { apiClient } from '@/api-client';
+import { FieldSpec } from '@/lib/data-map/view-layers';
 
 export type DataLoaderSubscriber = (loader: DataLoader) => void;
 
@@ -9,6 +9,7 @@ export class DataLoader<T = any> {
     public readonly id: string,
     public readonly layer: string,
     public readonly fieldSpec: FieldSpec,
+    public readonly apiClient: ApiClient,
   ) {}
 
   private _updateTrigger: number = 1;
@@ -83,7 +84,7 @@ export class DataLoader<T = any> {
 
     missingIds.forEach((id) => this.loadingIds.add(id));
 
-    return await apiClient.attributes.attributesReadAttributes({
+    return await this.apiClient.attributes.attributesReadAttributes({
       layer: this.layer,
       fieldGroup,
       field,
