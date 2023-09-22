@@ -1,13 +1,13 @@
 import { Alert, Stack } from '@mui/material';
 import _ from 'lodash';
 import { FC, ReactElement } from 'react';
-import { atomFamily, selectorFamily, useRecoilValue } from 'recoil';
+import { atomFamily, useRecoilValue } from 'recoil';
 
+import { makeHierarchicalVisibilityState } from '@/lib/data-selection/make-hierarchical-visibility-state';
 import { Layer } from '@/lib/data-selection/sidebar/Layer';
 import { SidebarRoot } from '@/lib/data-selection/sidebar/root';
 import { Section } from '@/lib/data-selection/sidebar/Section';
 import { EnforceSingleChild } from '@/lib/data-selection/sidebar/single-child';
-import { getParentPath } from '@/lib/paths/paths';
 import { StateEffectRootAsync } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
@@ -61,35 +61,8 @@ export const sidebarPathChildrenLoadingState = atomFamily<boolean, string>({
   default: true,
 });
 
-export const sidebarPathVisibilityState: RecoilStateFamily<boolean, string> = selectorFamily<
-  boolean,
-  string
->({
-  key: 'sidebarPathVisibilityState',
-  get:
-    (path: string) =>
-    ({ get }) => {
-      const parentPath = getParentPath(path);
-
-      return (
-        (parentPath === '' || get(sidebarPathVisibilityState(parentPath))) &&
-        get(sidebarVisibilityToggleState(path))
-      );
-    },
-  set:
-    (path: string) =>
-    ({ get, set }, newVisibility) => {
-      if (newVisibility) {
-        set(sidebarVisibilityToggleState(path), true);
-        const parentPath = getParentPath(path);
-        if (parentPath !== '' && get(sidebarPathVisibilityState(parentPath)) === false) {
-          set(sidebarPathVisibilityState(parentPath), true);
-        }
-      } else {
-        set(sidebarVisibilityToggleState(path), false);
-      }
-    },
-});
+export const sidebarPathVisibilityState: RecoilStateFamily<boolean, string> =
+  makeHierarchicalVisibilityState(sidebarVisibilityToggleState);
 
 const HazardsSection = () => (
   <Section path="hazards" title="Hazards">
