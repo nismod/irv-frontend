@@ -1,13 +1,22 @@
-import { default as CircleShapeSrc, ReactComponent as CircleShape } from './shapes/circle.svg';
-import { default as SquareShapeSrc, ReactComponent as SquareShape } from './shapes/square.svg';
-import { default as PolygonShapeSrc, ReactComponent as PolygonShape } from './shapes/polygon.svg';
-import { default as LineShapeSrc, ReactComponent as LineShape } from './shapes/line.svg';
-import { default as InvTriangleShapeSrc, ReactComponent as InvTriangleShape } from './shapes/inv-triangle.svg';
-import { default as DiamondShapeSrc, ReactComponent as DiamondShape } from './shapes/diamond.svg';
-import _ from 'lodash';
+import { ReactComponent as CircleShape, default as CircleShapeSrc } from './shapes/circle.svg';
+import { ReactComponent as DiamondShape, default as DiamondShapeSrc } from './shapes/diamond.svg';
+import {
+  ReactComponent as InvTriangleShape,
+  default as InvTriangleShapeSrc,
+} from './shapes/inv-triangle.svg';
+import { ReactComponent as LineShape, default as LineShapeSrc } from './shapes/line.svg';
+import { ReactComponent as PolygonShape, default as PolygonShapeSrc } from './shapes/polygon.svg';
+import { ReactComponent as SquareShape, default as SquareShapeSrc } from './shapes/square.svg';
 
-export const MAP_SHAPE_TYPES = ['line', 'circle', 'square', 'polygon', 'inv-triangle', 'diamond'] as const;
-export type MapShapeType = typeof MAP_SHAPE_TYPES[number];
+export const MAP_SHAPE_TYPES = [
+  'line',
+  'circle',
+  'square',
+  'polygon',
+  'inv-triangle',
+  'diamond',
+] as const;
+export type MapShapeType = (typeof MAP_SHAPE_TYPES)[number];
 
 type SVGComponent = typeof LineShape;
 
