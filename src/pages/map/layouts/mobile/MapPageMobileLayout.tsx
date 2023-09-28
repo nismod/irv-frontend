@@ -12,6 +12,18 @@ import { mobileTabsConfig, TabConfig } from './tabs-config';
 
 import './bottom-sheet.css';
 
+import { MapHud } from '@/lib/map/hud/MapHud';
+import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
+
+import { MapLayerSelection } from '@/map/layers/MapLayerSelection';
+
+import {
+  AppAttributionControl,
+  AppNavigationControl,
+  AppPlaceSearch,
+  AppScaleControl,
+} from '../hud';
+
 /**
  * Custom BottomNavigationAction that gets disabled if the corresponding tab doesn't have any content.
  *
@@ -73,6 +85,24 @@ const MobileTabPanel: FC<{ tabConfig: TabConfig }> = ({ tabConfig: { id, Content
   </NonUnmountingTabPanel>
 );
 
+const MapHudMobileLayout = () => {
+  return (
+    <MapHud bottom={120}>
+      <MapHudRegion position="top-left" StackProps={{ spacing: 1 }}>
+        <AppPlaceSearch />
+        <MapLayerSelection />
+      </MapHudRegion>
+      <MapHudRegion position="top-right">
+        <AppNavigationControl />
+      </MapHudRegion>
+      <MapHudRegion position="bottom-right">
+        <AppScaleControl />
+        <AppAttributionControl />
+      </MapHudRegion>
+    </MapHud>
+  );
+};
+
 export const MapPageMobileLayout = () => {
   const [bottomTabId, setBottomTabId] = useState('layers');
   const sheetRef = useRef<BottomSheetRef>();
@@ -88,7 +118,9 @@ export const MapPageMobileLayout = () => {
   return (
     <>
       <Box position="absolute" overflow="clip" top={0} left={0} right={0} bottom={0}>
-        <MapView />
+        <MapView>
+          <MapHudMobileLayout />
+        </MapView>
       </Box>
       <BottomSheet
         ref={sheetRef}
