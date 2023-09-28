@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { FC } from 'react';
 
 import { MapShapeType, ShapeLegend } from '@/lib/map-shapes/ShapeLegend';
@@ -11,11 +11,9 @@ export interface LayerLabelProps {
 
 export const LayerLabel: FC<LayerLabelProps> = ({ label, type, color }) => {
   return (
-    <>
-      <Typography>
-        <ShapeLegend type={type} color={color} />
-        {label}
-      </Typography>
-    </>
+    <Stack direction="row" alignItems="center">
+      <ShapeLegend type={type} color={color} />
+      <Typography>{label}</Typography>
+    </Stack>
   );
 };

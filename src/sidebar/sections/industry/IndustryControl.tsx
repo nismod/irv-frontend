@@ -3,7 +3,7 @@ import { useRecoilState } from 'recoil';
 import { ParamChecklist } from '@/lib/controls/params/ParamChecklist';
 
 import { INDUSTRY_METADATA } from '@/config/industry/industry-view-layer';
-import { LayerLabel, LayerLabelShapeType } from '@/sidebar/ui/LayerLabel';
+import { LayerLabel } from '@/sidebar/ui/LayerLabel';
 import { industrySelectionState, IndustryType } from '@/state/data-selection/industry';
 
 export const IndustryControl = () => {
@@ -16,7 +16,7 @@ export const IndustryControl = () => {
       onChecklistState={setCheckboxState}
       renderLabel={(key) => {
         const { color, type, shortLabel } = INDUSTRY_METADATA[key];
-        return <LayerLabel color={color} type={type as LayerLabelShapeType} label={shortLabel} />;
+        return <LayerLabel color={color} type={type} label={shortLabel} />;
       }}
       showAllNone={false}
     />

@@ -1,7 +1,7 @@
-import { LayerLabelShapeType } from '@/sidebar/ui/LayerLabel';
+import { MapShapeType } from '@/lib/map-shapes/shapes';
 
 export interface AssetMetadata {
-  type: LayerLabelShapeType;
+  type: MapShapeType;
   label: string;
   color: string;
 }
