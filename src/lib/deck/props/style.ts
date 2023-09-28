@@ -4,7 +4,7 @@ import { Feature } from 'geojson';
 import { Accessor, getTriggers } from './getters';
 import type { PropsWithTriggers } from './types';
 
-type ScaleLevel = 0 | 1 | 2;
+type ScaleLevel = 0 | 1 | 2 | 3;
 
 const lineSizeLevels: Record<
   ScaleLevel,
@@ -28,6 +28,11 @@ const lineSizeLevels: Record<
     getLineWidth: 20,
     lineWidthMinPixels: 1,
     lineWidthMaxPixels: 5,
+  },
+  3: {
+    getLineWidth: 10,
+    lineWidthMinPixels: 1,
+    lineWidthMaxPixels: 3,
   },
 };
 
@@ -70,6 +75,7 @@ const pointSizeLevels: Record<
   0: { getPointRadius: 1500, pointRadiusMinPixels: 3, pointRadiusMaxPixels: 6 },
   1: { getPointRadius: 1200, pointRadiusMinPixels: 2, pointRadiusMaxPixels: 4 },
   2: { getPointRadius: 300, pointRadiusMinPixels: 2, pointRadiusMaxPixels: 4 },
+  3: { getPointRadius: 100, pointRadiusMinPixels: 0, pointRadiusMaxPixels: 3 },
 };
 
 /**
