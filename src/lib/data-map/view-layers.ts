@@ -2,9 +2,8 @@ import { ScaleSequential } from 'd3-scale';
 import { ReactNode } from 'react';
 
 import { DataLoader } from '@/lib/data-loader/data-loader';
+import { InteractionTarget } from '@/lib/data-map/interactions/types';
 import { Accessor } from '@/lib/deck/props/getters';
-
-import { InteractionTarget } from './interactions/use-interactions';
 
 export interface FieldSpec {
   fieldGroup: string;

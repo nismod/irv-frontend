@@ -1,81 +1,88 @@
-import _ from 'lodash';
 import { atom, atomFamily, selector } from 'recoil';
 
 import { isReset } from '@/lib/recoil/is-reset';
 
-import { InteractionTarget } from './use-interactions';
+import { InteractionTarget } from './types';
 
-type IT = InteractionTarget<any> | InteractionTarget<any>[];
-
-export function hasHover(target: IT) {
-  if (Array.isArray(target)) {
-    return target.length > 0;
-  }
-  return !!target;
-}
-
-export const hoverState = atomFamily<IT, string>({
+/**
+ * State family containing an array of hovered targets, per interaction group
+ */
+export const hoverState = atomFamily<InteractionTarget[], string>({
   key: 'hoverState',
-  default: null,
+  default: [],
 });
 
-export const hoverPositionState = atom({
+/**
+ * State containing last hover position (cursor position)
+ */
+export const hoverPositionState = atom<[x: number, y: number]>({
   key: 'hoverPosition',
   default: null,
 });
 
-export const selectionState = atomFamily<InteractionTarget<any>, string>({
+/**
+ * State family containing one selected target (or null), per interaction group
+ */
+export const selectionState = atomFamily<InteractionTarget, string>({
   key: 'selectionState',
   default: null,
 });
 
 type AllowedGroupLayers = Record<string, string[]>;
 
-const allowedGroupLayersImpl = atom<AllowedGroupLayers>({
-  key: 'allowedGroupLayersImpl',
+const allowedGroupLayersInternal = atom<AllowedGroupLayers>({
+  key: 'allowedGroupLayersInternal',
   default: {},
 });
 
-function filterOneOrArray<T>(items: T | T[], filter: (item: T) => boolean) {
-  if (Array.isArray(items)) {
-    return items.filter(filter);
-  } else {
-    return items && filter(items) ? items : null;
-  }
-}
-
-function filterTargets(oldHoverTargets: IT, allowedLayers: string[]): IT {
-  const newLayerFilter = new Set(allowedLayers);
-  return filterOneOrArray(oldHoverTargets, (target) => newLayerFilter.has(target.viewLayer.id));
-}
-
+/**
+ * State containing a dictionary with keys being interaction group IDs, and values being arrays of allowed view layer IDs for the given group.
+ *
+ * When this state is updated, layers that aren't allowed anymore are removed from the hover / selection state.
+ */
 export const allowedGroupLayersState = selector<AllowedGroupLayers>({
   key: 'allowedGroupLayersState',
-  get: ({ get }) => get(allowedGroupLayersImpl),
+  get: ({ get }) => get(allowedGroupLayersInternal),
   set: ({ get, set, reset }, newAllowedGroups) => {
-    const oldAllowedGroupLayers = get(allowedGroupLayersImpl);
-    if (isReset(newAllowedGroups)) {
-      _.forEach(oldAllowedGroupLayers, (layers, group) => {
+    const oldAllowedGroupLayers = get(allowedGroupLayersInternal);
+    const shouldReset = isReset(newAllowedGroups);
+
+    for (const group of Object.keys(oldAllowedGroupLayers)) {
+      if (shouldReset) {
         reset(hoverState(group));
         reset(selectionState(group));
-      });
-    } else {
-      for (const group of Object.keys(oldAllowedGroupLayers)) {
+      } else {
         const newAllowedLayers = newAllowedGroups[group];
 
         if (newAllowedLayers == null || newAllowedLayers.length === 0) {
+          // if the interaction group is no longer present or has no allowed layers, reset the hover and select state for this group
           reset(hoverState(group));
           reset(selectionState(group));
         } else {
+          // if the interaction group is still present, keep only those hovered/selected layers that are still allowed
+
+          // only leave hover targets if they are from allowed layers
           const oldHoverTargets = get(hoverState(group));
           set(hoverState(group), filterTargets(oldHoverTargets, newAllowedLayers));
 
-          const oldSelectionTargets = get(selectionState(group));
-          set(selectionState(group), filterTargets(oldSelectionTargets, newAllowedLayers));
+          // only leave selection target if it is from an allowed layer
+          const oldSelectionTarget = get(selectionState(group));
+          set(
+            selectionState(group),
+            newAllowedLayers.includes(oldSelectionTarget?.viewLayer.id) ? oldSelectionTarget : null,
+          );
         }
       }
     }
 
-    set(allowedGroupLayersImpl, newAllowedGroups);
+    set(allowedGroupLayersInternal, newAllowedGroups);
   },
 });
+
+function filterTargets(
+  oldHoverTargets: InteractionTarget[],
+  allowedLayers: string[],
+): InteractionTarget[] {
+  const newLayerFilter = new Set(allowedLayers);
+  return oldHoverTargets.filter((target) => newLayerFilter.has(target.viewLayer.id));
+}

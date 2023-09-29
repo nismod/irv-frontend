@@ -1,10 +1,9 @@
 import { Box } from '@mui/material';
-import { isArray } from 'lodash';
-import { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { hasHover, hoverState } from '@/lib/data-map/interactions/interaction-state';
-import { InteractionTarget } from '@/lib/data-map/interactions/use-interactions';
+import { hoverState } from '@/lib/data-map/interactions/interaction-state';
+import { InteractionTarget } from '@/lib/data-map/interactions/types';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { AutoHidePaper, PreventHide } from './auto-hide';
@@ -17,36 +16,36 @@ const TooltipSection = ({ children }) => (
   </Box>
 );
 
-const ViewLayerTooltip = ({ hover }: { hover: InteractionTarget<any> }) => {
+const ViewLayerTooltip = ({ hover }: { hover: InteractionTarget }) => {
   const { viewLayer } = hover;
 
   return <>{viewLayer.renderTooltip?.(hover)}</>;
 };
 
-const InteractionGroupTooltip = ({ group }) => {
-  const hover = useRecoilValue(hoverState(group));
+const InteractionGroupTooltip = ({
+  group,
+  MergeComponent,
+}: {
+  /** Interaction group for which to display hover info */
+  group: string;
+  /**
+   * If supplied, the info about all hovered objects for the group will be passed to this component,
+   * instead of generating `ViewLayerTooltip` individually for each object
+   */
+  MergeComponent?: React.ComponentType<{ hoveredObjects: InteractionTarget[] }>;
+}) => {
+  const hoveredObjects = useRecoilValue(hoverState(group));
 
-  if (!hasHover(hover)) return null;
+  if (hoveredObjects.length === 0) return null;
 
-  const contents = isArray(hover)
-    ? hover.map((h) => <ViewLayerTooltip key={h.viewLayer.id} hover={h} />)
-    : [<ViewLayerTooltip key={hover.viewLayer.id} hover={hover} />];
-
-  if (contents.length === 0) return null;
+  let contents: ReactNode = null;
+  if (MergeComponent != null) {
+    contents = <MergeComponent hoveredObjects={hoveredObjects} />;
+  } else {
+    contents = hoveredObjects.map((h) => <ViewLayerTooltip key={h.viewLayer.id} hover={h} />);
+  }
 
   return <TooltipSection>{contents}</TooltipSection>;
-};
-
-const WdpaTooltipSection = () => {
-  const hoveredWdpas = useRecoilValue(hoverState('wdpa')) as InteractionTarget<any>[];
-
-  if (!hasHover(hoveredWdpas)) return null;
-
-  return (
-    <TooltipSection>
-      <WdpaHoverDescription hoveredObjects={hoveredWdpas} />
-    </TooltipSection>
-  );
 };
 
 export const TooltipContent: FC = () => {
@@ -59,8 +58,7 @@ export const TooltipContent: FC = () => {
           <InteractionGroupTooltip group="raster_assets" />
           <InteractionGroupTooltip group="hdi" />
           <InteractionGroupTooltip group="rexp" />
-
-          <WdpaTooltipSection />
+          <InteractionGroupTooltip group="wdpa" MergeComponent={WdpaHoverDescription} />
         </ErrorBoundary>
       </Box>
     </AutoHidePaper>

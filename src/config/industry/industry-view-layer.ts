@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { border, fillColor, pointRadius } from '@/lib/deck/props/style';
 import { makeColorConfig, makeConfig } from '@/lib/helpers';
 

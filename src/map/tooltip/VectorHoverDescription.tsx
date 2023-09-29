@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import { FC } from 'react';
 
-import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 import { DataDescription } from '@/lib/ui/data-display/DataDescription';
 import { DataItem } from '@/lib/ui/data-display/DataItem';

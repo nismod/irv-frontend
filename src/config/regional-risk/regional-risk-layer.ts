@@ -3,7 +3,7 @@ import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import React from 'react';
 
 import { colorMap } from '@/lib/color-map';
-import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ColorSpec, FieldSpec, ViewLayer } from '@/lib/data-map/view-layers';
 import { selectableMvtLayer } from '@/lib/deck/layers/selectable-mvt-layer';
 import { dataColorMap } from '@/lib/deck/props/color-map';

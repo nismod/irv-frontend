@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 import { dataColorMap } from '@/lib/deck/props/color-map';
 import { border, fillColor, lineStyle, pointRadius, strokeColor } from '@/lib/deck/props/style';

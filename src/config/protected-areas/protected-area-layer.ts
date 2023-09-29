@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { selectableMvtLayer } from '@/lib/deck/layers/selectable-mvt-layer';
 import { border, fillColor, pointRadius, setAlpha } from '@/lib/deck/props/style';

@@ -1,7 +1,7 @@
 import { capitalize } from 'lodash';
 import React from 'react';
 
-import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 import { makeValueFormat, nullFormat } from '@/lib/formats';
 
