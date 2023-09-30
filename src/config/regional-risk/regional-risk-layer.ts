@@ -58,7 +58,6 @@ export function regionalExposureLayer(variable: RegionalExposureVariableType): V
   return {
     id,
     interactionGroup: 'rexp',
-    spatialType: 'vector',
     params: {
       variable,
     },

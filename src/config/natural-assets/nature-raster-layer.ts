@@ -56,7 +56,6 @@ export function natureRasterViewLayer(type: NatureRasterType): ViewLayer {
 
   return {
     id: `nature_${type}`,
-    spatialType: 'raster',
     interactionGroup: 'raster_assets',
     params: {
       type,

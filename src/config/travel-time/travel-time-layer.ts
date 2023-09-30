@@ -38,7 +38,6 @@ export function travelTimeViewLayer(type: TraveltimeType) {
 
   return {
     id,
-    spatialType: 'raster',
     interactionGroup: 'raster_assets',
     fn({ deckProps }) {
       return rasterTileLayer({}, deckProps, {

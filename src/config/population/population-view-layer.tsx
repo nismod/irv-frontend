@@ -38,7 +38,6 @@ export function jrcPopulationViewLayer(): ViewLayer {
   return {
     id: 'population',
     interactionGroup: 'raster_assets',
-    spatialType: 'raster',
     fn({ deckProps, zoom }) {
       return rasterTileLayer(
         {

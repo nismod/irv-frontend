@@ -65,7 +65,6 @@ export function humanDevelopmentLayer(
   return {
     id,
     interactionGroup: 'hdi',
-    spatialType: 'vector',
     params: {
       regionLevel,
       variable,

@@ -24,7 +24,6 @@ export function protectedAreaViewLayer(shapeType: ShapeType, type: ProtectedArea
 
   return {
     id,
-    spatialType: 'vector',
     interactionGroup: 'wdpa',
     params: {
       shapeType,

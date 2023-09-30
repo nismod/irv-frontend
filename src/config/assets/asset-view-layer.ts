@@ -4,6 +4,7 @@ import {
   ViewLayer,
   ViewLayerDataAccessFunction,
   ViewLayerRenderDetailsFunction,
+  ViewLayerRenderLegendFunction,
   ViewLayerRenderTooltipFunction,
 } from '@/lib/data-map/view-layers';
 import { selectableMvtLayer } from '@/lib/deck/layers/selectable-mvt-layer';
@@ -13,11 +14,6 @@ import { GetColor } from '@/lib/deck/props/style';
 import { SOURCES } from '../sources';
 import { getAssetDataAccessor } from './data-access';
 import { getAssetDataFormats } from './data-formats';
-
-interface ViewLayerMetadata {
-  spatialType: string;
-  interactionGroup: string;
-}
 
 export interface DataStyle {
   getColor?: GetColor;
@@ -31,22 +27,26 @@ export type AssetViewLayerCustomFunction = (
 ) => object[];
 export interface AssetViewLayerOptions {
   assetId: string;
-  metadata: ViewLayerMetadata;
+  interactionGroup: string;
   selectionPolygonOffset?: number;
   styleParams?: StyleParams;
   customFn?: AssetViewLayerCustomFunction;
   customDataAccessFn?: ViewLayerDataAccessFunction;
+  renderLegend?: ViewLayerRenderLegendFunction;
+  legendKey?: string;
   renderTooltip?: ViewLayerRenderTooltipFunction;
   renderDetails?: ViewLayerRenderDetailsFunction;
 }
 
 export function assetViewLayer({
   assetId,
-  metadata: { spatialType, interactionGroup },
+  interactionGroup,
   selectionPolygonOffset = -1000,
   styleParams,
   customFn,
   customDataAccessFn,
+  renderLegend,
+  legendKey,
   renderTooltip,
   renderDetails,
 }: AssetViewLayerOptions): ViewLayer {
@@ -63,7 +63,6 @@ export function assetViewLayer({
 
   return {
     id: assetId,
-    spatialType,
     interactionGroup,
     params: {
       assetId,
@@ -88,6 +87,8 @@ export function assetViewLayer({
       ),
     dataAccessFn: customDataAccessFn,
     dataFormatsFn: getAssetDataFormats,
+    renderLegend,
+    legendKey,
     renderTooltip,
     renderDetails,
   };

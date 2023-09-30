@@ -11,6 +11,7 @@ import { INFRASTRUCTURE_COLORS } from '@/config/networks/colors';
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
 import { VectorHoverDescription } from '@/map/tooltip/VectorHoverDescription';
 
+import { assetLayerLegendConfig } from '../assets/asset-layer-legend-config';
 import { AssetViewLayerCustomFunction } from '../assets/asset-view-layer';
 import { INFRASTRUCTURE_LAYER_DETAILS } from './details';
 import { NetworkLayerType, NETWORKS_METADATA } from './metadata';
@@ -183,13 +184,13 @@ export function infrastructureViewLayer(
 
   return assetViewLayer({
     assetId: infrastructureType,
-    metadata: {
-      spatialType: 'vector',
-      interactionGroup: 'assets',
-    },
+    interactionGroup: 'assets',
     styleParams,
     customFn,
     customDataAccessFn: assetDataAccessFunction(infrastructureType),
+
+    ...assetLayerLegendConfig(styleParams),
+
     renderTooltip: (hover: InteractionTarget<VectorTarget>) => {
       return React.createElement(VectorHoverDescription, {
         hoveredObject: hover,

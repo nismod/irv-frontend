@@ -24,10 +24,7 @@ export function healthsitesViewLayer() {
 
   return assetViewLayer({
     assetId: 'healthsites',
-    metadata: {
-      spatialType: 'vector',
-      interactionGroup: 'assets',
-    },
+    interactionGroup: 'assets',
     customFn: ({ zoom }) => [
       pointRadius(zoom),
       fillColor(HEALTHSITES_COLOR.deck),

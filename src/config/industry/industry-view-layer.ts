@@ -40,10 +40,7 @@ export function industryViewLayer(industry_type_id: IndustryType) {
 
   return assetViewLayer({
     assetId: industry_type_id,
-    metadata: {
-      spatialType: 'vector',
-      interactionGroup: 'assets',
-    },
+    interactionGroup: 'assets',
     customFn: ({ zoom }) => [
       pointRadius(zoom, 1),
       fillColor(INDUSTRY_COLORS[industry_type_id].deck),

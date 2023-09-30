@@ -47,8 +47,11 @@ export interface FormatConfig<D = any> {
 
 export type ViewLayerDataAccessFunction = (fieldSpec: FieldSpec) => Accessor<any>;
 export type ViewLayerDataFormatFunction = (fieldSpec: FieldSpec) => FormatConfig;
+
+export type ViewLayerRenderLegendFunction = () => ReactNode;
 export type ViewLayerRenderTooltipFunction = (hover: any) => ReactNode;
 export type ViewLayerRenderDetailsFunction = (selection: any) => ReactNode;
+
 export interface ViewLayer<ParamsT = any> {
   id: string;
   params?: ParamsT;
@@ -56,15 +59,24 @@ export interface ViewLayer<ParamsT = any> {
   fn: (options: ViewLayerFunctionOptions) => any;
   dataAccessFn?: ViewLayerDataAccessFunction;
   dataFormatsFn?: ViewLayerDataFormatFunction;
-  legendDataFormatsFn?: ViewLayerDataFormatFunction;
-  spatialType?: string;
   interactionGroup?: string;
 
+  renderLegend?: ViewLayerRenderLegendFunction;
   /**
-   * new approach for legends: keep the rendering logic inside view layer
-   * (currently used for raster layers only)
+   * String key based on which the layer legends will be grouped.
+   * For all layers with the same legendKey, only one legend element will be rendered.
+   *
+   * If not defined, this defaults to the view layer's `id`, so each layer will by default render its own legend.
+   *
+   * Currently, the first layer in the group will be responsible for rendering the legend for all other layers.
+   * The key needs to be set in layers so that the one legend rendered for the group will represent all layers correctly.
+   *
+   * For example, if two layers use the same color scale for data visualisation, but the numerical range of the data is different,
+   * the layers should have a different legendKey - otherwise, the single legend would display min/max values that would correctly represent
+   * only one of the layers.
    */
-  renderLegend?: () => ReactNode;
+  legendKey?: string;
+
   renderTooltip?: ViewLayerRenderTooltipFunction;
   renderDetails?: ViewLayerRenderDetailsFunction;
 }

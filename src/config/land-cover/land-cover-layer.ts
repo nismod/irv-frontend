@@ -22,7 +22,6 @@ const landCoverLabels = Object.fromEntries(
 export function landCoverViewLayer(): ViewLayer {
   return {
     id: 'land_cover',
-    spatialType: 'raster',
     interactionGroup: 'raster_assets',
     fn: ({ deckProps }) =>
       rasterTileLayer(

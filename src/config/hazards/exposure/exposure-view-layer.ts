@@ -41,7 +41,6 @@ export function exposureViewLayer(hazardType: ExposureSource, hazardParams: any)
 
   return {
     id,
-    spatialType: 'raster',
     interactionGroup: 'hazards',
     params: { hazardType, hazardParams },
     fn: ({ deckProps, zoom }) => {
