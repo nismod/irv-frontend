@@ -4,6 +4,7 @@ import { useRecoilValue } from 'recoil';
 import { selectionState } from '@/lib/data-map/interactions/interaction-state';
 
 import { MobileTabContentWatcher } from '@/pages/map/layouts/mobile/tab-has-content';
+import { DETAILS_MOBILE_TAB_ID } from '@/pages/map/layouts/mobile/tabs-config';
 
 import { DetailsPanel } from './ui/DetailsPanel';
 
@@ -12,7 +13,7 @@ const InteractionGroupDetails = ({ group }) => {
 
   return selection?.viewLayer.renderDetails ? (
     <>
-      <MobileTabContentWatcher tabId="details" />
+      <MobileTabContentWatcher tabId={DETAILS_MOBILE_TAB_ID} />
       <DetailsPanel interactionGroup={group}>
         {selection.viewLayer.renderDetails(selection)}
       </DetailsPanel>

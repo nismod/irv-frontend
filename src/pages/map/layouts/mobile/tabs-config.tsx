@@ -13,24 +13,28 @@ export interface TabConfig {
   ContentComponent: ComponentType;
 }
 
+export const LAYERS_MOBILE_TAB_ID = 'layers';
+export const LEGEND_MOBILE_TAB_ID = 'legend';
+export const DETAILS_MOBILE_TAB_ID = 'details';
+
 /**
- *
+ * A list of all tabs to display in mobile layout bottom sheet
  */
 export const mobileTabsConfig: TabConfig[] = [
   {
-    id: 'layers',
+    id: LAYERS_MOBILE_TAB_ID,
     label: 'Layers',
     IconComponent: Layers,
     ContentComponent: LayersSidebar,
   },
   {
-    id: 'legend',
+    id: LEGEND_MOBILE_TAB_ID,
     label: 'Legend',
     IconComponent: Palette,
     ContentComponent: MapLegend,
   },
   {
-    id: 'details',
+    id: DETAILS_MOBILE_TAB_ID,
     label: 'Selection',
     IconComponent: TableRows,
     ContentComponent: DetailsContent,
