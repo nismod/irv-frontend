@@ -29,7 +29,7 @@ interface GroupedLegendLayers {
   all: ViewLayer[];
 }
 
-export const MapLegend: FC<{}> = () => {
+export const MapLegendContent: FC<{}> = () => {
   const viewLayers = useRecoilValue(viewLayersState);
 
   // use Map because it's guaranteed to remember insertion order
@@ -68,3 +68,9 @@ export const MapLegend: FC<{}> = () => {
     </>
   ) : null;
 };
+
+export const MapLegend = () => (
+  <Suspense fallback={null}>
+    <MapLegendContent />
+  </Suspense>
+);
