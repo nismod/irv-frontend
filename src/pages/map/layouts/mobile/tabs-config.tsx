@@ -18,9 +18,11 @@ export const LEGEND_MOBILE_TAB_ID = 'legend';
 export const DETAILS_MOBILE_TAB_ID = 'details';
 
 /**
- * A list of all tabs to display in mobile layout bottom sheet
+ * A list of all tabs to display in mobile layout bottom sheet.
+ *
+ * The `ContentComponent` for each tab should render a `<ContentWatcher />` if the tab contains any content.
  */
-export const mobileTabsConfig: TabConfig[] = [
+export const MOBILE_TABS_CONFIG: TabConfig[] = [
   {
     id: LAYERS_MOBILE_TAB_ID,
     label: 'Layers',

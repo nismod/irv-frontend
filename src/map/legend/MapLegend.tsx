@@ -3,9 +3,8 @@ import { FC, Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
+import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 
-import { MobileTabContentWatcher } from '@/pages/map/layouts/mobile/tab-has-content';
-import { LEGEND_MOBILE_TAB_ID } from '@/pages/map/layouts/mobile/tabs-config';
 import { viewLayersState } from '@/state/layers/view-layers';
 
 import { GradientLegend } from './GradientLegend';
@@ -30,7 +29,7 @@ interface GroupedLegendLayers {
   all: ViewLayer[];
 }
 
-export const MapLegendContent: FC<{}> = () => {
+export const MapLegendContent: FC = () => {
   const viewLayers = useRecoilValue(viewLayersState);
 
   // use Map because it's guaranteed to remember insertion order
@@ -51,7 +50,7 @@ export const MapLegendContent: FC<{}> = () => {
 
   return legendConfigs.size ? (
     <>
-      <MobileTabContentWatcher tabId={LEGEND_MOBILE_TAB_ID} />
+      <ContentWatcher />
       <Paper>
         <Box p={1} maxWidth={270}>
           <Suspense fallback={'Loading legend...'}>
@@ -70,7 +69,7 @@ export const MapLegendContent: FC<{}> = () => {
   ) : null;
 };
 
-export const MapLegend = () => (
+export const MapLegend: FC = () => (
   <Suspense fallback={null}>
     <MapLegendContent />
   </Suspense>
