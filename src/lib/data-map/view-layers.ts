@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 import { DataLoader } from '@/lib/data-loader/data-loader';
 import { InteractionTarget } from '@/lib/data-map/interactions/types';
-import { Accessor } from '@/lib/deck/props/getters';
+import { AccessorFunction } from '@/lib/deck/props/getters';
 
 export interface FieldSpec {
   fieldGroup: string;
@@ -45,22 +45,39 @@ export interface FormatConfig<D = any> {
   getValueFormatted: (value: D, fieldSpec: FieldSpec) => string | ReactNode;
 }
 
-export type ViewLayerDataAccessFunction = (fieldSpec: FieldSpec) => Accessor<any>;
+/** Produces a data accessor function, given a `FieldSpec` object */
+export type ViewLayerDataAccessFunction = (fieldSpec: FieldSpec) => AccessorFunction<any>;
+
+/** Produces a `FormatConfig` object, given a `FieldSpec` object */
 export type ViewLayerDataFormatFunction = (fieldSpec: FieldSpec) => FormatConfig;
 
 export type ViewLayerRenderLegendFunction = () => ReactNode;
-export type ViewLayerRenderTooltipFunction = (hover: any) => ReactNode;
-export type ViewLayerRenderDetailsFunction = (selection: any) => ReactNode;
+export type ViewLayerRenderTooltipFunction = (
+  /** Hovered feature(s) to render details for */
+  hover: InteractionTarget,
+) => ReactNode;
+
+export type ViewLayerRenderDetailsFunction = (
+  /**
+   * Selected feature to render details for
+   */
+  selection: InteractionTarget,
+) => ReactNode;
 
 export interface ViewLayer<ParamsT = any> {
   id: string;
   params?: ParamsT;
   styleParams?: StyleParams;
-  fn: (options: ViewLayerFunctionOptions) => any;
-  dataAccessFn?: ViewLayerDataAccessFunction;
-  dataFormatsFn?: ViewLayerDataFormatFunction;
   interactionGroup?: string;
 
+  fn: (options: ViewLayerFunctionOptions) => any;
+
+  /** Factory method that creates a deck.gl-compatible data accessor for the view layer, given a `FieldSpec` object */
+  dataAccessFn?: ViewLayerDataAccessFunction;
+  /** Factory method that creates a `FormatConfig` object for the view layer, given a `FieldSpec` object */
+  dataFormatsFn?: ViewLayerDataFormatFunction;
+
+  /** Render a React tree for this view layer's legend */
   renderLegend?: ViewLayerRenderLegendFunction;
   /**
    * String key based on which the layer legends will be grouped.
@@ -77,6 +94,7 @@ export interface ViewLayer<ParamsT = any> {
    */
   legendKey?: string;
 
+  /** Render a React tree for this view layer's tooltip.*/
   renderTooltip?: ViewLayerRenderTooltipFunction;
   renderDetails?: ViewLayerRenderDetailsFunction;
 }

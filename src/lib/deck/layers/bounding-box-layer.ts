@@ -1,4 +1,4 @@
-import { PathStyleExtension } from '@deck.gl/extensions/typed';
+import { PathStyleExtension, PathStyleExtensionProps } from '@deck.gl/extensions/typed';
 
 import { geoJsonLayer } from './base';
 
@@ -7,7 +7,7 @@ export interface BoundingBoxLayerOptions {
 }
 
 export function boundingBoxLayer({ bboxGeom }: BoundingBoxLayerOptions, ...props) {
-  return geoJsonLayer(
+  return geoJsonLayer<PathStyleExtensionProps>(
     {
       data: bboxGeom,
 

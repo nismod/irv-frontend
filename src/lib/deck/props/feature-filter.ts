@@ -1,4 +1,5 @@
-import { DataFilterExtension } from '@deck.gl/extensions/typed';
+import { DataFilterExtension, DataFilterExtensionProps } from '@deck.gl/extensions/typed';
+import { LayerProps } from 'deck.gl/typed';
 
 /**
  * Filter features by ID (or unique ID property) using the GPU extension
@@ -6,7 +7,10 @@ import { DataFilterExtension } from '@deck.gl/extensions/typed';
  * @param uniqueIdProperty the name of a unique ID property, if feature IDs are not present
  * @returns deck.gl layer props that configure feature filtering
  */
-export function featureFilter(featureId: string | number, uniqueIdProperty?: string) {
+export function featureFilter(
+  featureId: string | number,
+  uniqueIdProperty?: string,
+): DataFilterExtensionProps & Pick<LayerProps, 'updateTriggers' | 'extensions'> {
   const filterFn = uniqueIdProperty
     ? (x) => (x.properties[uniqueIdProperty] === featureId ? 1 : 0)
     : (x) => (x.id === featureId ? 1 : 0);

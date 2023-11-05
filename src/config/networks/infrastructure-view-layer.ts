@@ -5,14 +5,15 @@ import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 import { dataColorMap } from '@/lib/deck/props/color-map';
 import { border, fillColor, lineStyle, pointRadius, strokeColor } from '@/lib/deck/props/style';
 
-import { assetViewLayer } from '@/config/assets/asset-view-layer';
-import { assetDataAccessFunction } from '@/config/assets/data-access';
+import { makeAssetDataAccessorFactory } from '@/config/assets/data-access';
+import { makeAssetLayerFn } from '@/config/assets/make-asset-layer-fn';
 import { INFRASTRUCTURE_COLORS } from '@/config/networks/colors';
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
 import { VectorHoverDescription } from '@/map/tooltip/VectorHoverDescription';
 
 import { assetLayerLegendConfig } from '../assets/asset-layer-legend-config';
-import { AssetViewLayerCustomFunction } from '../assets/asset-view-layer';
+import { getAssetDataFormats } from '../assets/data-formats';
+import { AssetCustomPropsFunction } from '../assets/make-asset-layer-fn';
 import { INFRASTRUCTURE_LAYER_DETAILS } from './details';
 import { NetworkLayerType, NETWORKS_METADATA } from './metadata';
 
@@ -53,7 +54,7 @@ function electricitySourceFn({ zoom, dataStyle }) {
 }
 */
 
-const INFRASTRUCTURE_LAYER_FUNCTIONS: Record<NetworkLayerType, AssetViewLayerCustomFunction> = {
+const INFRASTRUCTURE_LAYER_FUNCTIONS: Record<NetworkLayerType, AssetCustomPropsFunction> = {
   power_transmission: ({ zoom, dataStyle }) => [
     strokeColor(dataStyle?.getColor ?? INFRASTRUCTURE_COLORS.electricity_high.deck),
     lineStyle(zoom, 0),
@@ -179,15 +180,28 @@ export function infrastructureViewLayer(
   infrastructureType: NetworkLayerType,
   styleParams: StyleParams,
 ): ViewLayer {
-  const customFn = INFRASTRUCTURE_LAYER_FUNCTIONS[infrastructureType];
+  const customLayerPropsFn = INFRASTRUCTURE_LAYER_FUNCTIONS[infrastructureType];
   const { label, color } = NETWORKS_METADATA[infrastructureType];
 
-  return assetViewLayer({
-    assetId: infrastructureType,
+  const dataAccessFn = makeAssetDataAccessorFactory(infrastructureType);
+
+  return {
+    id: infrastructureType,
     interactionGroup: 'assets',
+    params: {
+      infrastructureType,
+    },
     styleParams,
-    customFn,
-    customDataAccessFn: assetDataAccessFunction(infrastructureType),
+
+    dataAccessFn,
+    dataFormatsFn: getAssetDataFormats,
+
+    fn: makeAssetLayerFn({
+      assetId: infrastructureType,
+      styleParams,
+      customDataAccessFn: dataAccessFn,
+      customLayerPropsFn,
+    }),
 
     ...assetLayerLegendConfig(styleParams),
 
@@ -211,5 +225,5 @@ export function infrastructureViewLayer(
         showRiskSection: infrastructureType !== 'rail_nodes',
       });
     },
-  });
+  };
 }

@@ -1,6 +1,8 @@
-import { GeoJsonLayerProps } from 'deck.gl/typed';
+import { Color, GeoJsonLayerProps } from 'deck.gl/typed';
+import { Feature } from 'geojson';
 
-import { Getter } from './getters';
+import { Accessor } from './getters';
+import type { PropsWithTriggers } from './types';
 
 type ScaleLevel = 0 | 1 | 2;
 
@@ -29,11 +31,21 @@ const lineSizeLevels: Record<
   },
 };
 
-export function lineStyle(zoom, level: ScaleLevel = 2) {
+export type LineStyleProps = Pick<
+  GeoJsonLayerProps,
+  | 'lineJointRounded'
+  | 'lineCapRounded'
+  | 'lineWidthUnits'
+  | 'getLineWidth'
+  | 'lineWidthMinPixels'
+  | 'lineWidthMaxPixels'
+>;
+
+export function lineStyle(zoom, level: ScaleLevel = 2): Partial<LineStyleProps> {
   return {
     lineJointRounded: true,
     lineCapRounded: true,
-    lineWidthUnit: 'meters',
+    lineWidthUnits: 'meters' as const,
 
     ...lineSizeLevels[level],
 
@@ -54,15 +66,20 @@ const pointSizeLevels: Record<
   2: { getPointRadius: 300, pointRadiusMinPixels: 2, pointRadiusMaxPixels: 4 },
 };
 
-export function pointRadius(zoom, level: ScaleLevel = 2): Partial<GeoJsonLayerProps> {
+export type PointStyleProps = Pick<
+  GeoJsonLayerProps,
+  'pointRadiusUnits' | 'getPointRadius' | 'pointRadiusMinPixels' | 'pointRadiusMaxPixels'
+>;
+
+export function pointRadius(zoom, level: ScaleLevel = 2): Partial<PointStyleProps> {
   return {
-    pointRadiusUnits: 'meters',
+    pointRadiusUnits: 'meters' as const,
     ...pointSizeLevels[level],
   };
 }
 
-export type Color = [number, number, number, number?];
-export type GetColor = Getter<Color>;
+// export type Color = [number, number, number, number?];
+export type GetColor = Accessor<Color, Feature>;
 
 /**
  * Returns color with alpha set to new value.
@@ -75,10 +92,22 @@ export function setAlpha(color: Color, alpha: number): Color {
   return [r, g, b, alpha];
 }
 
-export function vectorColor(type: 'fill' | 'stroke', getColor: GetColor) {
-  let propName: string;
-  if (type === 'fill') propName = 'getFillColor';
-  else if (type === 'stroke') propName = 'getLineColor';
+const COLOR_PROPS = {
+  fill: 'getFillColor',
+  stroke: 'getLineColor',
+} as const;
+
+type ColorPropNameMap = typeof COLOR_PROPS;
+type ColorPropKey = keyof ColorPropNameMap;
+
+/**
+ * deck.gl prop factory for vector color props
+ */
+function vectorColor<CT extends ColorPropKey>(
+  type: CT,
+  getColor: GetColor,
+): PropsWithTriggers<ColorPropNameMap[CT], GetColor> {
+  const propName = COLOR_PROPS[type];
 
   return {
     [propName]: getColor,
@@ -86,13 +115,13 @@ export function vectorColor(type: 'fill' | 'stroke', getColor: GetColor) {
       [propName]:
         (getColor as any)?.updateTriggers ?? (typeof getColor === 'function' ? [] : undefined),
     },
-  };
+  } as PropsWithTriggers<ColorPropNameMap[CT], GetColor>;
 }
 
 export const fillColor = (getColor: GetColor) => vectorColor('fill', getColor);
 export const strokeColor = (getColor: GetColor) => vectorColor('stroke', getColor);
 
-export function border(color = [255, 255, 255]) {
+export function border(color: Color = [255, 255, 255]) {
   return {
     stroked: true,
     getLineColor: color,

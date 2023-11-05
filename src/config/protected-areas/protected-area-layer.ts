@@ -2,7 +2,8 @@ import React from 'react';
 
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ViewLayer } from '@/lib/data-map/view-layers';
-import { selectableMvtLayer } from '@/lib/deck/layers/selectable-mvt-layer';
+import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
+import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { border, fillColor, pointRadius, setAlpha } from '@/lib/deck/props/style';
 import { toLabelLookup } from '@/lib/helpers';
 
@@ -30,14 +31,7 @@ export function protectedAreaViewLayer(shapeType: ShapeType, type: ProtectedArea
       type,
     },
     fn({ deckProps, zoom, selection }) {
-      return selectableMvtLayer(
-        {
-          selectionOptions: {
-            selectedFeatureId: selection?.target.feature.properties[uniqueIdProperty],
-            uniqueIdProperty,
-            selectionFillColor: shapeType === 'polygons' ? [0, 0, 0, 0] : undefined,
-          },
-        },
+      return basicMvtLayer(
         deckProps,
         {
           data: SOURCES.vector.getUrl(id),
@@ -52,6 +46,11 @@ export function protectedAreaViewLayer(shapeType: ShapeType, type: ProtectedArea
           },
           fillColor(setAlpha(color.deck, 100)),
         ],
+        mvtSelection({
+          selectedFeatureId: selection?.target.feature.properties[uniqueIdProperty],
+          uniqueIdProperty,
+          selectionFillColor: shapeType === 'polygons' ? [0, 0, 0, 0] : undefined,
+        }),
       );
     },
     renderDetails(selection: InteractionTarget<VectorTarget>) {

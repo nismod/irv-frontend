@@ -1,6 +1,6 @@
-import * as d3 from 'd3-color';
 import _ from 'lodash';
 
+import { makeColor } from './colors';
 import { ValueLabel } from './controls/params/value-label';
 
 /**
@@ -51,13 +51,6 @@ export function unique<T>(arr: T[]) {
   return Array.from(new Set(arr));
 }
 
-export function colorCssToRgb(cssColor: string): [number, number, number, number?] {
-  const color = d3.color(cssColor);
-  const { r, g, b } = color.rgb();
-  const a = color.opacity;
-  return a === 1 ? [r, g, b] : [r, g, b, a * 256];
-}
-
 export function toDictionary<T, K extends string, V>(
   array: T[],
   keyFn: (x: T) => K,
@@ -100,15 +93,6 @@ export const makeOrderingCheck = <T extends string>() => {
     array: E & ([T] extends [E[number]] ? unknown : ValueMissingError<T, E[number]>),
   ) => array;
 };
-
-/**
- * Creates a color object with css and deck.gl format from CSS string
- * @param c color in CSS string format
- * @returns object with both css and deck color formats
- */
-export function makeColor(c: string) {
-  return { css: c, deck: colorCssToRgb(c) };
-}
 
 export function makeColorConfig<K extends string>(cfg: Record<K, string>) {
   return _.mapValues(cfg, makeColor);
