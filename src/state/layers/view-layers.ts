@@ -1,7 +1,4 @@
-import { selector } from 'recoil';
-
-import { ViewLayer } from '@/lib/data-map/view-layers';
-import { ConfigTree } from '@/lib/nested-config/config-tree';
+import { makeViewLayersState } from '@/lib/data-map/state/make-view-layers-state';
 
 import { buildingDensityLayerState } from './data-layers/building-density';
 import { hazardLayerState } from './data-layers/hazards';
@@ -25,30 +22,37 @@ import { regionalExposureLayerState } from './data-layers/regional-risk';
 import { travelTimeLayerState } from './data-layers/travel-time';
 import { featureBoundingBoxLayerState } from './ui-layers/feature-bbox';
 
-export const viewLayersState = selector<ConfigTree<ViewLayer>>({
+export const viewLayersState = makeViewLayersState({
   key: 'viewLayersState',
-  get: ({ get }) => {
+  getViewLayers: ({ get }) => {
     return [
       /**
        * Data layers
        */
 
+      // raster layers that cover all/most of land
       get(landCoverLayerState),
-      get(humanDevelopmentLayerState),
       get(populationLayerState),
       get(buildingDensityLayerState),
       get(organicCarbonLayerState),
       get(biodiversityIntactnessLayerState),
       get(forestLandscapeIntegrityLayerState),
-      get(protectedAreasPolygonLayerState),
       get(travelTimeLayerState),
+
+      // vector layers that cover all/most of land
+      get(humanDevelopmentLayerState),
+      get(regionalExposureLayerState),
+
+      // vector / raster layers that cover some land
+      get(protectedAreasPolygonLayerState),
       get(hazardLayerState),
       get(populationExposureLayerState),
+
+      // point/line layers
       get(networkLayersState),
       get(industryLayersState),
       get(healthcareLayersState),
       get(protectedAreasPointLayerState),
-      get(regionalExposureLayerState),
 
       /**
        * UI Layers

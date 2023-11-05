@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { MobileTabContentWatcher } from '@/pages/map/layouts/mobile/tab-has-content';
-import { viewLayersFlatState } from '@/state/layers/view-layers-flat';
+import { viewLayersState } from '@/state/layers/view-layers';
 
 import { GradientLegend } from './GradientLegend';
 
@@ -30,7 +30,7 @@ interface GroupedLegendLayers {
 }
 
 export const MapLegend: FC<{}> = () => {
-  const viewLayers = useRecoilValue(viewLayersFlatState);
+  const viewLayers = useRecoilValue(viewLayersState);
 
   // use Map because it's guaranteed to remember insertion order
   const legendConfigs = new Map<string, GroupedLegendLayers>();

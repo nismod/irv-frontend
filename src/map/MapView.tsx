@@ -9,8 +9,8 @@ import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { interactionGroupsState } from '@/state/layers/interaction-groups';
-import { viewLayersFlatState } from '@/state/layers/view-layers-flat';
-import { useSaveViewLayers, viewLayersParamsState } from '@/state/layers/view-layers-params';
+import { viewLayersState } from '@/state/layers/view-layers';
+import { viewLayersParamsState } from '@/state/layers/view-layers-params';
 import { mapViewStateState, useSyncMapUrl } from '@/state/map-view/map-view-state';
 
 import { backgroundState, showLabelsState } from './layers/layers-state';
@@ -30,13 +30,7 @@ const MapViewContent = ({ children }) => {
   const showLabels = useRecoilValue(showLabelsState);
   const { mapStyle, firstLabelId } = useBasemapStyle(background, showLabels);
 
-  const viewLayers = useRecoilValue(viewLayersFlatState);
-  const saveViewLayers = useSaveViewLayers();
-
-  useEffect(() => {
-    saveViewLayers(viewLayers);
-  }, [saveViewLayers, viewLayers]);
-
+  const viewLayers = useRecoilValue(viewLayersState);
   const viewLayersParams = useRecoilValue(viewLayersParamsState);
 
   const interactionGroups = useRecoilValue(interactionGroupsState);
