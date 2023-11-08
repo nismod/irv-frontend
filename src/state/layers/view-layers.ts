@@ -1,3 +1,5 @@
+import { waitForAll } from 'recoil';
+
 import { makeViewLayersState } from '@/lib/data-map/state/make-view-layers-state';
 
 import { buildingDensityLayerState } from './data-layers/building-density';
@@ -25,40 +27,42 @@ import { featureBoundingBoxLayerState } from './ui-layers/feature-bbox';
 export const viewLayersState = makeViewLayersState({
   key: 'viewLayersState',
   getViewLayers: ({ get }) => {
-    return [
-      /**
-       * Data layers
-       */
+    return get(
+      waitForAll([
+        /**
+         * Data layers
+         */
 
-      // raster layers that cover all/most of land
-      get(landCoverLayerState),
-      get(populationLayerState),
-      get(buildingDensityLayerState),
-      get(organicCarbonLayerState),
-      get(biodiversityIntactnessLayerState),
-      get(forestLandscapeIntegrityLayerState),
-      get(travelTimeLayerState),
+        // raster layers that cover all/most of land
+        landCoverLayerState,
+        populationLayerState,
+        buildingDensityLayerState,
+        organicCarbonLayerState,
+        biodiversityIntactnessLayerState,
+        forestLandscapeIntegrityLayerState,
+        travelTimeLayerState,
 
-      // vector layers that cover all/most of land
-      get(humanDevelopmentLayerState),
-      get(regionalExposureLayerState),
+        // vector layers that cover all/most of land
+        humanDevelopmentLayerState,
+        regionalExposureLayerState,
 
-      // vector / raster layers that cover some land
-      get(protectedAreasPolygonLayerState),
-      get(hazardLayerState),
-      get(populationExposureLayerState),
+        // vector / raster layers that cover some land
+        protectedAreasPolygonLayerState,
+        hazardLayerState,
+        populationExposureLayerState,
 
-      // point/line layers
-      get(networkLayersState),
-      get(industryLayersState),
-      get(healthcareLayersState),
-      get(protectedAreasPointLayerState),
+        // point/line layers
+        networkLayersState,
+        industryLayersState,
+        healthcareLayersState,
+        protectedAreasPointLayerState,
 
-      /**
-       * UI Layers
-       */
+        /**
+         * UI Layers
+         */
 
-      get(featureBoundingBoxLayerState),
-    ];
+        featureBoundingBoxLayerState,
+      ]),
+    );
   },
 });
