@@ -1,4 +1,4 @@
-import { Menu } from '@mui/icons-material';
+import { Close, Menu } from '@mui/icons-material';
 import {
   AppBar,
   Divider,
@@ -22,17 +22,21 @@ const Link = styled(MuiLink)({
 });
 
 const DrawerLink = styled(Link)({
-  '&.active': {
-    backgroundColor: '#eeeeee',
+  color: '#ffffff',
+  '&:hover,&:focus': {
+    backgroundColor: '#213621',
+  },
+  '&:active,&.active': {
+    backgroundColor: '#213621',
   },
 });
 
 const ToolbarLink = styled(Link)({
-  padding: '0 3px 1px 3px',
+  padding: '0 0 1px 0',
   margin: '0 9px -10px 9px',
   borderBottom: '6px solid transparent',
   '&:hover,&:focus': {
-    borderBottomColor: '#ffffffbc',
+    borderBottomColor: '#ffffff',
   },
   '&:active,&.active': {
     borderBottomColor: '#ffffff',
@@ -42,9 +46,18 @@ const ToolbarLink = styled(Link)({
 const ToolbarNavLink = forwardRef<any, any>(({ ...others }, ref) => (
   <ToolbarLink variant="h6" component={RouterNavLink} ref={ref} {...others} />
 ));
+const ToolbarNavLinkSecondary = forwardRef<any, any>(({ ...others }, ref) => (
+  <ToolbarLink
+    variant="h6"
+    sx={{ fontWeight: 400, fontSize: '1.3rem' }}
+    component={RouterNavLink}
+    ref={ref}
+    {...others}
+  />
+));
 
 const DrawerNavLink = forwardRef<any, any>(({ ...others }, ref) => (
-  <DrawerLink component={RouterNavLink} ref={ref} {...others} />
+  <DrawerLink variant="h6" component={RouterNavLink} ref={ref} {...others} />
 ));
 
 const GrowingDivider = styled(Divider)({
@@ -68,6 +81,8 @@ const navItems = [
     to: '/view/risk',
     title: 'Risk',
   },
+];
+const secondaryNavItems = [
   {
     to: '/data',
     title: 'About',
@@ -78,15 +93,19 @@ const navItems = [
   },
 ];
 
-const drawerWidth = 240;
+const drawerWidth = 360;
 
 const MobileDrawer = styled(Drawer)({
   width: drawerWidth,
   flexShrink: 0,
-  [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+  [`& .MuiDrawer-paper`]: {
+    width: drawerWidth,
+    boxSizing: 'border-box',
+    backgroundColor: 'rgb(23,38,23)',
+  },
 });
 
-const MobileNavContent = () => {
+const MobileNavContent: FC<{ height: number }> = ({ height }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const closeDrawer = useCallback(() => {
@@ -96,22 +115,27 @@ const MobileNavContent = () => {
   return (
     <>
       <IconButton color="inherit" onClick={() => setDrawerOpen((open) => !open)} title="Menu">
-        <Menu />
+        {drawerOpen ? <Close /> : <Menu />}
       </IconButton>
 
       <ToolbarNavLink to="/" onClick={closeDrawer}>
-        G-SRAT
+        GRI Risk Viewer
       </ToolbarNavLink>
 
       <GrowingDivider />
 
       <MobileDrawer open={drawerOpen} onClose={closeDrawer}>
-        <Toolbar /> {/* Prevents app bar from concealing content*/}
-        <List>
+        {/* Margin prevents app bar from concealing content*/}
+        <List sx={{ marginTop: height - topStripeHeight + 'px' }}>
           <ListItem component={DrawerNavLink} to="/" onClick={closeDrawer}>
             Home
           </ListItem>
           {navItems.map(({ to, title }) => (
+            <ListItem key={to} component={DrawerNavLink} to={to} onClick={closeDrawer}>
+              {title}
+            </ListItem>
+          ))}
+          {secondaryNavItems.map(({ to, title }) => (
             <ListItem key={to} component={DrawerNavLink} to={to} onClick={closeDrawer}>
               {title}
             </ListItem>
@@ -124,7 +148,7 @@ const MobileNavContent = () => {
 
 const DesktopNavContent = () => (
   <>
-    <ToolbarNavLink to="/">G-SRAT</ToolbarNavLink>
+    <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
 
     {navItems.map(({ to, title }) => (
       <ToolbarNavLink key={to} to={to}>
@@ -133,6 +157,12 @@ const DesktopNavContent = () => (
     ))}
 
     <GrowingDivider />
+
+    {secondaryNavItems.map(({ to, title }) => (
+      <ToolbarNavLinkSecondary key={to} to={to}>
+        {title}
+      </ToolbarNavLinkSecondary>
+    ))}
   </>
 );
 
@@ -142,16 +172,16 @@ export const Nav: FC<{ height: number }> = ({ height }) => {
   const isMobile = useIsMobile();
 
   return (
-    <AppBar position="fixed" sx={{ color: 'white' }}>
-      <Box height={topStripeHeight} width="100%" bgcolor="rgb(197,206,0)" />
+    <AppBar position="fixed" elevation={0} sx={{ color: 'white' }}>
+      <Box height={topStripeHeight} width="100%" bgcolor="rgb(142,193,85)" />
       <Toolbar
         variant="dense"
         sx={{
-          backgroundColor: 'rgb(0,126,133)',
+          backgroundColor: 'rgb(23,38,23)',
           height: height - topStripeHeight,
         }}
       >
-        {isMobile ? <MobileNavContent /> : <DesktopNavContent />}
+        {isMobile ? <MobileNavContent height={height} /> : <DesktopNavContent />}
       </Toolbar>
     </AppBar>
   );
