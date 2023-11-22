@@ -16,7 +16,8 @@ export function getHazardId(hazardType: string, hazardParams: any) {
 }
 
 export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLayer {
-  const magFilter = hazardType === 'cyclone' ? GL.NEAREST : GL.LINEAR;
+  const isCyclone = hazardType === 'cyclone' || hazardType === 'cyclone_iris';
+  const magFilter = isCyclone ? GL.NEAREST : GL.LINEAR;
 
   const id = hazardType;
   const deckId = getHazardId(hazardType, hazardParams);
@@ -34,7 +35,7 @@ export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLaye
           textureParameters: {
             [GL.TEXTURE_MAG_FILTER]: magFilter,
           },
-          opacity: hazardType === 'cyclone' ? 0.6 : 1,
+          opacity: isCyclone ? 0.6 : 1,
 
           // TODO: tweak transparentColor to tweak border color / transparent layer tint
 
