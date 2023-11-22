@@ -219,7 +219,6 @@ export type Unrequired<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export const inlist = <T, const ElemT extends T>(val: T, arr: ReadonlyArray<ElemT>): val is ElemT =>
   arr.includes(val as ElemT);
 
-
 export function firstNonEmptyString(...args: (string | null | undefined)[]): string {
-  return args.find(x => x != null && x !== '') ?? '';
+  return args.find((x) => x != null && x !== '') ?? '';
 }

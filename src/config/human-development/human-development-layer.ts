@@ -14,9 +14,9 @@ import { toLabelLookup } from '@/lib/helpers';
 import { SimpleAssetDetails } from '@/details/features/asset-details';
 
 import { SOURCES } from '../sources';
-import { HdiHoverDescription } from './HdiHoverDescription';
 import { getHumanDevelopmentDataFormats } from './data-formats';
 import { HDI_REGION_LEVEL_DETAILS } from './details';
+import { HdiHoverDescription } from './HdiHoverDescription';
 import { HDI_REGION_LEVEL_LABELS, HdiRegionLevel, HdiVariableType } from './metadata';
 
 const hdiColorLookup: Record<HdiVariableType, ColorSpec> = {

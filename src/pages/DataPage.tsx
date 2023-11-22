@@ -413,8 +413,9 @@ export const DataPage = () => (
             <TableCell>ESA CCI</TableCell>
             <TableCell>
               The source of these data are the ESA Climate Change Initiative and in particular its
-              Land Cover project © ESA Climate Change Initiative Land Cover led by UCLouvain (2017),
-              ESA Climate Change Initiative &ndash; Land Cover project 2020 and EC C3S Land Cover.
+              Land Cover project © ESA Climate Change Initiative Land Cover led by UCLouvain
+              (2017), ESA Climate Change Initiative &ndash; Land Cover project 2020 and EC C3S Land
+              Cover.
             </TableCell>
           </TableRow>
 

@@ -4,7 +4,7 @@ import { RasterColorMap } from '@/map/legend/RasterLegend';
 
 export const BUILDING_DENSITY_TYPES = ['all', 'non_residential'] as const;
 
-export type BuildingDensityType = typeof BUILDING_DENSITY_TYPES[number];
+export type BuildingDensityType = (typeof BUILDING_DENSITY_TYPES)[number];
 
 export const BUILDING_DENSITY_TYPE_LABELS: ValueLabel<BuildingDensityType>[] = [
   {

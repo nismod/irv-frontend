@@ -2,7 +2,7 @@ import { ValueLabel } from '@/lib/controls/params/value-label';
 
 export const HDI_REGION_LEVELS = ['countries', 'regions'] as const;
 
-export type HdiRegionLevel = typeof HDI_REGION_LEVELS[number];
+export type HdiRegionLevel = (typeof HDI_REGION_LEVELS)[number];
 
 export const HDI_REGION_LEVEL_LABELS: ValueLabel<HdiRegionLevel>[] = [
   {
@@ -31,7 +31,7 @@ export const HDI_VARIABLES = [
   'income_index',
 ] as const;
 
-export type HdiVariableType = typeof HDI_VARIABLES[number];
+export type HdiVariableType = (typeof HDI_VARIABLES)[number];
 
 export const HDI_VARIABLE_LABELS: ValueLabel<HdiVariableType>[] = [
   {

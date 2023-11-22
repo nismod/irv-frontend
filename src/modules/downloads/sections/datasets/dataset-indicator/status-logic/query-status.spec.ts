@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { QueryResultStatus, computeQueryStatus } from './query-status';
+import { computeQueryStatus, QueryResultStatus } from './query-status';
 
 describe('Compute state of API query with specified data status function', () => {
   const PV_NAME = 'processor.version';

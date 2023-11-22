@@ -2,8 +2,8 @@ import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Switch } f
 import _ from 'lodash';
 import { useEffect } from 'react';
 import {
-  TransactionInterface_UNSTABLE,
   atom,
+  TransactionInterface_UNSTABLE,
   useRecoilState,
   useRecoilTransaction_UNSTABLE,
 } from 'recoil';

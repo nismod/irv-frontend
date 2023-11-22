@@ -8,11 +8,11 @@ import { useResizeDetector } from 'react-resize-detector';
 
 import { extendBbox, geoJsonToAppBoundingBox } from '@/lib/bounding-box';
 import { DeckGLOverlay } from '@/lib/map/DeckGLOverlay';
-import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
+import { MapHudAttributionControl } from '@/lib/map/hud/mapbox-controls';
 import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudButton } from '@/lib/map/hud/MapHudButton';
 import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
-import { MapHudAttributionControl } from '@/lib/map/hud/mapbox-controls';
+import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 
 import { useBackgroundAttribution, useBasemapStyle } from '@/map/use-basemap-style';
 

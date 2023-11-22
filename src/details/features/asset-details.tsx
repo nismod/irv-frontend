@@ -7,9 +7,9 @@ import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 
 import { apiFeatureQuery } from '@/state/queries';
 
-import { ButtonPlacement, DownloadButton } from './DownloadButton';
 import { DamagesSection } from './damages/DamagesSection';
 import { DetailsComponentType } from './detail-components';
+import { ButtonPlacement, DownloadButton } from './DownloadButton';
 
 interface LoadDetailsProps {
   featureDetailsState: RecoilValue<any>;

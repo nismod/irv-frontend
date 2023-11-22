@@ -6,7 +6,7 @@ export const NATURE_RASTER_TYPES = [
   'organic_carbon',
 ] as const;
 
-export type NatureRasterType = typeof NATURE_RASTER_TYPES[number];
+export type NatureRasterType = (typeof NATURE_RASTER_TYPES)[number];
 
 export const NATURE_RASTER_VALUE_LABELS: ValueLabel<NatureRasterType>[] = [
   {

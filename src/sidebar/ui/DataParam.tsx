@@ -2,8 +2,8 @@ import { useRecoilValue } from 'recoil';
 
 import {
   paramOptionsState,
-  paramValueState,
   paramsState,
+  paramValueState,
   useUpdateDataParam,
 } from '@/state/data-params';
 

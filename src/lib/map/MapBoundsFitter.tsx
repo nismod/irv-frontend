@@ -2,7 +2,7 @@ import { WebMercatorViewport } from 'deck.gl/typed';
 import { FC, useEffect } from 'react';
 import { useMap } from 'react-map-gl/maplibre';
 
-import { BoundingBox, appToDeckBoundingBox } from '@/lib/bounding-box';
+import { appToDeckBoundingBox, BoundingBox } from '@/lib/bounding-box';
 
 interface MapBoundsFitterProps {
   boundingBox: BoundingBox;

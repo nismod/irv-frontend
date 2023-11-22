@@ -1,5 +1,5 @@
 import { Box, Fade, Tooltip, Typography } from '@mui/material';
-import { FC, ReactNode, memo } from 'react';
+import { FC, memo, ReactNode } from 'react';
 
 import { RasterColorMapValues } from './RasterLegend';
 

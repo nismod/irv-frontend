@@ -1,8 +1,8 @@
 import { FormControl, FormLabel, MenuItem, Select } from '@mui/material';
 
 import { useDataGroup } from '../../../lib/data-selection/DataGroup';
-import { DataParam } from '../../../lib/data-selection/DataParam';
 import { useInputDisabled } from '../../../lib/data-selection/DisabledInput';
+import { DataParam } from '../DataParam';
 
 function epochLabel(value) {
   if (value === 2010 || value === 'present' || value === 'baseline') return 'Present';

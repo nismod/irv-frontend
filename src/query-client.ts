@@ -1,4 +1,4 @@
-import { QueryClient, QueryFunction, QueryKey, UseQueryOptions, useQuery } from 'react-query';
+import { QueryClient, QueryFunction, QueryKey, useQuery, UseQueryOptions } from 'react-query';
 import { Simplify } from 'type-fest';
 
 export const queryClient = new QueryClient();

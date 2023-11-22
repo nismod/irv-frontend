@@ -1,8 +1,9 @@
 import { FormControl, FormLabel, MenuItem, Select } from '@mui/material';
 
 import { useDataGroup } from '@/lib/data-selection/DataGroup';
-import { DataParam } from '@/lib/data-selection/DataParam';
 import { useInputDisabled } from '@/lib/data-selection/DisabledInput';
+
+import { DataParam } from '../DataParam';
 
 const gcmLabelLookup = {
   'EC-EARTH3P-HR': 'EC-Earth3P-HR',

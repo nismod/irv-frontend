@@ -7,7 +7,7 @@ export const REGIONAL_EXPOSURE_VARIABLES = [
   'pop_exposed_river_rcp4p5_MIROC-ESM-CHEM_2050_thresholdNone',
 ] as const;
 
-export type RegionalExposureVariableType = typeof REGIONAL_EXPOSURE_VARIABLES[number];
+export type RegionalExposureVariableType = (typeof REGIONAL_EXPOSURE_VARIABLES)[number];
 
 export const REGIONAL_EXPOSURE_VARIABLE_LABELS: ValueLabel<RegionalExposureVariableType>[] = [
   {

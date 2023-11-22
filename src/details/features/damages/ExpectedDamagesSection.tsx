@@ -6,14 +6,14 @@ import { useMemo } from 'react';
 import { selector, useRecoilValue } from 'recoil';
 
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
-import { DamageTable } from './DamageTable';
 import {
-  QUIRKY_FIELDS_MAPPING,
   buildOrdering,
   featureState,
   hazardDataParamsState,
   orderDamages,
+  QUIRKY_FIELDS_MAPPING,
 } from './DamagesSection';
+import { DamageTable } from './DamageTable';
 import { ExpectedDamageChart } from './ExpectedDamageChart';
 import { HazardSelect, selectedHazardState } from './param-controls';
 
@@ -34,8 +34,9 @@ export interface ExpectedDamageCell {
   eael_amax: number;
 }
 function getExpectedDamageObject(d: ExpectedDamage): ExpectedDamageCell {
-  let { hazard, epoch, rcp } = _.mapValues(QUIRKY_FIELDS_MAPPING, (fn, key) =>
-    fn?.(d[key].toString()),
+  let { hazard, epoch, rcp } = _.mapValues(
+    QUIRKY_FIELDS_MAPPING,
+    (fn, key) => fn?.(d[key].toString()),
   );
 
   return {

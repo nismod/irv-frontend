@@ -4,11 +4,11 @@ import { useEffect, useMemo } from 'react';
 import { useFetch } from 'use-http';
 
 import {
-  BACKGROUNDS,
   BACKGROUND_ATTRIBUTIONS,
-  BASEMAP_STYLE_URL,
   BackgroundName,
+  BACKGROUNDS,
   BackgroundSpecification,
+  BASEMAP_STYLE_URL,
   LABELS_LAYERS,
 } from '@/config/basemaps';
 

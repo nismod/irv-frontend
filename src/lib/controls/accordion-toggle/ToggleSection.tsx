@@ -6,7 +6,7 @@ import {
   FormControlLabel,
   Radio,
 } from '@mui/material';
-import { FC, createContext, useCallback, useContext } from 'react';
+import { createContext, FC, useCallback, useContext } from 'react';
 import { useRecoilState } from 'recoil';
 
 import { RecoilStateFamily } from '@/lib/recoil/types';

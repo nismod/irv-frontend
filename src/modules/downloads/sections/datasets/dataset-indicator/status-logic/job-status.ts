@@ -1,6 +1,5 @@
 import { JobProgress, JobStateEnum } from '@nismod/irv-autopkg-client';
 
-
 export type JobResult = any;
 
 export enum JobStatusType {
@@ -69,11 +68,11 @@ export function computeJobStatus(
     };
   }
 
-  if(status === JobStateEnum.SKIPPED) {
+  if (status === JobStateEnum.SKIPPED) {
     return {
       status: JobStatusType.Skipped,
-      data: null
-    }
+      data: null,
+    };
   }
 
   if (status === JobStateEnum.SUCCESS) {

@@ -6,20 +6,20 @@ import { inlist } from '@/lib/helpers';
 import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 
 import {
-  SavedJob,
   lastSubmittedJobByParamsState,
+  SavedJob,
   useJobById,
   useMoveJobToCompleted,
 } from '../../../data/jobs';
 import { fetchPackageByRegion } from '../../../data/packages';
 import { usePackageData } from '../use-package-data';
+import { InfoChip, ProcessingInfoChip, SuccessChip } from './dataset-chips';
 import { DownloadChip } from './DownloadChip';
 import { RequestChip } from './RequestChip';
-import { InfoChip, ProcessingInfoChip, SuccessChip } from './dataset-chips';
-import { DatasetStatus, computeDatasetStatus } from './status-logic/dataset-status';
-import { ComputeJobStatusResult, JobStatusType, computeJobStatus } from './status-logic/job-status';
+import { computeDatasetStatus, DatasetStatus } from './status-logic/dataset-status';
+import { computeJobStatus, ComputeJobStatusResult, JobStatusType } from './status-logic/job-status';
 import { ComputePackageDataResult, PackageDataStatus } from './status-logic/package-data';
-import { QueryStatusResult, computeQueryStatus } from './status-logic/query-status';
+import { computeQueryStatus, QueryStatusResult } from './status-logic/query-status';
 
 export function DatasetStatusIndicator({
   boundary,

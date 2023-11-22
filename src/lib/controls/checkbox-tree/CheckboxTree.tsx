@@ -7,7 +7,7 @@ import produce from 'immer';
 import React, { useCallback } from 'react';
 
 import { CheckboxTreeItem } from './CheckboxTreeItem';
-import { TreeNode, dfs, getDescendants } from './tree-node';
+import { dfs, getDescendants, TreeNode } from './tree-node';
 
 export interface CheckboxTreeConfig<T> {
   roots: TreeNode<T>[];

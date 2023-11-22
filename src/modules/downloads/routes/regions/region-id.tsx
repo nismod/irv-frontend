@@ -3,7 +3,7 @@ import { Boundary, Processor } from '@nismod/irv-autopkg-client';
 import { MultiPolygon, Polygon } from 'geojson';
 import { range } from 'lodash';
 import { Suspense } from 'react';
-import { Await, LoaderFunctionArgs, defer, useLoaderData } from 'react-router-dom';
+import { Await, defer, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 
 import { BackLink } from '@/lib/nav';
 

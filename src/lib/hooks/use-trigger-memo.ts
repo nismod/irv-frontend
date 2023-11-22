@@ -11,9 +11,5 @@ import { DependencyList, useMemo } from 'react';
  * @returns memoed result of the callback
  */
 export function useTriggerMemo<T>(callback: () => T, dependencies: DependencyList, trigger: any) {
-  return useMemo(
-    callback,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [callback, ...dependencies, trigger],
-  );
+  return useMemo(callback, [callback, ...dependencies, trigger]);
 }

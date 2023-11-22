@@ -4,9 +4,9 @@ import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { useIsMobile } from '@/use-is-mobile';
 
-import { MapViewRouteSync } from './MapViewRouteSync';
 import { MapPageDesktopLayout } from './layouts/MapPageDesktopLayout';
 import { MapPageMobileLayout } from './layouts/mobile/MapPageMobileLayout';
+import { MapViewRouteSync } from './MapViewRouteSync';
 
 const MapPageLayout = () => {
   const isMobile = useIsMobile();

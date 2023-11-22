@@ -8,7 +8,7 @@ import { MapView } from '@/map/MapView';
 import { globalStyleVariables } from '@/theme';
 
 import { mobileTabHasContentState } from './tab-has-content';
-import { TabConfig, mobileTabsConfig } from './tabs-config';
+import { mobileTabsConfig, TabConfig } from './tabs-config';
 
 import './bottom-sheet.css';
 

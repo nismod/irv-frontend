@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { DefaultValue, atom, selector } from 'recoil';
+import { atom, DefaultValue, selector } from 'recoil';
 
 import { useSyncStateThrottled } from '@/lib/recoil/sync-state-throttled';
 

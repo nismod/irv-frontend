@@ -1,5 +1,5 @@
 import { featureFilter } from '../props/feature-filter';
-import { GetColor, fillColor, strokeColor } from '../props/style';
+import { fillColor, GetColor, strokeColor } from '../props/style';
 import { geoJsonLayer } from './base';
 
 export interface TileSelectionLayerOptions {

@@ -1,3 +1,4 @@
+import { ApiClient } from '@nismod/irv-api-client';
 import stringify from 'json-stable-stringify';
 
 import { FieldSpec } from '@/lib/data-map/view-layers';
@@ -12,11 +13,13 @@ export class DataLoaderManager {
   private loaders: { [key: string]: DataLoader } = {};
   private nextLoaderId = 0;
 
+  constructor(public readonly apiClient: ApiClient) {}
+
   public getDataLoader(layer: string, fieldSpec: FieldSpec) {
     const loaderKey = getLoaderKey(layer, fieldSpec);
     if (this.loaders[loaderKey] == null) {
       console.log(`Initialising data loader for ${layer} ${stringify(fieldSpec)}`);
-      const loader = new DataLoader(this.nextLoaderId.toString(), layer, fieldSpec);
+      const loader = new DataLoader(this.nextLoaderId.toString(), layer, fieldSpec, this.apiClient);
       this.nextLoaderId += 1;
       this.loaders[loaderKey] = loader;
     }
@@ -32,5 +35,3 @@ export class DataLoaderManager {
     }
   }
 }
-
-export const dataLoaderManager = new DataLoaderManager();

@@ -4,7 +4,7 @@ import { ParamChecklist } from '@/lib/controls/params/ParamChecklist';
 
 import { INDUSTRY_METADATA } from '@/config/industry/industry-view-layer';
 import { LayerLabel, LayerLabelShapeType } from '@/sidebar/ui/LayerLabel';
-import { IndustryType, industrySelectionState } from '@/state/data-selection/industry';
+import { industrySelectionState, IndustryType } from '@/state/data-selection/industry';
 
 export const IndustryControl = () => {
   const [checkboxState, setCheckboxState] = useRecoilState(industrySelectionState);

@@ -2,10 +2,8 @@
 
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
-import fs from 'fs';
-import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { PluginOption, defineConfig } from 'vite';
+import { defineConfig, PluginOption } from 'vite';
 import { qrcode } from 'vite-plugin-qrcode';
 import pluginRewriteAll from 'vite-plugin-rewrite-all';
 import svgrPlugin from 'vite-plugin-svgr';
@@ -17,12 +15,11 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
  * See https://vitejs.dev/config/server-options.html#server-proxy for syntax
  */
 const proxyTable = await import('./dev-proxy/proxy-table').catch((err) => {
-    console.error(err);
-    console.log("Fallback to empty proxy table");
-    return {devProxy: {}}
+  console.error(err);
+  console.log('Fallback to empty proxy table');
+  return { devProxy: {} };
 });
 const devProxy = proxyTable.devProxy;
-
 
 // https://vitejs.dev/config/
 export default defineConfig({

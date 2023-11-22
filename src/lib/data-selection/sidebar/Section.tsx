@@ -4,9 +4,9 @@ import { FC } from 'react';
 import { usePath } from '@/lib/paths/paths';
 import { SubPath } from '@/lib/paths/sub-path';
 
-import { VisibilityToggle } from './VisibilityToggle';
 import { Accordion, AccordionDetails, AccordionSummary, AccordionTitle } from './accordion';
 import { useExpandedState, useVisibilityState } from './context';
+import { VisibilityToggle } from './VisibilityToggle';
 
 interface SectionProps {
   title: string;

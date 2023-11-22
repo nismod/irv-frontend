@@ -1,8 +1,8 @@
 import { selector } from 'recoil';
 
 import { exposureViewLayer } from '@/config/hazards/exposure/exposure-view-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import { populationExposureHazardState } from '@/sidebar/sections/risk/population-exposure';
+import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import { dataParamsByGroupState } from '@/state/data-params';
 
 export const populationExposureLayerState = selector({

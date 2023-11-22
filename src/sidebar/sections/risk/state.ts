@@ -6,7 +6,7 @@ import { StateEffect } from '@/lib/recoil/state-effects/types';
 import { sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
 
 export const RISK_TARGETS = ['population', 'buildings', 'transport', 'power'] as const;
-export type RiskTargetType = typeof RISK_TARGETS[number];
+export type RiskTargetType = (typeof RISK_TARGETS)[number];
 
 export const RISK_TARGET_OPTIONS: ValueLabel<RiskTargetType>[] = [
   { value: 'population', label: 'Population' },
@@ -47,7 +47,7 @@ export const RISK_SOURCES = [
   'earthquake',
 ] as const;
 
-export type RiskSourceType = typeof RISK_SOURCES[number];
+export type RiskSourceType = (typeof RISK_SOURCES)[number];
 
 export const RISK_SOURCE_OPTIONS: ValueLabel<RiskSourceType>[] = [
   { value: 'fluvial', label: 'River Flooding' },

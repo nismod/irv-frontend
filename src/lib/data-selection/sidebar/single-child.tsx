@@ -4,7 +4,7 @@ import { useRecoilCallback } from 'recoil';
 import { getSubPath, usePath } from '@/lib/paths/paths';
 import { usePathChildrenState } from '@/lib/paths/sub-path';
 
-import { VisibilityStateContext, useVisibilityState } from './context';
+import { useVisibilityState, VisibilityStateContext } from './context';
 
 const ChildVisibilityWatcher = ({ childPath, onVisibility }) => {
   const [visible] = useVisibilityState(childPath);

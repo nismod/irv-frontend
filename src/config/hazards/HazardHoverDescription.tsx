@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/use-interactions';
 
-import { HAZARDS_METADATA, HAZARD_COLOR_MAPS, HazardType } from '@/config/hazards/metadata';
+import { HAZARD_COLOR_MAPS, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { RasterHoverDescription } from '@/map/tooltip/RasterHoverDescription';
 
 export const HazardHoverDescription: FC<{ hoveredObject: InteractionTarget<RasterTarget> }> = ({

@@ -4,14 +4,14 @@ import { FC, ReactElement } from 'react';
 import { atomFamily, selectorFamily, useRecoilValue } from 'recoil';
 
 import { Layer } from '@/lib/data-selection/sidebar/Layer';
-import { Section } from '@/lib/data-selection/sidebar/Section';
 import { SidebarRoot } from '@/lib/data-selection/sidebar/root';
+import { Section } from '@/lib/data-selection/sidebar/Section';
 import { EnforceSingleChild } from '@/lib/data-selection/sidebar/single-child';
 import { getParentPath } from '@/lib/paths/paths';
 import { StateEffectRootAsync } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
-import { ViewType, viewState } from '@/state/view';
+import { viewState, ViewType } from '@/state/view';
 
 import { BuildingDensityControl } from './sections/buildings/BuildingDensityControl';
 import {
@@ -32,7 +32,7 @@ import { HdiControl } from './sections/vulnerability/HdiControl';
 import { TravelTimeControl } from './sections/vulnerability/TravelTimeControl';
 import { WdpaControls } from './sections/vulnerability/WdpaControl';
 import { DataNotice } from './ui/DataNotice';
-import { SidebarUrlStateSyncRoot, defaultSectionVisibilitySyncEffect } from './url-state';
+import { defaultSectionVisibilitySyncEffect, SidebarUrlStateSyncRoot } from './url-state';
 
 const viewLabels = {
   hazard: 'Hazard',

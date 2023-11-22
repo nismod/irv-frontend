@@ -11,14 +11,14 @@ import { BoundingBox } from '@/lib/bounding-box';
 import { BaseMap } from '@/lib/data-map/BaseMap';
 import { DataMap } from '@/lib/data-map/DataMap';
 import { DataMapTooltip } from '@/lib/data-map/DataMapTooltip';
-import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
-import { MapHud } from '@/lib/map/hud/MapHud';
-import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
 import {
   MapHudAttributionControl,
   MapHudNavigationControl,
   MapHudScaleControl,
 } from '@/lib/map/hud/mapbox-controls';
+import { MapHud } from '@/lib/map/hud/MapHud';
+import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
+import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
 import { MapSearch } from '@/lib/map/place-search/MapSearch';
 import { PlaceSearchResult } from '@/lib/map/place-search/use-place-search';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
@@ -31,8 +31,8 @@ import { mapViewStateState, useSyncMapUrl } from '@/state/map-view/map-view-stat
 import { globalStyleVariables } from '@/theme';
 import { useIsMobile } from '@/use-is-mobile';
 
-import { MapLayerSelection } from './layers/MapLayerSelection';
 import { backgroundState, showLabelsState } from './layers/layers-state';
+import { MapLayerSelection } from './layers/MapLayerSelection';
 import { MapLegend } from './legend/MapLegend';
 import { TooltipContent } from './tooltip/TooltipContent';
 import { useBasemapStyle } from './use-basemap-style';

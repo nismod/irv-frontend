@@ -1,4 +1,4 @@
-import { FC, createContext, useContext } from 'react';
+import { createContext, FC, useContext } from 'react';
 
 export const DisabledInputContext = createContext<boolean>(false);
 

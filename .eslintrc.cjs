@@ -17,5 +17,26 @@ module.exports = {
         additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)',
       },
     ],
+    'import/no-restricted-paths': [
+      'error',
+      {
+        zones: [
+          {
+            target: './src/lib/',
+            from: './src/',
+            except: ['./lib/'],
+            message: 'Code in @/lib  cannot import code from other folders!',
+          },
+        ],
+      },
+    ],
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {
+        // https://github.com/import-js/eslint-plugin-import/issues/1872#issuecomment-789895457
+        project: '.',
+      },
+    },
   },
 };

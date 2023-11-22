@@ -1,7 +1,7 @@
 import { ZRange } from '@deck.gl/geo-layers/typed/tileset-2d';
 import { TileIndex } from '@deck.gl/geo-layers/typed/tileset-2d/types';
 import { Matrix4 } from '@math.gl/core';
-import { Viewport, _Tileset2D } from 'deck.gl/typed';
+import { _Tileset2D, Viewport } from 'deck.gl/typed';
 import _ from 'lodash';
 
 /**
