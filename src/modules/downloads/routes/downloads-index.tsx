@@ -24,7 +24,7 @@ export const Component = () => {
   return (
     <CenteredLayout>
       <Stack direction="column">
-        <article className="centred" p={2}>
+        <article className="centred">
           <DownloadsIntroText components={mdxComponents} />
         </article>
         <Stack direction="column" alignItems={'center'}>

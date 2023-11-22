@@ -34,6 +34,8 @@ const DrawerLink = styled(Link)({
 const ToolbarLink = styled(Link)({
   padding: '0 0 1px 0',
   margin: '0 9px -10px 9px',
+  whiteSpace: 'nowrap',
+  textOverflow: 'clip',
   borderBottom: '6px solid transparent',
   '&:hover,&:focus': {
     borderBottomColor: '#ffffff',
@@ -126,7 +128,7 @@ const MobileNavContent: FC<{ height: number }> = ({ height }) => {
 
       <MobileDrawer open={drawerOpen} onClose={closeDrawer}>
         {/* Margin prevents app bar from concealing content*/}
-        <List sx={{ marginTop: height - topStripeHeight + 'px' }}>
+        <List sx={{ marginTop: height + 'px', padding: 0 }}>
           <ListItem component={DrawerNavLink} to="/" onClick={closeDrawer}>
             Home
           </ListItem>
@@ -135,6 +137,8 @@ const MobileNavContent: FC<{ height: number }> = ({ height }) => {
               {title}
             </ListItem>
           ))}
+        </List>
+        <List sx={{ borderTop: '1px solid rgba(255, 255, 255, 0.4)', padding: 0 }}>
           {secondaryNavItems.map(({ to, title }) => (
             <ListItem key={to} component={DrawerNavLink} to={to} onClick={closeDrawer}>
               {title}

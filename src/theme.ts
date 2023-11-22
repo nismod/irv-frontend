@@ -12,6 +12,9 @@ declare module '@mui/material/styles' {
 
 export const theme = createTheme({
   palette: {
+    text: {
+      primary: '#222',
+    },
     primary: {
       main: '#172617',
     },
@@ -19,7 +22,7 @@ export const theme = createTheme({
       main: '#ffffff',
       dark: '#aaaaaa',
       light: '#aaaaaa',
-      contrastText: '#000000',
+      contrastText: '#222',
     },
   },
   components: {
@@ -106,30 +109,29 @@ export const theme = createTheme({
       fontWeight: 600,
       fontFamily: 'InterDisplay, sans-serif',
       fontSize: '3rem',
-      '@media (min-width:600px)': {
-        fontSize: '4rem',
-      },
       '@media (min-width:900px)': {
-        fontSize: '6rem',
+        fontSize: '4.5rem',
       },
       margin: '1rem 0',
+      letterSpacing: '-2px',
+      lineHeight: 1.1,
       maxWidth: '11em',
     },
     h2: {
       fontWeight: 600,
       fontFamily: 'Inter, sans-serif',
-      fontSize: '1.6rem',
+      fontSize: '1.5rem',
       margin: '0.5rem 0',
     },
     h3: {
       fontWeight: 600,
       fontFamily: 'Inter, sans-serif',
-      fontSize: '1.2rem',
+      fontSize: '1.25rem',
     },
     h5: {
       fontWeight: 600,
       fontFamily: 'Inter, sans-serif',
-      fontSize: '1.8rem',
+      fontSize: '1.5rem',
       letterSpacing: '-1px',
       margin: '1rem 0 2rem',
       lineHeight: 1.2,
@@ -137,7 +139,7 @@ export const theme = createTheme({
     h6: {
       fontWeight: 600,
       fontFamily: 'Inter, sans-serif',
-      fontSize: '1.6rem',
+      fontSize: '1.5rem',
       letterSpacing: '-1px',
     },
   },
