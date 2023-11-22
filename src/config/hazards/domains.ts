@@ -17,7 +17,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     defaults: {
       rp: 100,
       rcp: 'baseline',
-      epoch: 'present',
+      epoch: 'baseline',
       gcm: 'MIROC-ESM-CHEM',
     },
     dependencies: {
@@ -28,7 +28,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
   coastal: {
     defaults: {
       rp: 100,
-      epoch: 'present',
+      epoch: 'baseline',
       rcp: 'baseline',
       gcm: 'None',
     },
@@ -44,7 +44,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
        * epoch and rcp for cyclones are added programmatically upon load
        * adjust custom code for data loading when these fields are added to the backend
        */
-      epoch: 'present',
+      epoch: 'baseline',
       rcp: 'baseline',
     },
     dependencies: {
@@ -55,7 +55,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
   cyclone_iris: {
     defaults: {
       rp: 10,
-      epoch: 2020,
+      epoch: 'baseline',
       ssp: 'constant',
     },
     dependencies: {

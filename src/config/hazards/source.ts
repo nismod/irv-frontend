@@ -18,15 +18,17 @@ export function getHazardDataPath({ hazardType, hazardParams, metric }: HazardSo
     const { rp, ssp, epoch } = hazardParams;
     path = `${hazardType}/${epoch}/${rp}/${ssp}`;
   } else {
-    const { rp, rcp, epoch, gcm } = hazardParams;
-    const sanitisedRcp = rcp?.replace('.', 'x');
+    let { rp, rcp, epoch, gcm } = hazardParams;
+
+    // for the raster URL, RCP 4.5 maps to 4x5 (differently than in feature properties, where it's mapped to 4p5)
+    rcp = rcp?.replace('.', 'x');
 
     if (hazardType === 'cyclone') {
       path = `${hazardType}/${rp}/${gcm}`;
     } else if (['extreme_heat', 'drought'].includes(hazardType)) {
-      path = `${hazardType}/${metric}/${sanitisedRcp}/${epoch}/${gcm}`;
+      path = `${hazardType}/${metric}/${rcp}/${epoch}/${gcm}`;
     } else {
-      path = `${hazardType}/${rp}/${sanitisedRcp}/${epoch}/${gcm}`;
+      path = `${hazardType}/${rp}/${rcp}/${epoch}/${gcm}`;
     }
   }
 

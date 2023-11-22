@@ -39,7 +39,7 @@ const HAZARD_DOMAIN_SORTING_FUNCTIONS = {
 const HAZARD_DOMAIN_CUSTOM_MODIFICATIONS = {
   cyclone: (value: any) => ({
     ...value,
-    epoch: value.gcm === 'constant' ? 'present' : '2050',
+    epoch: value.gcm === 'constant' ? 'baseline' : '2050',
 
     // match the rcp format for other hazards - it's preprocessed later, anyway
     rcp: value.gcm === 'constant' ? 'baseline' : '8x5',
