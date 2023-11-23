@@ -122,11 +122,8 @@ export const IntroPage = () => {
         <p>
           This project is funded by the UK Natural Environment Research Council (NERC) through the
           UK Centre for Greening Finance and Investment, the World Bank Group, Insurance for
-          Development Forum, the UK Foreign Commonwealth and Development Office (FCDO) through the{' '}
-          <a href="https://climatecompatiblegrowth.com/" target="_blank" rel="noopener noreferrer">
-            Climate Compatible Growth (CCG)
-          </a>{' '}
-          programme and Willis Towers Watson.
+          Development Forum, the UK Foreign Commonwealth and Development Office (FCDO) through the
+          Climate Compatible Growth (CCG) programme and Willis Towers Watson.
         </p>
       </div>
       <Stack
@@ -152,6 +149,9 @@ export const IntroPage = () => {
           rel="noopener noreferrer"
         >
           <img height="100" src="/logo-uk-aid.png" alt="UK Aid" />
+        </a>
+        <a href="https://climatecompatiblegrowth.com/" target="_blank" rel="noopener noreferrer">
+          <img height="120" src="/logo-ccg.png" alt="Climate Compatible Growth" />
         </a>
         <a href="https://www.wtwco.com/" target="_blank" rel="noopener noreferrer">
           <img height="30" src="/logo-wtw.png" alt="WTW" />
