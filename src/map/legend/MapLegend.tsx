@@ -2,12 +2,11 @@ import { Box, Divider, Paper, Stack } from '@mui/material';
 import { FC, Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 
+import { GradientLegend } from '@/lib/data-map/legend/GradientLegend';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 
 import { viewLayersState } from '@/state/layers/view-layers';
-
-import { GradientLegend } from './GradientLegend';
 
 const LegendLoading = () => {
   return (

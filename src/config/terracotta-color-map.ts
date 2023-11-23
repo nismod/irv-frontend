@@ -1,8 +1,6 @@
-import { selectorFamily, useRecoilValue } from 'recoil';
+import { selectorFamily } from 'recoil';
 
 import { apiClient } from '@/api-client';
-
-import { ColorValue } from './RasterLegend';
 
 const colorMapValuesQuery = selectorFamily({
   key: 'colorMapValuesQuery',
@@ -14,8 +12,8 @@ const colorMapValuesQuery = selectorFamily({
   },
 });
 
-const colorMapValuesState = selectorFamily({
-  key: 'colorMapValuesState',
+export const terracottaColorMapValuesQuery = selectorFamily({
+  key: 'terracottaColorMapValuesQuery',
   get:
     (colorSpec: { scheme: string; range: [number, number] }) =>
     ({ get }) => {
@@ -30,10 +28,3 @@ const colorMapValuesState = selectorFamily({
       }));
     },
 });
-
-export function useRasterColorMapValues(
-  colorScheme: string,
-  stretchRange: [number, number],
-): ColorValue[] {
-  return useRecoilValue(colorMapValuesState({ scheme: colorScheme, range: stretchRange }));
-}

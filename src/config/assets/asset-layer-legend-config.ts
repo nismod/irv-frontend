@@ -1,8 +1,7 @@
 import React from 'react';
 
+import { VectorLegend } from '@/lib/data-map/legend/VectorLegend';
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
-
-import { VectorLegend } from '@/map/legend/VectorLegend';
 
 import { getAssetDataFormats } from './data-formats';
 

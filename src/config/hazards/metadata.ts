@@ -1,9 +1,8 @@
 import { ReactNode } from 'react';
 
+import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
 import { makeValueFormat } from '@/lib/formats';
 import { makeOrderingCheck } from '@/lib/helpers';
-
-import { RasterColorMap } from '@/map/legend/RasterLegend';
 
 export const HAZARD_TYPES = [
   'fluvial',

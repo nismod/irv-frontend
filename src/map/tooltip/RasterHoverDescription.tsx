@@ -1,8 +1,8 @@
 import { FC, ReactNode } from 'react';
 
-import { useRasterColorMapValues } from '@/map/legend/use-color-map-values';
+import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
+import { useRasterColorMapValues } from '@/lib/data-map/legend/use-raster-color-map-values';
 
-import { RasterColorMap } from '../legend/RasterLegend';
 import { RasterBaseHover } from './RasterBaseHover';
 
 export interface RasterHoverDescriptionProps {

@@ -5,9 +5,8 @@ import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/typ
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 
-import { HazardLegend } from '@/map/legend/content/HazardLegend';
-
 import { HazardHoverDescription } from './HazardHoverDescription';
+import { HazardLegend } from './HazardLegend';
 import { HAZARD_COLOR_MAPS } from './metadata';
 import { getHazardDataPath, getHazardDataUrl } from './source';
 

@@ -1,8 +1,8 @@
 import { FC, useMemo } from 'react';
 
 import { colorScaleValues } from '@/lib/color-map';
-import { ColorMap, FormatConfig } from '@/lib/data-map/view-layers';
 
+import { ColorMap, FormatConfig } from '../view-layers';
 import { GradientLegend } from './GradientLegend';
 
 export const VectorLegend: FC<{ colorMap: ColorMap; legendFormatConfig: FormatConfig }> = ({

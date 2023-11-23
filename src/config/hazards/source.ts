@@ -1,4 +1,4 @@
-import { RasterColorMap } from '@/map/legend/RasterLegend';
+import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
 
 import { SOURCES } from '../sources';
 
