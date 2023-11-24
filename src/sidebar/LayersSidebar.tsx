@@ -1,12 +1,15 @@
-import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
+import { FC } from 'react';
 
-import { MobileTabContentWatcher } from '@/pages/map/layouts/mobile/tab-has-content';
+import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
+import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { SidebarContent } from './SidebarContent';
 
-export const LayersSidebar = () => (
-  <ErrorBoundary message="There was a problem displaying the sidebar.">
-    <MobileTabContentWatcher tabId="layers" />
-    <SidebarContent />
-  </ErrorBoundary>
-);
+export const LayersSidebar: FC = () => {
+  return (
+    <ErrorBoundary message="There was a problem displaying the sidebar.">
+      <ContentWatcher />
+      <SidebarContent />
+    </ErrorBoundary>
+  );
+};

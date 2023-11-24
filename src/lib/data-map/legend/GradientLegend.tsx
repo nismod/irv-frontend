@@ -1,7 +1,15 @@
 import { Box, Fade, Tooltip, Typography } from '@mui/material';
 import { FC, memo, ReactNode } from 'react';
 
-import { RasterColorMapValues } from './RasterLegend';
+export interface ColorValue {
+  color: string;
+  value: any;
+}
+
+export interface ColorMapValues {
+  colorMapValues: ColorValue[];
+  rangeTruncated: [boolean, boolean];
+}
 
 const legendHeight = 10;
 
@@ -21,7 +29,7 @@ export function formatRangeTruncation(
 }
 
 const LegendGradient: FC<{
-  colorMap: RasterColorMapValues;
+  colorMap: ColorMapValues;
   getValueLabel: (value: number) => ReactNode | string;
 }> = ({ colorMap, getValueLabel }) => {
   const { colorMapValues, rangeTruncated } = colorMap;
@@ -50,7 +58,7 @@ export interface GradientLegendProps {
   label: string | ReactNode;
   description?: string;
   range: [number, number];
-  colorMap: RasterColorMapValues;
+  colorMap: ColorMapValues;
   getValueLabel: (x: any) => ReactNode | string;
 }
 

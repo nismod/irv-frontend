@@ -1,11 +1,13 @@
 import { Box } from '@mui/system';
 import { FC, ReactNode, useMemo } from 'react';
 
+import {
+  ColorMapValues,
+  ColorValue,
+  formatRangeTruncation,
+} from '@/lib/data-map/legend/GradientLegend';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 import { DataItem } from '@/lib/ui/data-display/DataItem';
-
-import { formatRangeTruncation } from '../legend/GradientLegend';
-import { ColorValue, RasterColorMapValues } from '../legend/RasterLegend';
 
 export type RGBAColor = [number, number, number, number];
 
@@ -24,7 +26,7 @@ function useRasterColorMapLookup(
 }
 
 export interface RasterBaseHoverProps {
-  colorMap: RasterColorMapValues;
+  colorMap: ColorMapValues;
   color: RGBAColor;
   label: string;
   formatValue: (x: any) => ReactNode | string;

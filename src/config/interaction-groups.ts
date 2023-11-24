@@ -1,4 +1,4 @@
-import { InteractionGroupConfig } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionGroupConfig } from '@/lib/data-map/interactions/types';
 import { makeConfig } from '@/lib/helpers';
 
 export const INTERACTION_GROUPS = makeConfig<InteractionGroupConfig, string>([

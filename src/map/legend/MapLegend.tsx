@@ -1,14 +1,12 @@
 import { Box, Divider, Paper, Stack } from '@mui/material';
-import { FC, Fragment, Suspense } from 'react';
+import { FC, Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { ColorMap, FormatConfig } from '@/lib/data-map/view-layers';
+import { GradientLegend } from '@/lib/data-map/legend/GradientLegend';
+import { ViewLayer } from '@/lib/data-map/view-layers';
+import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 
-import { MobileTabContentWatcher } from '@/pages/map/layouts/mobile/tab-has-content';
-import { viewLayersFlatState } from '@/state/layers/view-layers-flat';
-
-import { GradientLegend } from './GradientLegend';
-import { VectorLegend } from './VectorLegend';
+import { viewLayersState } from '@/state/layers/view-layers';
 
 const LegendLoading = () => {
   return (
@@ -16,72 +14,52 @@ const LegendLoading = () => {
   );
 };
 
-export const MapLegend: FC<{}> = () => {
-  const viewLayers = useRecoilValue(viewLayersFlatState);
+/**
+ * An object holding information about multiple view layers represented by one legend element
+ */
+interface GroupedLegendLayers {
+  /**
+   * The main view layer representing the group of layers.
+   */
+  main: ViewLayer;
+  /**
+   * All view layers represented by this legend. Could be used in the future if some legends need information about all layers.
+   */
+  all: ViewLayer[];
+}
 
-  const rasterLegends = [];
+export const MapLegendContent: FC = () => {
+  const viewLayers = useRecoilValue(viewLayersState);
 
-  const vectorLegendConfigs: Record<
-    string,
-    {
-      colorMap: ColorMap;
-      formatConfig: FormatConfig;
-    }
-  > = {};
+  // use Map because it's guaranteed to remember insertion order
+  const legendConfigs = new Map<string, GroupedLegendLayers>();
 
+  // iterate over view layers that have a legend, and save the first layer for each legend grouping (based on `viewLayer.legendKey`)
   viewLayers.forEach((viewLayer) => {
-    if (viewLayer.spatialType === 'raster') {
-      // for raster layers, use the renderLegend() method of the view layer
-      const layerLegend = viewLayer.renderLegend?.();
-      if (layerLegend) {
-        rasterLegends.push(
-          <Suspense key={viewLayer.id} fallback={<LegendLoading />}>
-            {layerLegend}
-          </Suspense>,
-        );
+    if (viewLayer.renderLegend) {
+      const { id, legendKey = id } = viewLayer;
+
+      if (!legendConfigs.has(legendKey)) {
+        legendConfigs.set(legendKey, { main: viewLayer, all: [] });
       }
-    } else {
-      const { colorMap } = viewLayer.styleParams ?? {};
 
-      if (colorMap) {
-        /**
-         * Construct a key for grouping legends of the same type,
-         * to avoid displaying the same legend many times for multiple layers.
-         * Currently this is based on fieldGroup-field pair,
-         * but this could need reworking for future cases.
-         */
-        const colorMapKey = `${colorMap.fieldSpec.fieldGroup}-${colorMap.fieldSpec.field}`;
-
-        // save the colorMap and formatConfig for first layer of each group
-        if (vectorLegendConfigs[colorMapKey] == null) {
-          const { legendDataFormatsFn, dataFormatsFn } = viewLayer;
-
-          const formatFn = legendDataFormatsFn ?? dataFormatsFn;
-          const formatConfig = formatFn(colorMap.fieldSpec);
-
-          vectorLegendConfigs[colorMapKey] = { colorMap, formatConfig };
-        }
-      }
+      legendConfigs.get(legendKey).all.push(viewLayer);
     }
   });
 
-  return rasterLegends.length || Object.keys(vectorLegendConfigs).length ? (
+  return legendConfigs.size ? (
     <>
-      <MobileTabContentWatcher tabId="legend" />
+      <ContentWatcher />
       <Paper>
         <Box p={1} maxWidth={270}>
           <Suspense fallback={'Loading legend...'}>
             <Stack gap={0.3} divider={<Divider />}>
-              {rasterLegends}
-              {Object.entries(vectorLegendConfigs).map(
-                ([legendKey, { colorMap, formatConfig }]) => (
-                  <VectorLegend
-                    key={legendKey}
-                    colorMap={colorMap}
-                    legendFormatConfig={formatConfig}
-                  />
-                ),
-              )}
+              {Array.from(legendConfigs).map(([legendKey, { main }]) => (
+                <Suspense key={legendKey} fallback={<LegendLoading />}>
+                  {/* use main layer for each legend grouping to render the legend */}
+                  {main.renderLegend()}
+                </Suspense>
+              ))}
             </Stack>
           </Suspense>
         </Box>
@@ -89,3 +67,9 @@ export const MapLegend: FC<{}> = () => {
     </>
   ) : null;
 };
+
+export const MapLegend: FC = () => (
+  <Suspense fallback={null}>
+    <MapLegendContent />
+  </Suspense>
+);

@@ -1,11 +1,11 @@
 import { capitalize } from 'lodash';
 import React from 'react';
 
-import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
+import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 import { makeValueFormat, nullFormat } from '@/lib/formats';
 
-import { RasterColorMap, RasterLegend } from '@/map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/map/tooltip/RasterHoverDescription';
 
 import { SOURCES } from '../sources';
@@ -38,7 +38,6 @@ export function travelTimeViewLayer(type: TraveltimeType) {
 
   return {
     id,
-    spatialType: 'raster',
     interactionGroup: 'raster_assets',
     fn({ deckProps }) {
       return rasterTileLayer({}, deckProps, {

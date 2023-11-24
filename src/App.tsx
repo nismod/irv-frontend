@@ -12,7 +12,10 @@ import './index.css';
 import { QueryClientProvider } from 'react-query';
 import { RecoilURLSyncJSON } from 'recoil-sync';
 
+import { RasterColorMapSourceProvider } from '@/lib/data-map/legend/use-raster-color-map-values';
 import { RecoilLocalStorageSync } from '@/lib/recoil/sync-stores/RecoilLocalStorageSync';
+
+import { terracottaColorMapValuesQuery } from '@/config/terracotta-color-map';
 
 import { queryClient } from './query-client';
 import { router } from './router';
@@ -26,7 +29,9 @@ export const App = () => {
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <QueryClientProvider client={queryClient}>
-                <RouterProvider router={router} />
+                <RasterColorMapSourceProvider state={terracottaColorMapValuesQuery}>
+                  <RouterProvider router={router} />
+                </RasterColorMapSourceProvider>
               </QueryClientProvider>
             </ThemeProvider>
           </StyledEngineProvider>

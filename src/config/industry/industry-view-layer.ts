@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
+import { ViewLayer } from '@/lib/data-map/view-layers';
 import { border, fillColor, pointRadius } from '@/lib/deck/props/style';
 import { makeColorConfig, makeConfig } from '@/lib/helpers';
 
@@ -8,12 +9,11 @@ import { SimpleAssetDetails } from '@/details/features/asset-details';
 import { VectorHoverDescription } from '@/map/tooltip/VectorHoverDescription';
 import { IndustryType } from '@/state/data-selection/industry';
 
-import { assetViewLayer } from '../assets/asset-view-layer';
-import { assetDataAccessFunction } from '../assets/data-access';
+import { makeAssetLayerFn } from '../assets/make-asset-layer-fn';
 import { AssetMetadata } from '../assets/metadata';
 import { IndustryDetails } from './details';
 
-export const INDUSTRY_COLORS = makeColorConfig({
+export const INDUSTRY_COLORS = makeColorConfig<IndustryType>({
   cement: '#e4cda9',
   steel: '#5b8cc3',
 });
@@ -35,21 +35,23 @@ export const INDUSTRY_METADATA = makeConfig<AssetMetadata & { shortLabel: string
   },
 ]);
 
-export function industryViewLayer(industry_type_id: IndustryType) {
-  const { label, color } = INDUSTRY_METADATA[industry_type_id];
+export function industryViewLayer(industryType: IndustryType): ViewLayer {
+  const { label, color } = INDUSTRY_METADATA[industryType];
 
-  return assetViewLayer({
-    assetId: industry_type_id,
-    metadata: {
-      spatialType: 'vector',
-      interactionGroup: 'assets',
+  return {
+    id: industryType,
+    params: {
+      industryType,
     },
-    customFn: ({ zoom }) => [
-      pointRadius(zoom, 1),
-      fillColor(INDUSTRY_COLORS[industry_type_id].deck),
-      border([100, 100, 100]),
-    ],
-    customDataAccessFn: assetDataAccessFunction(industry_type_id),
+    interactionGroup: 'assets',
+    fn: makeAssetLayerFn({
+      assetId: industryType,
+      customLayerPropsFn: ({ zoom }) => [
+        pointRadius(zoom, 1),
+        fillColor(INDUSTRY_COLORS[industryType].deck),
+        border([100, 100, 100]),
+      ],
+    }),
     renderTooltip: (hover: InteractionTarget<VectorTarget>) => {
       return React.createElement(VectorHoverDescription, {
         hoveredObject: hover,
@@ -68,5 +70,5 @@ export function industryViewLayer(industry_type_id: IndustryType) {
         detailsComponent: IndustryDetails,
       });
     },
-  });
+  };
 }

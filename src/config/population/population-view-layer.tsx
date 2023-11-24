@@ -1,12 +1,12 @@
 import GL from '@luma.gl/constants';
 import React from 'react';
 
-import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
+import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 import { makeValueFormat } from '@/lib/formats';
 
-import { RasterColorMap, RasterLegend } from '@/map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/map/tooltip/RasterHoverDescription';
 
 import { SOURCES } from '../sources';
@@ -38,7 +38,6 @@ export function jrcPopulationViewLayer(): ViewLayer {
   return {
     id: 'population',
     interactionGroup: 'raster_assets',
-    spatialType: 'raster',
     fn({ deckProps, zoom }) {
       return rasterTileLayer(
         {

@@ -3,7 +3,7 @@ import React, { FC, ReactNode } from 'react';
 import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 
 import { GradientLegend } from './GradientLegend';
-import { useRasterColorMapValues } from './use-color-map-values';
+import { useRasterColorMapValues } from './use-raster-color-map-values';
 
 export interface RasterColorMap {
   scheme: string;
@@ -15,15 +15,6 @@ export interface RasterColorMap {
    * below/above that end of the range.
    */
   rangeTruncated?: [boolean, boolean];
-}
-
-export interface ColorValue {
-  color: string;
-  value: any;
-}
-export interface RasterColorMapValues {
-  colorMapValues: ColorValue[];
-  rangeTruncated: [boolean, boolean];
 }
 
 export const RasterLegend: FC<{

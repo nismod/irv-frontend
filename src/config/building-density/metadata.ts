@@ -1,6 +1,5 @@
 import { ValueLabel } from '@/lib/controls/params/value-label';
-
-import { RasterColorMap } from '@/map/legend/RasterLegend';
+import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
 
 export const BUILDING_DENSITY_TYPES = ['all', 'non_residential'] as const;
 

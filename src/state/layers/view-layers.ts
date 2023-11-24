@@ -1,7 +1,6 @@
-import { selector } from 'recoil';
+import { waitForAll } from 'recoil';
 
-import { ViewLayer } from '@/lib/data-map/view-layers';
-import { ConfigTree } from '@/lib/nested-config/config-tree';
+import { makeViewLayersState } from '@/lib/data-map/state/make-view-layers-state';
 
 import { buildingDensityLayerState } from './data-layers/building-density';
 import { hazardLayerState } from './data-layers/hazards';
@@ -25,36 +24,45 @@ import { regionalExposureLayerState } from './data-layers/regional-risk';
 import { travelTimeLayerState } from './data-layers/travel-time';
 import { featureBoundingBoxLayerState } from './ui-layers/feature-bbox';
 
-export const viewLayersState = selector<ConfigTree<ViewLayer>>({
+export const viewLayersState = makeViewLayersState({
   key: 'viewLayersState',
-  get: ({ get }) => {
-    return [
-      /**
-       * Data layers
-       */
+  getViewLayers: ({ get }) => {
+    return get(
+      waitForAll([
+        /**
+         * Data layers
+         */
 
-      get(landCoverLayerState),
-      get(humanDevelopmentLayerState),
-      get(populationLayerState),
-      get(buildingDensityLayerState),
-      get(organicCarbonLayerState),
-      get(biodiversityIntactnessLayerState),
-      get(forestLandscapeIntegrityLayerState),
-      get(protectedAreasPolygonLayerState),
-      get(travelTimeLayerState),
-      get(hazardLayerState),
-      get(populationExposureLayerState),
-      get(networkLayersState),
-      get(industryLayersState),
-      get(healthcareLayersState),
-      get(protectedAreasPointLayerState),
-      get(regionalExposureLayerState),
+        // raster layers that cover all/most of land
+        landCoverLayerState,
+        populationLayerState,
+        buildingDensityLayerState,
+        organicCarbonLayerState,
+        biodiversityIntactnessLayerState,
+        forestLandscapeIntegrityLayerState,
+        travelTimeLayerState,
 
-      /**
-       * UI Layers
-       */
+        // vector layers that cover all/most of land
+        humanDevelopmentLayerState,
+        regionalExposureLayerState,
 
-      get(featureBoundingBoxLayerState),
-    ];
+        // vector / raster layers that cover some land
+        protectedAreasPolygonLayerState,
+        hazardLayerState,
+        populationExposureLayerState,
+
+        // point/line layers
+        networkLayersState,
+        industryLayersState,
+        healthcareLayersState,
+        protectedAreasPointLayerState,
+
+        /**
+         * UI Layers
+         */
+
+        featureBoundingBoxLayerState,
+      ]),
+    );
   },
 });

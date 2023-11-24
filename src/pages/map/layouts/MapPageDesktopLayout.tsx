@@ -1,9 +1,21 @@
 import { Box } from '@mui/material';
 
+import { MapHud } from '@/lib/map/hud/MapHud';
+import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
+
 import { DetailsContent } from '@/details/DetailsContent';
+import { MapLayerSelection } from '@/map/layers/MapLayerSelection';
+import { MapLegend } from '@/map/legend/MapLegend';
 import { MapView } from '@/map/MapView';
 import { LayersSidebar } from '@/sidebar/LayersSidebar';
 import { globalStyleVariables } from '@/theme';
+
+import {
+  AppAttributionControl,
+  AppNavigationControl,
+  AppPlaceSearch,
+  AppScaleControl,
+} from './hud';
 
 const SidebarLayout = ({ top, bottom, left, right, width, children }) => (
   <Box
@@ -34,6 +46,27 @@ const SidebarLayout = ({ top, bottom, left, right, width, children }) => (
   </Box>
 );
 
+const MapHudDesktopLayout = () => {
+  return (
+    <MapHud left={globalStyleVariables.controlSidebarWidth}>
+      <MapHudRegion position="top-left" StackProps={{ spacing: 1 }}>
+        <AppPlaceSearch />
+        <MapLayerSelection />
+      </MapHudRegion>
+      <MapHudRegion position="top-right">
+        <AppNavigationControl />
+      </MapHudRegion>
+      <MapHudRegion position="bottom-right" style={{ maxWidth: '40%' }}>
+        <AppScaleControl />
+        <AppAttributionControl />
+      </MapHudRegion>
+      <MapHudRegion position="bottom-left">
+        <MapLegend />
+      </MapHudRegion>
+    </MapHud>
+  );
+};
+
 export const MapPageDesktopLayout = () => {
   return (
     <>
@@ -47,7 +80,9 @@ export const MapPageDesktopLayout = () => {
         <LayersSidebar />
       </SidebarLayout>
       <Box position="absolute" overflow="clip" top={0} left={0} right={0} bottom={0}>
-        <MapView />
+        <MapView>
+          <MapHudDesktopLayout />
+        </MapView>
       </Box>
       <SidebarLayout
         top={0}

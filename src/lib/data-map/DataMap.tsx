@@ -4,6 +4,7 @@ import { useMap } from 'react-map-gl/maplibre';
 
 import { useTriggerMemo } from '../hooks/use-trigger-memo';
 import { DeckGLOverlay } from '../map/DeckGLOverlay';
+import { InteractionGroupConfig } from './interactions/types';
 import { useInteractions } from './interactions/use-interactions';
 import { useDataLoadTrigger } from './use-data-load-trigger';
 import { ViewLayer, ViewLayerParams } from './view-layers';
@@ -12,7 +13,7 @@ export interface DataMapProps {
   beforeId: string | undefined;
   viewLayers: ViewLayer[];
   viewLayersParams: Record<string, ViewLayerParams>;
-  interactionGroups: any;
+  interactionGroups: InteractionGroupConfig[];
 }
 
 // set a convention where the view layer id is either the first part of the deck id before the @ sign, or it's the whole id

@@ -2,9 +2,8 @@ import { ScaleSequential } from 'd3-scale';
 import { ReactNode } from 'react';
 
 import { DataLoader } from '@/lib/data-loader/data-loader';
-import { Accessor } from '@/lib/deck/props/getters';
-
-import { InteractionTarget } from './interactions/use-interactions';
+import { InteractionTarget } from '@/lib/data-map/interactions/types';
+import { AccessorFunction } from '@/lib/deck/props/getters';
 
 export interface FieldSpec {
   fieldGroup: string;
@@ -46,26 +45,56 @@ export interface FormatConfig<D = any> {
   getValueFormatted: (value: D, fieldSpec: FieldSpec) => string | ReactNode;
 }
 
-export type ViewLayerDataAccessFunction = (fieldSpec: FieldSpec) => Accessor<any>;
+/** Produces a data accessor function, given a `FieldSpec` object */
+export type ViewLayerDataAccessFunction = (fieldSpec: FieldSpec) => AccessorFunction<any>;
+
+/** Produces a `FormatConfig` object, given a `FieldSpec` object */
 export type ViewLayerDataFormatFunction = (fieldSpec: FieldSpec) => FormatConfig;
-export type ViewLayerRenderTooltipFunction = (hover: any) => ReactNode;
-export type ViewLayerRenderDetailsFunction = (selection: any) => ReactNode;
+
+export type ViewLayerRenderLegendFunction = () => ReactNode;
+export type ViewLayerRenderTooltipFunction = (
+  /** Hovered feature(s) to render details for */
+  hover: InteractionTarget,
+) => ReactNode;
+
+export type ViewLayerRenderDetailsFunction = (
+  /**
+   * Selected feature to render details for
+   */
+  selection: InteractionTarget,
+) => ReactNode;
+
 export interface ViewLayer<ParamsT = any> {
   id: string;
   params?: ParamsT;
   styleParams?: StyleParams;
-  fn: (options: ViewLayerFunctionOptions) => any;
-  dataAccessFn?: ViewLayerDataAccessFunction;
-  dataFormatsFn?: ViewLayerDataFormatFunction;
-  legendDataFormatsFn?: ViewLayerDataFormatFunction;
-  spatialType?: string;
   interactionGroup?: string;
 
+  fn: (options: ViewLayerFunctionOptions) => any;
+
+  /** Factory method that creates a deck.gl-compatible data accessor for the view layer, given a `FieldSpec` object */
+  dataAccessFn?: ViewLayerDataAccessFunction;
+  /** Factory method that creates a `FormatConfig` object for the view layer, given a `FieldSpec` object */
+  dataFormatsFn?: ViewLayerDataFormatFunction;
+
+  /** Render a React tree for this view layer's legend */
+  renderLegend?: ViewLayerRenderLegendFunction;
   /**
-   * new approach for legends: keep the rendering logic inside view layer
-   * (currently used for raster layers only)
+   * String key based on which the layer legends will be grouped.
+   * For all layers with the same legendKey, only one legend element will be rendered.
+   *
+   * If not defined, this defaults to the view layer's `id`, so each layer will by default render its own legend.
+   *
+   * Currently, the first layer in the group will be responsible for rendering the legend for all other layers.
+   * The key needs to be set in layers so that the one legend rendered for the group will represent all layers correctly.
+   *
+   * For example, if two layers use the same color scale for data visualisation, but the numerical range of the data is different,
+   * the layers should have a different legendKey - otherwise, the single legend would display min/max values that would correctly represent
+   * only one of the layers.
    */
-  renderLegend?: () => ReactNode;
+  legendKey?: string;
+
+  /** Render a React tree for this view layer's tooltip.*/
   renderTooltip?: ViewLayerRenderTooltipFunction;
   renderDetails?: ViewLayerRenderDetailsFunction;
 }

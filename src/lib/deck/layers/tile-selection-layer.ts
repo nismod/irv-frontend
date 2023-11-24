@@ -26,7 +26,6 @@ export function tileSelectionLayer(
       pickable: false,
       getPolygonOffset: ({ layerIndex }) => [0, -layerIndex * 100 + polygonOffset],
       visible: selectedFeatureId != null,
-      refinementStrategy: 'no-overlap',
 
       getLineWidth: 2,
       lineWidthUnits: 'pixels',

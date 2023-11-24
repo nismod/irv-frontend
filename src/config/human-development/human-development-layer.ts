@@ -3,11 +3,12 @@ import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import React from 'react';
 
 import { colorMap } from '@/lib/color-map';
-import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ColorSpec, FieldSpec, ViewLayer } from '@/lib/data-map/view-layers';
-import { selectableMvtLayer } from '@/lib/deck/layers/selectable-mvt-layer';
+import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
 import { dataColorMap } from '@/lib/deck/props/color-map';
 import { featureProperty } from '@/lib/deck/props/data-source';
+import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { border, fillColor } from '@/lib/deck/props/style';
 import { toLabelLookup } from '@/lib/helpers';
 
@@ -65,7 +66,6 @@ export function humanDevelopmentLayer(
   return {
     id,
     interactionGroup: 'hdi',
-    spatialType: 'vector',
     params: {
       regionLevel,
       variable,
@@ -79,20 +79,18 @@ export function humanDevelopmentLayer(
     fn: ({ deckProps, zoom, selection }) => {
       const dataStyleColor = dataColorMap(featureProperty(variable), colorMap(colorSpec));
 
-      return selectableMvtLayer(
-        {
-          selectionOptions: {
-            selectedFeatureId: selection?.target.feature.id,
-            selectionFillColor: [0, 0, 0, 0],
-            selectionLineColor: [0, 255, 255, 255],
-          },
-        },
+      return basicMvtLayer(
         deckProps,
         {
           data: SOURCES.vector.getUrl(id),
         },
         border([40, 40, 40, 255]),
         fillColor(dataStyleColor),
+        mvtSelection({
+          selectedFeatureId: selection?.target.feature.id,
+          selectionFillColor: [0, 0, 0, 0],
+          selectionLineColor: [0, 255, 255, 255],
+        }),
         {
           highlightColor: [255, 255, 255, 100],
         },

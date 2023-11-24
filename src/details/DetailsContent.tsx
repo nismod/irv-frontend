@@ -1,9 +1,9 @@
 import { Stack } from '@mui/material';
+import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { selectionState } from '@/lib/data-map/interactions/interaction-state';
-
-import { MobileTabContentWatcher } from '@/pages/map/layouts/mobile/tab-has-content';
+import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 
 import { DetailsPanel } from './ui/DetailsPanel';
 
@@ -12,7 +12,7 @@ const InteractionGroupDetails = ({ group }) => {
 
   return selection?.viewLayer.renderDetails ? (
     <>
-      <MobileTabContentWatcher tabId="details" />
+      <ContentWatcher />
       <DetailsPanel interactionGroup={group}>
         {selection.viewLayer.renderDetails(selection)}
       </DetailsPanel>
@@ -20,7 +20,7 @@ const InteractionGroupDetails = ({ group }) => {
   ) : null;
 };
 
-export const DetailsContent = () => {
+export const DetailsContent: FC = () => {
   return (
     <Stack spacing={2}>
       <InteractionGroupDetails group="assets" />

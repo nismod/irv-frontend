@@ -77,7 +77,7 @@ function totalExpectedDamagesProperty(layer: string, direct: boolean, { rcp, epo
 /**
  * Defines how to get data for an asset layer, depending on what field is required
  */
-export function getAssetDataAccessor(layer: string, fieldSpec: FieldSpec) {
+export function makeAssetDataAccessor(layer: string, fieldSpec: FieldSpec) {
   if (fieldSpec == null) return null;
 
   const { fieldGroup, fieldDimensions, field } = fieldSpec;
@@ -110,6 +110,6 @@ export function getAssetDataAccessor(layer: string, fieldSpec: FieldSpec) {
   }
 }
 
-export function assetDataAccessFunction(layer: string) {
-  return (fieldSpec: FieldSpec) => getAssetDataAccessor(layer, fieldSpec);
+export function makeAssetDataAccessorFactory(layer: string) {
+  return (fieldSpec: FieldSpec) => makeAssetDataAccessor(layer, fieldSpec);
 }

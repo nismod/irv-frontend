@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { FC } from 'react';
 
-import { InteractionTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget } from '@/lib/data-map/interactions/types';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 
 import { PROTECTED_AREA_COLORS } from '@/config/protected-areas/metadata';

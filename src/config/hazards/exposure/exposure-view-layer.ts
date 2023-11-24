@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
+import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 import { Subset } from '@/lib/helpers';
 
-import { RasterColorMap, RasterLegend } from '@/map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/map/tooltip/RasterHoverDescription';
 
 import { HAZARDS_METADATA, HazardType } from '../metadata';
@@ -41,7 +41,6 @@ export function exposureViewLayer(hazardType: ExposureSource, hazardParams: any)
 
   return {
     id,
-    spatialType: 'raster',
     interactionGroup: 'hazards',
     params: { hazardType, hazardParams },
     fn: ({ deckProps, zoom }) => {

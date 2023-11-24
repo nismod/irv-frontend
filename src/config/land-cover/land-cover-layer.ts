@@ -2,7 +2,7 @@ import GL from '@luma.gl/constants';
 import _ from 'lodash';
 import React from 'react';
 
-import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/use-interactions';
+import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 
@@ -22,7 +22,6 @@ const landCoverLabels = Object.fromEntries(
 export function landCoverViewLayer(): ViewLayer {
   return {
     id: 'land_cover',
-    spatialType: 'raster',
     interactionGroup: 'raster_assets',
     fn: ({ deckProps }) =>
       rasterTileLayer(
