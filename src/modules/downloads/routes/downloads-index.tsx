@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 
 import { AppLink } from '@/lib/nav';
@@ -24,12 +24,12 @@ export const Component = () => {
   return (
     <CenteredLayout>
       <Stack direction="column">
-        <Box p={2}>
+        <article className="centred">
           <DownloadsIntroText components={mdxComponents} />
-        </Box>
+        </article>
         <Stack direction="column" alignItems={'center'}>
           <RegionSearchNavigation regions={regions} title="Select a country" />
-          <Typography textAlign="center">
+          <Typography textAlign="center" sx={{ my: 2 }}>
             Or <AppLink to="regions">browse all countries</AppLink>
           </Typography>
         </Stack>

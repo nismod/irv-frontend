@@ -12,65 +12,37 @@ import { Link } from 'react-router-dom';
 
 import { ExtLink } from '@/lib/nav';
 
+import { HeadingBox } from './HeadingBox';
+
 export const DataPage = () => (
   <article>
-    <Typography variant="h1">About G-SRAT, Data Sources and Access</Typography>
-
-    <Typography variant="h2">Disclaimer</Typography>
-
-    <p>
-      The Global Systemic Risk Assessment Tool (G-SRAT) is provided for general information only and
-      is not intended to amount to advice on which you should rely. You must obtain professional or
-      specialist advice before taking, or refraining from, any action on the basis of the content on
-      our site.
-    </p>
-
-    <p>
-      Although we make reasonable efforts to update the information on our site, we make no
-      representations, warranties or guarantees, whether express or implied, that the content on our
-      site (including this tool) is accurate, complete or up to date. The University of Oxford
-      accepts no liability in relation to any issues or liabilities that may subsequently arise from
-      use of the data or this tool for any purpose. Please consult our{' '}
-      <Link to="/terms-of-use">website terms of use</Link> for more information about our liability
-      to you.
-    </p>
-
-    <Typography variant="h2">Acknowledgments</Typography>
-
-    <p>
-      The development of this site is led by the University of Oxford (the{' '}
-      <a href="https://opsis.eci.ox.ac.uk/">
-        Oxford Programme for Sustainable Infrastructure Systems
-      </a>
-      ). It is supported by a wide range of contributing technical organisations and specialists
-      that share data, analytics and expertise, including: the{' '}
-      <a href="https://www.smithschool.ox.ac.uk/research/sustainable-finance">
-        University of Oxford Sustainable Finance Group
-      </a>
-      , the{' '}
-      <a href="https://www.insdevforum.org/working-groups/rmsg/">
-        Insurance Development Forum’s Risk Modelling Steering Group
-      </a>{' '}
-      (RMSG), the{' '}
-      <a href="https://www.globalquakemodel.org/who-we-are">Global Earthquake Model Foundation</a>{' '}
-      (GEM), the <a href="https://www.disasterprotection.org/">Centre for Disaster Protection</a>,{' '}
-      <a href="https://www.fathom.global/">Fathom</a>, <a href="https://www.jbarisk.com/">JBA</a>,{' '}
-      <a href="https://www.nasdaq.com/solutions/nasdaq-risk-platform">NASDAQ</a>,{' '}
-      <a href="https://oasislmf.org/">OASIS Loss Modelling Framework</a>,{' '}
-      <a href="https://www.wtwco.com/en-US">Willis Towers Watson</a>,{' '}
-      <a href="https://www.aon.com/home/index">Aon</a>, and the{' '}
-      <a href="https://www.worldbank.org/en/home">World Bank</a> (
-      <a href="https://www.gfdrr.org/en">GFDRR</a> and{' '}
-      <a href="https://www.worldbank.org/en/programs/disaster-risk-financing-and-insurance-program">
-        DRFIP
-      </a>
-      ). The ambition is to expand these technical collaborations over time to build the climate
-      risk data ecosystem.
-    </p>
-
-    <Typography variant="h2">Hazard Data</Typography>
-
-    <TableContainer component={Paper} sx={{ mb: 4 }}>
+    <HeadingBox>
+      <Typography variant="h1">About GRI, Data Sources and Acknowledgments</Typography>
+    </HeadingBox>
+    <div className="centred">
+      <hr className="minibar" />
+      <Typography variant="h5" component="p">
+        The GRI Risk Viewer is developed at the University of Oxford by the Oxford Programme for
+        Sustainable Infrastructure Systems.
+      </Typography>
+      <p>
+        This website is developed at{' '}
+        <a href="https://github.com/nismod/infra-risk-vis" target="blank">
+          github.com/nismod/infra-risk-vis
+        </a>{' '}
+        and much of the risk analytics are produced using the workflow developed at{' '}
+        <a href="https://github.com/nismod/open-gira" target="blank">
+          github.com/nismod/open-gira
+        </a>
+        .
+      </p>
+      <p>
+        The rest of this page details the sources of data presented on this site, and acknowledges
+        additional sources, funding and collaborations.
+      </p>
+      <Typography variant="h2">Hazard Data</Typography>
+    </div>
+    <TableContainer className="centred wide" component={Paper} sx={{ mb: 4 }}>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -231,9 +203,11 @@ export const DataPage = () => (
       </Table>
     </TableContainer>
 
-    <Typography variant="h2">Exposure Data</Typography>
+    <div className="centred">
+      <Typography variant="h2">Exposure Data</Typography>
+    </div>
 
-    <TableContainer component={Paper} sx={{ mb: 4 }}>
+    <TableContainer className="centred wide" component={Paper} sx={{ mb: 4 }}>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -444,9 +418,11 @@ export const DataPage = () => (
       </Table>
     </TableContainer>
 
-    <Typography variant="h2">Vulnerability Data</Typography>
+    <div className="centred">
+      <Typography variant="h2">Vulnerability Data</Typography>
+    </div>
 
-    <TableContainer component={Paper} sx={{ mb: 4 }}>
+    <TableContainer className="centred wide" component={Paper} sx={{ mb: 4 }}>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -570,47 +546,79 @@ export const DataPage = () => (
       </Table>
     </TableContainer>
 
-    <Typography variant="h2">Source Code</Typography>
+    <div className="centred">
+      <Typography variant="h2">Contextual Map Data</Typography>
 
-    <p>This website is developed here:</p>
+      <p>
+        Background map data is &copy;{' '}
+        <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, style
+        &copy; <a href="https://carto.com/attributions">CARTO</a>.
+      </p>
 
-    <ul>
-      <li>
-        <a href="https://github.com/nismod/infra-risk-vis" target="blank">
-          github.com/nismod/infra-risk-vis
+      <p>
+        Satellite imagery background is derived from{' '}
+        <a href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</a> by{' '}
+        <a href="https://eox.at">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel
+        data 2020).
+      </p>
+
+      <p>
+        Photo credit: Hurricane Irma, 7 September 2017. Data: MODIS/Terra (NASA WorldView).
+        Processed by Antti Lipponen (<a href="https://twitter.com/anttilip">@anttilip</a>){' '}
+        <a href="https://creativecommons.org/licenses/by/2.0/">CC-BY</a>
+      </p>
+
+      <Typography variant="h2">Disclaimer</Typography>
+
+      <p>
+        The Global Systemic Risk Assessment Tool (G-SRAT) is provided for general information only
+        and is not intended to amount to advice on which you should rely. You must obtain
+        professional or specialist advice before taking, or refraining from, any action on the basis
+        of the content on our site.
+      </p>
+
+      <p>
+        Although we make reasonable efforts to update the information on our site, we make no
+        representations, warranties or guarantees, whether express or implied, that the content on
+        our site (including this tool) is accurate, complete or up to date. The University of Oxford
+        accepts no liability in relation to any issues or liabilities that may subsequently arise
+        from use of the data or this tool for any purpose. Please consult our{' '}
+        <Link to="/terms-of-use">website terms of use</Link> for more information about our
+        liability to you.
+      </p>
+
+      <Typography variant="h2">Acknowledgments</Typography>
+
+      <p>
+        The development of this site is led by the University of Oxford (the{' '}
+        <a href="https://opsis.eci.ox.ac.uk/">
+          Oxford Programme for Sustainable Infrastructure Systems
         </a>
-      </li>
-    </ul>
-
-    <p>Much of the risk analytics are produced using the workflow developed here:</p>
-
-    <ul>
-      <li>
-        <a href="https://github.com/nismod/open-gira" target="blank">
-          github.com/nismod/open-gira
+        ). It is supported by a wide range of contributing technical organisations and specialists
+        that share data, analytics and expertise, including: the{' '}
+        <a href="https://www.smithschool.ox.ac.uk/research/sustainable-finance">
+          University of Oxford Sustainable Finance Group
         </a>
-      </li>
-    </ul>
-
-    <Typography variant="h2">Contextual Map Data</Typography>
-
-    <p>
-      Background map data is &copy;{' '}
-      <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, style &copy;{' '}
-      <a href="https://carto.com/attributions">CARTO</a>.
-    </p>
-
-    <p>
-      Satellite imagery background is derived from{' '}
-      <a href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</a> by{' '}
-      <a href="https://eox.at">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data
-      2020).
-    </p>
-
-    <p>
-      Photo credit: Hurricane Irma, 7 September 2017. Data: MODIS/Terra (NASA WorldView). Processed
-      by Antti Lipponen (<a href="https://twitter.com/anttilip">@anttilip</a>){' '}
-      <a href="https://creativecommons.org/licenses/by/2.0/">CC-BY</a>
-    </p>
+        , the{' '}
+        <a href="https://www.insdevforum.org/working-groups/rmsg/">
+          Insurance Development Forum’s Risk Modelling Steering Group
+        </a>{' '}
+        (RMSG), the{' '}
+        <a href="https://www.globalquakemodel.org/who-we-are">Global Earthquake Model Foundation</a>{' '}
+        (GEM), the <a href="https://www.disasterprotection.org/">Centre for Disaster Protection</a>,{' '}
+        <a href="https://www.fathom.global/">Fathom</a>, <a href="https://www.jbarisk.com/">JBA</a>,{' '}
+        <a href="https://www.nasdaq.com/solutions/nasdaq-risk-platform">NASDAQ</a>,{' '}
+        <a href="https://oasislmf.org/">OASIS Loss Modelling Framework</a>,{' '}
+        <a href="https://www.wtwco.com/en-US">Willis Towers Watson</a>,{' '}
+        <a href="https://www.aon.com/home/index">Aon</a>, and the{' '}
+        <a href="https://www.worldbank.org/en/home">World Bank</a> (
+        <a href="https://www.gfdrr.org/en">GFDRR</a> and{' '}
+        <a href="https://www.worldbank.org/en/programs/disaster-risk-financing-and-insurance-program">
+          DRFIP
+        </a>
+        ). The ambition is to expand these technical collaborations over time to build the climate
+        risk data ecosystem.
+      </p>
+    </div>
   </article>
 );
