@@ -1,15 +1,27 @@
-import { createContext, useContext } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { ColorValue } from '@/lib/data-map/legend/GradientLegend';
 import { RecoilReadableStateFamily } from '@/lib/recoil/types';
 
-const ColorMapSourceContext =
-  createContext<
-    RecoilReadableStateFamily<ColorValue[], { scheme: string; range: [number, number] }>
-  >(null);
+type ColorMapValuesSourceState = RecoilReadableStateFamily<
+  ColorValue[],
+  { scheme: string; range: [number, number] }
+>;
 
-export function RasterColorMapSourceProvider({ state, children }) {
+const ColorMapSourceContext = createContext<ColorMapValuesSourceState>(null);
+
+/**
+ * Context provider for a source of raster color maps
+ */
+export function RasterColorMapSourceProvider({
+  state,
+  children,
+}: {
+  /** Recoil state family that accepts color map details as param and returns an array of ColorValue */
+  state: ColorMapValuesSourceState;
+  children?: ReactNode;
+}) {
   return <ColorMapSourceContext.Provider value={state}>{children}</ColorMapSourceContext.Provider>;
 }
 
