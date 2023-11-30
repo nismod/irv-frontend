@@ -1,7 +1,7 @@
 import { Color, GeoJsonLayerProps } from 'deck.gl/typed';
 import { Feature } from 'geojson';
 
-import { Accessor } from './getters';
+import { Accessor, getTriggers } from './getters';
 import type { PropsWithTriggers } from './types';
 
 type ScaleLevel = 0 | 1 | 2;
@@ -31,6 +31,9 @@ const lineSizeLevels: Record<
   },
 };
 
+/**
+ * GeoJsonLayer line style props
+ */
 export type LineStyleProps = Pick<
   GeoJsonLayerProps,
   | 'lineJointRounded'
@@ -41,6 +44,9 @@ export type LineStyleProps = Pick<
   | 'lineWidthMaxPixels'
 >;
 
+/**
+ * deck.gl prop factory for GeojsonLayer line width/style props
+ */
 export function lineStyle(zoom, level: ScaleLevel = 2): Partial<LineStyleProps> {
   return {
     lineJointRounded: true,
@@ -66,11 +72,17 @@ const pointSizeLevels: Record<
   2: { getPointRadius: 300, pointRadiusMinPixels: 2, pointRadiusMaxPixels: 4 },
 };
 
+/**
+ * GeoJsonLayer point style props
+ */
 export type PointStyleProps = Pick<
   GeoJsonLayerProps,
   'pointRadiusUnits' | 'getPointRadius' | 'pointRadiusMinPixels' | 'pointRadiusMaxPixels'
 >;
 
+/**
+ * deck.gl prop factory for GeojsonLayer point radius props
+ */
 export function pointRadius(zoom, level: ScaleLevel = 2): Partial<PointStyleProps> {
   return {
     pointRadiusUnits: 'meters' as const,
@@ -102,6 +114,8 @@ type ColorPropKey = keyof ColorPropNameMap;
 
 /**
  * deck.gl prop factory for vector color props
+ *
+ * **NOTE**: relies on a merge strategy for `updateTriggers` to be defined
  */
 function vectorColor<CT extends ColorPropKey>(
   type: CT,
@@ -112,15 +126,24 @@ function vectorColor<CT extends ColorPropKey>(
   return {
     [propName]: getColor,
     updateTriggers: {
-      [propName]:
-        (getColor as any)?.updateTriggers ?? (typeof getColor === 'function' ? [] : undefined),
+      [propName]: getTriggers(getColor),
     },
   } as PropsWithTriggers<ColorPropNameMap[CT], GetColor>;
 }
 
+/**
+ * deck.gl prop factory for vector fill color props
+ */
 export const fillColor = (getColor: GetColor) => vectorColor('fill', getColor);
+
+/**
+ * deck.gl prop factory for vector stroke color props
+ */
 export const strokeColor = (getColor: GetColor) => vectorColor('stroke', getColor);
 
+/**
+ * deck.gl prop factory for vector border stroke/color props
+ */
 export function border(color: Color = [255, 255, 255]) {
   return {
     stroked: true,

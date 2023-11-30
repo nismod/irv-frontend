@@ -6,7 +6,7 @@ import { colorMap } from '@/lib/color-map';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ColorSpec, FieldSpec, ViewLayer } from '@/lib/data-map/view-layers';
 import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
-import { dataColorMap } from '@/lib/deck/props/color-map';
+import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { featureProperty } from '@/lib/deck/props/data-source';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { border, fillColor } from '@/lib/deck/props/style';
@@ -77,7 +77,7 @@ export function humanDevelopmentLayer(
       },
     },
     fn: ({ deckProps, zoom, selection }) => {
-      const dataStyleColor = dataColorMap(featureProperty(variable), colorMap(colorSpec));
+      const dataStyleColor = makeDataColorAccessor(featureProperty(variable), colorMap(colorSpec));
 
       return basicMvtLayer(
         deckProps,

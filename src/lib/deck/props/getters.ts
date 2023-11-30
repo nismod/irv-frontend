@@ -42,3 +42,13 @@ export function withLoaderTriggers(fn: AccessorFunction<any>, dataLoader: DataLo
   fn.dataLoader = dataLoader;
   return withTriggers(fn, [dataLoader.id, dataLoader.updateTrigger]);
 }
+
+/**
+ * Get update triggers for an accessor (value or accessor function).
+ * If the accessor has an `updateTriggers` property, it is returned.
+ * If it doesn't but it is a function, an empty array is returned.
+ * Otherwise, `undefined` is returned.
+ */
+export function getTriggers<OutT, InT>(accessor: Accessor<OutT, InT>) {
+  return (accessor as any)?.updateTriggers ?? (typeof accessor === 'function' ? [] : undefined);
+}

@@ -17,7 +17,11 @@ import {
   makeObjectsMerger,
 } from '@/lib/nested-config/merge-objects';
 
+/**
+ * Special strategies for merging some of the properties inside deck.gl `updateTriggers`
+ */
 const mergeUpdateTriggers = makeObjectsMerger({
+  // if multiple prop objects specify `updateTriggers` for `renderSubLayers`, concatenate the triggers
   renderSubLayers: appendValue,
 });
 
@@ -26,9 +30,10 @@ const mergeUpdateTriggers = makeObjectsMerger({
  * specific to Deck.GL
  */
 const mergeDeckProps = makeObjectsMerger({
+  // if multiple prop objects specify `updateTriggers`, use the custom object merge strategy for `updateTriggers` defined above
   updateTriggers: mergeUpdateTriggers,
 
-  // concatenate extensions arrays
+  // concatenate multiple `extensions` arrays
   extensions: appendValue,
 
   // concatenate the results of all `renderSubLayer` functions

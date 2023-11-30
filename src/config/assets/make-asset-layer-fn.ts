@@ -3,7 +3,7 @@ import { MVTLayerProps } from 'deck.gl/typed';
 import { colorMap } from '@/lib/color-map';
 import { StyleParams, ViewLayerDataAccessFunction } from '@/lib/data-map/view-layers';
 import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
-import { dataColorMap } from '@/lib/deck/props/color-map';
+import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { GetColor } from '@/lib/deck/props/style';
 import { tiledDataLoading } from '@/lib/deck/props/tiled-data-loading';
@@ -41,7 +41,7 @@ export function makeAssetLayerFn({
 
   const dataStyle: DataStyle = styleParams?.colorMap
     ? {
-        getColor: dataColorMap(dataAccessor, colorMap(styleParams.colorMap.colorSpec)),
+        getColor: makeDataColorAccessor(dataAccessor, colorMap(styleParams.colorMap.colorSpec)),
       }
     : null;
 

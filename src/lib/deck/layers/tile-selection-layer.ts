@@ -9,6 +9,12 @@ export interface TileSelectionLayerOptions {
   selectionLineColor?: GetColor;
   polygonOffset?: number;
 }
+
+/**
+ * A deck.gl layer to draw a selection layer for a GeoJson tile.
+ * Uses data from the tile instead of loading its own data.
+ * Filters the selected feature on-GPU and displays it with a different style.
+ */
 export function tileSelectionLayer(
   tileProps,
   {

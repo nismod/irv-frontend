@@ -2,7 +2,7 @@ import React from 'react';
 
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
-import { dataColorMap } from '@/lib/deck/props/color-map';
+import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { border, fillColor, lineStyle, pointRadius, strokeColor } from '@/lib/deck/props/style';
 
 import { makeAssetDataAccessorFactory } from '@/config/assets/data-access';
@@ -30,7 +30,7 @@ function makeRoadsFn(asset_id, scaleLevel) {
   return ({ zoom, dataStyle }) => [
     strokeColor(
       dataStyle?.getColor ??
-        dataColorMap(
+        makeDataColorAccessor(
           () => asset_id,
           (x) => roadColor[x],
         ),

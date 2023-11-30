@@ -1,11 +1,15 @@
 import { PathStyleExtension, PathStyleExtensionProps } from '@deck.gl/extensions/typed';
+import { Feature, Polygon } from 'geojson';
 
 import { geoJsonLayer } from './base';
 
 export interface BoundingBoxLayerOptions {
-  bboxGeom: any;
+  bboxGeom: Feature<Polygon>;
 }
 
+/**
+ * A deck.gl layer factory to draw a bounding box
+ */
 export function boundingBoxLayer({ bboxGeom }: BoundingBoxLayerOptions, ...props) {
   return geoJsonLayer<PathStyleExtensionProps>(
     {

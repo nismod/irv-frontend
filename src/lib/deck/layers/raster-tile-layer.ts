@@ -14,6 +14,9 @@ function getBoundsForTile(tileProps): BitmapBoundingBox {
   return [west, south, east, north];
 }
 
+/**
+ * A deck.gl layer factory to draw a raster tile layer (TileLayer with BitmapLayer for each tile)
+ */
 export function rasterTileLayer<DataT = any>(
   bitmapProps: Partial<BitmapLayerProps>,
   ...props: ConfigTree<Partial<TileLayerProps<DataT>>>
