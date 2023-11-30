@@ -7,24 +7,31 @@ import { DeckGLOverlay } from '../map/DeckGLOverlay';
 import { InteractionGroupConfig } from './interactions/types';
 import { useInteractions } from './interactions/use-interactions';
 import { useDataLoadTrigger } from './use-data-load-trigger';
-import { ViewLayer, ViewLayerParams } from './view-layers';
+import { ViewLayer } from './view-layers';
 
 export interface DataMapProps {
+  /** ID of the react-map-gl layer before which the deck.gl layers should be inserted */
   beforeId: string | undefined;
+  /** Array of all view layers */
   viewLayers: ViewLayer[];
-  viewLayersParams: Record<string, ViewLayerParams>;
+  /** Lookup of view layer params by layer ID */
+  viewLayersParams: Record<string, any>;
+  /** Array of interaction group configs */
   interactionGroups: InteractionGroupConfig[];
 }
 
-// set a convention where the view layer id is either the first part of the deck id before the @ sign, or it's the whole id
+/** Sets a convention where the view layer ID is either the first part of the deck ID before the `@` sign,
+ *  or it's the whole ID if there's not `@` sign
+ */
 function lookupViewForDeck(deckLayerId: string) {
   return deckLayerId.split('@')[0];
 }
 
 /**
- * Processes the config: all view layers, interaction groups etc
+ * Main data map component - processes the config: view layers, view layer params, interaction groups
+ * - and displays a DeckGLOverlay with layers representing the data.
  *
- *
+ * Handles view layer interactions and external data loading.
  */
 export const DataMap: FC<DataMapProps> = ({
   beforeId,
@@ -48,6 +55,7 @@ export const DataMap: FC<DataMapProps> = ({
 
   const dataLoadTrigger = useDataLoadTrigger(dataLoaders);
 
+  /** Function called every time the map zoom changes, to calculate new list of deck layers */
   const layersFunction = useCallback(
     ({ zoom }: { zoom: number }) =>
       viewLayers.map((viewLayer) =>
@@ -61,6 +69,10 @@ export const DataMap: FC<DataMapProps> = ({
   const { current: map } = useMap();
   const zoom = map.getMap().getZoom();
 
+  /**
+   * List of deck.gl layers, recalculated upon zoom change,
+   * but also when `dataLoadTrigger` changes - because deck.gl can't detect a change to external data
+   */
   const layers = useTriggerMemo(
     () => layersFunction({ zoom }),
     [layersFunction, zoom],
@@ -84,14 +96,19 @@ export const DataMap: FC<DataMapProps> = ({
   );
 };
 
+/** Utility function to create deck layers for a list of view layers */
 function makeDeckLayers(
   viewLayer: ViewLayer,
-  viewLayerParams: ViewLayerParams,
+  viewLayerParams: any,
   zoom: number,
   beforeId: string | undefined,
 ) {
   return viewLayer.fn({
-    deckProps: { id: viewLayer.id, pickable: !!viewLayer.interactionGroup, beforeId },
+    deckProps: {
+      id: viewLayer.id, // by default set deck layer ID to view layer ID. View layers can override this
+      pickable: !!viewLayer.interactionGroup, // automatically set layer to pickable or not, depending on whether it specifies an interaction group
+      beforeId,
+    },
     zoom,
     ...viewLayerParams,
   });

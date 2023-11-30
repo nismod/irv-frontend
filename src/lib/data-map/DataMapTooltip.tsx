@@ -3,6 +3,10 @@ import { useRecoilValue } from 'recoil';
 
 import { hoverPositionState } from './interactions/interaction-state';
 
+/** Component which absolutely positions its children based on the current hover position state.
+ *
+ * Only outputs content if hover state exists and the children are non-empty.
+ */
 export const DataMapTooltip: FC<{}> = ({ children }) => {
   const tooltipXY = useRecoilValue(hoverPositionState);
 

@@ -2,7 +2,7 @@ import bboxPolygon from '@turf/bbox-polygon';
 import { atom, selector } from 'recoil';
 
 import { BoundingBox, extendBbox } from '@/lib/bounding-box';
-import { ViewLayer, viewOnlyLayer } from '@/lib/data-map/view-layers';
+import { ViewLayer } from '@/lib/data-map/view-layers';
 import { boundingBoxLayer } from '@/lib/deck/layers/bounding-box-layer';
 
 export interface FeatureWithBbox {
@@ -24,8 +24,9 @@ export const featureBoundingBoxLayerState = selector<ViewLayer>({
 
     const geom = bboxPolygon(extendBbox(bbox, 5));
 
-    return viewOnlyLayer(`feature-bounding-box-${id}`, ({ deckProps }) =>
-      boundingBoxLayer({ bboxGeom: geom }, deckProps),
-    );
+    return {
+      id: `feature-bounding-box-${id}`,
+      fn: ({ deckProps }) => boundingBoxLayer({ bboxGeom: geom }, deckProps),
+    };
   },
 });

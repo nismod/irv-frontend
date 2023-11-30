@@ -12,5 +12,5 @@ export type RecoilReadableStateFamily<DataType, ParamType> = (
   param: ParamType,
 ) => RecoilState<DataType> | RecoilValueReadOnly<DataType>;
 
-/** The type for the `get` property of Recoil read-only `selector` options */
+/** Type for Recoil read-only selector `get` definition */
 export type ReadSelectorGetDefinition<T> = ReadOnlySelectorOptions<T>['get'];
