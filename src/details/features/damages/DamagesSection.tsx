@@ -4,7 +4,7 @@ import { atom, selector, waitForAll } from 'recoil';
 
 import { DataParamGroupConfig, ParamGroup } from '@/lib/controls/data-params';
 import { cartesian } from '@/lib/helpers';
-import { useSyncRecoilState } from '@/lib/recoil/sync-state';
+import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
 
 import { HAZARD_DOMAINS_CONFIG } from '@/config/hazards/domains';
 import { HazardType } from '@/config/hazards/metadata';
@@ -25,7 +25,7 @@ export const hazardDataParamsState = selector({
 });
 
 export const DamagesSection = ({ fd }) => {
-  useSyncRecoilState(featureState, fd);
+  useSyncValueToRecoil(fd, featureState);
 
   return (
     <>

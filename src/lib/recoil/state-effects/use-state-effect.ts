@@ -4,9 +4,11 @@ import { RecoilValueReadOnly, useRecoilCallback, useRecoilValue } from 'recoil';
 import { useConditionalHook } from '@/lib/hooks/use-conditional-hook';
 import { usePrevious } from '@/lib/hooks/use-previous';
 
-import { EffectHookType, StateEffect, StateEffectAsync, StateLogicCallback } from './types';
+import { EffectHookType, StateEffect, StateEffectAsync } from './types';
 
-export function useStateLogicAtomicCallback<T>(effect: StateEffect<T>) {
+type StateLogicCallback<T> = (newValue: T, previousValue: T) => void;
+
+function useStateLogicAtomicCallback<T>(effect: StateEffect<T>) {
   return useRecoilCallback(
     ({ transact_UNSTABLE }) =>
       (newValue: T, previousValue: T) => {
@@ -16,14 +18,14 @@ export function useStateLogicAtomicCallback<T>(effect: StateEffect<T>) {
   );
 }
 
-export function useStateLogicAsyncCallback<T>(effect: StateEffectAsync<T>) {
+function useStateLogicAsyncCallback<T>(effect: StateEffectAsync<T>) {
   return useRecoilCallback(
     (ops) => (newValue: T, previousValue: T) => effect(ops, newValue, previousValue),
     [effect],
   );
 }
 
-export function useStateEffect<T>(
+function useStateEffect<T>(
   state: RecoilValueReadOnly<T>,
   stateLogicCallback: StateLogicCallback<T>,
   hookType: EffectHookType,
@@ -38,9 +40,15 @@ export function useStateEffect<T>(
   );
 }
 
+/**
+ * Watch a Recoil state and execute a state effect (atomically - inside a transaction) when the state changes.
+ */
 export function useStateEffectAtomic<T>(
+  /** State to watch */
   state: RecoilValueReadOnly<T>,
+  /** Effect to apply upon change */
   effect: StateEffect<T>,
+  /** Whether to use useEffect or useLayoutEffect hook */
   hookType: EffectHookType = 'effect',
 ) {
   const cb = useStateLogicAtomicCallback(effect);
@@ -48,10 +56,16 @@ export function useStateEffectAtomic<T>(
   useStateEffect(state, cb, hookType);
 }
 
+/**
+ * Watch a Recoil state and execute a state effect (asynchronously - inside `useRecoilCallback`) when the state changes.
+ */
 export function useStateEffectAsync<T>(
+  /** State to watch */
   state: RecoilValueReadOnly<T>,
+  /** Effect to apply upon change */
   effect: StateEffectAsync<T>,
-  hookType: EffectHookType = 'layoutEffect',
+  /** Whether to use useEffect or useLayoutEffect hook */
+  hookType: EffectHookType = 'effect',
 ) {
   const cb = useStateLogicAsyncCallback(effect);
 

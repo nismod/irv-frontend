@@ -4,10 +4,18 @@ import { RecoilState, RecoilValueReadOnly, useRecoilValue, useSetRecoilState } f
 /**
  * Sync an external value to a recoil state
  */
-export function useSyncRecoilState<T>(state: RecoilState<T>, value: T) {
-  const setState = useSetRecoilState(state);
+export function useSyncValueToRecoil<T>(
+  value: T,
+  replicaState: RecoilState<T>,
+  doSync: boolean = true,
+) {
+  const setState = useSetRecoilState(replicaState);
 
-  useEffect(() => setState(value), [setState, value]);
+  useEffect(() => {
+    if (doSync) {
+      setState(value);
+    }
+  }, [doSync, setState, value]);
 }
 
 /**
@@ -19,11 +27,6 @@ export function useSyncState<T>(
   doSync: boolean = true,
 ) {
   const value = useRecoilValue(state);
-  const syncValue = useSetRecoilState(replicaState);
 
-  useEffect(() => {
-    if (doSync) {
-      syncValue(value);
-    }
-  }, [value, syncValue, doSync, state, replicaState]);
+  useSyncValueToRecoil(value, replicaState, doSync);
 }

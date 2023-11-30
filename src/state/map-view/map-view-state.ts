@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { atom, DefaultValue, selector } from 'recoil';
 
-import { useSyncStateThrottled } from '@/lib/recoil/sync-state-throttled';
+import { useSyncStateThrottled } from '@/lib/recoil/state-sync/use-sync-state-throttled';
 
 import { mapViewConfig } from '@/config/map-view';
 

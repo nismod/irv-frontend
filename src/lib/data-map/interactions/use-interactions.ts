@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
-import { useSyncRecoilState } from '@/lib/recoil/sync-state';
+import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
 import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
 
 import {
@@ -71,7 +71,7 @@ export function useInteractions(
     [interactiveLayers],
   );
 
-  useSyncRecoilState(allowedGroupLayersState, activeGroupLayerIds);
+  useSyncValueToRecoil(activeGroupLayerIds, allowedGroupLayersState);
 
   const onHover = useCallback(
     (info: any, deck: MapboxOverlay) => {

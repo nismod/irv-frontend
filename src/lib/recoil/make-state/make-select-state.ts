@@ -1,15 +1,27 @@
 import { atom, RecoilValueReadOnly, selector } from 'recoil';
 
-function firstElem<T>(options: T) {
+function firstElem<T>(options: T[]) {
   return options?.[0];
 }
 
 export type DefaultFunction<T> = (options: T[]) => T;
 
+/**
+ * Creates a compound Recoil state that selects from a list of options.
+ */
 export function makeSelectState<T>(
+  /**
+   * Recoil key prefix
+   */
   key: string,
+  /**
+   * Recoil state containing the list of options
+   */
   optionsState: RecoilValueReadOnly<T[]>,
-  allowEmpty: boolean = false,
+
+  /**
+   * Function to select the default value from the list of options
+   */
   defaultFn: DefaultFunction<T> = firstElem,
 ) {
   const selectedImpl = atom({
@@ -27,7 +39,7 @@ export function makeSelectState<T>(
     get: ({ get }) => {
       const selectedOption = get(selectedImpl);
       const options = get(optionsState);
-      if ((selectedOption == null && allowEmpty) || !options.includes(selectedOption)) {
+      if (selectedOption == null || !options.includes(selectedOption)) {
         return get(defaultImpl);
       }
       return selectedOption;

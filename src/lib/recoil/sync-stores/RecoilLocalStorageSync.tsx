@@ -56,6 +56,9 @@ const listenLocalStorage = ({ updateItem, updateAllKnownItems }) => {
   return () => window.removeEventListener('storage', onStorage);
 };
 
+/**
+ * A RecoilSync component that syncs Recoil state to localStorage.
+ */
 export const RecoilLocalStorageSync: FC<SetOptional<RecoilSyncOptions, 'read' | 'write'>> = (
   props,
 ) => {
