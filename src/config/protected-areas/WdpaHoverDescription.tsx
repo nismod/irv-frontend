@@ -4,7 +4,7 @@ import { FC } from 'react';
 import { InteractionTarget } from '@/lib/data-map/interactions/types';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 
-import { PROTECTED_AREA_COLORS } from '@/config/protected-areas/metadata';
+import { PROTECTED_AREA_COLORS } from './metadata';
 
 export const WdpaHoverDescription: FC<{
   hoveredObjects: InteractionTarget<any>[];

@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
+import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { border, fillColor, pointRadius } from '@/lib/deck/props/style';
 import { makeColorConfig, makeConfig } from '@/lib/helpers';
 
 import { SimpleAssetDetails } from '@/details/features/asset-details';
-import { VectorHoverDescription } from '@/map/tooltip/VectorHoverDescription';
 import { IndustryType } from '@/state/data-selection/industry';
 
 import { makeAssetLayerFn } from '../assets/make-asset-layer-fn';

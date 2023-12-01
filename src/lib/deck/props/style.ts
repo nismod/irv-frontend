@@ -93,17 +93,6 @@ export function pointRadius(zoom, level: ScaleLevel = 2): Partial<PointStyleProp
 // export type Color = [number, number, number, number?];
 export type GetColor = Accessor<Color, Feature>;
 
-/**
- * Returns color with alpha set to new value.
- * Doesn't mutate the input color.
- * @param color (r,g,b,[a]) color to modify
- * @param alpha new alpha value
- */
-export function setAlpha(color: Color, alpha: number): Color {
-  const [r, g, b] = color;
-  return [r, g, b, alpha];
-}
-
 const COLOR_PROPS = {
   fill: 'getFillColor',
   stroke: 'getLineColor',

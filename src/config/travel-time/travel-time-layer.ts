@@ -3,10 +3,9 @@ import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
 import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 import { makeValueFormat, nullFormat } from '@/lib/formats';
-
-import { RasterHoverDescription } from '@/map/tooltip/RasterHoverDescription';
 
 import { SOURCES } from '../sources';
 
