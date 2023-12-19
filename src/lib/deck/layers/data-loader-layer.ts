@@ -6,6 +6,9 @@ export interface DataLoaderOptions {
   dataLoader: DataLoader;
 }
 
+/**
+ * A deck.gl layer to load data through an external loader for all vector features in a tile
+ */
 export function dataLoaderLayer(tileProps, { dataLoader }: DataLoaderOptions) {
   const {
     tile: { content },

@@ -5,7 +5,7 @@ import { syncEffect, urlSyncEffect } from 'recoil-sync';
 
 import { getSubPath } from '@/lib/paths/paths';
 import { PathChildrenStateContext } from '@/lib/paths/sub-path';
-import { StateSyncRoot } from '@/lib/recoil/StateSyncRoot';
+import { StateSyncRoot } from '@/lib/recoil/state-sync/StateSyncRoot';
 
 import { sidebarPathChildrenState, sidebarVisibilityToggleState } from './SidebarContent';
 

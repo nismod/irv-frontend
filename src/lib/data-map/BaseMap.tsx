@@ -3,8 +3,11 @@ import { ComponentProps, FC, ReactNode, useCallback } from 'react';
 import { Map } from 'react-map-gl/maplibre';
 
 export interface BaseMapProps {
+  /** Map style configuration. Same as `mapStyle` of the rect-map-gl component. */
   mapStyle: ComponentProps<typeof Map>['mapStyle'];
+  /** View state of the map */
   viewState: MapViewState;
+  /** Handler called when the map view state changes */
   onViewState: (vs: MapViewState) => void;
   children?: ReactNode;
 }

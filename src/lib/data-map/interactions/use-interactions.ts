@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
-import { useSyncRecoilState } from '@/lib/recoil/sync-state';
+import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
 import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
 
 import {
@@ -22,12 +22,16 @@ import { InteractionGroupConfig, InteractionTarget } from './types';
 const DEFAULT_PICKING_RADIUS = 8;
 
 /**
- * Based on view layers and interaction groups, returns props to pass to deck.gl for handling callback / hover, layer pass filter etc
+ * Based on view layers and interaction groups, returns props to pass to deck.gl for handling click / hover, layer pass filter etc
  */
 export function useInteractions(
+  /** Array of all view layers in the application */
   viewLayers: ViewLayer[],
+  /** Function to get view layer ID for a deck layer ID */
   lookupViewForDeck: (deckLayerId: string) => string,
+  /** Array of interaction group configs */
   interactionGroups: InteractionGroupConfig[],
+  /** Default picking radius to use when no interaction group is present */
   defaultPickingRadius: number = DEFAULT_PICKING_RADIUS,
 ) {
   const setHoverXY = useSetRecoilState(hoverPositionState);
@@ -67,7 +71,7 @@ export function useInteractions(
     [interactiveLayers],
   );
 
-  useSyncRecoilState(allowedGroupLayersState, activeGroupLayerIds);
+  useSyncValueToRecoil(activeGroupLayerIds, allowedGroupLayersState);
 
   const onHover = useCallback(
     (info: any, deck: MapboxOverlay) => {

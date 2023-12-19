@@ -1,5 +1,10 @@
+/** A generic tree node type
+ * @template T the type of the tree's nodes (each node will also have `id` and `children` fields)
+ */
 export type TreeNode<T> = {
+  /** String ID of the node (unique in the whole tree) */
   id: string;
+  /** Array of children of this tree node */
   children?: TreeNode<T>[];
 } & T;
 

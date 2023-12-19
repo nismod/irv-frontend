@@ -1,6 +1,6 @@
 import { RecoilState, RecoilValueReadOnly } from 'recoil';
 
-import { useSyncState } from './sync-state';
+import { useSyncState } from './use-sync-state';
 
 export function StateSyncRoot<T>({
   state,

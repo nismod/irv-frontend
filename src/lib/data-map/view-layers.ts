@@ -1,84 +1,66 @@
 import { ScaleSequential } from 'd3-scale';
+import { LayersList } from 'deck.gl/typed';
 import { ReactNode } from 'react';
 
-import { DataLoader } from '@/lib/data-loader/data-loader';
 import { InteractionTarget } from '@/lib/data-map/interactions/types';
 import { AccessorFunction } from '@/lib/deck/props/getters';
 
-export interface FieldSpec {
-  fieldGroup: string;
-  fieldDimensions?: any;
-  field: string;
-  fieldParams?: any;
+/** Current view layer params used in the app
+ *
+ * TODO: decouple the base ViewLayer from the app-specific view layer params
+ */
+export interface IrvViewLayerParams {
+  selection?: InteractionTarget;
 }
 
-export interface ColorSpec {
-  scheme: (t: number, n: number) => string;
-  scale: (
-    domain: [number, number],
-    interpolator: (t: number, n: number) => string,
-  ) => ScaleSequential<any, any>;
-  range: [number, number];
-  empty: string;
-  zeroIsEmpty?: boolean;
-}
-export interface ColorMap {
-  fieldSpec: FieldSpec;
-  colorSpec: ColorSpec;
-}
-export interface StyleParams {
-  colorMap?: ColorMap;
-}
-export interface ViewLayerFunctionOptions {
-  deckProps: any;
-  zoom: number;
-  selection?: InteractionTarget<any>;
-}
-
-export interface DataManager {
-  getDataAccessor: (layer: string, fieldSpec: any) => (d: any) => any;
-  getDataLoader: (layer: string, fieldSpec: any) => DataLoader;
-}
-
-export interface FormatConfig<D = any> {
-  getDataLabel: (fieldSpec: FieldSpec) => string;
-  getValueFormatted: (value: D, fieldSpec: FieldSpec) => string | ReactNode;
-}
-
-/** Produces a data accessor function, given a `FieldSpec` object */
-export type ViewLayerDataAccessFunction = (fieldSpec: FieldSpec) => AccessorFunction<any>;
-
-/** Produces a `FormatConfig` object, given a `FieldSpec` object */
-export type ViewLayerDataFormatFunction = (fieldSpec: FieldSpec) => FormatConfig;
-
-export type ViewLayerRenderLegendFunction = () => ReactNode;
-export type ViewLayerRenderTooltipFunction = (
-  /** Hovered feature(s) to render details for */
-  hover: InteractionTarget,
-) => ReactNode;
-
-export type ViewLayerRenderDetailsFunction = (
-  /**
-   * Selected feature to render details for
+/**
+ * Arguments for the view layer map render function.
+ *
+ * This serves as current map/application context that view layer code can read from.
+ */
+export type ViewLayerFunctionOptions<ViewLayerParamsT extends object> = {
+  /** Custom deck.gl props passed to the layer from the app.
+   *
+   * Useful for setting basic properties such as `id`, `pickable` etc automatically.
    */
-  selection: InteractionTarget,
-) => ReactNode;
+  deckProps: any;
+  /** Current map zoom level. Allows zoom-dependent logic inside layers */
+  zoom: number;
+} & ViewLayerParamsT;
 
+/** A single deck.gl layer, a falsey value, or a list of the above */
+type ViewLayerMapLayers = LayersList[number];
+
+/**
+ * View layers are the main components of the data map application.
+ *
+ * One view layer usually corresponds to one dataset with its distinct characteristics and configuration.
+ *
+ * A view layer can render some deck.gl layers to the map, but it can also define
+ * the rendering of several React UI slots such as the legend, tooltip, and selection details
+ * for the layer.
+ *
+ * A view layer can belong to an interaction group, which determines the interactivity
+ * of the layer.
+ */
 export interface ViewLayer<ParamsT = any> {
+  /** Globally unique ID of the view layer */
   id: string;
+  /** Store for arbitrary user data used to define this layer.
+   * Can be accessed from code which renders tooltips etc
+   */
   params?: ParamsT;
-  styleParams?: StyleParams;
+
+  /** ID of the interaction group this view layer belongs to */
   interactionGroup?: string;
 
-  fn: (options: ViewLayerFunctionOptions) => any;
-
-  /** Factory method that creates a deck.gl-compatible data accessor for the view layer, given a `FieldSpec` object */
-  dataAccessFn?: ViewLayerDataAccessFunction;
-  /** Factory method that creates a `FormatConfig` object for the view layer, given a `FieldSpec` object */
-  dataFormatsFn?: ViewLayerDataFormatFunction;
+  /** Function to render deck.gl map layers for this view layer
+   * TODO: Decouple the abstract ViewLayer from the app-specific `IrvViewLayerParams` type
+   */
+  fn: (options: ViewLayerFunctionOptions<IrvViewLayerParams>) => ViewLayerMapLayers;
 
   /** Render a React tree for this view layer's legend */
-  renderLegend?: ViewLayerRenderLegendFunction;
+  renderLegend?: () => ReactNode;
   /**
    * String key based on which the layer legends will be grouped.
    * For all layers with the same legendKey, only one legend element will be rendered.
@@ -95,18 +77,79 @@ export interface ViewLayer<ParamsT = any> {
   legendKey?: string;
 
   /** Render a React tree for this view layer's tooltip.*/
-  renderTooltip?: ViewLayerRenderTooltipFunction;
-  renderDetails?: ViewLayerRenderDetailsFunction;
+  renderTooltip?: (
+    /** Hovered feature(s) to render details for */
+    hover: InteractionTarget,
+  ) => ReactNode;
+
+  /** Render a React tree for this view layer's selection details */
+  renderDetails?: (
+    /**
+     * Selected feature to render details for
+     */
+    selection: InteractionTarget,
+  ) => ReactNode;
+
+  /** The following properties are specific only to **VECTOR** layers
+   *
+   *  TODO: convert ViewLayer to a class and only leave universal functionality in the base class,
+   *  moving functionality specific to just one data type into derived classes
+   */
+
+  /** Specification of mapping attribute data to feature style */
+  styleParams?: StyleParams;
+  /** Factory method that creates a deck.gl-compatible data accessor for the view layer, given a `FieldSpec` object */
+  dataAccessFn?: ViewLayerDataAccessFunction;
+  /** Factory method that creates a `FormatConfig` object for the view layer, given a `FieldSpec` object */
+  dataFormatsFn?: ViewLayerDataFormatFunction;
 }
 
-export function viewOnlyLayer(id, fn): ViewLayer {
-  return {
-    id,
-    interactionGroup: null,
-    fn,
-  };
+/** The following types are specific to **VECTOR** layers   */
+
+/** IRV vector data field specification */
+export interface FieldSpec {
+  fieldGroup: string;
+  fieldDimensions?: any;
+  field: string;
+  fieldParams?: any;
 }
 
-export interface ViewLayerParams {
-  selection?: any;
+/** Vector color scale specification */
+export interface ColorSpec {
+  scheme: (t: number) => string;
+  scale: (
+    domain: [number, number],
+    interpolator: (t: number) => string,
+  ) => ScaleSequential<any, any>;
+  range: [number, number];
+  empty: string;
+  zeroIsEmpty?: boolean;
 }
+
+/** Specification for a mapping between a data field and a color scale */
+export interface ColorMap {
+  fieldSpec: FieldSpec;
+  colorSpec: ColorSpec;
+}
+
+/** Style parameters for a vector data layer */
+export interface StyleParams {
+  /** How attributes should be mapped to feature color */
+  colorMap?: ColorMap;
+
+  // more mappings could be added here, e.g. sizeMap etc
+}
+
+/** Label / value formatting config for a vector data layer */
+export interface FormatConfig<D = any> {
+  /** Get a data label/title based on a vector data field spec */
+  getDataLabel: (fieldSpec: FieldSpec) => string;
+  /** Format a given value based on a vector data field spec*/
+  getValueFormatted: (value: D, fieldSpec: FieldSpec) => string | ReactNode;
+}
+
+/** Produces a data accessor function, given a `FieldSpec` object */
+export type ViewLayerDataAccessFunction = (fieldSpec: FieldSpec) => AccessorFunction<any>;
+
+/** Produces a `FormatConfig` object, given a `FieldSpec` object */
+export type ViewLayerDataFormatFunction = (fieldSpec: FieldSpec) => FormatConfig;

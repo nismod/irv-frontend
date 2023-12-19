@@ -17,6 +17,9 @@ export interface RasterColorMap {
   rangeTruncated?: [boolean, boolean];
 }
 
+/** UI component displaying a legend for a raster layer.
+ * Needs to be a descendant of a `RasterColorMapSourceProvider` that sets a source for fetching color map values
+ **/
 export const RasterLegend: FC<{
   label: string;
   description?: string;

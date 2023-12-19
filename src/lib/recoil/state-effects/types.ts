@@ -1,10 +1,10 @@
 import { CallbackInterface, TransactionInterface_UNSTABLE } from 'recoil';
 
-export type StateEffectAtomicInterface = TransactionInterface_UNSTABLE;
+type StateEffectAtomicInterface = TransactionInterface_UNSTABLE;
 
 /**
  * Type for a function to be used as a state effect.
- * The function will be called with the transaction interace,
+ * The function will be called with the Recoil transaction interface (get, set, reset),
  * the current value, and previous value of the tracked state.
  */
 export type StateEffect<T> = (ops: StateEffectAtomicInterface, value: T, previousValue: T) => void;
@@ -14,13 +14,23 @@ export type StateEffect<T> = (ops: StateEffectAtomicInterface, value: T, previou
  */
 export type CurrentStateEffect<T> = (ops: StateEffectAtomicInterface, value: T) => void;
 
-export type StateEffectAsyncInterface = Pick<CallbackInterface, 'snapshot' | 'set' | 'reset'>;
+type StateEffectAsyncInterface = Pick<CallbackInterface, 'snapshot' | 'set' | 'reset'>;
+
+/**
+ * Type for a function to be used as an async state effect.
+ * The function will be called with the Recoil async interface (snapshot, set, reset),
+ * the current value, and previous value of the tracked state.
+ */
 export type StateEffectAsync<T> = (
   ops: StateEffectAsyncInterface,
   value: T,
   previousValue: T,
 ) => void;
 
-export type StateLogicCallback<T> = (newValue: T, previousValue: T) => void;
+/**
+ * Like StateEffectAsync<T> but without the previous value
+ */
+export type CurrentStateEffectASync<T> = (ops: StateEffectAsyncInterface, value: T) => void;
 
+/** React's useEffect or useLayoutEffect */
 export type EffectHookType = 'effect' | 'layoutEffect';

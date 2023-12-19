@@ -2,13 +2,21 @@ import { ApiClient } from '@nismod/irv-api-client';
 
 import { FieldSpec } from '@/lib/data-map/view-layers';
 
+/** Subscriber function that is called when a data loader is updated.  */
 export type DataLoaderSubscriber = (loader: DataLoader) => void;
 
+/** Class for managing the loading of additional attributes for map features from the IRV API.
+ * A single DataLoader is responsible for managing the loading of a single attribute.
+ */
 export class DataLoader<T = any> {
   constructor(
+    /** Unique ID of this loader */
     public readonly id: string,
+    /** Data layer this loader is responsible for */
     public readonly layer: string,
+    /** Specification of the field this loader is responsible for loading */
     public readonly fieldSpec: FieldSpec,
+    /** Instance of an IRV API client to use for loading */
     public readonly apiClient: ApiClient,
   ) {}
 
@@ -18,16 +26,19 @@ export class DataLoader<T = any> {
     return this._updateTrigger;
   }
 
+  /** Internal store of data per feature ID */
   private data: Map<number, T> = new Map();
 
-  // feature IDs that have not been loaded yet
+  /** Set of feature IDs that have not been loaded yet */
   private missingIds: Set<number> = new Set();
 
-  // feature IDs that are currently being loaded
+  /** Set of feature IDs that are currently being loaded */
   private loadingIds: Set<number> = new Set();
 
+  /** List of subscribers subscribed to this loader's updates */
   private subscribers: DataLoaderSubscriber[];
 
+  /** Get data for a feature ID. If not loaded, adds the ID to missind IDs list, but returns `undefined` in the meantime. */
   getData(id: number) {
     const data = this.data.get(id);
 
@@ -38,15 +49,18 @@ export class DataLoader<T = any> {
     return data;
   }
 
+  /** Add a subscriber */
   subscribe(callback: DataLoaderSubscriber) {
     this.subscribers ??= [];
     this.subscribers.push(callback);
   }
 
+  /** Remove a subscriber */
   unsubscribe(callback: DataLoaderSubscriber) {
     this.subscribers = this.subscribers?.filter((subscriber) => subscriber !== callback);
   }
 
+  /** Clear loaded data, subscribers and all internal state */
   destroy() {
     this.subscribers = [];
     this.data.clear();
@@ -54,6 +68,7 @@ export class DataLoader<T = any> {
     this.loadingIds.clear();
   }
 
+  /** Trigger loading of data for all IDs that have been currently flagged as missing. */
   async loadMissingData() {
     if (this.missingIds.size === 0) return;
 
@@ -66,6 +81,7 @@ export class DataLoader<T = any> {
     this.updateData(loadedData);
   }
 
+  /** Trigger loading of data for a provided list of IDs */
   async loadDataForIds(ids: number[]) {
     const tempMissingIds = ids.filter(
       (id) => this.data.get(id) === undefined && !this.loadingIds.has(id),

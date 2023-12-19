@@ -2,18 +2,18 @@ import { GetRecoilValue } from 'recoil';
 
 import { selectionState } from '@/lib/data-map/interactions/interaction-state';
 import { makeViewLayerParamsState } from '@/lib/data-map/state/make-view-layer-params-state';
-import { ViewLayer } from '@/lib/data-map/view-layers';
+import { IrvViewLayerParams, ViewLayer } from '@/lib/data-map/view-layers';
 
 import { viewLayersState } from './view-layers';
 
-export const viewLayersParamsState = makeViewLayerParamsState({
+export const viewLayersParamsState = makeViewLayerParamsState<IrvViewLayerParams>({
   key: 'viewLayersState',
   viewLayersState,
   getParamsForViewLayer:
     (viewLayer: ViewLayer) =>
     ({ get }) => ({
       selection: getSelectionParam(get, viewLayer),
-      // add params here when they are added to the app
+      // add more view layer params here when they are added to the app
     }),
 });
 

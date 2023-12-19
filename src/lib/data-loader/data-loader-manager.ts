@@ -5,20 +5,25 @@ import { FieldSpec } from '@/lib/data-map/view-layers';
 
 import { DataLoader } from './data-loader';
 
+/** Generate a unique key for a `layer` and `fieldSpec` */
 function getLoaderKey(layer: string, fieldSpec: FieldSpec) {
   return `${layer}__${stringify(fieldSpec)}`;
 }
 
+/** Class for managing multiple data loaders. */
 export class DataLoaderManager {
   private loaders: { [key: string]: DataLoader } = {};
   private nextLoaderId = 0;
 
-  constructor(public readonly apiClient: ApiClient) {}
+  constructor(
+    /** Instance of IRV API client to pass to data loaders */
+    public readonly apiClient: ApiClient,
+  ) {}
 
+  /** Get the data loader for layer/fieldSpec combination. If not present, create it. */
   public getDataLoader(layer: string, fieldSpec: FieldSpec) {
     const loaderKey = getLoaderKey(layer, fieldSpec);
     if (this.loaders[loaderKey] == null) {
-      console.log(`Initialising data loader for ${layer} ${stringify(fieldSpec)}`);
       const loader = new DataLoader(this.nextLoaderId.toString(), layer, fieldSpec, this.apiClient);
       this.nextLoaderId += 1;
       this.loaders[loaderKey] = loader;
@@ -26,6 +31,7 @@ export class DataLoaderManager {
     return this.loaders[loaderKey];
   }
 
+  /** Remove the data loader for layer/fieldSpec combination (if exists). */
   public clearDataLoader(layer: string, fieldSpec: FieldSpec) {
     const loaderKey = getLoaderKey(layer, fieldSpec);
 

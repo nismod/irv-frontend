@@ -1,17 +1,27 @@
 import { FormControl, FormLabel, MenuItem, Select, SelectProps } from '@mui/material';
-import { PropsWithChildren, useCallback } from 'react';
+import { useCallback } from 'react';
 
-import { isValueLabel, ValueLabel } from './params/value-label';
+import { getValueLabel, ValueLabel } from './params/value-label';
 
 interface ParamDropdownProps<V extends string | number = string> {
+  /** Title of the input */
   title?: string;
+  /** Current selected value */
   value: V;
+  /** List of available options (either of the same type as value, or wrapped in `ValueLabel` objects) */
   options: (V | ValueLabel<V>)[];
+  /** Handler called when selected value changes */
   onChange: (value: V) => void;
+  /** Is this input disabled? False by default */
   disabled?: boolean;
+  /** Variant of the component - passed to MUI Select */
   variant?: SelectProps['variant'];
 }
 
+/**
+ * Simple UI component for a (full-width) selection dropdown with a title.
+ * @template V input value type
+ */
 export const ParamDropdown = <V extends string | number = string>({
   title,
   value,
@@ -19,7 +29,7 @@ export const ParamDropdown = <V extends string | number = string>({
   options,
   disabled = false,
   variant = undefined,
-}: PropsWithChildren<ParamDropdownProps<V>>) => {
+}: ParamDropdownProps<V>) => {
   const handleChange = useCallback((e) => onChange(e.target.value), [onChange]);
   return (
     <FormControl fullWidth>
@@ -32,12 +42,7 @@ export const ParamDropdown = <V extends string | number = string>({
         disabled={disabled || options.length < 2}
       >
         {options.map((option) => {
-          let value, label;
-          if (isValueLabel(option)) {
-            ({ value, label } = option);
-          } else {
-            value = label = option;
-          }
+          let { value, label } = getValueLabel(option);
 
           return (
             <MenuItem key={value} value={value}>
