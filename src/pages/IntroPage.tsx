@@ -13,8 +13,9 @@ export const IntroPage = () => {
       <div className="centred">
         <hr className="minibar" />
         <Typography variant="h5" component="p">
-          The Global Systemic Risk Assessment Tool (G-SRAT) is a data and analytics portal covering
-          hazards, exposure, vulnerability and risk to infrastructure and people around the world.
+          The GRI Risk Viewer, previously called the Global Systemic Risk Assessment Tool (G-SRAT),
+          is a data and analytics portal covering hazards, exposure, vulnerability and risk to
+          infrastructure and people around the world.
         </Typography>
         <Typography variant="h5" component="p">
           This tool aims to support climate adaptation decision-making by identifying spatial
