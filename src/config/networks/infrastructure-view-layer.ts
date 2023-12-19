@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
+import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { border, fillColor, lineStyle, pointRadius, strokeColor } from '@/lib/deck/props/style';
@@ -9,7 +10,6 @@ import { makeAssetDataAccessorFactory } from '@/config/assets/data-access';
 import { makeAssetLayerFn } from '@/config/assets/make-asset-layer-fn';
 import { INFRASTRUCTURE_COLORS } from '@/config/networks/colors';
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
-import { VectorHoverDescription } from '@/map/tooltip/VectorHoverDescription';
 
 import { assetLayerLegendConfig } from '../assets/asset-layer-legend-config';
 import { getAssetDataFormats } from '../assets/data-formats';

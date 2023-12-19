@@ -1,19 +1,16 @@
-import { Box } from '@mui/system';
+import { Color } from 'deck.gl/typed';
 import { FC, ReactNode, useMemo } from 'react';
 
+import { colorDeckToCss } from '@/lib/colors';
 import {
   ColorMapValues,
   ColorValue,
   formatRangeTruncation,
 } from '@/lib/data-map/legend/GradientLegend';
+import { withoutAlpha } from '@/lib/deck/color';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 import { DataItem } from '@/lib/ui/data-display/DataItem';
 
-export type RGBAColor = [number, number, number, number];
-
-export function serializeColor([r, g, b, a]: [r: number, g: number, b: number, a: number]) {
-  return `rgb(${r},${g},${b})`;
-}
 function useRasterColorMapLookup(
   colorMapValues: ColorValue[],
 ): Record<string, { value: any; i: number }> {
@@ -27,11 +24,14 @@ function useRasterColorMapLookup(
 
 export interface RasterBaseHoverProps {
   colorMap: ColorMapValues;
-  color: RGBAColor;
+  color: Color;
   label: string;
   formatValue: (x: any) => ReactNode | string;
 }
 
+/**
+ *  A tooltip for raster layers that displays the color and value of the hovered pixel
+ */
 export const RasterBaseHover: FC<RasterBaseHoverProps> = ({
   colorMap,
   color,
@@ -41,22 +41,19 @@ export const RasterBaseHover: FC<RasterBaseHoverProps> = ({
   const { colorMapValues, rangeTruncated = [false, false] } = colorMap;
   const rasterValueLookup = useRasterColorMapLookup(colorMapValues);
 
-  const colorString = serializeColor(color);
-  const valueLookup = rasterValueLookup?.[colorString];
-  const { value, i } = valueLookup ?? {};
+  const colorString = colorDeckToCss(withoutAlpha(color));
+  const { value, i } = rasterValueLookup?.[colorString] ?? {};
   return (
-    <Box>
-      <DataItem
-        label={label}
-        value={
-          <>
-            <ColorBox color={colorString} />
-            {value == null
-              ? formatValue(value)
-              : formatRangeTruncation(formatValue(value), i, rangeTruncated)}
-          </>
-        }
-      />
-    </Box>
+    <DataItem
+      label={label}
+      value={
+        <>
+          <ColorBox color={colorString} />
+          {value == null
+            ? formatValue(value)
+            : formatRangeTruncation(formatValue(value), i, rangeTruncated)}
+        </>
+      }
+    />
   );
 };

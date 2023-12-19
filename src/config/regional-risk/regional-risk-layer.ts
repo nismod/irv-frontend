@@ -4,6 +4,7 @@ import React from 'react';
 
 import { colorMap } from '@/lib/color-map';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
+import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { ColorSpec, FieldSpec, ViewLayer } from '@/lib/data-map/view-layers';
 import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
 import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
@@ -12,7 +13,6 @@ import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { border, fillColor } from '@/lib/deck/props/style';
 
 import { SimpleAssetDetails } from '@/details/features/asset-details';
-import { VectorHoverDescription } from '@/map/tooltip/VectorHoverDescription';
 
 import { SOURCES } from '../sources';
 import { getRegionalExposureDataFormats } from './data-formats';

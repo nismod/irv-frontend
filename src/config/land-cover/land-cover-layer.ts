@@ -2,17 +2,18 @@ import GL from '@luma.gl/constants';
 import _ from 'lodash';
 import React from 'react';
 
+import { colorDeckToCss } from '@/lib/colors';
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
+import { RasterBaseHover } from '@/lib/data-map/tooltip/RasterBaseHover';
 import { ViewLayer } from '@/lib/data-map/view-layers';
+import { withoutAlpha } from '@/lib/deck/color';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
-
-import { RasterBaseHover, serializeColor } from '@/map/tooltip/RasterBaseHover';
 
 import landCoverLegend from './land-cover-legend.json';
 
 const landCoverColorMap = _.map(landCoverLegend, ({ color: rgba }, code) => ({
   value: parseInt(code, 10),
-  color: serializeColor(rgba as any),
+  color: colorDeckToCss(withoutAlpha(rgba as any)),
 }));
 
 const landCoverLabels = Object.fromEntries(

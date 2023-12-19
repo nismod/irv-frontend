@@ -2,11 +2,10 @@ import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
 import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 import { Subset } from '@/lib/helpers';
-
-import { RasterHoverDescription } from '@/map/tooltip/RasterHoverDescription';
 
 import { HAZARDS_METADATA, HazardType } from '../metadata';
 import { getHazardDataPath, getHazardDataUrl } from '../source';
