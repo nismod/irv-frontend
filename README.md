@@ -1,12 +1,14 @@
 # Frontend for `infra-risk-vis`
 
-React app served through NGINX.
+React app, frontend for https://global.infrastructureresilience.org/.
 
-## Setting up Husky
+## Set up Husky
 
-When running `npm install` in development, the `prepare` script should be run automatically. This will set up the Husky git hooks. The `pre-commit` hook is used to run linting and formatting on staged files using `lint-staged`.
+When running `npm install` in development, the `prepare` script should be run
+automatically. This will set up the Husky git hooks. The `pre-commit` hook is
+used to run linting and formatting on staged files using `lint-staged`.
 
-## Installing dependencies for development
+## Install dependencies for development
 
 This package's dependencies include packages in the `@nismod` scope, which are
 published through the GitHub npm package repository.
@@ -81,14 +83,30 @@ docker run -it -p 5173:5173 -v $(pwd)/src:/app/src --network infra-risk-vis_defa
 
 Then visit http://localhost:5173
 
-N.B. The GitHub action will build images derived from `Dockerfile-prod` for
-`main` and `develop` branches.
+## Release an update
 
-And to build and push an update to the container registry manually:
+The easiest way to make the updated code available is to push/merge to `main`,
+then make a GitHub Release with a new tag, which will be used as the version number.
+
+- test changes locally (`npm test`, and manual check)
+- push/merge to `main`
+- review logs since previous release `git log 0.23..HEAD`
+- [Draft a new release](https://github.com/nismod/irv-frontend/releases)
+- Choose a tag > create a new tag with new version, e.g. `0.24`
+- summarise changes as lists of Features and Fixes
+- Publish Release
+- Wait for [Actions](https://github.com/nismod/irv-frontend/actions) to complete
+- Update container image in [docker-compose.yml](https://github.com/nismod/infra-risk-vis/blob/master/docker-compose-prod-deploy.yaml)
+- Restart service `docker compose -f docker-compose-prod-deploy.yaml up web-server -d`
+
+Alternatively, to build and push an update to the container registry manually:
 
 - Log in to the container registry, see
   https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
-- Build and push the production container (replace `/PATH/TO/TOKEN`)
+- Build and push the production container
+  - replace `/PATH/TO/TOKEN` with the path to a file containing GitHub personal
+    access token with `write:packages` permissions)
+  - replace `0.20` with the latest version number
 
 ```bash
 DOCKER_BUILDKIT=1 docker build \
