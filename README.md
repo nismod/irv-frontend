@@ -120,6 +120,20 @@ docker push ghcr.io/nismod/irv-frontend:0.20
 See https://github.com/nismod/infra-risk-vis/ for `docker-compose.yml` and how
 the frontend is composed with other services.
 
+## Development
+
+Developer-focussed documentation on the app and potential roadmap:
+
+- [HOWTO](./docs/howto.md) - simple overview of the app structure, main
+  concepts and some pointers on how to add new things
+- [directions](./docs/directions.md) - detailed overview of the current folder
+  hierarchy, and a list of refactoring directions and additions that could be
+  made in the future
+- [Deck.gl](./docs/deckgl.md) - some rationale and descriptions of the ways in
+  which the app extends vanilla deck.gl behavior, especially the prop merging
+- [comments](./docs/code-thoughts.md) - comments on what could be improved in
+  individual files, if time and resource allow
+
 ## License
 
 This codebase is made available under the MIT License, copyright (c) 2023 Tom
