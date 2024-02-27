@@ -65,20 +65,20 @@ For example, to build the container (replace `/PATH/TO/TOKEN`, but not
 DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-dev \
-   -t ghcr.io/nismod/irv-frontend:0.20-dev .
+   -t ghcr.io/nismod/irv-frontend:0.24-dev .
 ```
 
 To run:
 
 ```bash
-docker run -it -p 5173:5173 -v $(pwd)/src:/app/src ghcr.io/nismod/irv-frontend:0.20-dev
+docker run -it -p 5173:5173 -v $(pwd)/src:/app/src ghcr.io/nismod/irv-frontend:0.24-dev
 ```
 
 Or to run inside an infra-risk-vis network (allowing DNS resolution for
 connection to the backend services via the vite reverse proxy):
 
 ```bash
-docker run -it -p 5173:5173 -v $(pwd)/src:/app/src --network infra-risk-vis_default ghcr.io/nismod/irv-frontend:0.20-dev
+docker run -it -p 5173:5173 -v $(pwd)/src:/app/src --network infra-risk-vis_default ghcr.io/nismod/irv-frontend:0.24-dev
 ```
 
 Then visit http://localhost:5173
@@ -106,15 +106,15 @@ Alternatively, to build and push an update to the container registry manually:
 - Build and push the production container
   - replace `/PATH/TO/TOKEN` with the path to a file containing GitHub personal
     access token with `write:packages` permissions)
-  - replace `0.20` with the latest version number
+  - replace `0.24` with the latest version number
 
 ```bash
 DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-prod \
-   -t ghcr.io/nismod/irv-frontend:0.20 .
+   -t ghcr.io/nismod/irv-frontend:0.24 .
 
-docker push ghcr.io/nismod/irv-frontend:0.20
+docker push ghcr.io/nismod/irv-frontend:0.24
 ```
 
 See https://github.com/nismod/infra-risk-vis/ for `docker-compose.yml` and how
