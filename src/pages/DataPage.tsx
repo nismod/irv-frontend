@@ -609,14 +609,13 @@ export const DataPage = () => (
         <a href="https://www.fathom.global/">Fathom</a>, <a href="https://www.jbarisk.com/">JBA</a>,{' '}
         <a href="https://www.nasdaq.com/solutions/nasdaq-risk-platform">NASDAQ</a>,{' '}
         <a href="https://oasislmf.org/">OASIS Loss Modelling Framework</a>,{' '}
-        <a href="https://www.wtwco.com/en-US">Willis Towers Watson</a>,{' '}
         <a href="https://www.aon.com/home/index">Aon</a>, and the{' '}
         <a href="https://www.worldbank.org/en/home">World Bank</a> (
         <a href="https://www.gfdrr.org/en">GFDRR</a> and{' '}
         <a href="https://www.worldbank.org/en/programs/disaster-risk-financing-and-insurance-program">
           DRFIP
         </a>
-        ). The ambition is to expand these technical collaborations over time to build the climate
+        ). Our ambition is to expand these technical collaborations over time to build the climate
         risk data ecosystem.
       </p>
     </div>
