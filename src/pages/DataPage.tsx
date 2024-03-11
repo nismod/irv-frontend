@@ -331,6 +331,17 @@ export const DataPage = () => (
               collections of multiple-sensor, multiple-platform satellite imageries: Landsat (MSS,
               TM, ETM sensor) supports the 1975, 1990, 2000, and 2014 epochs, while Sentinel-2 (S2)
               composite (GHS-composite-S2 R2020A) supports the 2018 epoch.
+              <br />
+              <br />
+              Non-residential (NRES) built-up surface is defined as “any built-up surface not
+              included in the RES class”. See{' '}
+              <a href="https://ghsl.jrc.ec.europa.eu/documents/GHSL_Data_Package_2022.pdf">
+                Schiavina et al. (2022)
+              </a>{' '}
+              Section 2 for definitions and Table 3 for analysis of NRES built-up surfaces
+              stratified by land-use class in the US and Europe - these include for example
+              transportation (airports, ports, stations), industrial, retail, commercial, and
+              institutional (health, education) uses.
             </TableCell>
           </TableRow>
 
