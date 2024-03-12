@@ -31,7 +31,7 @@ import { RegionalRiskSection } from './sections/risk/regional-risk';
 import { HdiControl } from './sections/vulnerability/HdiControl';
 import { TravelTimeControl } from './sections/vulnerability/TravelTimeControl';
 import { WdpaControls } from './sections/vulnerability/WdpaControl';
-import { DataNotice } from './ui/DataNotice';
+import { DataNotice, DataNoticeTextBlock } from './ui/DataNotice';
 import { defaultSectionVisibilitySyncEffect, SidebarUrlStateSyncRoot } from './url-state';
 
 const viewLabels = {
@@ -95,46 +95,60 @@ const ExposureSection = () => (
   <Section path="exposure" title="Exposure">
     <Layer path="population" title="Population">
       <DataNotice>
-        Map shows population density in 2020, from the JRC Global Human Settlement Layer (2022).
+        <DataNoticeTextBlock>
+          Map shows population density in 2020, from the JRC Global Human Settlement Layer (2022).
+        </DataNoticeTextBlock>
       </DataNotice>
     </Layer>
     <Layer path="buildings" title="Buildings">
       <DataNotice>
-        Map shows density of built-up surface in 2020, from the JRC Global Human Settlement Layer
-        (2022).
+        <DataNoticeTextBlock>
+          Map shows density of built-up surface in 2020, from the JRC Global Human Settlement Layer
+          (2022).
+        </DataNoticeTextBlock>
       </DataNotice>
       <BuildingDensityControl />
     </Layer>
     <Layer path="infrastructure" title="Infrastructure">
       <DataNotice>
-        Map shows infrastructure networks: road and rail derived from OpenStreetMap, power from
-        Gridfinder, Arderne et al (2020).
+        <DataNoticeTextBlock>
+          Map shows infrastructure networks: road and rail derived from OpenStreetMap, power from
+          Gridfinder, Arderne et al (2020).
+        </DataNoticeTextBlock>
       </DataNotice>
       <NetworkControl />
     </Layer>
     <Layer path="industry" title="Industry">
       <DataNotice>
-        Map shows global databases of cement, iron and steel production assets, from the Spatial
-        Finance Initiative, McCarten et al (2021).
+        <DataNoticeTextBlock>
+          Map shows global databases of cement, iron and steel production assets, from the Spatial
+          Finance Initiative, McCarten et al (2021).
+        </DataNoticeTextBlock>
       </DataNotice>
       <IndustryControl />
     </Layer>
     <Layer path="healthsites" title="Healthcare">
       <DataNotice>
-        Map shows locations of healthcare facilities from the healthsites.io project, containing
-        data extracted from OpenStreetMap.
+        <DataNoticeTextBlock>
+          Map shows locations of healthcare facilities from the healthsites.io project, containing
+          data extracted from OpenStreetMap.
+        </DataNoticeTextBlock>
       </DataNotice>
     </Layer>
     <Layer path="land-cover" title="Land Cover">
       <DataNotice>
-        Map shows land cover classification gridded maps from the European Space Agency Climate
-        Change Initiative Land Cover project (2021).
+        <DataNoticeTextBlock>
+          Map shows land cover classification gridded maps from the European Space Agency Climate
+          Change Initiative Land Cover project (2021).
+        </DataNoticeTextBlock>
       </DataNotice>
     </Layer>
     <Layer path="organic-carbon" title="Soil Organic Carbon">
       <DataNotice>
-        Map shows soil organic carbon content at 0-30cm, in tonnes/hectare, aggregated to a 1000m
-        grid, from SoilGrids 2.0, Poggio et al (2021).
+        <DataNoticeTextBlock>
+          Map shows soil organic carbon content at 0-30cm, in tonnes/hectare, aggregated to a 1000m
+          grid, from SoilGrids 2.0, Poggio et al (2021).
+        </DataNoticeTextBlock>
       </DataNotice>
     </Layer>
   </Section>

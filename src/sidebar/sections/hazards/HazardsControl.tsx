@@ -6,7 +6,7 @@ import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { HazardType } from '@/config/hazards/metadata';
-import { DataNotice } from '@/sidebar/ui/DataNotice';
+import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { GCMControl } from '@/sidebar/ui/params/GCMControl';
@@ -55,7 +55,9 @@ export const FluvialControl = () => {
   return (
     <HazardControl type="fluvial">
       <DataNotice>
-        Map shows river flooding depths for different return periods, from WRI Aqueduct (2020).
+        <DataNoticeTextBlock>
+          Map shows river flooding depths for different return periods, from WRI Aqueduct (2020).
+        </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl />
       <InputRow>
@@ -70,7 +72,9 @@ export const CoastalControl = () => {
   return (
     <HazardControl type="coastal">
       <DataNotice>
-        Map shows coastal flooding depths for different return periods, from WRI Aqueduct (2020).
+        <DataNoticeTextBlock>
+          Map shows coastal flooding depths for different return periods, from WRI Aqueduct (2020).
+        </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl />
       <InputRow>
@@ -85,8 +89,10 @@ export const CycloneControl = () => {
   return (
     <HazardControl type="cyclone">
       <DataNotice>
-        Map shows tropical cyclone maximum wind speed (in m/s) for different return periods, from
-        Bloemendaal et al (2020).
+        <DataNoticeTextBlock>
+          Map shows tropical cyclone maximum wind speed (in m/s) for different return periods, from
+          Bloemendaal et al (2020).
+        </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl
         valueLabelDisplay="auto"
@@ -105,8 +111,10 @@ export const CycloneIrisControl = () => {
   return (
     <HazardControl type="cyclone_iris">
       <DataNotice>
-        Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods, from
-        Sparks and Toumi [Manuscript submitted for publication].
+        <DataNoticeTextBlock>
+          Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods, from
+          Sparks and Toumi [Manuscript submitted for publication].
+        </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl
         valueLabelDisplay="auto"
@@ -124,10 +132,12 @@ export const ExtremeHeatControl = () => {
   return (
     <HazardControl type="extreme_heat">
       <DataNotice>
-        Map shows annual probability of an "extreme heat event", defined by Lange et al (2020) using
-        both a relative indicator based on temperature (Russo et al 2015, 2017) and an absolute
-        indicator based on temperature and relative humidity (Masterton &amp; Richardson, 1979)
-        exceed their respective threshold values.
+        <DataNoticeTextBlock>
+          Map shows annual probability of an "extreme heat event", defined by Lange et al (2020)
+          using both a relative indicator based on temperature (Russo et al 2015, 2017) and an
+          absolute indicator based on temperature and relative humidity (Masterton &amp; Richardson,
+          1979) exceed their respective threshold values.
+        </DataNoticeTextBlock>
       </DataNotice>
       <InputRow>
         <EpochControl />
@@ -142,9 +152,11 @@ export const DroughtControl = () => {
   return (
     <HazardControl type="drought">
       <DataNotice>
-        Map shows annual probability of a "drought event", defined by Lange et al (2020) as monthly
-        soil moisture falling below the 2.5th percentile of the preindustrial baseline distribution
-        for at least seven consecutive months.
+        <DataNoticeTextBlock>
+          Map shows annual probability of a "drought event", defined by Lange et al (2020) as
+          monthly soil moisture falling below the 2.5th percentile of the preindustrial baseline
+          distribution for at least seven consecutive months.
+        </DataNoticeTextBlock>
       </DataNotice>
       <InputRow>
         <EpochControl />
@@ -159,15 +171,15 @@ export const EarthquakeControl = () => {
   return (
     <HazardControl type="earthquake">
       <DataNotice>
-        <p>
+        <DataNoticeTextBlock>
           Map shows seismic hazard as the peak ground acceleration (PGA) with a 10% probability of
           being exceeded in 50 years, from the Global Earthquake Model (GEM){' '}
           <a href="https://maps.openquake.org/map/global-seismic-hazard-map/">
             Global Seismic Hazard Map (version 2018.1)
           </a>
-        </p>
+        </DataNoticeTextBlock>
 
-        <p>Return Period: 475 years</p>
+        <DataNoticeTextBlock>Return Period: 475 years</DataNoticeTextBlock>
       </DataNotice>
     </HazardControl>
   );
