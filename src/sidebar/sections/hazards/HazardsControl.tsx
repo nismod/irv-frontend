@@ -133,10 +133,11 @@ export const ExtremeHeatControl = () => {
     <HazardControl type="extreme_heat">
       <DataNotice>
         <DataNoticeTextBlock>
-          Map shows annual probability of an "extreme heat event", defined by Lange et al (2020)
-          using both a relative indicator based on temperature (Russo et al 2015, 2017) and an
-          absolute indicator based on temperature and relative humidity (Masterton &amp; Richardson,
-          1979) exceed their respective threshold values.
+          Map shows the annual probability of an "extreme heat event" in each grid cell. Extreme
+          heat events are defined by Lange et al (2020) as occurring when two indicators both exceed
+          a threshold: a relative indicator based on temperature (Russo et al 2015, 2017) and an
+          absolute indicator based on temperature and relative humidity (Masterton & Richardson,
+          1979).
         </DataNoticeTextBlock>
       </DataNotice>
       <InputRow>
