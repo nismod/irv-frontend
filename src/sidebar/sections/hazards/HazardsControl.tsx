@@ -159,11 +159,15 @@ export const EarthquakeControl = () => {
   return (
     <HazardControl type="earthquake">
       <DataNotice>
-        Map shows seismic hazard as the peak ground acceleration (PGA) with a 10% probability of
-        being exceeded in 50 years, from the Global Earthquake Model (GEM){' '}
-        <a href="https://maps.openquake.org/map/global-seismic-hazard-map/">
-          Global Seismic Hazard Map (version 2018.1)
-        </a>
+        <p>
+          Map shows seismic hazard as the peak ground acceleration (PGA) with a 10% probability of
+          being exceeded in 50 years, from the Global Earthquake Model (GEM){' '}
+          <a href="https://maps.openquake.org/map/global-seismic-hazard-map/">
+            Global Seismic Hazard Map (version 2018.1)
+          </a>
+        </p>
+
+        <p>Return Period: 475 years</p>
       </DataNotice>
     </HazardControl>
   );
