@@ -35,16 +35,11 @@ export const DamagesSection = ({ fd }) => {
   );
 };
 
-export const QUIRKY_FIELDS_MAPPING = {
-  hazard: (h: string) => (h === 'river' ? 'fluvial' : h),
-  epoch: (e: string) => (e === '1980' ? 'present' : e),
-  rcp: (r: string) => {
-    if (r === 'historical') return 'baseline';
-    if (r.startsWith('rcp')) return r.substring(3).replace('p', '.'); // rcp4p5 -> 4.5
-    return r;
-  },
-};
+export function processRcpIncoming(rcp) {
+  if (rcp.match(/\dp\d/)) return rcp.replace('p', '.');
 
+  return rcp;
+}
 export function orderDamages<K, T extends K>(
   damages: T[],
   ordering: K[],

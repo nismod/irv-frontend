@@ -70,7 +70,8 @@ const makeSpec = (
 
 // need to map special value to year to maintain chronological ordering on the X axis
 function prepareEpoch(epoch: string) {
-  return epoch === 'present' ? '2020' : epoch;
+  // TODO: this only works with the assumption that 2020 is lower than all the other epochs
+  return epoch === 'baseline' ? '2020' : epoch;
 }
 
 interface ExpectedDamageChartProps {

@@ -7,41 +7,9 @@ import { dataLoaderManager } from '@/data-loader-manager';
 
 import { HAZARD_TYPES, HazardType } from '../hazards/metadata';
 
-/**
- * handle quirks/inconsistencies in feature property naming for hazards
- */
-function lookupHazard(hazard: string) {
-  if (hazard === 'fluvial') return 'river';
-  return hazard;
-}
-
-/**
- * handle quirks/inconsistencies in feature property naming for RCP
- */
-function lookupRcp(rcp: string, layer: string) {
-  if (rcp == null) return rcp;
-  if (rcp === 'baseline') {
-    if (layer.startsWith('road_') || layer.startsWith('rail_')) {
-      return 'historical';
-    }
-    return rcp;
-  }
-  return `rcp${rcp.replace(/\./g, 'p')}`;
-}
-
-/**
- * handle quirks/inconsistencies in feature property naming for epoch
- */
-function lookupEpoch(epoch: string, hazard: HazardType, layer: string) {
-  if (epoch === 'present') {
-    if (hazard === 'cyclone') {
-      return '2020';
-    }
-    if (layer.startsWith('road_') || layer.startsWith('rail_')) {
-      return '1980';
-    }
-  }
-  return epoch;
+/* replace e.g. 4.5 with 4p5 */
+function sanitiseRcp(rcp: string) {
+  return rcp?.replace(/\./g, 'p');
 }
 
 /**
@@ -55,10 +23,7 @@ function getExpectedDamageKey(
   rcp: string,
   epoch: string,
 ) {
-  return `${direct ? 'ead' : 'eael'}__${lookupHazard(hazard)}__rcp_${lookupRcp(
-    rcp,
-    layer,
-  )}__epoch_${lookupEpoch(epoch, hazard, layer)}`;
+  return `${direct ? 'ead' : 'eael'}__${hazard}__rcp_${sanitiseRcp(rcp)}__epoch_${epoch}`;
 }
 
 /**

@@ -1,5 +1,6 @@
 import { ValueLabel } from '@/lib/controls/params/value-label';
 
+// TODO: quirks - field names contain "historical" and "1980"
 export const REGIONAL_EXPOSURE_VARIABLES = [
   'pop_exposed_seismic_threshold0.1g',
   'pop_exposed_seismic_threshold0.2g',

@@ -11,15 +11,11 @@ import {
   featureState,
   hazardDataParamsState,
   orderDamages,
-  QUIRKY_FIELDS_MAPPING,
+  processRcpIncoming,
 } from './DamagesSection';
 import { DamageTable } from './DamageTable';
 import { ExpectedDamageChart } from './ExpectedDamageChart';
 import { HazardSelect, selectedHazardState } from './param-controls';
-
-function getDamageKey({ hazard, rcp, epoch }) {
-  return `${hazard}__rcp_${rcp}__epoch_${epoch}__conf_None`;
-}
 
 export interface ExpectedDamageCell {
   key: string;
@@ -33,23 +29,22 @@ export interface ExpectedDamageCell {
   eael_amin: number;
   eael_amax: number;
 }
+
+function getDamageKey({ hazard, rcp, epoch }) {
+  return `${hazard}__rcp_${rcp}__epoch_${epoch}__conf_None`;
+}
+
 function getExpectedDamageObject(d: ExpectedDamage): ExpectedDamageCell {
-  let { hazard, epoch, rcp } = _.mapValues(
-    QUIRKY_FIELDS_MAPPING,
-    (fn, key) => fn?.(d[key].toString()),
-  );
+  let { hazard, epoch, rcp } = d;
+
+  rcp = processRcpIncoming(rcp);
 
   return {
     key: getDamageKey({ hazard, rcp, epoch }),
     hazard,
     rcp,
     epoch,
-    ead_mean: d.ead_mean,
-    ead_amin: d.ead_amin,
-    ead_amax: d.ead_amax,
-    eael_mean: d.eael_mean,
-    eael_amin: d.eael_amin,
-    eael_amax: d.eael_amax,
+    ..._.pick(d, ['ead_mean', 'ead_amin', 'ead_amax', 'eael_mean', 'eael_amin', 'eael_amax']),
   };
 }
 
