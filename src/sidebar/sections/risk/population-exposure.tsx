@@ -17,7 +17,7 @@ import {
   sidebarPathVisibilityState,
   sidebarVisibilityToggleState,
 } from '@/sidebar/SidebarContent';
-import { DataNotice } from '@/sidebar/ui/DataNotice';
+import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
@@ -89,9 +89,10 @@ export const PopulationExposureSection = () => {
         effect={syncHazardsWithDamageSourceStateEffect}
       />
       <DataNotice>
-        Map shows expected annual population exposed to extreme events, based on the annual
-        probability of the hazard. Zoom in for extreme heat exposure to show.
-        <br />
+        <DataNoticeTextBlock>
+          Map shows expected annual population exposed to extreme events, based on the annual
+          probability of the hazard. Zoom in for extreme heat exposure to show.
+        </DataNoticeTextBlock>
       </DataNotice>
       <InputSection>
         <FormControl>

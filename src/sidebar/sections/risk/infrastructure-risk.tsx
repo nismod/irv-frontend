@@ -12,6 +12,7 @@ import { StateEffect } from '@/lib/recoil/state-effects/types';
 import { HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
 import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { DataParam } from '@/sidebar/ui/DataParam';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
@@ -117,6 +118,13 @@ export const InfrastructureRiskSection = () => {
           state={paramValueState({ group: 'infrastructure-risk', param: 'hazard' })}
           effect={syncHazardEffect}
         />
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Power sector assets (transmission lines) are assumed to be vulnerable to high wind
+            speeds but not flooding. Road and rail assets are assumed to be vulnerable to flooding
+            but not wind.
+          </DataNoticeTextBlock>
+        </DataNotice>
         <InputRow>
           <DataParam group="infrastructure-risk" id="sector">
             {({ value, onChange, options }) => (
