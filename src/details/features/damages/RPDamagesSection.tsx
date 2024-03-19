@@ -12,7 +12,13 @@ import {
   orderDamages,
   QUIRKY_FIELDS_MAPPING,
 } from './DamagesSection';
-import { EpochSelect, selectedEpochState, selectedHazardState } from './param-controls';
+import {
+  EpochSelect,
+  ReturnPeriodSelect,
+  selectedEpochState,
+  selectedHazardState,
+  selectedRpOptionState,
+} from './param-controls';
 import { ReturnPeriodDamageChart } from './ReturnPeriodDamageChart';
 import { RPDamageTable } from './RPDamageTable';
 
@@ -90,7 +96,7 @@ const rpDamageDataState = selector({
   },
 });
 
-const selectedRpDataState = selector({
+export const selectedRpDataState = selector({
   key: 'DamagesSection/selectedRpDataState',
   get: ({ get }) => {
     const selectedHazard = get(selectedHazardState);
@@ -103,10 +109,29 @@ const selectedRpDataState = selector({
   },
 });
 
+const filteredTableDataState = selector({
+  key: 'DamagesSection/filteredTableDataState',
+  get: ({ get }) => {
+    const selectedRpOption = get(selectedRpOptionState);
+    const selectedRpData = get(selectedRpDataState);
+
+    if (!selectedRpData) {
+      return null;
+    }
+
+    if (!selectedRpOption || selectedRpOption === 'Show All') {
+      return selectedRpData;
+    }
+
+    return selectedRpData.filter((x) => x.rp === +selectedRpOption);
+  },
+});
+
 export const RPDamagesSection = () => {
   const fd = useRecoilValue(featureState);
   const returnPeriodDamagesData = useRecoilValue(rpDamageDataState);
   const selectedRPData = useRecoilValue(selectedRpDataState);
+  const filteredTableData = useRecoilValue(filteredTableDataState);
 
   return (
     <Box py={2}>
@@ -138,7 +163,8 @@ export const RPDamagesSection = () => {
               height={150}
               renderer="svg"
             />
-            <RPDamageTable damages={selectedRPData} />
+            <ReturnPeriodSelect />
+            <RPDamageTable damages={filteredTableData} />
           </>
         ) : (
           <Typography variant="body2" color="textSecondary">
