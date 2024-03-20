@@ -79,7 +79,7 @@ const rpOptionsState = selector({
             selectedRpData
               .map((row) => row.rp)
               .sort((a, b) => a - b)
-              .map((rp) => rp.toString()),
+              .map(String),
           ),
         ]
       : [];
@@ -96,16 +96,16 @@ export const ReturnPeriodSelect = () => {
   const [selectedRpOption, setSelectedRpOption] = useRecoilState(selectedRpOptionState);
 
   return rpOptions.length ? (
-    <FormControl fullWidth disabled={rpOptions.length === 1}>
+    <FormControl fullWidth disabled={rpOptions.length < 2}>
       <InputLabel>Return Period</InputLabel>
       <Select
         label="Return Period"
         value={selectedRpOption ?? SHOW_ALL_OPTION}
         onChange={(e) => setSelectedRpOption(e.target.value as string)}
       >
-        {rpOptions.map((h) => (
-          <MenuItem key={h} value={h}>
-            {titleCase(h.toString())}
+        {rpOptions.map((rpOption) => (
+          <MenuItem key={rpOption} value={rpOption}>
+            {titleCase(rpOption)}
           </MenuItem>
         ))}
       </Select>

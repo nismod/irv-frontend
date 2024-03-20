@@ -124,7 +124,7 @@ const filteredTableDataState = selector({
       return selectedRpData;
     }
 
-    return selectedRpData.filter((x) => x.rp === +selectedRpOption);
+    return selectedRpData.filter((dataRow) => dataRow.rp === +selectedRpOption);
   },
 });
 
