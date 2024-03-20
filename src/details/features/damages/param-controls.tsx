@@ -65,6 +65,8 @@ export const EpochSelect = () => {
   ) : null;
 };
 
+export const SHOW_ALL_OPTION = 'Show All';
+
 const rpOptionsState = selector({
   key: 'DamagesSection/rpOptionsState',
   get: ({ get }) => {
@@ -72,7 +74,7 @@ const rpOptionsState = selector({
 
     return selectedRpData
       ? [
-          'Show All',
+          SHOW_ALL_OPTION,
           ...unique(
             selectedRpData
               .map((row) => row.rp)
@@ -98,7 +100,7 @@ export const ReturnPeriodSelect = () => {
       <InputLabel>Return Period</InputLabel>
       <Select
         label="Return Period"
-        value={selectedRpOption ?? 'Show All'}
+        value={selectedRpOption ?? SHOW_ALL_OPTION}
         onChange={(e) => setSelectedRpOption(e.target.value as string)}
       >
         {rpOptions.map((h) => (

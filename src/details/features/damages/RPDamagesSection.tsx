@@ -18,6 +18,7 @@ import {
   selectedEpochState,
   selectedHazardState,
   selectedRpOptionState,
+  SHOW_ALL_OPTION,
 } from './param-controls';
 import { ReturnPeriodDamageChart } from './ReturnPeriodDamageChart';
 import { RPDamageTable } from './RPDamageTable';
@@ -119,7 +120,7 @@ const filteredTableDataState = selector({
       return null;
     }
 
-    if (!selectedRpOption || selectedRpOption === 'Show All') {
+    if (!selectedRpOption || selectedRpOption === SHOW_ALL_OPTION) {
       return selectedRpData;
     }
 
