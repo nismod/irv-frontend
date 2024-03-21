@@ -1,4 +1,12 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+} from '@mui/material';
 
 import { numFormat, numRangeFormat } from '@/lib/helpers';
 
@@ -25,7 +33,14 @@ export const RPDamageTable = ({ damages }) => (
       <TableBody>
         {damages.map((d) => (
           <TableRow key={d.key}>
-            <TableCell sx={padding}>{d.rp}</TableCell>
+            <Tooltip
+              title={`Probability: ${d.rp === 0 ? 0 : 1 / d.rp}`}
+              arrow
+              placement="left"
+              followCursor
+            >
+              <TableCell sx={padding}>{d.rp}</TableCell>
+            </Tooltip>
             <TableCell sx={{ pl: 0, pr: padding.px, py: padding.py }}>{d.rcp}</TableCell>
             <TableCell sx={padding} align="right">
               {numFormat(d.damage_mean)}

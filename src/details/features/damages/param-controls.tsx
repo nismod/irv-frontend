@@ -7,6 +7,7 @@ import { makeSelectState } from '@/lib/recoil/make-state/make-select-state';
 import { HAZARDS_METADATA } from '@/config/hazards/metadata';
 
 import { damagesDataState } from './ExpectedDamagesSection';
+import { selectedRpDataState } from './RPDamagesSection';
 
 export const hazardsState = selector({
   key: 'DamagesSection/hazardsState',
@@ -57,6 +58,54 @@ export const EpochSelect = () => {
         {epochs.map((h) => (
           <MenuItem key={h} value={h}>
             {titleCase(h)}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  ) : null;
+};
+
+export const SHOW_ALL_OPTION = 'Show All';
+
+const rpOptionsState = selector({
+  key: 'DamagesSection/rpOptionsState',
+  get: ({ get }) => {
+    const selectedRpData = get(selectedRpDataState);
+
+    return selectedRpData
+      ? [
+          SHOW_ALL_OPTION,
+          ...unique(
+            selectedRpData
+              .map((row) => row.rp)
+              .sort((a, b) => a - b)
+              .map(String),
+          ),
+        ]
+      : [];
+  },
+});
+
+export const selectedRpOptionState = makeSelectState(
+  'DamagesSection/selectedRpOption',
+  rpOptionsState,
+);
+
+export const ReturnPeriodSelect = () => {
+  const rpOptions = useRecoilValue(rpOptionsState);
+  const [selectedRpOption, setSelectedRpOption] = useRecoilState(selectedRpOptionState);
+
+  return rpOptions.length ? (
+    <FormControl fullWidth disabled={rpOptions.length < 2}>
+      <InputLabel>Return Period</InputLabel>
+      <Select
+        label="Return Period"
+        value={selectedRpOption ?? SHOW_ALL_OPTION}
+        onChange={(e) => setSelectedRpOption(e.target.value as string)}
+      >
+        {rpOptions.map((rpOption) => (
+          <MenuItem key={rpOption} value={rpOption}>
+            {titleCase(rpOption)}
           </MenuItem>
         ))}
       </Select>

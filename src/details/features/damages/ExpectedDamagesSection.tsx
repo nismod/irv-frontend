@@ -160,7 +160,14 @@ export const ExpectedDamagesSection = () => {
                   {...eadChartProps}
                 />
               </Box>
-            ) : null}
+            ) : (
+              <Box mt={1}>
+                <Typography variant="body2">
+                  Indirect damages (losses) due to disruption of infrastructure services (loss of
+                  power, transport disruption) are not yet available.
+                </Typography>
+              </Box>
+            )}
             <Box mt={1}>
               <DamageTable damages={selectedData} />
             </Box>

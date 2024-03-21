@@ -18,9 +18,9 @@ const makeSpec = (rpValues: number[], field_key: string, field_title: string) =>
   },
   encoding: {
     x: {
-      field: 'probability',
+      field: 'rp',
       type: 'quantitative',
-      title: 'Probability',
+      title: 'Return Period (Years)',
       axis: {
         gridDash: [2, 2],
         domainColor: '#ccc',
