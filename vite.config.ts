@@ -50,5 +50,9 @@ export default defineConfig({
     proxy: devProxy,
     host: '0.0.0.0', // listen on all network interfaces
   },
-  test: {},
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/vitest.setup.ts',
+  },
 });
