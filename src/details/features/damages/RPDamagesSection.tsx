@@ -4,6 +4,8 @@ import { ReturnPeriodDamage } from '@nismod/irv-api-client';
 import _ from 'lodash';
 import { selector, useRecoilValue } from 'recoil';
 
+import { InputRow } from '@/sidebar/ui/InputRow';
+
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
 import {
   buildOrdering,
@@ -149,7 +151,12 @@ export const RPDamagesSection = () => {
             </ButtonPlacement>
           )}
         </Box>
-        <EpochSelect />
+
+        <InputRow>
+          <EpochSelect />
+          <ReturnPeriodSelect />
+        </InputRow>
+
         {selectedRPData ? (
           <>
             <ReturnPeriodDamageChart
@@ -164,7 +171,6 @@ export const RPDamagesSection = () => {
               height={150}
               renderer="svg"
             />
-            <ReturnPeriodSelect />
             <RPDamageTable damages={filteredTableData} />
           </>
         ) : (
