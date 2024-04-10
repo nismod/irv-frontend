@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { ExtLink } from '@/lib/nav';
 
 import { HeadingBox } from './HeadingBox';
+import { TableCellParagraph, TableCellStack } from './ui/TypographyContainers';
 
 export const DataPage = () => (
   <article>
@@ -100,26 +101,37 @@ export const DataPage = () => (
             </TableCell>
             <TableCell>CC0 1.0</TableCell>
             <TableCell>
-              Annual probability of drought (soil moisture below a baseline threshold) or extreme
-              heat (temperature and humidity-based indicators over a threshold) events on a 0.5°
-              grid. 8 hydrological models forced by 4 GCMs under baseline, RCP 2.6 &amp; 6.0
-              emission scenarios. Current and future maps in 2030, 2050 and 2080. <br />
-              <br />
-              The ISIMIP2b climate input data and impact model output data analyzed in this study
-              are available in the ISIMIP data repository at ESGF, see
-              https://esg.pik-potsdam.de/search/isimip/?project=ISIMIP2b&product=input and
-              https://esg.pik-potsdam.de/search/isimip/?project=ISIMIP2b&product=output,
-              respectively. More information about the GHM, GGCM, and GVM output data is provided by
-              Gosling et al. (2020), Arneth et al. (2020), and Reyer et al. (2019), respectively.{' '}
-              <br /> <br />
-              Event definitions are given in Lange et al, table 1. Land area is exposed to drought
-              if monthly soil moisture falls below the 2.5th percentile of the preindustrial
-              baseline distribution for at least seven consecutive months. Land area is exposed to
-              extreme heat if both a relative indicator based on temperature (Russo et al 2015,
-              2017) and an absolute indicator based on temperature and relative humidity (Masterton
-              &amp; Richardson, 1979) exceed their respective threshold value. <br /> <br />
-              Note that the time series of extreme events given by Lange et al has been processed
-              into an annual probability of occurrence by the GRI team for visualisation purposes.
+              <TableCellStack>
+                <TableCellParagraph>
+                  Annual probability of drought (soil moisture below a baseline threshold) or
+                  extreme heat (temperature and humidity-based indicators over a threshold) events
+                  on a 0.5° grid. 8 hydrological models forced by 4 GCMs under baseline, RCP 2.6
+                  &amp; 6.0 emission scenarios. Current and future maps in 2030, 2050 and 2080.
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  The ISIMIP2b climate input data and impact model output data analyzed in this
+                  study are available in the ISIMIP data repository at ESGF, see
+                  https://esg.pik-potsdam.de/search/isimip/?project=ISIMIP2b&product=input and
+                  https://esg.pik-potsdam.de/search/isimip/?project=ISIMIP2b&product=output,
+                  respectively. More information about the GHM, GGCM, and GVM output data is
+                  provided by Gosling et al. (2020), Arneth et al. (2020), and Reyer et al. (2019),
+                  respectively.{' '}
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  Event definitions are given in Lange et al, table 1. Land area is exposed to
+                  drought if monthly soil moisture falls below the 2.5th percentile of the
+                  preindustrial baseline distribution for at least seven consecutive months. Land
+                  area is exposed to extreme heat if both a relative indicator based on temperature
+                  (Russo et al 2015, 2017) and an absolute indicator based on temperature and
+                  relative humidity (Masterton &amp; Richardson, 1979) exceed their respective
+                  threshold value.
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  Note that the time series of extreme events given by Lange et al has been
+                  processed into an annual probability of occurrence by the GRI team for
+                  visualisation purposes.
+                </TableCellParagraph>
+              </TableCellStack>
             </TableCell>
           </TableRow>
           <TableRow>
@@ -284,64 +296,74 @@ export const DataPage = () => (
             <TableCell>Population and built-up area</TableCell>
             <TableCell>JRC Global Human Settlement Layer</TableCell>
             <TableCell>
-              Dataset: Pesaresi M., Politis P. (2022): GHS built-up surface grid, derived from
-              Sentinel2 composite and Landsat, multitemporal (1975-2030)European Commission, Joint
-              Research Centre (JRC) PID:
-              http://data.europa.eu/89h/d07d81b4-7680-4d28-b896-583745c27085,
-              doi:10.2905/D07D81B4-7680-4D28-B896-583745C27085
-              <br />
-              <br />
-              Concept & Methodology: Schiavina M., Melchiorri M., Pesaresi M., Politis P., Freire
-              S., Maffenini L., Florio P., Ehrlich D., Goch K., Tommasi P., Kemper T. GHSL Data
-              Package 2022, JRC 129516, ISBN 978-92-76-53071-8 doi:10.2760/19817
-              <br />
-              <br />
-              Dataset: Schiavina M., Freire S., MacManus K. (2022): GHS-POP R2022A - GHS population
-              grid multitemporal (1975-2030).European Commission, Joint Research Centre (JRC) PID:
-              http://data.europa.eu/89h/d6d86a90-4351-4508-99c1-cb074b022c4a,
-              doi:10.2905/D6D86A90-4351-4508-99C1-CB074B022C4A
-              <br />
-              <br />
-              Concept & Methodology: Freire S., MacManus K., Pesaresi M., Doxsey-Whitfield E., Mills
-              J. (2016) Development of new open and free multi-temporal global population grids at
-              250 m resolution. Geospatial Data in a Changing World; Association of Geographic
-              Information Laboratories in Europe (AGILE), AGILE 2016
+              <TableCellStack>
+                <TableCellParagraph>
+                  Dataset: Pesaresi M., Politis P. (2022): GHS built-up surface grid, derived from
+                  Sentinel2 composite and Landsat, multitemporal (1975-2030)European Commission,
+                  Joint Research Centre (JRC) PID:
+                  http://data.europa.eu/89h/d07d81b4-7680-4d28-b896-583745c27085,
+                  doi:10.2905/D07D81B4-7680-4D28-B896-583745C27085
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  Concept & Methodology: Schiavina M., Melchiorri M., Pesaresi M., Politis P.,
+                  Freire S., Maffenini L., Florio P., Ehrlich D., Goch K., Tommasi P., Kemper T.
+                  GHSL Data Package 2022, JRC 129516, ISBN 978-92-76-53071-8 doi:10.2760/19817
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  Dataset: Schiavina M., Freire S., MacManus K. (2022): GHS-POP R2022A - GHS
+                  population grid multitemporal (1975-2030).European Commission, Joint Research
+                  Centre (JRC) PID: http://data.europa.eu/89h/d6d86a90-4351-4508-99c1-cb074b022c4a,
+                  doi:10.2905/D6D86A90-4351-4508-99C1-CB074B022C4A
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  Concept & Methodology: Freire S., MacManus K., Pesaresi M., Doxsey-Whitfield E.,
+                  Mills J. (2016) Development of new open and free multi-temporal global population
+                  grids at 250 m resolution. Geospatial Data in a Changing World; Association of
+                  Geographic Information Laboratories in Europe (AGILE), AGILE 2016
+                </TableCellParagraph>
+              </TableCellStack>
             </TableCell>
             <TableCell>
               <a href="https://ec.europa.eu/info/legal-notice_en#copyright-notice">CC-BY 4.0</a>
             </TableCell>
             <TableCell>
-              GHS-POP R2022A - GHS population grid multitemporal (1975-2030), epoch: 2020,
-              resolution: 1 km, coordinate system: Mollweide, reprojected for visualisation. For
-              GHS-POP (GHS-POP_GLOBE_R2022A), the Sentinel/Landsat based GHS-BUILT-S
-              (GHS-BUILT-S_GLOBE_R2022A, version 1.0) was used as target for disaggregation of
-              population estimates. The base source for population estimates (both census unit
-              counts and geometries) was the raw dataset (census population at the census year and
-              growth rates) of the Gridded Population of the World, version 4.11 (GPWv4.11), from
-              CIESIN/SEDAC (https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/whatsnewrev11).
-              <br />
-              <br />
-              GHS-BUILT-S R2022A - GHS built-up surface grid, derived from Sentinel-2 composite and
-              Landsat, multitemporal (1975-2030), epoch: 2020, resolution: 1 km, coordinate system:
-              Mollweide, classification: Total RES+NRES or Non Residential, reprojected for
-              visualisation. The GHS-BUILT-S spatial raster dataset depicts the distribution of the
-              built-up (BU) surfaces estimates between 1975 and 2030 in 5 years intervals and two
-              functional use components a) the total BU surface and b) the non-residential (NRES) BU
-              surface. The data is made by spatial-temporal interpolation of five observed
-              collections of multiple-sensor, multiple-platform satellite imageries: Landsat (MSS,
-              TM, ETM sensor) supports the 1975, 1990, 2000, and 2014 epochs, while Sentinel-2 (S2)
-              composite (GHS-composite-S2 R2020A) supports the 2018 epoch.
-              <br />
-              <br />
-              Non-residential (NRES) built-up surface is defined as “any built-up surface not
-              included in the RES class”. See{' '}
-              <a href="https://ghsl.jrc.ec.europa.eu/documents/GHSL_Data_Package_2022.pdf">
-                Schiavina et al. (2022)
-              </a>{' '}
-              Section 2 for definitions and Table 3 for analysis of NRES built-up surfaces
-              stratified by land-use class in the US and Europe - these include for example
-              transportation (airports, ports, stations), industrial, retail, commercial, and
-              institutional (health, education) uses.
+              <TableCellStack>
+                <TableCellParagraph>
+                  GHS-POP R2022A - GHS population grid multitemporal (1975-2030), epoch: 2020,
+                  resolution: 1 km, coordinate system: Mollweide, reprojected for visualisation. For
+                  GHS-POP (GHS-POP_GLOBE_R2022A), the Sentinel/Landsat based GHS-BUILT-S
+                  (GHS-BUILT-S_GLOBE_R2022A, version 1.0) was used as target for disaggregation of
+                  population estimates. The base source for population estimates (both census unit
+                  counts and geometries) was the raw dataset (census population at the census year
+                  and growth rates) of the Gridded Population of the World, version 4.11 (GPWv4.11),
+                  from CIESIN/SEDAC
+                  (https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/whatsnewrev11).
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  GHS-BUILT-S R2022A - GHS built-up surface grid, derived from Sentinel-2 composite
+                  and Landsat, multitemporal (1975-2030), epoch: 2020, resolution: 1 km, coordinate
+                  system: Mollweide, classification: Total RES+NRES or Non Residential, reprojected
+                  for visualisation. The GHS-BUILT-S spatial raster dataset depicts the distribution
+                  of the built-up (BU) surfaces estimates between 1975 and 2030 in 5 years intervals
+                  and two functional use components a) the total BU surface and b) the
+                  non-residential (NRES) BU surface. The data is made by spatial-temporal
+                  interpolation of five observed collections of multiple-sensor, multiple-platform
+                  satellite imageries: Landsat (MSS, TM, ETM sensor) supports the 1975, 1990, 2000,
+                  and 2014 epochs, while Sentinel-2 (S2) composite (GHS-composite-S2 R2020A)
+                  supports the 2018 epoch.
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  Non-residential (NRES) built-up surface is defined as “any built-up surface not
+                  included in the RES class”. See{' '}
+                  <a href="https://ghsl.jrc.ec.europa.eu/documents/GHSL_Data_Package_2022.pdf">
+                    Schiavina et al. (2022)
+                  </a>{' '}
+                  Section 2 for definitions and Table 3 for analysis of NRES built-up surfaces
+                  stratified by land-use class in the US and Europe - these include for example
+                  transportation (airports, ports, stations), industrial, retail, commercial, and
+                  institutional (health, education) uses.
+                </TableCellParagraph>
+              </TableCellStack>
             </TableCell>
           </TableRow>
 
@@ -369,15 +391,20 @@ export const DataPage = () => (
               </a>
             </TableCell>
             <TableCell>
-              McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C.,
-              Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and Yoken, D.
-              2021. Global Database of Cement Production Assets. Spatial Finance Initiative.
-              <br />
-              <br />
-              McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C.,
-              Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and Yoken,
-              D., 2021. Global Database of Iron and Steel Production Assets. Spatial Finance
-              Initiative
+              <TableCellStack>
+                <TableCellParagraph>
+                  McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C.,
+                  Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and
+                  Yoken, D. 2021. Global Database of Cement Production Assets. Spatial Finance
+                  Initiative.
+                </TableCellParagraph>
+                <TableCellParagraph>
+                  McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C.,
+                  Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and
+                  Yoken, D., 2021. Global Database of Iron and Steel Production Assets. Spatial
+                  Finance Initiative
+                </TableCellParagraph>
+              </TableCellStack>
             </TableCell>
             <TableCell>CC BY 4.0</TableCell>
             <TableCell>Cement and Steel Asset site locations as points</TableCell>
