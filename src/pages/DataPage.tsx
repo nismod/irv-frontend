@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 
 import { ExtLink } from '@/lib/nav';
 
-import { HeadingBox } from './HeadingBox';
+import { HeadingBox } from './ui/HeadingBox';
 import { TableCellParagraph, TableCellStack } from './ui/TypographyContainers';
 
 export const DataPage = () => (

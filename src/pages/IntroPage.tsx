@@ -1,7 +1,7 @@
 import { Divider, Stack, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-import { HeadingBox } from './HeadingBox';
+import { HeadingBox } from './ui/HeadingBox';
 
 export const IntroPage = () => {
   return (

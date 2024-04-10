@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import { HeadingBox } from './HeadingBox';
+import { HeadingBox } from './ui/HeadingBox';
 
 export const TermsPage = () => (
   <article>
