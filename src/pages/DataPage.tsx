@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 
 import { ExtLink } from '@/lib/nav';
 
+import { ArticleParagraph } from './ui/article-components';
 import { HeadingBox } from './ui/HeadingBox';
 import { TableCellParagraph, TableCellStack } from './ui/table-components';
 
@@ -26,7 +27,7 @@ export const DataPage = () => (
         The GRI Risk Viewer is developed at the University of Oxford by the Oxford Programme for
         Sustainable Infrastructure Systems.
       </Typography>
-      <p>
+      <ArticleParagraph>
         This website is developed at{' '}
         <a href="https://github.com/nismod/infra-risk-vis" target="blank">
           github.com/nismod/infra-risk-vis
@@ -36,11 +37,11 @@ export const DataPage = () => (
           github.com/nismod/open-gira
         </a>
         .
-      </p>
-      <p>
+      </ArticleParagraph>
+      <ArticleParagraph>
         The rest of this page details the sources of data presented on this site, and acknowledges
         additional sources, funding and collaborations.
-      </p>
+      </ArticleParagraph>
       <Typography variant="h2">Hazard Data</Typography>
     </div>
     <TableContainer className="centred wide" component={Paper} sx={{ mb: 4 }}>
@@ -587,35 +588,35 @@ export const DataPage = () => (
     <div className="centred">
       <Typography variant="h2">Contextual Map Data</Typography>
 
-      <p>
+      <ArticleParagraph>
         Background map data is &copy;{' '}
         <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, style
         &copy; <a href="https://carto.com/attributions">CARTO</a>.
-      </p>
+      </ArticleParagraph>
 
-      <p>
+      <ArticleParagraph>
         Satellite imagery background is derived from{' '}
         <a href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</a> by{' '}
         <a href="https://eox.at">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel
         data 2020).
-      </p>
+      </ArticleParagraph>
 
-      <p>
+      <ArticleParagraph>
         Photo credit: Hurricane Irma, 7 September 2017. Data: MODIS/Terra (NASA WorldView).
         Processed by Antti Lipponen (<a href="https://twitter.com/anttilip">@anttilip</a>){' '}
         <a href="https://creativecommons.org/licenses/by/2.0/">CC-BY</a>
-      </p>
+      </ArticleParagraph>
 
       <Typography variant="h2">Disclaimer</Typography>
 
-      <p>
+      <ArticleParagraph>
         The Global Systemic Risk Assessment Tool (G-SRAT) is provided for general information only
         and is not intended to amount to advice on which you should rely. You must obtain
         professional or specialist advice before taking, or refraining from, any action on the basis
         of the content on our site.
-      </p>
+      </ArticleParagraph>
 
-      <p>
+      <ArticleParagraph>
         Although we make reasonable efforts to update the information on our site, we make no
         representations, warranties or guarantees, whether express or implied, that the content on
         our site (including this tool) is accurate, complete or up to date. The University of Oxford
@@ -623,11 +624,11 @@ export const DataPage = () => (
         from use of the data or this tool for any purpose. Please consult our{' '}
         <Link to="/terms-of-use">website terms of use</Link> for more information about our
         liability to you.
-      </p>
+      </ArticleParagraph>
 
       <Typography variant="h2">Acknowledgments</Typography>
 
-      <p>
+      <ArticleParagraph>
         The development of this site is led by the University of Oxford (the{' '}
         <a href="https://opsis.eci.ox.ac.uk/">
           Oxford Programme for Sustainable Infrastructure Systems
@@ -655,7 +656,7 @@ export const DataPage = () => (
         </a>
         ). Our ambition is to expand these technical collaborations over time to build the climate
         risk data ecosystem.
-      </p>
+      </ArticleParagraph>
     </div>
   </article>
 );
