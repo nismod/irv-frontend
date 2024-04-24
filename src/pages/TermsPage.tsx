@@ -32,13 +32,15 @@ export const TermsPage = () => (
               <a href="#cookie">Cookie Policy</a>
             </li>
           </ul>
-          <a id="terms" href="#terms">
-            Link to Terms
-          </a>
         </ArticleParagraph>
       </ArticleSection>
 
       <ArticleSection>
+        <ArticleParagraph>
+          <a id="terms" href="#terms">
+            Link to Terms
+          </a>
+        </ArticleParagraph>
         <SuperSectionHeader>Terms and conditions of website use</SuperSectionHeader>
       </ArticleSection>
       <ArticleSection>
