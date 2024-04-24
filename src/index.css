@@ -18,35 +18,6 @@
   background-position: center center;
 }
 
-article {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 1.25rem;
-  letter-spacing: -0.5px;
-  line-height: 1.45;
-}
-@media (min-width: 600px) {
-  article {
-    font-size: 1.6rem;
-  }
-}
-article .centred,
-article.centred {
-  margin: 0 auto 1em;
-  max-width: 50rem;
-  padding: 0 1em;
-}
-article .centred.wide,
-article.centred.wide {
-  max-width: 75rem;
-}
-article .minibar {
-  width: 3rem;
-  margin: 4rem 0 0;
-  height: 4px;
-  border: 0;
-  background-color: #222;
-}
-
 /**
  * Map and controls
  */

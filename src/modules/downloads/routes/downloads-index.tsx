@@ -4,6 +4,12 @@ import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 import { AppLink } from '@/lib/nav';
 import { LoaderData } from '@/lib/react/react-router';
 
+import {
+  ArticleContainer,
+  ArticleContentContainer,
+  ArticleSection,
+} from '@/pages/ui/ArticleContainer';
+
 import { CenteredLayout } from '../components/CenteredLayout';
 import { fetchAllRegions } from '../data/regions';
 import { mdxComponents } from '../markdown';
@@ -24,9 +30,13 @@ export const Component = () => {
   return (
     <CenteredLayout>
       <Stack direction="column">
-        <article className="centred">
-          <DownloadsIntroText components={mdxComponents} />
-        </article>
+        <ArticleContainer>
+          <ArticleContentContainer>
+            <ArticleSection>
+              <DownloadsIntroText components={mdxComponents} />
+            </ArticleSection>
+          </ArticleContentContainer>
+        </ArticleContainer>
         <Stack direction="column" alignItems={'center'}>
           <RegionSearchNavigation regions={regions} title="Select a country" />
           <Typography textAlign="center" sx={{ my: 2 }}>
