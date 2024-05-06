@@ -28,6 +28,7 @@ import { NetworkControl } from './sections/networks/NetworkControl';
 import { InfrastructureRiskSection } from './sections/risk/infrastructure-risk';
 import { PopulationExposureSection } from './sections/risk/population-exposure';
 import { RegionalRiskSection } from './sections/risk/regional-risk';
+import { TopographyControl } from './sections/topography/TopographyControl';
 import { HdiControl } from './sections/vulnerability/HdiControl';
 import { TravelTimeControl } from './sections/vulnerability/TravelTimeControl';
 import { WdpaControls } from './sections/vulnerability/WdpaControl';
@@ -142,6 +143,13 @@ const ExposureSection = () => (
           Change Initiative Land Cover project (2021).
         </DataNoticeTextBlock>
       </DataNotice>
+    </Layer>
+    <Layer path="topography" title="Topography">
+      {/* <Layer path="industry" title="Topography"> */}
+      <DataNotice>
+        <DataNoticeTextBlock>TODO DEM data description.</DataNoticeTextBlock>
+      </DataNotice>
+      <TopographyControl />
     </Layer>
     <Layer path="organic-carbon" title="Soil Organic Carbon">
       <DataNotice>
