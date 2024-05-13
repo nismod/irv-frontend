@@ -89,6 +89,10 @@ const navItems = [
     to: '/view/adaptation',
     title: 'Adaptation',
   },
+  {
+    to: '/metrics',
+    title: 'Metrics',
+  },
 ];
 const secondaryNavItems = [
   {
