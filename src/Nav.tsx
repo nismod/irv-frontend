@@ -83,6 +83,10 @@ const navItems = [
     to: '/view/risk',
     title: 'Risk',
   },
+  {
+    to: '/metrics',
+    title: 'Metrics',
+  },
 ];
 const secondaryNavItems = [
   {
