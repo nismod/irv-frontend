@@ -1,4 +1,4 @@
-import { Paper } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const HeadingBox = styled(Paper)(({ theme }) => ({
@@ -14,3 +14,7 @@ export const HeadingBox = styled(Paper)(({ theme }) => ({
   paddingBottom: theme.spacing(2),
   borderRadius: 0,
 }));
+
+export const HeadingBoxText = ({ children }) => {
+  return <Typography variant="h1">{children}</Typography>;
+};
