@@ -1,7 +1,6 @@
 import { Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { ReturnPeriodDamage } from '@nismod/irv-api-client';
-import _ from 'lodash';
 import { selector, useRecoilValue } from 'recoil';
 
 import { InputRow } from '@/sidebar/ui/InputRow';
@@ -12,7 +11,7 @@ import {
   featureState,
   hazardDataParamsState,
   orderDamages,
-  QUIRKY_FIELDS_MAPPING,
+  processRcpIncoming,
 } from './DamagesSection';
 import {
   EpochSelect,
@@ -45,10 +44,9 @@ interface RPDamageCell {
 }
 
 function getRPDamageObject(d: ReturnPeriodDamage): RPDamageCell {
-  let { hazard, epoch, rcp } = _.mapValues(
-    QUIRKY_FIELDS_MAPPING,
-    (fn, key) => fn?.(d[key].toString()),
-  );
+  let { hazard, epoch, rcp } = d;
+
+  rcp = processRcpIncoming(rcp);
 
   return {
     key: getRPDamageKey({ hazard, epoch, rcp, rp: d.rp }),
