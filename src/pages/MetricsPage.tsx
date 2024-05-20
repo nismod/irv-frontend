@@ -1,3 +1,8 @@
 export const MetricsPage = () => {
-  return <div>Metrics Page Placeholder (WIP)</div>;
+  return (
+    <>
+      <div>Metrics Page Placeholder (WIP)</div>
+      {/* <CountrySelector /> */}
+    </>
+  );
 };

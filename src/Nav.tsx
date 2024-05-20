@@ -7,10 +7,10 @@ import {
   List,
   ListItem,
   Link as MuiLink,
+  Stack,
   styled,
   Toolbar,
 } from '@mui/material';
-import { Box } from '@mui/system';
 import { FC, forwardRef, useCallback, useState } from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
 
@@ -69,20 +69,24 @@ const GrowingDivider = styled(Divider)({
 const navItems = [
   {
     to: '/view/hazard',
-    title: 'Hazard',
+    title: 'Map',
   },
-  {
-    to: '/view/exposure',
-    title: 'Exposure',
-  },
-  {
-    to: '/view/vulnerability',
-    title: 'Vulnerability',
-  },
-  {
-    to: '/view/risk',
-    title: 'Risk',
-  },
+  // {
+  //   to: '/view/hazard',
+  //   title: 'Hazard',
+  // },
+  // {
+  //   to: '/view/exposure',
+  //   title: 'Exposure',
+  // },
+  // {
+  //   to: '/view/vulnerability',
+  //   title: 'Vulnerability',
+  // },
+  // {
+  //   to: '/view/risk',
+  //   title: 'Risk',
+  // },
   {
     to: '/metrics',
     title: 'Metrics',
@@ -95,7 +99,7 @@ const secondaryNavItems = [
   },
   {
     to: '/downloads',
-    title: 'Downloads',
+    title: 'Data',
   },
 ];
 
@@ -154,43 +158,79 @@ const MobileNavContent: FC<{ height: number }> = ({ height }) => {
   );
 };
 
-const DesktopNavContent = () => (
+const menuGap = 0.8;
+
+const DesktopNavContent = (height) => (
   <>
-    <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
+    <Stack direction="row" alignItems="center" justifyContent="space-between" width={'100%'}>
+      <Stack direction={'row'} alignItems="center" justifyContent="center" gap={2}>
+        <Stack
+          direction={'row'}
+          alignItems="center"
+          justifyContent="center"
+          sx={{
+            // backgroundColor: 'rgba(0,0,0, 0.4)',
+            height: height,
+            px: 2,
+          }}
+        >
+          <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
+        </Stack>
 
-    {navItems.map(({ to, title }) => (
-      <ToolbarNavLink key={to} to={to}>
-        {title}
-      </ToolbarNavLink>
-    ))}
+        <Stack direction={'row'} alignItems="center" justifyContent="center" gap={menuGap}>
+          {navItems.map(({ to, title }) => (
+            <ToolbarNavLinkSecondary key={to} to={to}>
+              {title}
+            </ToolbarNavLinkSecondary>
+          ))}
+        </Stack>
+      </Stack>
 
-    <GrowingDivider />
+      {/* <GrowingDivider /> */}
 
-    {secondaryNavItems.map(({ to, title }) => (
-      <ToolbarNavLinkSecondary key={to} to={to}>
-        {title}
-      </ToolbarNavLinkSecondary>
-    ))}
+      <Stack direction={'row'} alignItems="center" justifyContent="center" gap={menuGap}>
+        {secondaryNavItems.map(({ to, title }) => (
+          <ToolbarNavLinkSecondary key={to} to={to}>
+            {title}
+          </ToolbarNavLinkSecondary>
+        ))}
+      </Stack>
+    </Stack>
   </>
 );
 
-const topStripeHeight = 6;
+// const topStripeHeight = 6;
 
 export const Nav: FC<{ height: number }> = ({ height }) => {
   const isMobile = useIsMobile();
 
   return (
     <AppBar position="fixed" elevation={0} sx={{ color: 'white' }}>
-      <Box height={topStripeHeight} width="100%" bgcolor="rgb(142,193,85)" />
+      {/* <Box height={topStripeHeight} width="100%" bgcolor="rgb(142,193,85)" /> */}
       <Toolbar
         variant="dense"
         sx={{
           backgroundColor: 'rgb(23,38,23)',
-          height: height - topStripeHeight,
+          height: height,
         }}
       >
-        {isMobile ? <MobileNavContent height={height} /> : <DesktopNavContent />}
+        {isMobile ? <MobileNavContent height={height} /> : <DesktopNavContent height={height} />}
       </Toolbar>
     </AppBar>
   );
+
+  // return (
+  //   <AppBar position="fixed" elevation={0} sx={{ color: 'white' }}>
+  //     <Box height={topStripeHeight} width="100%" bgcolor="rgb(142,193,85)" />
+  //     <Toolbar
+  //       variant="dense"
+  //       sx={{
+  //         backgroundColor: 'rgb(23,38,23)',
+  //         height: height - topStripeHeight,
+  //       }}
+  //     >
+  //       {isMobile ? <MobileNavContent height={height} /> : <DesktopNavContent />}
+  //     </Toolbar>
+  //   </AppBar>
+  // );
 };
