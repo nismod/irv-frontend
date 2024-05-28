@@ -34,9 +34,8 @@ export interface ExpectedDamageCell {
   eael_amax: number;
 }
 function getExpectedDamageObject(d: ExpectedDamage): ExpectedDamageCell {
-  let { hazard, epoch, rcp } = _.mapValues(
-    QUIRKY_FIELDS_MAPPING,
-    (fn, key) => fn?.(d[key].toString()),
+  let { hazard, epoch, rcp } = _.mapValues(QUIRKY_FIELDS_MAPPING, (fn, key) =>
+    fn?.(d[key].toString()),
   );
 
   return {
