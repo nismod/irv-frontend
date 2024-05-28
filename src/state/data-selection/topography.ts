@@ -1,11 +1,8 @@
 import { atom } from 'recoil';
 
-export enum TopographyType {
-  slope,
-  elevation,
-}
+import { TopographyType } from '@/config/topography/metadata';
 
 export const topographySelectionState = atom<TopographyType>({
   key: 'topographySelectionState',
-  default: TopographyType.slope,
+  default: 'elevation',
 });

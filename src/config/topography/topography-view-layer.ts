@@ -1,84 +1,82 @@
-import GL from '@luma.gl/constants';
-import _ from 'lodash';
+import { Color } from 'deck.gl/typed';
 import React from 'react';
 
-import { colorDeckToCss } from '@/lib/colors';
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
-import { RasterBaseHover } from '@/lib/data-map/tooltip/RasterBaseHover';
+import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
-import { withoutAlpha } from '@/lib/deck/color';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
+import { toLabelLookup } from '@/lib/helpers';
 
-import { TopographyType } from '@/state/data-selection/topography';
+import { SOURCES } from '../sources';
+import { DEM_RASTER_VALUE_LABELS, TopographyType } from './metadata';
 
-import landCoverLegend from './land-cover-legend.json';
-
-const landCoverColorMap = _.map(landCoverLegend, ({ color: rgba }, code) => ({
-  value: parseInt(code, 10),
-  color: colorDeckToCss(withoutAlpha(rgba as any)),
-}));
-
-const landCoverLabels = Object.fromEntries(
-  _.map(landCoverLegend, ({ name }, code) => [parseInt(code, 10), name]),
-);
-
-export function topographyViewLayer(topographyType: TopographyType): ViewLayer {
-  if (topographyType === TopographyType.slope) {
-    return {
-      id: 'land_cover',
-      interactionGroup: 'raster_assets',
-      fn: ({ deckProps }) =>
-        rasterTileLayer(
-          {
-            textureParameters: {
-              [GL.TEXTURE_MAG_FILTER]: GL.LINEAR,
-            },
-          },
-          deckProps,
-          {
-            data: '/api/tiles/land_cover/{z}/{x}/{y}.png?colormap=explicit',
-            refinementStrategy: 'no-overlap',
-          },
-        ),
-      renderTooltip(hover: InteractionTarget<RasterTarget>) {
-        return React.createElement(RasterBaseHover, {
-          colorMap: {
-            colorMapValues: landCoverColorMap,
-            rangeTruncated: [false, false],
-          },
-          color: hover.target.color,
-          label: 'Slope',
-          formatValue: (x) => landCoverLabels[x],
-        });
-      },
-    };
+const DEM_RASTER_FORMATS: Record<
+  TopographyType,
+  {
+    colorMap: RasterColorMap;
+    formatValue: (x: number) => string;
+    transparentColor?: Color;
   }
+> = {
+  elevation: {
+    colorMap: {
+      scheme: 'gnbu',
+      range: [0, 5000],
+      rangeTruncated: [false, true],
+    },
+    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 0 })}m`,
+  },
+  slope: {
+    colorMap: {
+      scheme: 'bupu',
+      range: [0, 90],
+    },
+    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 1 })}°`,
+    transparentColor: [255, 255, 255, 0],
+  },
+};
+
+const valueLabelLookup = toLabelLookup(DEM_RASTER_VALUE_LABELS);
+
+export function topographyViewLayer(type: TopographyType): ViewLayer {
+  const { colorMap, formatValue, transparentColor = [255, 255, 255, 0] } = DEM_RASTER_FORMATS[type];
+  const label = `${valueLabelLookup[type]}`;
+
+  const formatFn = (x: number) => (x != null ? formatValue(x) : '-');
 
   return {
-    id: 'land_cover',
+    id: `topography_${type}`,
     interactionGroup: 'raster_assets',
+    params: {
+      type,
+    },
     fn: ({ deckProps }) =>
       rasterTileLayer(
         {
-          textureParameters: {
-            [GL.TEXTURE_MAG_FILTER]: GL.LINEAR,
-          },
+          transparentColor,
         },
         deckProps,
         {
-          data: '/api/tiles/land_cover/{z}/{x}/{y}.png?colormap=explicit',
+          data: SOURCES.raster.getUrl({
+            path: `dem/${type}`,
+            ...colorMap,
+          }),
           refinementStrategy: 'no-overlap',
         },
       ),
-    renderTooltip(hover: InteractionTarget<RasterTarget>) {
-      return React.createElement(RasterBaseHover, {
-        colorMap: {
-          colorMapValues: landCoverColorMap,
-          rangeTruncated: [false, false],
-        },
-        color: hover.target.color,
-        label: 'Elevation',
-        formatValue: (x) => landCoverLabels[x],
+    renderLegend: () =>
+      React.createElement(RasterLegend, {
+        label,
+        colorMap,
+        getValueLabel: formatFn,
+      }),
+    renderTooltip(hoveredObject: InteractionTarget<RasterTarget>) {
+      return React.createElement(RasterHoverDescription, {
+        colorMap,
+        color: hoveredObject.target.color,
+        label,
+        formatValue: formatFn,
       });
     },
   };
