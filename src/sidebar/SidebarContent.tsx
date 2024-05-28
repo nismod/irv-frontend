@@ -147,7 +147,10 @@ const ExposureSection = () => (
     <Layer path="topography" title="Topography">
       {/* <Layer path="industry" title="Topography"> */}
       <DataNotice>
-        <DataNoticeTextBlock>TODO DEM data description.</DataNoticeTextBlock>
+        <DataNoticeTextBlock>
+          Elevation (m) and slope (°) from Hengl (2018) Global DEM derivatives at 250m based on the
+          MERIT DEM.
+        </DataNoticeTextBlock>
       </DataNotice>
       <TopographyControl />
     </Layer>
