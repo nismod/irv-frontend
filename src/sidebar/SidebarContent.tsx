@@ -149,7 +149,7 @@ const ExposureSection = () => (
       <DataNotice>
         <DataNoticeTextBlock>
           Elevation (m) and slope (°) from Hengl (2018) Global DEM derivatives at 250m based on the
-          MERIT DEM.
+          MERIT DEM, displayed to nearest ~10m or degree.
         </DataNoticeTextBlock>
       </DataNotice>
       <TopographyControl />

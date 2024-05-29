@@ -22,17 +22,18 @@ const DEM_RASTER_FORMATS: Record<
   elevation: {
     colorMap: {
       scheme: 'gnbu',
-      range: [0, 5000],
+      range: [0, 6000],
       rangeTruncated: [false, true],
     },
-    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 0 })}m`,
+    formatValue: (x) =>
+      `${(Math.round(x / 10) * 10).toLocaleString(undefined, { maximumFractionDigits: 0 })}m`,
   },
   slope: {
     colorMap: {
       scheme: 'bupu',
       range: [0, 90],
     },
-    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 1 })}°`,
+    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 0 })}°`,
     transparentColor: [255, 255, 255, 0],
   },
 };
