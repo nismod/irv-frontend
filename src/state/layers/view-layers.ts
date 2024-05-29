@@ -21,6 +21,7 @@ import {
   protectedAreasPolygonLayerState,
 } from './data-layers/protected-areas';
 import { regionalExposureLayerState } from './data-layers/regional-risk';
+import { topographyLayersState } from './data-layers/topography';
 import { travelTimeLayerState } from './data-layers/travel-time';
 import { featureBoundingBoxLayerState } from './ui-layers/feature-bbox';
 
@@ -41,6 +42,7 @@ export const viewLayersState = makeViewLayersState({
         biodiversityIntactnessLayerState,
         forestLandscapeIntegrityLayerState,
         travelTimeLayerState,
+        topographyLayersState,
 
         // vector layers that cover all/most of land
         humanDevelopmentLayerState,

@@ -467,6 +467,31 @@ export const DataPage = () => (
               </TableRow>
 
               <TableRow>
+                <TableCell>Topography</TableCell>
+                <TableCell>
+                  <ExternalLink href="https://doi.org/10.5281/zenodo.1447210">
+                    Global DEM derivatives based on MERIT DEM
+                  </ExternalLink>
+                </TableCell>
+                <TableCell>
+                  Tomislav Hengl. (2018). Global DEM derivatives at 250m, 1 km and 2 km based on the
+                  MERIT DEM (1.0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.1447210
+                </TableCell>
+                <TableCell>CC-BY-SA 4.0</TableCell>
+                <TableCell>
+                  DEM derivatives computed using SAGA GIS at 250m and using MERIT DEM (Yamazaki et
+                  al., 2017) as input. Antarctica is not included. MERIT DEM was first reprojected
+                  to 6 global tiles based on the Equi7 grid system (Bauer-Marschallinger et al.
+                  2014) and then these were used to derive all DEM derivatives. To access original
+                  DEM tiles please refer to the{' '}
+                  <ExternalLink href="http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_DEM/">
+                    MERIT DEM download page
+                  </ExternalLink>
+                  .
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
                 <TableCell>Soil Organic Carbon stock</TableCell>
                 <TableCell>
                   <ExternalLink href="https://soilgrids.org/">SoilGrids 2.0</ExternalLink>
