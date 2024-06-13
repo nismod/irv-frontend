@@ -340,30 +340,25 @@ export const DataPage = () => (
                 <TableCell>
                   <TableCellStack>
                     <TableCellParagraph>
-                      Dataset: Pesaresi M., Politis P. (2022): GHS built-up surface grid, derived
-                      from Sentinel2 composite and Landsat, multitemporal (1975-2030)European
-                      Commission, Joint Research Centre (JRC) PID:
-                      http://data.europa.eu/89h/d07d81b4-7680-4d28-b896-583745c27085,
-                      doi:10.2905/D07D81B4-7680-4D28-B896-583745C27085
+                      Schiavina, Marcello; Freire, Sergio; Alessandra Carioli; MacManus, Kytt
+                      (2023): GHS-POP R2023A - GHS population grid multitemporal (1975-2030).
+                      European Commission, Joint Research Centre (JRC) [Dataset] doi:
+                      10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE PID:
+                      http://data.europa.eu/89h/2ff68a52-5b5b-4a22-8f40-c41da8332cfe
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      Concept & Methodology: Schiavina M., Melchiorri M., Pesaresi M., Politis P.,
-                      Freire S., Maffenini L., Florio P., Ehrlich D., Goch K., Tommasi P., Kemper T.
-                      GHSL Data Package 2022, JRC 129516, ISBN 978-92-76-53071-8 doi:10.2760/19817
+                      Pesaresi, Martino; Politis, Panagiotis (2023): GHS-BUILT-S R2023A - GHS
+                      built-up surface grid, derived from Sentinel2 composite and Landsat,
+                      multitemporal (1975-2030). European Commission, Joint Research Centre (JRC)
+                      [Dataset] doi: 10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA PID:
+                      http://data.europa.eu/89h/9f06f36f-4b11-47ec-abb0-4f8b7b1d72ea
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      Dataset: Schiavina M., Freire S., MacManus K. (2022): GHS-POP R2022A - GHS
-                      population grid multitemporal (1975-2030).European Commission, Joint Research
-                      Centre (JRC) PID:
-                      http://data.europa.eu/89h/d6d86a90-4351-4508-99c1-cb074b022c4a,
-                      doi:10.2905/D6D86A90-4351-4508-99C1-CB074B022C4A
-                    </TableCellParagraph>
-                    <TableCellParagraph>
-                      Concept & Methodology: Freire S., MacManus K., Pesaresi M., Doxsey-Whitfield
-                      E., Mills J. (2016) Development of new open and free multi-temporal global
-                      population grids at 250 m resolution. Geospatial Data in a Changing World;
-                      Association of Geographic Information Laboratories in Europe (AGILE), AGILE
-                      2016
+                      Schiavina, M., Melchiorri, M., Pesaresi, M., Politis, P., Carneiro Freire,
+                      S.M., Maffenini, L., Florio, P., Ehrlich, D., Goch, K., Carioli, A., Uhl, J.,
+                      Tommasi, P. and Kemper, T., GHSL Data Package 2023, Publications Office of the
+                      European Union, Luxembourg, 2023, ISBN 978-92-68-02341-9, doi:10.2760/098587,
+                      JRC133256.
                     </TableCellParagraph>
                   </TableCellStack>
                 </TableCell>
@@ -375,39 +370,57 @@ export const DataPage = () => (
                 <TableCell>
                   <TableCellStack>
                     <TableCellParagraph>
-                      GHS-POP R2022A - GHS population grid multitemporal (1975-2030), epoch: 2020,
-                      resolution: 1 km, coordinate system: Mollweide, reprojected for visualisation.
-                      For GHS-POP (GHS-POP_GLOBE_R2022A), the Sentinel/Landsat based GHS-BUILT-S
-                      (GHS-BUILT-S_GLOBE_R2022A, version 1.0) was used as target for disaggregation
-                      of population estimates. The base source for population estimates (both census
-                      unit counts and geometries) was the raw dataset (census population at the
-                      census year and growth rates) of the Gridded Population of the World, version
-                      4.11 (GPWv4.11), from CIESIN/SEDAC
-                      (https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/whatsnewrev11).
+                      GHS-POP R2023A - The spatial raster dataset depicts the distribution of
+                      population, expressed as the number of people per cell. Residential population
+                      estimates between 1975 and 2020 in 5 years intervals and projections to 2025
+                      and 2030 derived from CIESIN GPWv4.11 were disaggregated from census or
+                      administrative units to grid cells, informed by the distribution, density, and
+                      classification of built-up as mapped in the Global Human Settlement Layer
+                      (GHSL) global layer per corresponding epoch.
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      GHS-BUILT-S R2022A - GHS built-up surface grid, derived from Sentinel-2
-                      composite and Landsat, multitemporal (1975-2030), epoch: 2020, resolution: 1
-                      km, coordinate system: Mollweide, classification: Total RES+NRES or Non
-                      Residential, reprojected for visualisation. The GHS-BUILT-S spatial raster
-                      dataset depicts the distribution of the built-up (BU) surfaces estimates
-                      between 1975 and 2030 in 5 years intervals and two functional use components
-                      a) the total BU surface and b) the non-residential (NRES) BU surface. The data
-                      is made by spatial-temporal interpolation of five observed collections of
-                      multiple-sensor, multiple-platform satellite imageries: Landsat (MSS, TM, ETM
-                      sensor) supports the 1975, 1990, 2000, and 2014 epochs, while Sentinel-2 (S2)
-                      composite (GHS-composite-S2 R2020A) supports the 2018 epoch.
+                      This dataset is an update of the product released in 2022. Major improvements
+                      are the following: use of built-up volume maps (GHS-BUILT-V R2022A); use of
+                      more recent and detailed population estimates derived from GPWv4.11
+                      integrating both UN World Population Prospects 2022 country population data
+                      and World Urbanisation Prospects 2018 data on Cities; revision of GPWv4.11
+                      population growthrates by convergence to upper administrative level
+                      growthrates; systematic improvement of census coastlines; systematic revision
+                      of census units declared as unpopulated; integration of non-residential
+                      built-up volume information (GHS-BUILT-V_NRES R2023A); spatial resolution of
+                      100m Mollweide (and 3 arcseconds in WGS84); projections to 2030.
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      Non-residential (NRES) built-up surface is defined as “any built-up surface
-                      not included in the RES class”. See{' '}
-                      <ExternalLink href="https://ghsl.jrc.ec.europa.eu/documents/GHSL_Data_Package_2022.pdf">
-                        Schiavina et al. (2022)
-                      </ExternalLink>{' '}
-                      Section 2 for definitions and Table 3 for analysis of NRES built-up surfaces
-                      stratified by land-use class in the US and Europe - these include for example
-                      transportation (airports, ports, stations), industrial, retail, commercial,
-                      and institutional (health, education) uses.
+                      GHS-BUILT-S R2023A - The spatial raster dataset depicts the distribution of
+                      the built-up (BU) surfaces estimates between 1975 and 2030 in 5 years
+                      intervals and two functional use components a) the total BU surface and b) the
+                      non-residential (NRES) BU surface. The data is made by spatial-temporal
+                      interpolation of five observed collections of multiple-sensor,
+                      multiple-platform satellite imageries. Landsat (MSS, TM, ETM sensor) supports
+                      the 1975, 1990, 2000, and 2014 epochs. Sentinel2 (S2) composite
+                      (GHS-composite-S2 R2020A) supports the 2018 epoch.
+                    </TableCellParagraph>
+                    <TableCellParagraph>
+                      The built-up surface fraction (BUFRAC) is estimated at 10m of spatial
+                      resolution from the S2 image data, using as learning set a composite of data
+                      from GHS-BUILT-S2 R2020A, Facebook, Microsoft, and Open Street Map (OSM)
+                      building delineation. The BUFRAC inference is made from the combination of
+                      quantized image features (reflectance, derivative of morphological profile
+                      DMP) through associative rule learning applied to spatial data analytics,
+                      which was introduced as symbolic machine learning (SML).
+                    </TableCellParagraph>
+                    <TableCellParagraph>
+                      The non-residential (NRES) domain is predicted from S2 image data by
+                      observation of radiometric, textural, and morphological features in an
+                      object-oriented image processing framework. The multi-temporal dimension is
+                      provided by testing by the SML the association between the combination of the
+                      quantized radiometric information collected by the Landsat imagery in the past
+                      epochs, and the “built-up” (BU) and “non-built-up” (NBU) class abstraction on
+                      image segments extracted from S2 images. The spatial-temporal interpolation is
+                      solved by rank-optimal spatial allocation using explanatory variables related
+                      to the landscape (slope, elevation, distance to water, and distance to
+                      vegetation) and related to the observed dynamic of BU surfaces in the past
+                      epochs.
                     </TableCellParagraph>
                   </TableCellStack>
                 </TableCell>
