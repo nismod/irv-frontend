@@ -1,5 +1,5 @@
-import { TreeItem } from '@mui/lab';
 import { Checkbox, FormControlLabel } from '@mui/material';
+import { TreeItem } from '@mui/x-tree-view';
 import { MouseEventHandler, useCallback } from 'react';
 
 import { CheckboxTreeState } from './CheckboxTree';
@@ -45,7 +45,7 @@ export function CheckboxTreeItem<T>({
   return (
     <TreeItem
       key={root.id}
-      nodeId={root.id}
+      itemId={root.id}
       onClick={toggleOnLeafClick && isLeaf ? handleLeafClick : undefined}
       label={
         <FormControlLabel
