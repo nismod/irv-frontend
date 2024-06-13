@@ -64,6 +64,7 @@ export const FluvialControl = () => {
         <EpochControl />
         <RCPControl />
       </InputRow>
+      <GCMControl />
     </HazardControl>
   );
 };
