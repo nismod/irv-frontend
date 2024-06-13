@@ -10,25 +10,31 @@ export interface HazardParams {
 interface HazardDomainConfig {
   defaults: Record<string, any>;
   dependencies: Record<string, string[]>;
+  domain: string; // backend/raster_tile_source domain
 }
 
 export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
   fluvial: {
+    domain: 'aqueduct',
     defaults: {
+      hazard: 'fluvial',
       rp: 100,
       rcp: 'baseline',
-      epoch: 'present',
-      gcm: 'MIROC-ESM-CHEM',
+      epoch: 'baseline',
+      gcm: 'WATCH',
     },
     dependencies: {
+      rp: ['hazard'],
       rcp: ['epoch'],
-      gcm: ['epoch'],
+      gcm: ['epoch', 'hazard'],
     },
   },
   coastal: {
+    domain: 'aqueduct',
     defaults: {
+      hazard: 'coastal',
       rp: 100,
-      epoch: 'present',
+      epoch: 'baseline',
       rcp: 'baseline',
       gcm: 'None',
     },
@@ -37,14 +43,11 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     },
   },
   cyclone: {
+    domain: 'cyclone_storm',
     defaults: {
-      rp: 10,
+      rp: 100,
       gcm: 'constant',
-      /**
-       * epoch and rcp for cyclones are added programmatically upon load
-       * adjust custom code for data loading when these fields are added to the backend
-       */
-      epoch: 'present',
+      epoch: 'baseline',
       rcp: 'baseline',
     },
     dependencies: {
@@ -53,8 +56,9 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     },
   },
   cyclone_iris: {
+    domain: 'cyclone_iris',
     defaults: {
-      rp: 10,
+      rp: 100,
       epoch: 2020,
       ssp: 'constant',
     },
@@ -63,6 +67,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     },
   },
   extreme_heat: {
+    domain: 'isimip',
     defaults: {
       epoch: 'baseline',
       rcp: 'baseline',
@@ -73,6 +78,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     },
   },
   earthquake: {
+    domain: 'earthquake',
     defaults: {
       rp: 475,
       medium: 'soil',
@@ -80,6 +86,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     dependencies: {},
   },
   drought: {
+    domain: 'isimip',
     defaults: {
       epoch: 'baseline',
       rcp: 'baseline',
