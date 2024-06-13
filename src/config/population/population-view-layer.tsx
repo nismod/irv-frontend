@@ -18,7 +18,7 @@ export const JRC_POPULATION_COLOR_MAP: RasterColorMap = {
 
 function getPopulationUrl() {
   return SOURCES.raster.getUrl({
-    path: 'population',
+    path: 'population/2020', // default, only available epoch: 2020
     ...JRC_POPULATION_COLOR_MAP,
   });
 }
