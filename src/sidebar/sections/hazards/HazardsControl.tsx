@@ -112,8 +112,8 @@ export const CycloneIrisControl = () => {
     <HazardControl type="cyclone_iris">
       <DataNotice>
         <DataNoticeTextBlock>
-          Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods, from
-          Sparks and Toumi [Manuscript submitted for publication].
+          Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods,
+          derived from event sets published in Sparks and Toumi (2024).
         </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl
