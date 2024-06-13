@@ -658,6 +658,67 @@ export const DataPage = () => (
         </StyledTableContainer>
       </TableSectionContainer>
 
+      <TableSectionContainer>
+        <TableHeader>Risk Data</TableHeader>
+
+        <StyledTableContainer>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Dataset</TableCell>
+                <TableCell>Source</TableCell>
+                <TableCell>Citation</TableCell>
+                <TableCell>License</TableCell>
+                <TableCell>Notes</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>Population Exposure</TableCell>
+                <TableCell>Derived from ISIMIP hazards and GHSL population</TableCell>
+                <TableCell>
+                  Russell, T., Nicholas, C., & Bernhofen, M. (2024). Annual probability of extreme
+                  heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo.{' '}
+                  <ExternalLink href="https://doi.org/10.5281/zenodo.11582369">
+                    10.5281/zenodo.11582369
+                  </ExternalLink>
+                </TableCell>
+                <TableCell>CC BY-SA 4.0 International</TableCell>
+                <TableCell>
+                  Population exposure is calculated as annual expected population directly exposed
+                  to the occurrence of extreme heat or drought events, assuming any population
+                  directly within the footprint of an event is exposed, but not otherwise taking any
+                  other risk-mitigating or -propagating factors into account.
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Infrastructure Risk</TableCell>
+                <TableCell>Derived from exposure and hazard layers</TableCell>
+                <TableCell>
+                  Russell T., Thomas F., nismod/open-gira contributors and OpenStreetMap
+                  contributors (2022) Global Infrastructure Damage Risk Estimates. [Dataset]
+                  Available at https://global.infrastructureresilience.org
+                </TableCell>
+                <TableCell>CC-BY-SA, ODbL</TableCell>
+                <TableCell>
+                  Infrastructure expected annual direct damages are calculated from OpenStreetMap
+                  and Gridfinder networks, STORM cyclones and Aqueduct floods.
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Regional Summary</TableCell>
+                <TableCell>Derived from exposure and hazard layers</TableCell>
+                <TableCell>
+                  GEM (2022) Analysis of earthquake and flooding population exposure
+                </TableCell>
+                <TableCell>CC-BY-SA</TableCell>
+                <TableCell>Population exposed to various hazards at return periods.</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </StyledTableContainer>
+      </TableSectionContainer>
+
       <ArticleSection>
         <ArticleSectionHeader>Contextual Map Data</ArticleSectionHeader>
 
