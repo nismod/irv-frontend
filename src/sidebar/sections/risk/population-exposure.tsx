@@ -91,7 +91,10 @@ export const PopulationExposureSection = () => {
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows expected annual population exposed to extreme events, based on the annual
-          probability of the hazard. Zoom in for extreme heat exposure to show.
+          probability of the hazard. These are combined temperature and humidity indices for extreme
+          heat, and soil moisture below the 2.5th percentile of a pre-industrial baseline for land
+          exposed to drought. See hazard notes and about/data sources pages for references and more
+          detail.
         </DataNoticeTextBlock>
       </DataNotice>
       <InputSection>

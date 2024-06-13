@@ -14,19 +14,21 @@ export type ExposureSource = Subset<HazardType, 'extreme_heat' | 'drought'>;
 
 export const EXPOSURE_COLOR_MAPS: Record<ExposureSource, RasterColorMap> = {
   extreme_heat: {
-    scheme: 'reds',
-    range: [0, 5000],
-    rangeTruncated: [false, true],
+    scheme: 'gist_heat_r',
+    range: [1000, 2_000_000],
+    rangeTruncated: [true, true],
   },
   drought: {
     scheme: 'oranges',
-    range: [0, 1000],
-    rangeTruncated: [false, true],
+    range: [1000, 500_000],
+    rangeTruncated: [true, true],
   },
 };
 
-function numFormatWhole(value: number) {
-  return `${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+function numFormatWhole(nearest: number) {
+  nearest = nearest ? nearest : 1;
+  return (value) =>
+    `${(Math.round(value / nearest) * nearest).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 export function exposureViewLayer(hazardType: ExposureSource, hazardParams: any): ViewLayer {
@@ -53,17 +55,13 @@ export function exposureViewLayer(hazardType: ExposureSource, hazardParams: any)
           data: getHazardDataUrl({ hazardType, metric: 'exposure', hazardParams }, colorMap),
           refinementStrategy: 'no-overlap',
         },
-        // temporarily hide EH below zoom 6 due to artifacts in data
-        hazardType === 'extreme_heat' && {
-          minZoom: 6,
-        },
       );
     },
     renderLegend() {
       return React.createElement(RasterLegend, {
         label,
         colorMap,
-        getValueLabel: numFormatWhole,
+        getValueLabel: numFormatWhole(1),
       });
     },
     renderTooltip(hover: InteractionTarget<RasterTarget>) {
@@ -71,7 +69,7 @@ export function exposureViewLayer(hazardType: ExposureSource, hazardParams: any)
         colorMap,
         color: hover.target.color,
         label,
-        formatValue: numFormatWhole,
+        formatValue: numFormatWhole(1000),
       });
     },
   };
