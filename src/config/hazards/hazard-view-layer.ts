@@ -7,10 +7,10 @@ import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 
 import { HazardHoverDescription } from './HazardHoverDescription';
 import { HazardLegend } from './HazardLegend';
-import { HAZARD_COLOR_MAPS } from './metadata';
+import { HAZARD_COLOR_MAPS, HazardType } from './metadata';
 import { getHazardDataPath, getHazardDataUrl } from './source';
 
-export function getHazardId(hazardType: string, hazardParams: any) {
+export function getHazardId(hazardType: HazardType, hazardParams: any) {
   return getHazardDataPath({ hazardType, metric: 'occurrence', hazardParams });
 }
 
@@ -19,7 +19,7 @@ export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLaye
   const magFilter = isCyclone ? GL.NEAREST : GL.LINEAR;
 
   const id = hazardType;
-  const deckId = getHazardId(hazardType, hazardParams);
+  const deckId = getHazardId(hazardType as HazardType, hazardParams);
 
   return {
     id,
@@ -43,7 +43,7 @@ export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLaye
         {
           id: `${id}@${deckId}`, // follow the convention viewLayerId@deckLayerId
           data: getHazardDataUrl(
-            { hazardType, metric: 'occurrence', hazardParams },
+            { hazardType: hazardType as HazardType, metric: 'occurrence', hazardParams },
             { scheme, range },
           ),
           refinementStrategy: 'no-overlap',
