@@ -33,7 +33,7 @@ export function landCoverViewLayer(): ViewLayer {
         },
         deckProps,
         {
-          data: '/api/tiles/land_cover/{z}/{x}/{y}.png?colormap=explicit',
+          data: '/api/tiles/land_cover/land_cover/{z}/{x}/{y}.png?colormap=explicit',
           refinementStrategy: 'no-overlap',
         },
       ),

@@ -53,6 +53,7 @@ export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
 export interface HazardMetadata {
   label: string;
   formatValue: (x: number) => ReactNode | string;
+  getPath: (hazardParams: any, metric?: 'occurrence' | 'exposure') => string;
   labelAbbreviations?: Record<string, string>;
   legendAnnotation?: string;
 }
@@ -61,23 +62,43 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
   cyclone: {
     label: 'Cyclones (STORM)',
     formatValue: makeValueFormat('_m/s', { maximumFractionDigits: 1 }),
+    getPath: (hazardParams) => {
+      const { rp, rcp, epoch, gcm } = hazardParams;
+      return `cyclone_storm/${rp}/${gcm}/${rcp}/${epoch}`;
+    },
   },
   cyclone_iris: {
     label: 'Cyclones (IRIS)',
     formatValue: makeValueFormat('_m/s', { maximumFractionDigits: 1 }),
+    getPath: (hazardParams) => {
+      const { rp, ssp, epoch } = hazardParams;
+      return `cyclone_iris/${epoch}/${rp}/${ssp}`;
+    },
   },
   fluvial: {
     label: 'River Flooding',
     formatValue: makeValueFormat('_m', { maximumFractionDigits: 2 }),
+    getPath: (hazardParams) => {
+      const { rp, rcp, epoch, gcm } = hazardParams;
+      return `aqueduct/fluvial/${rp}/${rcp}/${epoch}/${gcm}`;
+    },
   },
   coastal: {
     label: 'Coastal Flooding',
     formatValue: makeValueFormat('_m', { maximumFractionDigits: 2 }),
+    getPath: (hazardParams) => {
+      const { rp, rcp, epoch, gcm } = hazardParams;
+      return `aqueduct/coastal/${rp}/${rcp}/${epoch}/${gcm}`;
+    },
   },
   extreme_heat: {
     label: 'Extreme Heat',
     formatValue: makeValueFormat('_', { maximumFractionDigits: 1, style: 'percent' }),
     legendAnnotation: 'Annual probability of extreme event',
+    getPath: (hazardParams, metric) => {
+      const { rcp, epoch, gcm } = hazardParams;
+      return `isimip/extreme_heat/${metric}/${rcp}/${epoch}/${gcm}`;
+    },
   },
   earthquake: {
     label: 'Seismic Hazard (PGA)',
@@ -85,11 +106,19 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
     labelAbbreviations: {
       PGA: 'Peak Ground Acceleration',
     },
+    getPath: (hazardParams) => {
+      const { rp, medium } = hazardParams;
+      return `earthquake/${rp}/${medium}`;
+    },
   },
   drought: {
     label: 'Droughts',
     formatValue: makeValueFormat('_', { maximumFractionDigits: 1, style: 'percent' }),
     legendAnnotation: 'Annual probability of extreme event',
+    getPath: (hazardParams, metric) => {
+      const { rcp, epoch, gcm } = hazardParams;
+      return `isimip/drought/${metric}/${rcp}/${epoch}/${gcm}`;
+    },
   },
 };
 

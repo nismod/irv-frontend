@@ -6,7 +6,7 @@ import { useInputDisabled } from '@/lib/data-selection/DisabledInput';
 import { DataParam } from '../DataParam';
 
 function sspLabel(ssp: string) {
-  return ssp.toUpperCase();
+  return ssp === 'baseline' ? 'Baseline' : ssp.toUpperCase();
 }
 
 export const SSPControl = () => {

@@ -1,8 +1,4 @@
-import {
-  ChevronRight as ChevronRightIcon,
-  ExpandMore as ExpandMoreIcon,
-} from '@mui/icons-material';
-import { TreeView } from '@mui/lab';
+import { SimpleTreeView } from '@mui/x-tree-view';
 import produce from 'immer';
 import React, { useCallback } from 'react';
 
@@ -161,11 +157,9 @@ export function CheckboxTree<T>({
 
   return (
     <>
-      <TreeView
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-        expanded={expanded}
-        onNodeToggle={(e, nodeIds) => onExpanded(nodeIds)}
+      <SimpleTreeView
+        expandedItems={expanded}
+        onExpandedItemsChange={(e, nodeIds) => onExpanded(nodeIds)}
       >
         {nodes.map((node) => (
           <CheckboxTreeItem
@@ -178,7 +172,7 @@ export function CheckboxTree<T>({
             toggleOnLeafClick={toggleOnLeafClick}
           />
         ))}
-      </TreeView>
+      </SimpleTreeView>
     </>
   );
 }

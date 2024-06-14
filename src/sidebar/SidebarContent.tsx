@@ -25,6 +25,7 @@ import {
 } from './sections/hazards/HazardsControl';
 import { IndustryControl } from './sections/industry/IndustryControl';
 import { NetworkControl } from './sections/networks/NetworkControl';
+import { CDDControl } from './sections/risk/CDDControl';
 import { InfrastructureRiskSection } from './sections/risk/infrastructure-risk';
 import { PopulationExposureSection } from './sections/risk/population-exposure';
 import { RegionalRiskSection } from './sections/risk/regional-risk';
@@ -78,6 +79,15 @@ const HazardsSection = () => (
     </Layer>
     <Layer path="cyclone_iris" title="Tropical Cyclones (IRIS)">
       <CycloneIrisControl />
+    </Layer>
+    <Layer path="cdd" title="Cooling degree days">
+      <DataNotice>
+        <DataNoticeTextBlock>
+          Change in cooling degree days with global mean temperature rise increasing from 1.5°C to
+          2.0°C, from Miranda et al. (2023).
+        </DataNoticeTextBlock>
+      </DataNotice>
+      <CDDControl />
     </Layer>
     <Layer path="extreme_heat" title="Extreme Heat">
       <ExtremeHeatControl />
@@ -145,7 +155,6 @@ const ExposureSection = () => (
       </DataNotice>
     </Layer>
     <Layer path="topography" title="Topography">
-      {/* <Layer path="industry" title="Topography"> */}
       <DataNotice>
         <DataNoticeTextBlock>
           Elevation (m) and slope (°) from Hengl (2018) Global DEM derivatives at 250m based on the
@@ -176,8 +185,20 @@ const VulnerabilitySection = () => (
       </Layer>
     </Section>
     <Section path="nature" title="Planet">
-      <Layer path="biodiversity-intactness" title="Biodiversity Intactness" />
-      <Layer path="forest-integrity" title="Forest Landscape Integrity" />
+      <Layer path="biodiversity-intactness" title="Biodiversity Intactness">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Map shows Biodiversity Intactness Index, from Newbold et al. (2016).
+          </DataNoticeTextBlock>
+        </DataNotice>
+      </Layer>
+      <Layer path="forest-integrity" title="Forest Landscape Integrity">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Map shows Forest Landscape Integrity Index, from Grantham et al. (2020).
+          </DataNoticeTextBlock>
+        </DataNotice>
+      </Layer>
       <Layer path="protected-areas" title="Protected Areas (WDPA)">
         <WdpaControls />
       </Layer>

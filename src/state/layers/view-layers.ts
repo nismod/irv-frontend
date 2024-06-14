@@ -3,6 +3,7 @@ import { waitForAll } from 'recoil';
 import { makeViewLayersState } from '@/lib/data-map/state/make-view-layers-state';
 
 import { buildingDensityLayerState } from './data-layers/building-density';
+import { cddLayersState } from './data-layers/cdd';
 import { hazardLayerState } from './data-layers/hazards';
 import { healthcareLayersState } from './data-layers/healthcare';
 import { humanDevelopmentLayerState } from './data-layers/human-development';
@@ -43,6 +44,7 @@ export const viewLayersState = makeViewLayersState({
         forestLandscapeIntegrityLayerState,
         travelTimeLayerState,
         topographyLayersState,
+        cddLayersState,
 
         // vector layers that cover all/most of land
         humanDevelopmentLayerState,

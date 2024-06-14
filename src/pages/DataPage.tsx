@@ -195,15 +195,24 @@ export const DataPage = () => (
                   </ExtLink>
                 </TableCell>
                 <TableCell>
-                  Sparks, N. & Toumi, R. IRIS: The Imperial College Storm Model [Manuscript
-                  submitted for publication].
+                  Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset.
+                  Scientific Data 11, 424{' '}
+                  <ExternalLink href="https://doi.org/10.1038/s41597-024-03250-y">
+                    DOI 10.1038/s41597-024-03250-y
+                  </ExternalLink>{' '}
+                  and Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model.
+                  Figshare. Collection.{' '}
+                  <ExternalLink href="https://doi.org/10.6084/m9.figshare.c.6724251.v1">
+                    DOI 10.6084/m9.figshare.c.6724251.v1
+                  </ExternalLink>
                 </TableCell>
                 <TableCell>CC BY 4.0</TableCell>
                 <TableCell>
                   Tropical cyclone maximum wind speeds (in m/s) generated using the IRIS tropical
                   cyclone model. Wind speeds available from 1 in 10 to 1 in 1,000 year return
                   periods at 1/10 degree spatial resolution. Present (2020) and future (2050)
-                  epochs, with SSP1-2.6, SSP2-4.5 and SSP5-8.5 future scenarios.
+                  epochs, with SSP1-2.6, SSP2-4.5 and SSP5-8.5 future scenarios. Return period maps
+                  generated from an earlier version of the IRIS model event set.
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -220,20 +229,22 @@ export const DataPage = () => (
                   <ExternalLink href="https://doi.org/10.1177/8755293020931866">
                     DOI: 10.1177/8755293020931866
                   </ExternalLink>
-                  .
+                  . and Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S.,
+                  Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A.,
+                  Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data
+                  set]. Zenodo.{' '}
+                  <ExternalLink href="https://doi.org/10.5281/zenodo.8409647">
+                    DOI 10.5281/zenodo.8409647
+                  </ExternalLink>
                 </TableCell>
                 <TableCell>
-                  The visualisation of seismic hazard data is licensed under the terms of the{' '}
                   <ExternalLink href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
                     Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
                     (CC BY-NC-SA){' '}
-                  </ExternalLink>{' '}
-                  . The underlying data are confidential,{' '}
-                  <ExternalLink href="mailto:info@globalquakemodel.org">contact GEM</ExternalLink>{' '}
-                  for more information.
+                  </ExternalLink>
                 </TableCell>
                 <TableCell>
-                  The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2018.1)
+                  The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1)
                   depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a
                   10% probability of being exceeded in 50 years, computed for reference rock
                   conditions (shear wave velocity, VS30, of 760-800 m/s).
@@ -329,30 +340,25 @@ export const DataPage = () => (
                 <TableCell>
                   <TableCellStack>
                     <TableCellParagraph>
-                      Dataset: Pesaresi M., Politis P. (2022): GHS built-up surface grid, derived
-                      from Sentinel2 composite and Landsat, multitemporal (1975-2030)European
-                      Commission, Joint Research Centre (JRC) PID:
-                      http://data.europa.eu/89h/d07d81b4-7680-4d28-b896-583745c27085,
-                      doi:10.2905/D07D81B4-7680-4D28-B896-583745C27085
+                      Schiavina, Marcello; Freire, Sergio; Alessandra Carioli; MacManus, Kytt
+                      (2023): GHS-POP R2023A - GHS population grid multitemporal (1975-2030).
+                      European Commission, Joint Research Centre (JRC) [Dataset] doi:
+                      10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE PID:
+                      http://data.europa.eu/89h/2ff68a52-5b5b-4a22-8f40-c41da8332cfe
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      Concept & Methodology: Schiavina M., Melchiorri M., Pesaresi M., Politis P.,
-                      Freire S., Maffenini L., Florio P., Ehrlich D., Goch K., Tommasi P., Kemper T.
-                      GHSL Data Package 2022, JRC 129516, ISBN 978-92-76-53071-8 doi:10.2760/19817
+                      Pesaresi, Martino; Politis, Panagiotis (2023): GHS-BUILT-S R2023A - GHS
+                      built-up surface grid, derived from Sentinel2 composite and Landsat,
+                      multitemporal (1975-2030). European Commission, Joint Research Centre (JRC)
+                      [Dataset] doi: 10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA PID:
+                      http://data.europa.eu/89h/9f06f36f-4b11-47ec-abb0-4f8b7b1d72ea
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      Dataset: Schiavina M., Freire S., MacManus K. (2022): GHS-POP R2022A - GHS
-                      population grid multitemporal (1975-2030).European Commission, Joint Research
-                      Centre (JRC) PID:
-                      http://data.europa.eu/89h/d6d86a90-4351-4508-99c1-cb074b022c4a,
-                      doi:10.2905/D6D86A90-4351-4508-99C1-CB074B022C4A
-                    </TableCellParagraph>
-                    <TableCellParagraph>
-                      Concept & Methodology: Freire S., MacManus K., Pesaresi M., Doxsey-Whitfield
-                      E., Mills J. (2016) Development of new open and free multi-temporal global
-                      population grids at 250 m resolution. Geospatial Data in a Changing World;
-                      Association of Geographic Information Laboratories in Europe (AGILE), AGILE
-                      2016
+                      Schiavina, M., Melchiorri, M., Pesaresi, M., Politis, P., Carneiro Freire,
+                      S.M., Maffenini, L., Florio, P., Ehrlich, D., Goch, K., Carioli, A., Uhl, J.,
+                      Tommasi, P. and Kemper, T., GHSL Data Package 2023, Publications Office of the
+                      European Union, Luxembourg, 2023, ISBN 978-92-68-02341-9, doi:10.2760/098587,
+                      JRC133256.
                     </TableCellParagraph>
                   </TableCellStack>
                 </TableCell>
@@ -364,39 +370,57 @@ export const DataPage = () => (
                 <TableCell>
                   <TableCellStack>
                     <TableCellParagraph>
-                      GHS-POP R2022A - GHS population grid multitemporal (1975-2030), epoch: 2020,
-                      resolution: 1 km, coordinate system: Mollweide, reprojected for visualisation.
-                      For GHS-POP (GHS-POP_GLOBE_R2022A), the Sentinel/Landsat based GHS-BUILT-S
-                      (GHS-BUILT-S_GLOBE_R2022A, version 1.0) was used as target for disaggregation
-                      of population estimates. The base source for population estimates (both census
-                      unit counts and geometries) was the raw dataset (census population at the
-                      census year and growth rates) of the Gridded Population of the World, version
-                      4.11 (GPWv4.11), from CIESIN/SEDAC
-                      (https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/whatsnewrev11).
+                      GHS-POP R2023A - The spatial raster dataset depicts the distribution of
+                      population, expressed as the number of people per cell. Residential population
+                      estimates between 1975 and 2020 in 5 years intervals and projections to 2025
+                      and 2030 derived from CIESIN GPWv4.11 were disaggregated from census or
+                      administrative units to grid cells, informed by the distribution, density, and
+                      classification of built-up as mapped in the Global Human Settlement Layer
+                      (GHSL) global layer per corresponding epoch.
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      GHS-BUILT-S R2022A - GHS built-up surface grid, derived from Sentinel-2
-                      composite and Landsat, multitemporal (1975-2030), epoch: 2020, resolution: 1
-                      km, coordinate system: Mollweide, classification: Total RES+NRES or Non
-                      Residential, reprojected for visualisation. The GHS-BUILT-S spatial raster
-                      dataset depicts the distribution of the built-up (BU) surfaces estimates
-                      between 1975 and 2030 in 5 years intervals and two functional use components
-                      a) the total BU surface and b) the non-residential (NRES) BU surface. The data
-                      is made by spatial-temporal interpolation of five observed collections of
-                      multiple-sensor, multiple-platform satellite imageries: Landsat (MSS, TM, ETM
-                      sensor) supports the 1975, 1990, 2000, and 2014 epochs, while Sentinel-2 (S2)
-                      composite (GHS-composite-S2 R2020A) supports the 2018 epoch.
+                      This dataset is an update of the product released in 2022. Major improvements
+                      are the following: use of built-up volume maps (GHS-BUILT-V R2022A); use of
+                      more recent and detailed population estimates derived from GPWv4.11
+                      integrating both UN World Population Prospects 2022 country population data
+                      and World Urbanisation Prospects 2018 data on Cities; revision of GPWv4.11
+                      population growthrates by convergence to upper administrative level
+                      growthrates; systematic improvement of census coastlines; systematic revision
+                      of census units declared as unpopulated; integration of non-residential
+                      built-up volume information (GHS-BUILT-V_NRES R2023A); spatial resolution of
+                      100m Mollweide (and 3 arcseconds in WGS84); projections to 2030.
                     </TableCellParagraph>
                     <TableCellParagraph>
-                      Non-residential (NRES) built-up surface is defined as “any built-up surface
-                      not included in the RES class”. See{' '}
-                      <ExternalLink href="https://ghsl.jrc.ec.europa.eu/documents/GHSL_Data_Package_2022.pdf">
-                        Schiavina et al. (2022)
-                      </ExternalLink>{' '}
-                      Section 2 for definitions and Table 3 for analysis of NRES built-up surfaces
-                      stratified by land-use class in the US and Europe - these include for example
-                      transportation (airports, ports, stations), industrial, retail, commercial,
-                      and institutional (health, education) uses.
+                      GHS-BUILT-S R2023A - The spatial raster dataset depicts the distribution of
+                      the built-up (BU) surfaces estimates between 1975 and 2030 in 5 years
+                      intervals and two functional use components a) the total BU surface and b) the
+                      non-residential (NRES) BU surface. The data is made by spatial-temporal
+                      interpolation of five observed collections of multiple-sensor,
+                      multiple-platform satellite imageries. Landsat (MSS, TM, ETM sensor) supports
+                      the 1975, 1990, 2000, and 2014 epochs. Sentinel2 (S2) composite
+                      (GHS-composite-S2 R2020A) supports the 2018 epoch.
+                    </TableCellParagraph>
+                    <TableCellParagraph>
+                      The built-up surface fraction (BUFRAC) is estimated at 10m of spatial
+                      resolution from the S2 image data, using as learning set a composite of data
+                      from GHS-BUILT-S2 R2020A, Facebook, Microsoft, and Open Street Map (OSM)
+                      building delineation. The BUFRAC inference is made from the combination of
+                      quantized image features (reflectance, derivative of morphological profile
+                      DMP) through associative rule learning applied to spatial data analytics,
+                      which was introduced as symbolic machine learning (SML).
+                    </TableCellParagraph>
+                    <TableCellParagraph>
+                      The non-residential (NRES) domain is predicted from S2 image data by
+                      observation of radiometric, textural, and morphological features in an
+                      object-oriented image processing framework. The multi-temporal dimension is
+                      provided by testing by the SML the association between the combination of the
+                      quantized radiometric information collected by the Landsat imagery in the past
+                      epochs, and the “built-up” (BU) and “non-built-up” (NBU) class abstraction on
+                      image segments extracted from S2 images. The spatial-temporal interpolation is
+                      solved by rank-optimal spatial allocation using explanatory variables related
+                      to the landscape (slope, elevation, distance to water, and distance to
+                      vegetation) and related to the observed dynamic of BU surfaces in the past
+                      epochs.
                     </TableCellParagraph>
                   </TableCellStack>
                 </TableCell>
@@ -643,6 +667,108 @@ export const DataPage = () => (
                 </TableCell>
                 <TableCell>Published as available with article (license not specified)</TableCell>
                 <TableCell>10 arcsec grid</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </StyledTableContainer>
+      </TableSectionContainer>
+
+      <TableSectionContainer>
+        <TableHeader>Risk Data</TableHeader>
+
+        <StyledTableContainer>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Dataset</TableCell>
+                <TableCell>Source</TableCell>
+                <TableCell>Citation</TableCell>
+                <TableCell>License</TableCell>
+                <TableCell>Notes</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>Cooling demand</TableCell>
+                <TableCell>
+                  Global CDD difference between 1.5°C and 2°C global warming scenarios.
+                </TableCell>
+                <TableCell>
+                  Miranda, N.D., Lizana, J., Sparrow, S.N. et al. (2023) Change in cooling degree
+                  days with global mean temperature rise increasing from 1.5°C to 2.0°C. Nature
+                  Sustainability 6, 1326-1330.{' '}
+                  <ExternalLink href="https://doi.org/10.1038/s41893-023-01155-z">
+                    DOI 10.1038/s41893-023-01155-z
+                  </ExternalLink>{' '}
+                  and Miranda, N. D., Lizana, J., Sparrow, S. N., Wallom, D. C. H., Zachau-Walker,
+                  M., Watson, P., Khosla, R., & McCulloch, M. (2023). Changes in Cooling Degree Days
+                  (CDD) between the 1.5°C and 2.0°C global warming scenarios. University of Oxford.{' '}
+                  <ExternalLink href="https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e">
+                    https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e
+                  </ExternalLink>
+                </TableCell>
+                <TableCell>CC-BY</TableCell>
+                <TableCell>
+                  Absolute and relative mean increase of cooling degree days (CDDs) from 1.5°C to
+                  2°C global warming scenarios. Additionally, the standard deviation is provided.
+                  The data has a horizontal resolution of 0.833 longitude and 0.556 latitude over
+                  the land surface. These annual CDDs and standard deviation globally were
+                  calculated using an ensemble of 700 simulations per climate change scenario.
+                  Cooling degree days (CDDS) were calculated for the ensemble members using the
+                  temperature threshold of 18°C. Then, annual mean CDDs and standard deviation per
+                  coordinate across ensemble members were obtained for the 1.5°C and 2°C scenarios.
+                  Finally, absolute and relative differences between 1.5°C and 2°C were computed.
+                  The climate data, involving 700 simulations per scenario, was generated using the
+                  HadAM4P Atmosphere-only General Circulation Model (AGCM) from the UK Met Office
+                  Hadley Centre. Three scenarios were generated: historical (2006-16), 1.5°C and
+                  2°C. The simulation outputs were mean temperatures with a 6-hour timestep and a
+                  horizontal resolution of 0.833 longitude and 0.556 latitude. Simulations took
+                  place within climateprediction.net (CPDN) climate simulation, which uses the
+                  Berkeley Open Infrastructure for Network Computing (BOINC) framework. Biases in
+                  simulated temperature were identified and corrected using a quantile mapping
+                  approach.
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Population Exposure</TableCell>
+                <TableCell>Derived from ISIMIP hazards and GHSL population</TableCell>
+                <TableCell>
+                  Russell, T., Nicholas, C., & Bernhofen, M. (2024). Annual probability of extreme
+                  heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo.{' '}
+                  <ExternalLink href="https://doi.org/10.5281/zenodo.11582369">
+                    10.5281/zenodo.11582369
+                  </ExternalLink>
+                </TableCell>
+                <TableCell>CC BY-SA 4.0 International</TableCell>
+                <TableCell>
+                  Population exposure is calculated as annual expected population directly exposed
+                  to the occurrence of extreme heat or drought events, assuming any population
+                  directly within the footprint of an event is exposed, but not otherwise taking any
+                  other risk-mitigating or -propagating factors into account.
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Infrastructure Risk</TableCell>
+                <TableCell>Derived from exposure and hazard layers</TableCell>
+                <TableCell>
+                  Russell T., Thomas F., nismod/open-gira contributors and OpenStreetMap
+                  contributors (2022) Global Infrastructure Damage Risk Estimates. [Dataset]
+                  Available at https://global.infrastructureresilience.org
+                </TableCell>
+                <TableCell>CC-BY-SA, ODbL</TableCell>
+                <TableCell>
+                  Infrastructure expected annual direct damages are calculated from OpenStreetMap
+                  and Gridfinder networks, STORM cyclones and Aqueduct floods.
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Regional Summary</TableCell>
+                <TableCell>Derived from exposure and hazard layers</TableCell>
+                <TableCell>
+                  GEM (2022) Analysis of earthquake and flooding population exposure
+                </TableCell>
+                <TableCell>CC-BY-SA</TableCell>
+                <TableCell>Population exposed to various hazards at return periods.</TableCell>
               </TableRow>
             </TableBody>
           </Table>
