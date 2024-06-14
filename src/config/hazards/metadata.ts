@@ -96,8 +96,8 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
     formatValue: makeValueFormat('_', { maximumFractionDigits: 1, style: 'percent' }),
     legendAnnotation: 'Annual probability of extreme event',
     getPath: (hazardParams, metric) => {
-      const { rcp, epoch, gcm } = hazardParams;
-      return `isimip/extreme_heat/${metric}/${rcp}/${epoch}/${gcm}`;
+      const { rcp, epoch, gcm, impact_model } = hazardParams;
+      return `isimip/extreme_heat/${metric}/${rcp}/${epoch}/${gcm}/${impact_model}`;
     },
   },
   earthquake: {
@@ -116,8 +116,8 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
     formatValue: makeValueFormat('_', { maximumFractionDigits: 1, style: 'percent' }),
     legendAnnotation: 'Annual probability of extreme event',
     getPath: (hazardParams, metric) => {
-      const { rcp, epoch, gcm } = hazardParams;
-      return `isimip/drought/${metric}/${rcp}/${epoch}/${gcm}`;
+      const { rcp, epoch, gcm, impact_model } = hazardParams;
+      return `isimip/drought/${metric}/${rcp}/${epoch}/${gcm}/${impact_model}`;
     },
   },
 };

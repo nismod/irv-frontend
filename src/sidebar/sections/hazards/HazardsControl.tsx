@@ -157,7 +157,8 @@ export const DroughtControl = () => {
         <DataNoticeTextBlock>
           Map shows annual probability of a "drought event", defined by Lange et al (2020) as
           monthly soil moisture falling below the 2.5th percentile of the preindustrial baseline
-          distribution for at least seven consecutive months.
+          distribution for at least seven consecutive months. Multiple impact models are available,
+          currently showing "WaterGAP2".
         </DataNoticeTextBlock>
       </DataNotice>
       <InputRow>

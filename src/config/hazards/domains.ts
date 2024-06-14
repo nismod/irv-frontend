@@ -72,6 +72,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
       epoch: 'baseline',
       rcp: 'baseline',
       gcm: 'gfdl-esm2m',
+      impact_model: 'hwmid-humidex',
     },
     dependencies: {
       rcp: ['epoch'],
@@ -91,6 +92,7 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
       epoch: 'baseline',
       rcp: 'baseline',
       gcm: 'gfdl-esm2m',
+      impact_model: 'watergap2',
     },
     dependencies: {
       rcp: ['epoch'],
