@@ -10,7 +10,6 @@ import {
   styled,
   Toolbar,
 } from '@mui/material';
-import { Box } from '@mui/system';
 import { FC, forwardRef, useCallback, useState } from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
 
@@ -86,8 +85,12 @@ const navItems = [
 ];
 const secondaryNavItems = [
   {
-    to: '/data',
+    to: '/about',
     title: 'About',
+  },
+  {
+    to: '/data',
+    title: 'Sources',
   },
   {
     to: '/downloads',
@@ -177,12 +180,14 @@ export const Nav: FC<{ height: number }> = ({ height }) => {
 
   return (
     <AppBar position="fixed" elevation={0} sx={{ color: 'white' }}>
-      <Box height={topStripeHeight} width="100%" bgcolor="rgb(142,193,85)" />
       <Toolbar
         variant="dense"
         sx={{
+          borderTopColor: 'rgb(142,193,85)',
+          borderTopWidth: topStripeHeight,
+          borderTopStyle: 'solid',
           backgroundColor: 'rgb(23,38,23)',
-          height: height - topStripeHeight,
+          height: height,
         }}
       >
         {isMobile ? <MobileNavContent height={height} /> : <DesktopNavContent />}

@@ -2,7 +2,8 @@ import { redirect } from 'react-router';
 import { createBrowserRouter } from 'react-router-dom';
 
 import { downloadsRoute } from './modules/downloads/downloads-routes';
-import { DataPage } from './pages/DataPage';
+import { AboutPage } from './pages/AboutPage';
+import { DataSourcesPage } from './pages/DataSourcesPage';
 import { IntroPage } from './pages/IntroPage';
 import { MapPage } from './pages/map/MapPage';
 import { RootErrorRoute, RootRoute } from './pages/root';
@@ -28,8 +29,12 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        path: '/about',
+        element: <AboutPage />,
+      },
+      {
         path: '/data',
-        element: <DataPage />,
+        element: <DataSourcesPage />,
       },
       {
         path: '/terms-of-use',
