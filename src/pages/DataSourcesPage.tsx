@@ -1,4 +1,5 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { IconButton, Link, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 import { ExtLink } from '@/lib/nav';
 
@@ -11,6 +12,7 @@ import {
   EmphasisTextContainer,
   EmphasisTextParagraph,
   MiniBar,
+  NarrowContainer,
 } from './ui/ArticleContainer';
 import { HeadingBox, HeadingBoxText } from './ui/HeadingBox';
 import {
@@ -20,6 +22,19 @@ import {
   TableHeader,
   TableSectionContainer,
 } from './ui/TableContainer';
+
+const BackToTop = ({ id }) => (
+  <ArticleSection>
+    <NarrowContainer>
+      <Link id={id} href="#contents" sx={{ opacity: 0.5 }}>
+        <IconButton edge="start" sx={{ mr: 1, border: 1 }}>
+          <KeyboardArrowUpIcon />
+        </IconButton>
+        Back to top
+      </Link>
+    </NarrowContainer>
+  </ArticleSection>
+);
 
 export const DataSourcesPage = () => (
   <ArticleContainer>
@@ -35,38 +50,34 @@ export const DataSourcesPage = () => (
             available for download.
           </EmphasisTextParagraph>
         </EmphasisTextContainer>
-        <a id="contents" href="#contents">
-          Contents
-        </a>
+        <ArticleParagraph>
+          <Link id="contents" href="#contents">
+            Contents
+          </Link>
+        </ArticleParagraph>
         <ArticleParagraph>
           Scroll down the page for details of data sources under each category:
           <ul>
             <li>
-              <a href="#context">Contextual map data</a>
+              <Link href="#context">Contextual map data</Link>
             </li>
             <li>
-              <a href="#hazard">Hazard</a>
+              <Link href="#hazard">Hazard</Link>
             </li>
             <li>
-              <a href="#exposure">Exposure</a>
+              <Link href="#exposure">Exposure</Link>
             </li>
             <li>
-              <a href="#vulnerability">Vulnerability</a>
+              <Link href="#vulnerability">Vulnerability</Link>
             </li>
             <li>
-              <a href="#risk">Risk</a>
+              <Link href="#risk">Risk</Link>
             </li>
           </ul>
         </ArticleParagraph>
       </ArticleSection>
 
-      <ArticleSection>
-        <ArticleParagraph>
-          <a id="context" href="#contents">
-            Back to top
-          </a>
-        </ArticleParagraph>
-      </ArticleSection>
+      <BackToTop id="context" />
       <ArticleSection>
         <ArticleSectionHeader>Contextual Map Data</ArticleSectionHeader>
 
@@ -84,13 +95,7 @@ export const DataSourcesPage = () => (
         </ArticleParagraph>
       </ArticleSection>
 
-      <ArticleSection>
-        <ArticleParagraph>
-          <a id="hazard" href="#contents">
-            Back to top
-          </a>
-        </ArticleParagraph>
-      </ArticleSection>
+      <BackToTop id="hazard" />
       <TableSectionContainer>
         <TableHeader>Hazard Data</TableHeader>
 
@@ -291,13 +296,7 @@ export const DataSourcesPage = () => (
         </StyledTableContainer>
       </TableSectionContainer>
 
-      <ArticleSection>
-        <ArticleParagraph>
-          <a id="exposure" href="#contents">
-            Back to top
-          </a>
-        </ArticleParagraph>
-      </ArticleSection>
+      <BackToTop id="exposure" />
       <TableSectionContainer>
         <TableHeader>Exposure Data</TableHeader>
 
@@ -582,13 +581,7 @@ export const DataSourcesPage = () => (
         </StyledTableContainer>
       </TableSectionContainer>
 
-      <ArticleSection>
-        <ArticleParagraph>
-          <a id="vulnerability" href="#contents">
-            Back to top
-          </a>
-        </ArticleParagraph>
-      </ArticleSection>
+      <BackToTop id="vulnerability" />
       <TableSectionContainer>
         <TableHeader>Vulnerability Data</TableHeader>
 
@@ -721,13 +714,7 @@ export const DataSourcesPage = () => (
         </StyledTableContainer>
       </TableSectionContainer>
 
-      <ArticleSection>
-        <ArticleParagraph>
-          <a id="risk" href="#contents">
-            Back to top
-          </a>
-        </ArticleParagraph>
-      </ArticleSection>
+      <BackToTop id="risk" />
       <TableSectionContainer>
         <TableHeader>Risk Data</TableHeader>
 
