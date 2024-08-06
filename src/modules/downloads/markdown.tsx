@@ -6,7 +6,13 @@ import { H1, H2, H3, H4, H5, H6 } from '@/lib/ui/mui/typography';
 export const MdLink = ({ to, title, children }) => {
   const isExternal = to.startsWith('http');
   return (
-    <AppLink to={to} title={title} children={children} target={isExternal ? '_blank' : undefined} />
+    <AppLink
+      to={to}
+      title={title}
+      children={children}
+      target={isExternal ? '_blank' : undefined}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
+    />
   );
 };
 
