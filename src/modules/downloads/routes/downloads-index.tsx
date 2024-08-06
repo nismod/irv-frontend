@@ -4,11 +4,7 @@ import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 import { AppLink } from '@/lib/nav';
 import { LoaderData } from '@/lib/react/react-router';
 
-import {
-  ArticleContainer,
-  ArticleContentContainer,
-  ArticleSection,
-} from '@/pages/ui/ArticleContainer';
+import { ArticleContainer, ArticleContentContainer } from '@/pages/ui/ArticleContainer';
 import { HeadingBox, HeadingBoxText } from '@/pages/ui/HeadingBox';
 
 import { CenteredLayout } from '../components/CenteredLayout';
@@ -34,20 +30,16 @@ export const Component = () => {
         <HeadingBoxText>Data Extract Downloads</HeadingBoxText>
       </HeadingBox>
       <CenteredLayout>
-        <Stack direction="column">
-          <ArticleContainer>
-            <ArticleContentContainer>
-              <ArticleSection>
-                <DownloadsIntroText components={mdxComponents} />
-              </ArticleSection>
-            </ArticleContentContainer>
-          </ArticleContainer>
-          <Stack direction="column" alignItems={'center'}>
-            <RegionSearchNavigation regions={regions} title="Select a country" />
-            <Typography textAlign="center" sx={{ my: 2 }}>
-              Or <AppLink to="regions">browse all countries</AppLink>
-            </Typography>
-          </Stack>
+        <ArticleContainer>
+          <ArticleContentContainer>
+            <DownloadsIntroText components={mdxComponents} />
+          </ArticleContentContainer>
+        </ArticleContainer>
+        <Stack direction="column" alignItems={'center'}>
+          <RegionSearchNavigation regions={regions} title="Select a country" />
+          <Typography textAlign="center" sx={{ my: 2 }}>
+            Or <AppLink to="regions">browse all countries</AppLink>
+          </Typography>
         </Stack>
       </CenteredLayout>
     </>
