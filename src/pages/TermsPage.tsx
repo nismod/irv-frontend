@@ -1,5 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
+import { AppLink, ExtLink } from '@/lib/nav';
+
 import {
   ArticleContainer,
   ArticleContentContainer,
@@ -36,6 +38,26 @@ export const TermsPage = () => (
       </ArticleSection>
 
       <ArticleSection>
+        <ArticleSectionHeader>Disclaimer</ArticleSectionHeader>
+
+        <ArticleParagraph>
+          This tool is provided for general information only and is not intended to amount to advice
+          on which you should rely. You must obtain professional or specialist advice before taking,
+          or refraining from, any action on the basis of the content on our site.
+        </ArticleParagraph>
+
+        <ArticleParagraph>
+          Although we make reasonable efforts to update the information on our site, we make no
+          representations, warranties or guarantees, whether express or implied, that the content on
+          our site (including this tool) is accurate, complete or up to date. The University of
+          Oxford accepts no liability in relation to any issues or liabilities that may subsequently
+          arise from use of the data or this tool for any purpose. Please consult our{' '}
+          <AppLink to="/terms-of-use">website terms of use</AppLink> for more information about our
+          liability to you.
+        </ArticleParagraph>
+      </ArticleSection>
+
+      <ArticleSection>
         <ArticleParagraph>
           <a id="terms" href="#terms">
             Link to Terms
@@ -47,9 +69,9 @@ export const TermsPage = () => (
         <ArticleSectionHeader>What's in these terms?</ArticleSectionHeader>
         <ArticleParagraph>
           These terms tell you the rules for using our website{' '}
-          <a href="https://global.infrastructureresilience.org">
+          <ExtLink href="https://global.infrastructureresilience.org">
             https://global.infrastructureresilience.org
-          </a>{' '}
+          </ExtLink>{' '}
           (our site).
         </ArticleParagraph>
       </ArticleSection>
