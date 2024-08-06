@@ -9,6 +9,7 @@ import {
   ArticleContentContainer,
   ArticleSection,
 } from '@/pages/ui/ArticleContainer';
+import { HeadingBox, HeadingBoxText } from '@/pages/ui/HeadingBox';
 
 import { CenteredLayout } from '../components/CenteredLayout';
 import { fetchAllRegions } from '../data/regions';
@@ -28,23 +29,28 @@ export const Component = () => {
   const { regions } = useLoaderData() as LandingPageData;
 
   return (
-    <CenteredLayout>
-      <Stack direction="column">
-        <ArticleContainer>
-          <ArticleContentContainer>
-            <ArticleSection>
-              <DownloadsIntroText components={mdxComponents} />
-            </ArticleSection>
-          </ArticleContentContainer>
-        </ArticleContainer>
-        <Stack direction="column" alignItems={'center'}>
-          <RegionSearchNavigation regions={regions} title="Select a country" />
-          <Typography textAlign="center" sx={{ my: 2 }}>
-            Or <AppLink to="regions">browse all countries</AppLink>
-          </Typography>
+    <>
+      <HeadingBox>
+        <HeadingBoxText>Data Extract Downloads</HeadingBoxText>
+      </HeadingBox>
+      <CenteredLayout>
+        <Stack direction="column">
+          <ArticleContainer>
+            <ArticleContentContainer>
+              <ArticleSection>
+                <DownloadsIntroText components={mdxComponents} />
+              </ArticleSection>
+            </ArticleContentContainer>
+          </ArticleContainer>
+          <Stack direction="column" alignItems={'center'}>
+            <RegionSearchNavigation regions={regions} title="Select a country" />
+            <Typography textAlign="center" sx={{ my: 2 }}>
+              Or <AppLink to="regions">browse all countries</AppLink>
+            </Typography>
+          </Stack>
         </Stack>
-      </Stack>
-    </CenteredLayout>
+      </CenteredLayout>
+    </>
   );
 };
 
