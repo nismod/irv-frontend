@@ -17,6 +17,30 @@
   background-size: cover;
   background-position: center center;
 }
+.card h2,
+.card p {
+  background: #172617;
+  transition: 0.1s;
+}
+.card p {
+  height: 105px;
+}
+.card:hover h2,
+.card:focus h2 {
+  text-decoration: underline;
+  background: rgb(50, 78, 50);
+}
+.card:hover p,
+.card:focus p {
+  background: rgb(50, 78, 50);
+}
+.card img {
+  transition: 0.1s;
+}
+.card:hover img,
+.card:focus img {
+  opacity: 0.8;
+}
 
 /**
  * Map and controls

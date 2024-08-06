@@ -1,4 +1,4 @@
-import { LinkProps, Link as MuiLink } from '@mui/material';
+import { LinkProps, Button as MuiButton, Link as MuiLink } from '@mui/material';
 import { ComponentProps } from 'react';
 import {
   Link as RouterLink,
@@ -15,6 +15,10 @@ export const ExtLink = ({ ...props }: Omit<LinkProps<'a'>, 'component'>) => {
 };
 
 export const AppLink = withProps(MuiLink<typeof RouterLink>, {
+  component: RouterLink,
+});
+
+export const AppLinkButton = withProps(MuiButton<typeof RouterLink>, {
   component: RouterLink,
 });
 
