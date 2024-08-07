@@ -89,6 +89,10 @@ const secondaryNavItems = [
     title: 'About',
   },
   {
+    to: '/guide',
+    title: 'Guide',
+  },
+  {
     to: '/data',
     title: 'Sources',
   },

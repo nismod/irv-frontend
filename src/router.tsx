@@ -4,6 +4,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { downloadsRoute } from './modules/downloads/downloads-routes';
 import { AboutPage } from './pages/AboutPage';
 import { DataSourcesPage } from './pages/DataSourcesPage';
+import { GuidePage } from './pages/GuidePage';
 import { IntroPage } from './pages/IntroPage';
 import { MapPage } from './pages/map/MapPage';
 import { RootErrorRoute, RootRoute } from './pages/root';
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: '/about',
         element: <AboutPage />,
+      },
+      {
+        path: '/guide',
+        element: <GuidePage />,
       },
       {
         path: '/data',
