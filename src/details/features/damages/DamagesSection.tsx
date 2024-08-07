@@ -37,7 +37,7 @@ export const DamagesSection = ({ fd }) => {
 
 export const QUIRKY_FIELDS_MAPPING = {
   hazard: (h: string) => (h === 'river' ? 'fluvial' : h),
-  epoch: (e: string) => (e === '1980' ? 'present' : e),
+  epoch: (e: string) => (e === '1980' ? 'baseline' : e),
   rcp: (r: string) => {
     if (r === 'historical') return 'baseline';
     if (r.startsWith('rcp')) return r.substring(3).replace('p', '.'); // rcp4p5 -> 4.5

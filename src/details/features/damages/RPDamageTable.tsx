@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from '@mui/material';
 
-import { numFormat, numRangeFormat } from '@/lib/helpers';
+import { numFormat, numRangeFormat, titleCase } from '@/lib/helpers';
 
 const padding = { px: 0.25, py: 0.25 };
 export const RPDamageTable = ({ damages }) => (
@@ -41,7 +41,7 @@ export const RPDamageTable = ({ damages }) => (
             >
               <TableCell sx={padding}>{d.rp}</TableCell>
             </Tooltip>
-            <TableCell sx={{ pl: 0, pr: padding.px, py: padding.py }}>{d.rcp}</TableCell>
+            <TableCell sx={{ pl: 0, pr: padding.px, py: padding.py }}>{titleCase(d.rcp)}</TableCell>
             <TableCell sx={padding} align="right">
               {numFormat(d.damage_mean)}
               <br />({numRangeFormat(d.damage_amin, d.damage_amax)})

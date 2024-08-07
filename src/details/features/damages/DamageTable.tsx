@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-import { numFormat, numRangeFormat } from '@/lib/helpers';
+import { numFormat, numRangeFormat, titleCase } from '@/lib/helpers';
 
 const padding = { px: 0.25, py: 0.25 };
 export const DamageTable = ({ damages }) => (
@@ -24,8 +24,8 @@ export const DamageTable = ({ damages }) => (
         {damages.map(
           ({ key, rcp, epoch, ead_mean, ead_amin, ead_amax, eael_mean, eael_amin, eael_amax }) => (
             <TableRow key={key}>
-              <TableCell sx={{ pl: 0, pr: padding.px, py: padding.py }}>{rcp}</TableCell>
-              <TableCell sx={padding}>{epoch}</TableCell>
+              <TableCell sx={{ pl: 0, pr: padding.px, py: padding.py }}>{titleCase(rcp)}</TableCell>
+              <TableCell sx={padding}>{titleCase(epoch)}</TableCell>
               <TableCell sx={padding} align="right">
                 {numFormat(ead_mean)}
                 <br />({numRangeFormat(ead_amin, ead_amax)})

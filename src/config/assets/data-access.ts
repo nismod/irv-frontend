@@ -33,7 +33,7 @@ function lookupRcp(rcp: string, layer: string) {
  * handle quirks/inconsistencies in feature property naming for epoch
  */
 function lookupEpoch(epoch: string, hazard: HazardType, layer: string) {
-  if (epoch === 'present') {
+  if (epoch === 'present' || epoch === 'baseline') {
     if (hazard === 'cyclone') {
       return '2020';
     }
