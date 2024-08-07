@@ -1,3 +1,5 @@
+import { Link } from '@mui/material';
+
 import { ExtLink } from '@/lib/nav';
 
 import {
@@ -11,6 +13,7 @@ import {
   MiniBar,
   SuperSectionHeader,
 } from './ui/ArticleContainer';
+import { BackToTop } from './ui/BackToTop';
 import { HeadingBox, HeadingBoxText } from './ui/HeadingBox';
 
 export const GuidePage = () => (
@@ -26,6 +29,113 @@ export const GuidePage = () => (
             This page introduces key concepts and terminology used throughout the GRI Risk Viewer.
           </EmphasisTextParagraph>
         </EmphasisTextContainer>
+
+        <ArticleParagraph>
+          <Link id="contents" href="#contents">
+            Contents
+          </Link>
+          <ul>
+            <li>
+              <Link href="#risk-analysis">Risk analysis</Link>
+            </li>
+            <li>
+              <Link href="#glossary">Glossary</Link>
+            </li>
+          </ul>
+        </ArticleParagraph>
+      </ArticleSection>
+
+      <BackToTop id="risk-analysis" />
+      <ArticleSection>
+        <SuperSectionHeader>Risk analysis</SuperSectionHeader>
+        <ArticleParagraph>
+          The platform uses globally available open data to display and provide access to data on
+          hazards, exposure and risk. In particular, the risk analytics are produced as part of a
+          scalable and rapidly deployable method (implemented in the{' '}
+          <ExtLink href="https://github.com/nismod/open-gira">Open-GIRA</ExtLink> workflow) aiming
+          to analyse direct damages and indirect losses associated with infrastructure networks due
+          to climate-related hazards.
+        </ArticleParagraph>
+        <ArticleParagraph>
+          Open-GIRA calculates direct damages to physical assets in a similar way to standard
+          catastrophe risk models and climate risk assessment methods. It can process return period
+          hazard maps or spatially resolved event sets. The workflow also estimates some of the
+          potential indirect losses from disasters, arising from business disruption and
+          infrastructure service disruption directly related to the direct impacts (damage or
+          destruction of assets). These can be thought of as the first order economic impact on the
+          supply chain.
+        </ArticleParagraph>
+        <ArticleParagraph>
+          The two principal use cases of the risk analysis are:
+          <ul>
+            <li>
+              Single asset risk analysis, including comparative analysis between multiple single
+              assets. This may also extend to the identification of hotspots of vulnerability by
+              comparing single assets across an entire set of assets. Note that while such
+              comparative analysis is useful, a full marginal impact (on the total aggregate
+              portfolio risk) is likely more informative and can only be conducted as part of a
+              portfolio risk analysis.
+            </li>
+            <li>
+              Portfolio risk analysis, that is the aggregation of risk across a portfolio of assets,
+              including regional, national, sectoral or network-wide analysis.
+            </li>
+          </ul>
+        </ArticleParagraph>
+        <ArticleParagraph>
+          The model can use three kinds of hazard data, all of which provide a measure of hazard
+          intensity at some spatial resolution over the area of interest:
+          <ul>
+            <li>
+              Return period hazard maps show areas affected by hazards of a particular severity,
+              expressed in terms of the return period of the hazard intensity at each grid cell.
+              These maps do not reflect realistic hazard events that could occur. Each grid cell is
+              treated independently. They are not spatially correlated and do not contain
+              information about the duration of the hazard.
+            </li>
+            <li>
+              Spatially resolved event sets map a large range of potential events, incorporating
+              information about the potential size, strength, location, path and likelihood of the
+              event occurring (e.g. tropical cyclone maximum wind speeds along a track). This
+              provides spatially correlated intensity measures across all grid cells in the modelled
+              domain and enables the calculation of aggregate losses (e.g. at a national scale) at a
+              range of different annual exceedance probabilities.
+            </li>
+            <li>
+              Historic event catalogues are formally equivalent to spatially resolved event sets but
+              for observed historical events &ndash; noting that such observations may come from
+              reanalysis modelling. Their principle use case is event reconstruction and validation.
+              These observed events may have an associated return period estimate.
+            </li>
+          </ul>
+        </ArticleParagraph>
+        <ArticleParagraph>
+          The type of input hazard data available determines the analysis results that can be relied
+          upon by a user. For single asset risk analysis, or simple comparison between assets, all
+          output metrics can be calculated from either return period maps or spatially resolved
+          event sets. For portfolio risk analysis, return period maps severely limit the output
+          metrics available.
+        </ArticleParagraph>
+        <ArticleParagraph>
+          Return period hazard maps do support single asset or comparative risk analysis, but do not
+          provide the necessary information to meaningfully aggregate risk results from multiple
+          assets to draw conclusions about portfolio, network-wide, regional, or national risks. The
+          asset-level analytics can still be calculated for all assets and are suitable for
+          comparison and could be used for high-level risk screening or prioritisation.
+        </ArticleParagraph>
+        <ArticleParagraph>
+          Spatially resolved event sets are needed to calculate aggregate losses for different
+          exceedance probabilities (or return periods). The GRI Risk Viewer currently only presents
+          return period hazard maps and risk results derived from them. There are limited open
+          datasets which provide spatially resolved event sets &ndash; notably for tropical
+          cyclones, there are the IBTraCS historical storms, STORM and IRIS synthetic event sets.
+          This currently limits the possibilities for deriving large-scale aggregate risk analytics.
+        </ArticleParagraph>
+      </ArticleSection>
+
+      <BackToTop id="glossary" />
+      <ArticleSection>
+        <SuperSectionHeader>Glossary of terms</SuperSectionHeader>
         <ArticleParagraph>
           This glossary draws on various resources covering climate and disaster risk concepts and
           terminology. The International Panel of Climate Change{' '}
@@ -41,9 +151,6 @@ export const GuidePage = () => (
           </ExtLink>{' '}
           which give concise descriptions of climate-related and other hazards.
         </ArticleParagraph>
-      </ArticleSection>
-      <ArticleSection>
-        <SuperSectionHeader>Glossary of terms</SuperSectionHeader>
 
         <ArticleSectionHeader>Risk</ArticleSectionHeader>
         <ArticleParagraph>
@@ -232,6 +339,7 @@ export const GuidePage = () => (
           below 0.5m, and some proportional repair or rehabilitation cost for higher depths.
         </ArticleParagraph>
       </ArticleSection>
+      <BackToTop id="end" />
     </ArticleContentContainer>
   </ArticleContainer>
 );
