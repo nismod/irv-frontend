@@ -7,6 +7,8 @@ import { CustomScrollRestoration } from '@/lib/nav';
 import { Nav } from '@/Nav';
 import { globalStyleVariables } from '@/theme';
 
+import { PageFooter } from './PageFooter';
+
 const RootLayout = ({ children }) => {
   return (
     <>
@@ -19,6 +21,7 @@ const RootLayout = ({ children }) => {
         right={0}
       >
         {children}
+        <PageFooter />
       </Box>
     </>
   );

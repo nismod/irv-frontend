@@ -1,4 +1,4 @@
-import { Job } from '@nismod/irv-autopkg-client';
+import { ApiError, Job } from '@nismod/irv-autopkg-client';
 import { array, date, object, string } from '@recoiljs/refine';
 import _ from 'lodash';
 import { useEffect } from 'react';
@@ -23,9 +23,22 @@ export const [useJobById, fetchJobById] = makeQueryAndPrefetch(
 );
 
 export function submitJob(boundaryName: string, processors: string[]) {
-  return autopkgClient.jobs.submitProcessingJobV1JobsPost({
-    requestBody: { boundary_name: boundaryName, processors },
-  });
+  throw new ApiError(
+    null,
+    {
+      url: '',
+      status: 403,
+      statusText: '',
+      body: '',
+      ok: false,
+    },
+    `Failed to process ${boundaryName}: ${processors}`,
+  );
+  // Short-circuit to avoid requesting jobs.
+
+  // return autopkgClient.jobs.submitProcessingJobV1JobsPost({
+  //   requestBody: { boundary_name: boundaryName, processors },
+  // });
 }
 
 export type JobParams = CamelCasedProperties<Job>;

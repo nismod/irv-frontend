@@ -1,6 +1,4 @@
-import { inlist } from '@/lib/helpers';
-
-import { ComputeJobStatusResult, JobStatusType } from './job-status';
+import { ComputeJobStatusResult } from './job-status';
 import { ComputePackageDataResult, PackageDataStatus } from './package-data';
 import { QueryResultStatus, QueryStatusResult } from './query-status';
 
@@ -34,43 +32,6 @@ export function computeDatasetStatus(
     return DatasetStatus.Ready;
   }
 
-  if (pkgStat === PackageDataStatus.Unavailable && jobStat === JobStatusType.Success) {
-    return DatasetStatus.ProcessingSuccess;
-  }
-
-  if (pkgStat === PackageDataStatus.Unavailable && jobStat === QueryResultStatus.Idle) {
-    return DatasetStatus.Prepare;
-  }
-
-  if (inlist(pkgStat, [QueryResultStatus.QueryError, PackageDataStatus.Unavailable])) {
-    if (jobStat === JobStatusType.Queued) {
-      return DatasetStatus.Queued;
-    }
-
-    if (jobStat === JobStatusType.Processing) {
-      return DatasetStatus.Processing;
-    }
-
-    if (jobStat === JobStatusType.Skipped) {
-      return DatasetStatus.ProcessingSkipped;
-    }
-
-    if (jobStat === JobStatusType.Failed) {
-      return DatasetStatus.ProcessingFailed;
-    }
-  }
-
-  /*
-  // don't need to check these conditions separately, all the rest is Unknown
-  if (
-    (jobStat === QueryResultStatus.QueryError &&
-      inlist(pkgStat, [QueryResultStatus.QueryError, PackageDataStatus.Unavailable])) ||
-    (pkgStat === QueryResultStatus.QueryError &&
-      inlist(jobStat, [QueryResultStatus.QueryError, QueryResultStatus.Idle]))
-  ) {
-    return DatasetStatus.Unknown;
-  }
-  */
-
-  return DatasetStatus.Unknown;
+  // See git history for handling full set of states
+  return DatasetStatus.ProcessingFailed;
 }

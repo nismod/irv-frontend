@@ -1,5 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 import { ExtLink } from '@/lib/nav';
 
@@ -11,9 +10,9 @@ import {
   ArticleSectionHeader,
   EmphasisTextContainer,
   EmphasisTextParagraph,
-  ExternalLink,
   MiniBar,
 } from './ui/ArticleContainer';
+import { BackToTop } from './ui/BackToTop';
 import { HeadingBox, HeadingBoxText } from './ui/HeadingBox';
 import {
   StyledTableContainer,
@@ -23,38 +22,66 @@ import {
   TableSectionContainer,
 } from './ui/TableContainer';
 
-export const DataPage = () => (
+export const DataSourcesPage = () => (
   <ArticleContainer>
     <HeadingBox>
-      <HeadingBoxText>About GRI, Data Sources and Acknowledgments</HeadingBoxText>
+      <HeadingBoxText>Data Sources</HeadingBoxText>
     </HeadingBox>
     <ArticleContentContainer>
       <ArticleSection>
         <EmphasisTextContainer>
           <MiniBar />
           <EmphasisTextParagraph>
-            The GRI Risk Viewer is developed at the University of Oxford by the Oxford Programme for
-            Sustainable Infrastructure Systems.
+            The GRI Risk Viewer draws on open data sources which are displayed in the maps and
+            available for download.
           </EmphasisTextParagraph>
         </EmphasisTextContainer>
-
         <ArticleParagraph>
-          This website is developed at{' '}
-          <ExternalLink href="https://github.com/nismod/infra-risk-vis">
-            github.com/nismod/infra-risk-vis
-          </ExternalLink>{' '}
-          and much of the risk analytics are produced using the workflow developed at{' '}
-          <ExternalLink href="https://github.com/nismod/open-gira">
-            github.com/nismod/open-gira
-          </ExternalLink>
-          .
+          <Link id="contents" href="#contents">
+            Contents
+          </Link>
         </ArticleParagraph>
         <ArticleParagraph>
-          The rest of this page details the sources of data presented on this site, and acknowledges
-          additional sources, funding and collaborations.
+          Scroll down the page for details of data sources under each category:
+          <ul>
+            <li>
+              <Link href="#context">Contextual map data</Link>
+            </li>
+            <li>
+              <Link href="#hazard">Hazard</Link>
+            </li>
+            <li>
+              <Link href="#exposure">Exposure</Link>
+            </li>
+            <li>
+              <Link href="#vulnerability">Vulnerability</Link>
+            </li>
+            <li>
+              <Link href="#risk">Risk</Link>
+            </li>
+          </ul>
         </ArticleParagraph>
       </ArticleSection>
 
+      <BackToTop id="context" />
+      <ArticleSection>
+        <ArticleSectionHeader>Contextual Map Data</ArticleSectionHeader>
+
+        <ArticleParagraph>
+          Background map data is &copy;{' '}
+          <ExtLink href="https://www.openstreetmap.org/copyright">OpenStreetMap</ExtLink>{' '}
+          contributors, style &copy; <ExtLink href="https://carto.com/attributions">CARTO</ExtLink>.
+        </ArticleParagraph>
+
+        <ArticleParagraph>
+          Satellite imagery background is derived from{' '}
+          <ExtLink href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</ExtLink> by{' '}
+          <ExtLink href="https://eox.at">EOX IT Services GmbH</ExtLink> (Contains modified
+          Copernicus Sentinel data 2020).
+        </ArticleParagraph>
+      </ArticleSection>
+
+      <BackToTop id="hazard" />
       <TableSectionContainer>
         <TableHeader>Hazard Data</TableHeader>
 
@@ -73,26 +100,26 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Coastal and River flooding</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://www.wri.org/data/aqueduct-floods-hazard-maps">
+                  <ExtLink href="https://www.wri.org/data/aqueduct-floods-hazard-maps">
                     WRI Aqueduct Floods Hazard Maps
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A.
                   Díaz Loaiza, et al. 2020. “Aqueduct Floods Methodology.” Technical Note.
                   Washington, D.C.: World Resources Institute. Available online at:{' '}
-                  <ExternalLink href="https://www.wri.org/publication/aqueduct-floods-methodology">
+                  <ExtLink href="https://www.wri.org/publication/aqueduct-floods-methodology">
                     www.wri.org/publication/aqueduct-floods-methodology
-                  </ExternalLink>
+                  </ExtLink>
                   .
                 </TableCell>
                 <TableCell>
                   All the products, methodologies, and datasets that make up Aqueduct are available
                   for use under the{' '}
-                  <ExternalLink href="https://creativecommons.org/licenses/by/4.0/">
+                  <ExtLink href="https://creativecommons.org/licenses/by/4.0/">
                     {' '}
                     Creative Commons Attribution International 4.0 License{' '}
-                  </ExternalLink>
+                  </ExtLink>
                   .
                 </TableCell>
                 <TableCell>
@@ -104,17 +131,17 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Extreme Heat and Drought</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://data.isimip.org/search/tree/ISIMIP2b/DerivedOutputData/lange2020/">
+                  <ExtLink href="https://data.isimip.org/search/tree/ISIMIP2b/DerivedOutputData/lange2020/">
                     Lange et al 2020, ISIMIP
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al.
                   (2020). Projecting exposure to extreme climate impact events across six event
                   categories and three spatial scales. Earth's Future, 8, e2020EF001616.{' '}
-                  <ExternalLink href="https://doi.org/10.1029/2020EF001616">
+                  <ExtLink href="https://doi.org/10.1029/2020EF001616">
                     DOI 10.1029/2020EF001616
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC0 1.0</TableCell>
                 <TableCell>
@@ -156,28 +183,28 @@ export const DataPage = () => (
                 <TableCell>Tropical Cyclones (STORM)</TableCell>
                 <TableCell>
                   STORM Tropical Cyclone Maximum Windspeeds,{' '}
-                  <ExternalLink href="https://data.4tu.nl/articles/dataset/STORM_tropical_cyclone_wind_speed_return_periods/12705164/3">
+                  <ExtLink href="https://data.4tu.nl/articles/dataset/STORM_tropical_cyclone_wind_speed_return_periods/12705164/3">
                     Present{' '}
-                  </ExternalLink>
+                  </ExtLink>
                   {' and '}{' '}
-                  <ExternalLink href="https://data.4tu.nl/articles/dataset/STORM_climate_change_tropical_cyclone_wind_speed_return_periods/14510817/3">
+                  <ExtLink href="https://data.4tu.nl/articles/dataset/STORM_climate_change_tropical_cyclone_wind_speed_return_periods/14510817/3">
                     Future climate{' '}
-                  </ExternalLink>
+                  </ExtLink>
                   .
                 </TableCell>
                 <TableCell>
                   Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts,
                   J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods.
                   4TU.ResearchData. Dataset.{' '}
-                  <ExternalLink href="https://doi.org/10.4121/12705164.v3">
+                  <ExtLink href="https://doi.org/10.4121/12705164.v3">
                     DOI 10.4121/12705164.v3
-                  </ExternalLink>{' '}
+                  </ExtLink>{' '}
                   and Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J. (Reindert);
                   Haigh, I.D. (Ivan); Martinez, Andrew B.; et al. (2022): STORM climate change
                   tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset.{' '}
-                  <ExternalLink href="https://doi.org/10.4121/14510817.v3">
+                  <ExtLink href="https://doi.org/10.4121/14510817.v3">
                     DOI 10.4121/14510817.v3
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC0 1.0</TableCell>
                 <TableCell>
@@ -197,14 +224,14 @@ export const DataPage = () => (
                 <TableCell>
                   Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset.
                   Scientific Data 11, 424{' '}
-                  <ExternalLink href="https://doi.org/10.1038/s41597-024-03250-y">
+                  <ExtLink href="https://doi.org/10.1038/s41597-024-03250-y">
                     DOI 10.1038/s41597-024-03250-y
-                  </ExternalLink>{' '}
+                  </ExtLink>{' '}
                   and Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model.
                   Figshare. Collection.{' '}
-                  <ExternalLink href="https://doi.org/10.6084/m9.figshare.c.6724251.v1">
+                  <ExtLink href="https://doi.org/10.6084/m9.figshare.c.6724251.v1">
                     DOI 10.6084/m9.figshare.c.6724251.v1
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC BY 4.0</TableCell>
                 <TableCell>
@@ -218,30 +245,30 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Seismic Risk</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://www.globalquakemodel.org/gem-maps/global-earthquake-hazard-map">
+                  <ExtLink href="https://www.globalquakemodel.org/gem-maps/global-earthquake-hazard-map">
                     GEM Global Earthquake Hazard Map
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R,
                   Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of
                   the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1),{' '}
-                  <ExternalLink href="https://doi.org/10.1177/8755293020931866">
+                  <ExtLink href="https://doi.org/10.1177/8755293020931866">
                     DOI: 10.1177/8755293020931866
-                  </ExternalLink>
+                  </ExtLink>
                   . and Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S.,
                   Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A.,
                   Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data
                   set]. Zenodo.{' '}
-                  <ExternalLink href="https://doi.org/10.5281/zenodo.8409647">
+                  <ExtLink href="https://doi.org/10.5281/zenodo.8409647">
                     DOI 10.5281/zenodo.8409647
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
-                  <ExternalLink href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <ExtLink href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
                     Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
                     (CC BY-NC-SA){' '}
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1)
@@ -255,6 +282,7 @@ export const DataPage = () => (
         </StyledTableContainer>
       </TableSectionContainer>
 
+      <BackToTop id="exposure" />
       <TableSectionContainer>
         <TableHeader>Exposure Data</TableHeader>
 
@@ -273,14 +301,12 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Roads and Rail</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://planet.openstreetmap.org/">
-                    OpenStreetMap
-                  </ExternalLink>
+                  <ExtLink href="https://planet.openstreetmap.org/">OpenStreetMap</ExtLink>
                 </TableCell>
                 <TableCell>
-                  <ExternalLink href="https://www.openstreetmap.org/copyright">
+                  <ExtLink href="https://www.openstreetmap.org/copyright">
                     © OpenStreetMap contributors https://www.openstreetmap.org/copyright
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>ODbL</TableCell>
                 <TableCell>
@@ -292,9 +318,9 @@ export const DataPage = () => (
 
               <TableRow>
                 <TableCell>
-                  <ExternalLink href="https://doi.org/10.5281/zenodo.3628142">
+                  <ExtLink href="https://doi.org/10.5281/zenodo.3628142">
                     Gridfinder Power Transmission lines
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>Source</TableCell>
                 <TableCell>
@@ -312,9 +338,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Power plants</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://datasets.wri.org/dataset/globalpowerplantdatabase">
+                  <ExtLink href="https://datasets.wri.org/dataset/globalpowerplantdatabase">
                     WRI Global Powerplants Database
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Global Energy Observatory, Google, KTH Royal Institute of Technology in Stockholm,
@@ -363,9 +389,9 @@ export const DataPage = () => (
                   </TableCellStack>
                 </TableCell>
                 <TableCell>
-                  <ExternalLink href="https://ec.europa.eu/info/legal-notice_en#copyright-notice">
+                  <ExtLink href="https://ec.europa.eu/info/legal-notice_en#copyright-notice">
                     CC-BY 4.0
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   <TableCellStack>
@@ -429,7 +455,7 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Health site locations</TableCell>
                 <TableCell>
-                  <ExternalLink href="http://healthsites.io">healthsites.io</ExternalLink>
+                  <ExtLink href="http://healthsites.io">healthsites.io</ExtLink>
                 </TableCell>
                 <TableCell>
                   This data was generated as an extract from the OpenStreetMap global open database
@@ -444,10 +470,10 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Cement and Steel Production Assets</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://www.cgfi.ac.uk/spatial-finance-initiative/database-downloads/">
+                  <ExtLink href="https://www.cgfi.ac.uk/spatial-finance-initiative/database-downloads/">
                     Global Databases of Cement and Iron and Steel Production Assets, Spatial Finance
                     Initiative
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   <TableCellStack>
@@ -472,9 +498,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Land Cover</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview">
+                  <ExtLink href="https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview">
                     ESA Land cover classification{' '}
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   European Space Agency Climate Change Initiative Land Cover project (2021) Land
@@ -493,9 +519,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Topography</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://doi.org/10.5281/zenodo.1447210">
+                  <ExtLink href="https://doi.org/10.5281/zenodo.1447210">
                     Global DEM derivatives based on MERIT DEM
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Tomislav Hengl. (2018). Global DEM derivatives at 250m, 1 km and 2 km based on the
@@ -508,9 +534,9 @@ export const DataPage = () => (
                   to 6 global tiles based on the Equi7 grid system (Bauer-Marschallinger et al.
                   2014) and then these were used to derive all DEM derivatives. To access original
                   DEM tiles please refer to the{' '}
-                  <ExternalLink href="http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_DEM/">
+                  <ExtLink href="http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_DEM/">
                     MERIT DEM download page
-                  </ExternalLink>
+                  </ExtLink>
                   .
                 </TableCell>
               </TableRow>
@@ -518,7 +544,7 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Soil Organic Carbon stock</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://soilgrids.org/">SoilGrids 2.0</ExternalLink>
+                  <ExtLink href="https://soilgrids.org/">SoilGrids 2.0</ExtLink>
                 </TableCell>
                 <TableCell>
                   Poggio, L., de Sousa, L.M., Batjes, N.H., Heuvelink, G.B.M., Kempen, B., Ribeiro,
@@ -541,6 +567,7 @@ export const DataPage = () => (
         </StyledTableContainer>
       </TableSectionContainer>
 
+      <BackToTop id="vulnerability" />
       <TableSectionContainer>
         <TableHeader>Vulnerability Data</TableHeader>
 
@@ -559,9 +586,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Access to Healthcare</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://www.nature.com/articles/s41591-020-1059-1">
+                  <ExtLink href="https://www.nature.com/articles/s41591-020-1059-1">
                     Global maps of travel time to healthcare facilities
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Weiss, D.J., Nelson, A., Vargas-Ruiz, C.A. et al. Global maps of travel time to
@@ -575,9 +602,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Human Development</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://globaldatalab.org/shdi/">
+                  <ExtLink href="https://globaldatalab.org/shdi/">
                     Global Data Lab Sub-national human development indices
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Global Data Lab (2019) Subnational Human Development Index (SHDI) Available at
@@ -610,9 +637,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Biodiversity</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://data.nhm.ac.uk/dataset/global-map-of-the-biodiversity-intactness-index-from-newbold-et-al-2016-science/resource/8531b4dc-bd44-4586-8216-47b3b8d60e85">
+                  <ExtLink href="https://data.nhm.ac.uk/dataset/global-map-of-the-biodiversity-intactness-index-from-newbold-et-al-2016-science/resource/8531b4dc-bd44-4586-8216-47b3b8d60e85">
                     Biodiversity Intactness Index
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Tim Newbold; Lawrence Hudson; Andy Arnell; Sara Contu et al. (2016). Map of
@@ -627,9 +654,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Protected Areas</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://www.protectedplanet.net/en/thematic-areas/wdpa?tab=WDPA">
+                  <ExtLink href="https://www.protectedplanet.net/en/thematic-areas/wdpa?tab=WDPA">
                     World Database of Protected Areas
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   UNEP-WCMC and IUCN (2022), Protected Planet: The World Database on Protected Areas
@@ -644,9 +671,9 @@ export const DataPage = () => (
               <TableRow>
                 <TableCell>Forest Integrity</TableCell>
                 <TableCell>
-                  <ExternalLink href="https://www.nature.com/articles/s41467-020-19493-3">
+                  <ExtLink href="https://www.nature.com/articles/s41467-020-19493-3">
                     Forest Landscape Integrity Index
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>
                   Grantham, H.S., Duncan, A., Evans, T.D. et al. Anthropogenic modification of
@@ -673,6 +700,7 @@ export const DataPage = () => (
         </StyledTableContainer>
       </TableSectionContainer>
 
+      <BackToTop id="risk" />
       <TableSectionContainer>
         <TableHeader>Risk Data</TableHeader>
 
@@ -697,15 +725,15 @@ export const DataPage = () => (
                   Miranda, N.D., Lizana, J., Sparrow, S.N. et al. (2023) Change in cooling degree
                   days with global mean temperature rise increasing from 1.5°C to 2.0°C. Nature
                   Sustainability 6, 1326-1330.{' '}
-                  <ExternalLink href="https://doi.org/10.1038/s41893-023-01155-z">
+                  <ExtLink href="https://doi.org/10.1038/s41893-023-01155-z">
                     DOI 10.1038/s41893-023-01155-z
-                  </ExternalLink>{' '}
+                  </ExtLink>{' '}
                   and Miranda, N. D., Lizana, J., Sparrow, S. N., Wallom, D. C. H., Zachau-Walker,
                   M., Watson, P., Khosla, R., & McCulloch, M. (2023). Changes in Cooling Degree Days
                   (CDD) between the 1.5°C and 2.0°C global warming scenarios. University of Oxford.{' '}
-                  <ExternalLink href="https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e">
+                  <ExtLink href="https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e">
                     https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC-BY</TableCell>
                 <TableCell>
@@ -735,9 +763,9 @@ export const DataPage = () => (
                 <TableCell>
                   Russell, T., Nicholas, C., & Bernhofen, M. (2024). Annual probability of extreme
                   heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo.{' '}
-                  <ExternalLink href="https://doi.org/10.5281/zenodo.11582369">
+                  <ExtLink href="https://doi.org/10.5281/zenodo.11582369">
                     10.5281/zenodo.11582369
-                  </ExternalLink>
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC BY-SA 4.0 International</TableCell>
                 <TableCell>
@@ -774,96 +802,6 @@ export const DataPage = () => (
           </Table>
         </StyledTableContainer>
       </TableSectionContainer>
-
-      <ArticleSection>
-        <ArticleSectionHeader>Contextual Map Data</ArticleSectionHeader>
-
-        <ArticleParagraph>
-          Background map data is &copy;{' '}
-          <ExternalLink href="https://www.openstreetmap.org/copyright">OpenStreetMap</ExternalLink>{' '}
-          contributors, style &copy;{' '}
-          <ExternalLink href="https://carto.com/attributions">CARTO</ExternalLink>.
-        </ArticleParagraph>
-
-        <ArticleParagraph>
-          Satellite imagery background is derived from{' '}
-          <ExternalLink href="https://s2maps.eu">
-            Sentinel-2 cloudless - https://s2maps.eu
-          </ExternalLink>{' '}
-          by <ExternalLink href="https://eox.at">EOX IT Services GmbH</ExternalLink> (Contains
-          modified Copernicus Sentinel data 2020).
-        </ArticleParagraph>
-
-        <ArticleParagraph>
-          Photo credit: Hurricane Irma, 7 September 2017. Data: MODIS/Terra (NASA WorldView).
-          Processed by Antti Lipponen (
-          <ExternalLink href="https://twitter.com/anttilip">@anttilip</ExternalLink>){' '}
-          <ExternalLink href="https://creativecommons.org/licenses/by/2.0/">CC-BY</ExternalLink>
-        </ArticleParagraph>
-      </ArticleSection>
-
-      <ArticleSection>
-        <ArticleSectionHeader>Disclaimer</ArticleSectionHeader>
-
-        <ArticleParagraph>
-          The Global Systemic Risk Assessment Tool (G-SRAT) is provided for general information only
-          and is not intended to amount to advice on which you should rely. You must obtain
-          professional or specialist advice before taking, or refraining from, any action on the
-          basis of the content on our site.
-        </ArticleParagraph>
-
-        <ArticleParagraph>
-          Although we make reasonable efforts to update the information on our site, we make no
-          representations, warranties or guarantees, whether express or implied, that the content on
-          our site (including this tool) is accurate, complete or up to date. The University of
-          Oxford accepts no liability in relation to any issues or liabilities that may subsequently
-          arise from use of the data or this tool for any purpose. Please consult our{' '}
-          <Link to="/terms-of-use">website terms of use</Link> for more information about our
-          liability to you.
-        </ArticleParagraph>
-      </ArticleSection>
-
-      <ArticleSection>
-        <ArticleSectionHeader>Acknowledgments</ArticleSectionHeader>
-
-        <ArticleParagraph>
-          The development of this site is led by the University of Oxford (the{' '}
-          <ExternalLink href="https://opsis.eci.ox.ac.uk/">
-            Oxford Programme for Sustainable Infrastructure Systems
-          </ExternalLink>
-          ). It is supported by a wide range of contributing technical organisations and specialists
-          that share data, analytics and expertise, including: the{' '}
-          <ExternalLink href="https://www.smithschool.ox.ac.uk/research/sustainable-finance">
-            University of Oxford Sustainable Finance Group
-          </ExternalLink>
-          , the{' '}
-          <ExternalLink href="https://www.insdevforum.org/working-groups/rmsg/">
-            Insurance Development Forum’s Risk Modelling Steering Group
-          </ExternalLink>{' '}
-          (RMSG), the{' '}
-          <ExternalLink href="https://www.globalquakemodel.org/who-we-are">
-            Global Earthquake Model Foundation
-          </ExternalLink>{' '}
-          (GEM), the{' '}
-          <ExternalLink href="https://www.disasterprotection.org/">
-            Centre for Disaster Protection
-          </ExternalLink>
-          , <ExternalLink href="https://www.fathom.global/">Fathom</ExternalLink>,{' '}
-          <ExternalLink href="https://www.jbarisk.com/">JBA</ExternalLink>,{' '}
-          <ExternalLink href="https://www.nasdaq.com/solutions/nasdaq-risk-platform">
-            NASDAQ
-          </ExternalLink>
-          , <ExternalLink href="https://oasislmf.org/">OASIS Loss Modelling Framework</ExternalLink>
-          , <ExternalLink href="https://www.aon.com/home/index">Aon</ExternalLink>, and the{' '}
-          <ExternalLink href="https://www.worldbank.org/en/home">World Bank</ExternalLink> (
-          <ExternalLink href="https://www.gfdrr.org/en">GFDRR</ExternalLink> and{' '}
-          <ExternalLink href="https://www.worldbank.org/en/programs/disaster-risk-financing-and-insurance-program">
-            DRFIP
-          </ExternalLink>
-          ). Our ambition is to expand these technical collaborations over time to build the climate
-          risk data ecosystem.
-        </ArticleParagraph>
-      </ArticleSection>
     </ArticleContentContainer>
   </ArticleContainer>
 );

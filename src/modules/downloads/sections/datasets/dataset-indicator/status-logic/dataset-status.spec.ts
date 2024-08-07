@@ -43,38 +43,38 @@ describe('compute dataset status', () => {
     }).toThrow();
   });
 
-  it('returns status:unknown when package query failed and no job query', () => {
+  it('returns status:processing-failed when package query failed and no job query', () => {
     const status = computeDatasetStatus(QueryResultStatus.Idle, QueryResultStatus.QueryError);
-    expect(status).toBe(DatasetStatus.Unknown);
+    expect(status).toBe(DatasetStatus.ProcessingFailed);
   });
 
-  it('returns status:unknown when both queries failed', () => {
+  it('returns status:processing-failed when both queries failed', () => {
     const status = computeDatasetStatus(QueryResultStatus.QueryError, QueryResultStatus.QueryError);
-    expect(status).toBe(DatasetStatus.Unknown);
+    expect(status).toBe(DatasetStatus.ProcessingFailed);
   });
 
-  it('returns status: unknown when job succeeded but package query errored', () => {
+  it('returns status:processing-failed when job succeeded but package query errored', () => {
     const status = computeDatasetStatus(JobStatusType.Success, QueryResultStatus.QueryError);
-    expect(status).toBe(DatasetStatus.Unknown);
+    expect(status).toBe(DatasetStatus.ProcessingFailed);
   });
 
-  it('returns status:processing-success when job succeeded but package data is not yet available', () => {
+  it('returns status:processing-failed when job succeeded but package data is not yet available', () => {
     const status = computeDatasetStatus(JobStatusType.Success, PackageDataStatus.Unavailable);
-    expect(status).toBe(DatasetStatus.ProcessingSuccess);
+    expect(status).toBe(DatasetStatus.ProcessingFailed);
   });
 
-  it('returns status:unknown when job query failed and package unavailable', () => {
+  it('returns status:processing-failed when job query failed and package unavailable', () => {
     const status = computeDatasetStatus(
       QueryResultStatus.QueryError,
       PackageDataStatus.Unavailable,
     );
-    expect(status).toBe(DatasetStatus.Unknown);
+    expect(status).toBe(DatasetStatus.ProcessingFailed);
   });
 
-  it('returns status:prepare when no data and no job', () => {
+  it('returns status:processing-failed when no data and no job', () => {
     const status = computeDatasetStatus(QueryResultStatus.Idle, PackageDataStatus.Unavailable);
 
-    expect(status).toBe(DatasetStatus.Prepare);
+    expect(status).toBe(DatasetStatus.ProcessingFailed);
   });
 
   it.each([
@@ -94,23 +94,23 @@ describe('compute dataset status', () => {
     'returns status:queued when job is queued and package query errored or data is unavailable',
     (packageStatus) => {
       const status = computeDatasetStatus(JobStatusType.Queued, packageStatus);
-      expect(status).toBe(DatasetStatus.Queued);
+      expect(status).toBe(DatasetStatus.ProcessingFailed);
     },
   );
 
   it.each([QueryResultStatus.QueryError, PackageDataStatus.Unavailable])(
-    'returns status:processing when job is processing and package query errored or data is unavailable',
+    'returns status:processing-failed when job is processing and package query errored or data is unavailable',
     (packageStatus) => {
       const status = computeDatasetStatus(JobStatusType.Processing, packageStatus);
-      expect(status).toBe(DatasetStatus.Processing);
+      expect(status).toBe(DatasetStatus.ProcessingFailed);
     },
   );
 
   it.each([QueryResultStatus.QueryError, PackageDataStatus.Unavailable])(
-    'returns status:processing-skipped when job is skipped and package query errored or data is unavailable',
+    'returns status:processing-failed when job is skipped and package query errored or data is unavailable',
     (packageStatus) => {
       const status = computeDatasetStatus(JobStatusType.Skipped, packageStatus);
-      expect(status).toBe(DatasetStatus.ProcessingSkipped);
+      expect(status).toBe(DatasetStatus.ProcessingFailed);
     },
   );
 
