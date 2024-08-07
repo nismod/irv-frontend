@@ -1,5 +1,4 @@
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { IconButton, Link, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Link, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 import { ExtLink } from '@/lib/nav';
 
@@ -12,8 +11,8 @@ import {
   EmphasisTextContainer,
   EmphasisTextParagraph,
   MiniBar,
-  NarrowContainer,
 } from './ui/ArticleContainer';
+import { BackToTop } from './ui/BackToTop';
 import { HeadingBox, HeadingBoxText } from './ui/HeadingBox';
 import {
   StyledTableContainer,
@@ -22,19 +21,6 @@ import {
   TableHeader,
   TableSectionContainer,
 } from './ui/TableContainer';
-
-const BackToTop = ({ id }) => (
-  <ArticleSection>
-    <NarrowContainer>
-      <Link id={id} href="#contents" sx={{ opacity: 0.5 }}>
-        <IconButton edge="start" sx={{ mr: 1, border: 1 }}>
-          <KeyboardArrowUpIcon />
-        </IconButton>
-        Back to top
-      </Link>
-    </NarrowContainer>
-  </ArticleSection>
-);
 
 export const DataSourcesPage = () => (
   <ArticleContainer>
@@ -46,7 +32,7 @@ export const DataSourcesPage = () => (
         <EmphasisTextContainer>
           <MiniBar />
           <EmphasisTextParagraph>
-            The GRI Risk Viewer draws on many open data sources which are displayed in the maps and
+            The GRI Risk Viewer draws on open data sources which are displayed in the maps and
             available for download.
           </EmphasisTextParagraph>
         </EmphasisTextContainer>
