@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Link, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 import { AppLink, ExtLink } from '@/lib/nav';
 
@@ -25,13 +25,13 @@ export const TermsPage = () => (
           This page contains the following documents:
           <ul>
             <li>
-              <a href="#terms">Terms of Use</a>
+              <Link href="#terms">Terms of Use</Link>
             </li>
             <li>
-              <a href="#privacy">Privacy Policy</a>
+              <Link href="#privacy">Privacy Policy</Link>
             </li>
             <li>
-              <a href="#cookie">Cookie Policy</a>
+              <Link href="#cookie">Cookie Policy</Link>
             </li>
           </ul>
         </ArticleParagraph>
@@ -59,9 +59,9 @@ export const TermsPage = () => (
 
       <ArticleSection>
         <ArticleParagraph>
-          <a id="terms" href="#terms">
+          <Link id="terms" href="#terms">
             Link to Terms
-          </a>
+          </Link>
         </ArticleParagraph>
         <SuperSectionHeader>Terms and conditions of website use</SuperSectionHeader>
       </ArticleSection>
@@ -276,9 +276,9 @@ export const TermsPage = () => (
 
       <ArticleSection>
         <ArticleParagraph>
-          <a id="privacy" href="#privacy">
+          <Link id="privacy" href="#privacy">
             Link to Privacy Policy
-          </a>
+          </Link>
         </ArticleParagraph>
         <SuperSectionHeader>Privacy Policy</SuperSectionHeader>
         <ArticleParagraph>
@@ -486,8 +486,8 @@ export const TermsPage = () => (
           If you want to exercise any of the rights described above or are dissatisfied with the way
           we have used your information, you should contact the University's Information Compliance
           Team at
-          <a href="mailto:data.protection@admin.ox.ac.uk">data.protection@admin.ox.ac.uk</a>. The
-          same email address may be used to contact the University's Data Protection Officer. We
+          <Link href="mailto:data.protection@admin.ox.ac.uk">data.protection@admin.ox.ac.uk</Link>.
+          The same email address may be used to contact the University's Data Protection Officer. We
           will seek to deal with your request without undue delay, and in any event in accordance
           with the requirements of the GDPR. Please note that we may keep a record of your
           communications to help us resolve any issues which you raise.
@@ -495,7 +495,7 @@ export const TermsPage = () => (
         <ArticleParagraph>
           If you remain dissatisfied, you have the right to lodge a complaint with the Information
           Commissioner's Office at{' '}
-          <a href="https://ico.org.uk/concerns/">https://ico.org.uk/concerns/</a>.{' '}
+          <ExtLink href="https://ico.org.uk/concerns/">https://ico.org.uk/concerns/</ExtLink>.{' '}
         </ArticleParagraph>
       </ArticleSection>
       <ArticleSection>
@@ -524,9 +524,9 @@ export const TermsPage = () => (
       </ArticleSection>
       <ArticleSection>
         <ArticleParagraph>
-          <a id="cookie" href="#cookie">
+          <Link id="cookie" href="#cookie">
             Link to Cookie Policy
-          </a>
+          </Link>
         </ArticleParagraph>
 
         <SuperSectionHeader>Cookie Policy</SuperSectionHeader>
@@ -560,7 +560,7 @@ export const TermsPage = () => (
           Most web browsers allow some control of most cookies through the browser settings. To find
           out more about cookies, including how to see what cookies have been set and how to manage
           and delete them please visit{' '}
-          <a href="http://www.allaboutcookies.org/">http://www.allaboutcookies.org/</a>.
+          <ExtLink href="http://www.allaboutcookies.org/">http://www.allaboutcookies.org/</ExtLink>.
         </ArticleParagraph>
         <ArticleParagraph>
           Cookies may be set either by global.infrastructureresilience.org ("first party cookies"),
@@ -579,9 +579,9 @@ export const TermsPage = () => (
 
         <ArticleParagraph>
           Google provide an{' '}
-          <a href="http://www.google.co.uk/intl/en/analytics/privacyoverview.html">
+          <ExtLink href="http://www.google.co.uk/intl/en/analytics/privacyoverview.html">
             overview of Google Analytics privacy
-          </a>{' '}
+          </ExtLink>{' '}
           for reference.
         </ArticleParagraph>
       </ArticleSection>
@@ -622,8 +622,9 @@ export const TermsPage = () => (
         <ArticleSectionHeader>Contact</ArticleSectionHeader>
         <ArticleParagraph>
           Any queries or concerns about the use of cookies on this website should be sent by email
-          to <a href="mailto:data.protection@admin.ox.ac.uk">data.protection@admin.ox.ac.uk</a> or
-          addressed to the Data Protection Office, University of Oxford, University Offices,
+          to{' '}
+          <Link href="mailto:data.protection@admin.ox.ac.uk">data.protection@admin.ox.ac.uk</Link>{' '}
+          or addressed to the Data Protection Office, University of Oxford, University Offices,
           Wellington Square, Oxford, OX1 2JD.
         </ArticleParagraph>
       </ArticleSection>
