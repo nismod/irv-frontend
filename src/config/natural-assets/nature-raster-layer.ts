@@ -30,9 +30,9 @@ export const NATURE_RASTER_FORMATS: Record<
   forest_landscape_integrity: {
     colorMap: {
       scheme: 'ylgn', //TODO - original dataset colormap is more like gold-yellow-green
-      range: [0, 10_000],
+      range: [0, 10],
     },
-    formatValue: (x) => `${(x / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 })}`,
+    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 1 })}`,
     transparentColor: [255, 255, 255, 0],
   },
   organic_carbon: {
