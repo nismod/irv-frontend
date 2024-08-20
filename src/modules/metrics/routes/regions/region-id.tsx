@@ -1,94 +1,170 @@
-import { Stack, Typography } from '@mui/material';
-import { Boundary, Processor } from '@nismod/irv-autopkg-client';
-import { MultiPolygon, Polygon } from 'geojson';
-import { defer, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { Box, Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
+import { Boundary, BoundarySummary } from '@nismod/irv-autopkg-client';
+import { useCallback, useEffect, useState } from 'react';
+import { defer, LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
 
-import { BackLink } from '@/lib/nav';
+import { ParamDropdown } from '@/lib/controls/ParamDropdown';
+import { AppLink } from '@/lib/nav';
 
-import { RegionMap } from '../../components/RegionMap';
-import { fetchAllDatasets } from '../../data/datasets';
-import { fetchRegionById } from '../../data/regions';
+import { Footer } from '@/pages/ui/Footer';
 
-export const loader = async ({ request: { signal }, params: { regionId } }: LoaderFunctionArgs) => {
+import { Dashboard } from '../../components/dashboard/Dashboard';
+import { RegionSearchNavigation } from '../../components/selection/RegionSearchNavigation';
+import { RegionMetricsHeader } from './RegionMetricsHeader';
+import { fetchAllRegions, fetchRegionById } from './regions';
+
+export const loader = async ({
+  request: { signal },
+  params: { regionId, metricId },
+}: LoaderFunctionArgs) => {
   return defer({
     region: await fetchRegionById({ regionId }, signal),
-    datasets: fetchAllDatasets({}, signal),
+    regions: await fetchAllRegions({}, signal),
+    metricId: metricId,
   });
 };
 
-loader.displayName = 'singleRegionLoader';
+loader.displayName = 'regionMetricsLoader';
 
-type SingleRegionLoaderData = {
+type RegionMetricsLoaderData = {
   region: Boundary;
-  datasets: Promise<Processor[]>;
+  regions: BoundarySummary[];
+  metricId: string;
 };
 
+const metricOptions = [
+  {
+    value: 'development',
+    label: 'Human Development Index',
+    url: 'https://gist.githubusercontent.com/shiarella/d7cf2c2b328c89720c213bd18cf7bace/raw/1c62f7f977d344bceb26ab89e7213af303ed9ccb/gdl-development.json',
+  },
+  {
+    value: 'healthcare',
+    label: 'Healthcare Index',
+    url: 'https://gist.githubusercontent.com/shiarella/5a3a7073d7b017e6c027e7113092de39/raw/dbc8c9943d0f01ccd0a2fdd2442e4577ad2c809b/gdl-health.json',
+  },
+  {
+    value: 'education',
+    label: 'Educational Index',
+    url: 'https://gist.githubusercontent.com/shiarella/4453d462208a121ad7bae6411660fb3a/raw/ba250c00a98c75099adccfd8e51bc2cda8d61ce4/gdl-education.json',
+  },
+  {
+    value: 'Income',
+    label: 'Income Index',
+    url: 'https://gist.githubusercontent.com/shiarella/b8b529540923e23c53252dcfd73da0d1/raw/48e1c6d105b6578c542ad665ef0de1c8dc9b3395/gdl-income.json',
+  },
+];
+
 export const Component = () => {
-  const { region } = useLoaderData() as SingleRegionLoaderData;
+  const { region, regions, metricId } = useLoaderData() as RegionMetricsLoaderData;
+
+  const navigate = useNavigate();
+
+  const [chartData, setChartData] = useState(null);
+  const [scaleAcrossYears, setScaleAcrossYears] = useState(true);
+  const [scaleAcrossCountries, setScaleAcrossCountries] = useState(false);
+
+  const maybeMetricSelection = metricOptions.find((option) => option.value === metricId);
+  const metricSelection = maybeMetricSelection ? maybeMetricSelection : metricOptions[0];
+  const selectedMetricId = metricSelection.value;
+
+  const handleMetricSelection = useCallback(
+    (selection: String) => {
+      const maybeMetricMatch = metricOptions.find((option) => option.value === selection);
+      const selectionId = maybeMetricMatch ? maybeMetricMatch.value : metricOptions[0].value;
+      if (selection != null) {
+        setTimeout(() => {
+          navigate(
+            `/metrics/regions/${region.name}/${selectionId}`,
+            { preventScrollReset: true }, // don't scroll to top on navigate
+          );
+        }, 100);
+      }
+    },
+    [navigate, region.name],
+  );
+
+  useEffect(() => {
+    fetch(metricSelection.url)
+      .then((d) => d.json())
+      .then((d) => setChartData(d));
+  }, [metricSelection.url]);
+
+  const boundarySummary = regions.find(
+    (regionBoundarySummary) => regionBoundarySummary.name === region.name,
+  );
 
   return (
-    <Stack direction="column" gap={5} alignItems={'center'} paddingBottom={20}>
-      <Stack direction="column" width="100%" padding="0px">
-        {/* <HeadingBox /> */}
+    <>
+      <Stack direction="column" gap={6} alignItems={'center'} paddingBottom={100}>
+        <RegionMetricsHeader />
 
-        <div
-          style={{
-            height: '16rem',
-            backgroundImage:
-              "url('/irma-2017_data-from-nasa-modis_processed-by-antti-lipponen_1280.jpg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-          }}
-        >
-          <Stack
-            padding={2}
-            paddingX={4}
-            justifyContent="center"
-            alignItems="center"
-            sx={{
-              position: 'absolute',
-              'background-color': 'rgba(255,255,255,0.6)',
-              top: '11.2rem',
-              right: '0px',
-              // height: 'inherit',
-              width: 'inherit',
-            }}
-            // position={'absolute'}
-            // sx={{"bottom": "5px" }}
-            // bottom={'5px'}
-            // right={'5px'}
-          >
-            <Typography variant="h2">Explore risk metrics by country</Typography>
-          </Stack>
-        </div>
+        <Stack direction="column" gap={5} alignItems={'center'} mt={10} pt={5} pb={20}>
+          <Stack direction="row" alignItems={'center'} gap={5}>
+            <Stack direction="column" alignItems={'center'}>
+              <RegionSearchNavigation
+                regions={regions}
+                title="Select a country"
+                selectedRegionSummary={boundarySummary}
+                metricId={selectedMetricId}
+              />
+              <Typography textAlign="center">
+                Or <AppLink to="/metrics/regions">browse all countries</AppLink>
+              </Typography>
+            </Stack>
 
-        <Stack
-          padding={6}
-          justifyContent="center"
-          alignItems="center"
-          sx={{ 'background-color': '#EAEAE4' }}
-        >
-          <Stack maxWidth={600}>
-            <Typography variant="body1">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-              exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            </Typography>
+            <Stack direction="column" alignItems={'center'} width={'300px'}>
+              <ParamDropdown
+                title={'Metric'}
+                onChange={(selection) => handleMetricSelection(selection)}
+                value={selectedMetricId}
+                options={metricOptions}
+              />
+            </Stack>
           </Stack>
+
+          <Stack direction="row" gap={5}>
+            <Stack>
+              <FormControlLabel
+                label="Fix scale across years"
+                control={
+                  <Checkbox
+                    checked={scaleAcrossYears}
+                    onChange={(e, checked) => setScaleAcrossYears(checked)}
+                  />
+                }
+              />
+
+              <FormControlLabel
+                label="Fix scale across countries"
+                control={
+                  <Checkbox
+                    checked={scaleAcrossCountries}
+                    onChange={(e, checked) => setScaleAcrossCountries(checked)}
+                  />
+                }
+              />
+            </Stack>
+          </Stack>
+
+          <Box padding={10}>
+            {chartData ? (
+              <Dashboard
+                region={region}
+                chartData={chartData}
+                metricId={metricId}
+                scaleAcrossCountries={scaleAcrossCountries}
+                scaleAcrossYears={scaleAcrossYears}
+              />
+            ) : (
+              <div>Loading data...</div>
+            )}
+          </Box>
         </Stack>
       </Stack>
 
-      <BackLink>&larr; Back</BackLink>
-      <Stack width="100%" maxWidth={'800px'}>
-        <Typography variant="h2">{region.name_long}</Typography>
-        <RegionMap
-          regionGeometry={region.geometry as MultiPolygon}
-          regionEnvelope={region.envelope as Polygon}
-          width="100%"
-          height={300}
-        />
-      </Stack>
-    </Stack>
+      <Footer />
+    </>
   );
 };
 

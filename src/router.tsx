@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { downloadsRoute } from './modules/downloads/downloads-routes';
 import { metricsRoute } from './modules/metrics/metrics-routes';
+import { AboutPage } from './pages/AboutPage';
 import { DataPage } from './pages/DataPage';
 import { IntroPage } from './pages/IntroPage';
 import { MapPage } from './pages/map/MapPage';
@@ -33,10 +34,10 @@ export const router = createBrowserRouter([
         path: '/data',
         element: <DataPage />,
       },
-      // {
-      //   path: '/metrics',
-      //   element: <MetricsPage />,
-      // },
+      {
+        path: '/about',
+        element: <AboutPage />,
+      },
       {
         path: '/terms-of-use',
         element: <TermsPage />,

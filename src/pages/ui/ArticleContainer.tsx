@@ -2,6 +2,8 @@ import { Box, Stack, Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
 
+import { IntroContainer, IntroTypography } from './IntroContainer';
+
 const ParagraphTypography = styled(Typography)(({ theme }) => ({
   fontFamily: 'Georgia, Times New Roman, Times, serif',
   fontSize: '1rem',
@@ -14,7 +16,7 @@ const ParagraphTypography = styled(Typography)(({ theme }) => ({
 
 export const ArticleSection = ({ children }) => {
   return (
-    <Stack spacing={2} paddingX={2} marginY={6} alignItems={'center'}>
+    <Stack spacing={2} paddingX={2} marginY={15} alignItems={'center'}>
       {children}
     </Stack>
   );
@@ -62,16 +64,24 @@ export const ArticleParagraph = ({ children }) => {
   );
 };
 
+// export const EmphasisTextContainer = ({ children }) => {
+//   return <NarrowContainer>{children}</NarrowContainer>;
+// };
+
 export const EmphasisTextContainer = ({ children }) => {
-  return <NarrowContainer>{children}</NarrowContainer>;
+  return <IntroContainer>{children}</IntroContainer>;
 };
 
+// export const EmphasisTextParagraph = ({ children }) => {
+//   return (
+//     <Typography variant="h5" paragraph={true}>
+//       {children}
+//     </Typography>
+//   );
+// };
+
 export const EmphasisTextParagraph = ({ children }) => {
-  return (
-    <Typography variant="h5" paragraph={true}>
-      {children}
-    </Typography>
-  );
+  return <IntroTypography>{children}</IntroTypography>;
 };
 
 export const ArticleContainer = ({ children }) => {

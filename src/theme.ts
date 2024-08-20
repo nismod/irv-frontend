@@ -148,6 +148,6 @@ export const theme = createTheme({
 export const globalStyleVariables = {
   controlSidebarWidth: 400,
   detailSidebarWidth: 500,
-  navbarHeight: 70,
+  navbarHeight: 80,
   detailsSidebarWidth: 400,
 };

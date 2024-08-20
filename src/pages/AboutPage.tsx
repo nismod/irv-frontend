@@ -25,17 +25,17 @@ import {
   TableSectionContainer,
 } from './ui/TableContainer';
 
-export const DataPage = () => (
+export const AboutPage = () => (
   <>
     <ArticleContainer>
       <HeaderBlock>
-        <HeadingBoxText>Data Sources</HeadingBoxText>
+        <HeadingBoxText>About GRI</HeadingBoxText>
       </HeaderBlock>
 
       {/* <div className="home" style={{ height: '16rem' }}></div>
        */}
 
-      <BannerImage imageUrl="https://eoimages.gsfc.nasa.gov/images/imagerecords/152000/152677/wildflowers_oli_20240409_lrg.jpg" />
+      <BannerImage imageUrl="https://eoimages.gsfc.nasa.gov/images/imagerecords/152000/152384/saharandustzm_tmo_20240125_lrg.jpg" />
       {/* <HeadingBox>
       <HeadingBoxText>About GRI, Data Sources and Acknowledgments</HeadingBoxText>
     </HeadingBox> */}

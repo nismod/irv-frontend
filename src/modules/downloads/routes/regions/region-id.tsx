@@ -12,6 +12,7 @@ import { RegionMap } from '../../components/RegionMap';
 import { fetchAllDatasets } from '../../data/datasets';
 import { fetchRegionById } from '../../data/regions';
 import { DatasetsList } from '../../sections/datasets/DatasetsList';
+import { RegionMetricsHeader } from './RegionMetricsHeader';
 
 export const loader = async ({ request: { signal }, params: { regionId } }: LoaderFunctionArgs) => {
   return defer({
@@ -31,25 +32,29 @@ export const Component = () => {
   const { region, datasets } = useLoaderData() as SingleRegionLoaderData;
 
   return (
-    <CenteredLayout>
-      <BackLink>&larr; Back</BackLink>
-      <Typography variant="h2">{region.name_long}</Typography>
-      <RegionMap
-        regionGeometry={region.geometry as MultiPolygon}
-        regionEnvelope={region.envelope as Polygon}
-        width="100%"
-        height={300}
-      />
-      <Box mt={5}>
-        <Typography variant="h3">Datasets</Typography>
-        <Suspense fallback={<DatasetsSkeleton />}>
-          <Await
-            resolve={datasets}
-            children={(datasets) => <DatasetsList datasets={datasets} region={region} />}
-          />
-        </Suspense>
-      </Box>
-    </CenteredLayout>
+    <>
+      <RegionMetricsHeader />
+
+      <CenteredLayout>
+        <BackLink>&larr; Back</BackLink>
+        <Typography variant="h2">{region.name_long}</Typography>
+        <RegionMap
+          regionGeometry={region.geometry as MultiPolygon}
+          regionEnvelope={region.envelope as Polygon}
+          width="100%"
+          height={300}
+        />
+        <Box mt={5}>
+          <Typography variant="h3">Datasets</Typography>
+          <Suspense fallback={<DatasetsSkeleton />}>
+            <Await
+              resolve={datasets}
+              children={(datasets) => <DatasetsList datasets={datasets} region={region} />}
+            />
+          </Suspense>
+        </Box>
+      </CenteredLayout>
+    </>
   );
 };
 
