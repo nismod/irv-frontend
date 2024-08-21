@@ -48,7 +48,7 @@ export function useBasemapStyle(
       sources: {},
       layers: [],
     },
-  } = useFetch(BASEMAP_STYLE_URL, { suspense: true });
+  } = useFetch(BASEMAP_STYLE_URL, { suspense: false });
 
   useEffect(() => {
     get();
