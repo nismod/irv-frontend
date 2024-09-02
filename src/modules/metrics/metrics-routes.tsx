@@ -15,21 +15,21 @@ export const metricsRoute: RouteObject = {
           handle: {
             pathBasedScroll: true,
           },
-          lazy: () => import('./routes/regions/regions-index'),
+          lazy: () => import('./routes/regions-index'),
         },
         {
           path: ':regionId',
           children: [
             {
               index: true,
-              lazy: () => import('./routes/regions/region-id'),
+              lazy: () => import('./routes/region-id'),
             },
             {
               path: ':metricId',
               children: [
                 {
                   index: true,
-                  lazy: () => import('./routes/regions/region-id'),
+                  lazy: () => import('./routes/region-id'),
                 },
               ],
             },
