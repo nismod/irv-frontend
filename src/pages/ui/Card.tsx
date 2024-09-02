@@ -1,35 +1,55 @@
-import { Paper } from '@mui/material';
+import { ArrowForward } from '@mui/icons-material';
+import { Box, CardActionArea, Card as MuiCard } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 
 export const Card = ({ title, href, image, text }) => (
-  <Paper
+  <MuiCard
+    className="card"
+    variant="outlined"
+    square
     sx={{
       width: 300,
       minHeight: 450,
     }}
   >
-    <Link
-      className="card"
-      to={href}
-      style={{
-        textDecoration: 'none',
-      }}
-    >
-      <Typography variant="h2" sx={{ color: 'white', p: 2, m: 0 }}>
-        {title}
-      </Typography>
-      <img src={image} alt={title} width="100%" height="auto" style={{ display: 'block' }} />
-      <Typography
-        variant="body1"
-        sx={{
-          color: 'white',
-          p: 2,
-          m: 0,
+    <CardActionArea>
+      <Link
+        to={href}
+        style={{
+          textDecoration: 'none',
         }}
       >
-        {text}
-      </Typography>
-    </Link>
-  </Paper>
+        <Typography variant="h2" sx={{ color: '#222', p: 2, m: 0 }}>
+          {title}
+        </Typography>
+        <img src={image} alt={title} width="100%" height="auto" style={{ display: 'block' }} />
+        <Box height={165} sx={{ overflow: 'hidden' }}>
+          <Typography
+            variant="body1"
+            sx={{
+              color: '#222',
+              p: 2,
+              m: 0,
+            }}
+          >
+            {text}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              color: '#222',
+              p: 2,
+              m: 0,
+            }}
+          >
+            View {title.toLowerCase()}
+            <span className="icon-button-diy">
+              <ArrowForward />
+            </span>
+          </Typography>
+        </Box>
+      </Link>
+    </CardActionArea>
+  </MuiCard>
 );

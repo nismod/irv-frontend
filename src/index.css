@@ -17,31 +17,24 @@
   background-size: cover;
   background-position: center center;
 }
-.card h2,
-.card p {
-  background: #172617;
-  transition: 0.1s;
+.card .MuiCardActionArea-focusHighlight {
+  background-color: rgb(23, 38, 23);
 }
-.card p {
-  height: 105px;
-}
-.card:hover h2,
-.card:focus h2 {
+.card a:hover p:last-child,
+.card a:focus p:last-child {
   text-decoration: underline;
-  background: rgb(50, 78, 50);
 }
-.card:hover p,
-.card:focus p {
-  background: rgb(50, 78, 50);
+.icon-button-diy {
+  border-radius: 50%;
+  border: 1px solid;
+  height: 30px;
+  width: 30px;
+  display: inline-block;
+  padding: 2px;
+  margin-top: -4px;
+  vertical-align: top;
+  margin-left: 6px;
 }
-.card img {
-  transition: 0.1s;
-}
-.card:hover img,
-.card:focus img {
-  opacity: 0.8;
-}
-
 /**
  * Map and controls
  */
