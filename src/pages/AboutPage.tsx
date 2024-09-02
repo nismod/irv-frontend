@@ -98,7 +98,7 @@ export const AboutPage = () => (
             Spatial Finance Initiative
           </ExtLink>{' '}
           as part of the{' '}
-          <ExtLink href="https://resilient-planet-data.org/">Resilient Planet Inititative</ExtLink>,
+          <ExtLink href="https://resilient-planet-data.org/">Resilient Planet Initiative</ExtLink>,
           previously the Global Resilience Index Initiative (GRII) as well as the many open data
           sources listed <Link to="/data">here</Link>. Appropriate open data sources are regularly
           reviewed.

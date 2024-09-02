@@ -307,7 +307,8 @@ export const GuidePage = () => (
         <ArticleSectionHeader>Expected Annual Damages</ArticleSectionHeader>
         <ArticleParagraph>
           Expected Annual Damages (EAD) are the average damage costs incurred for an asset in any
-          given year due to a given hazard type for a given time epoch and climate scenario.
+          given year due to a given hazard type for a given time epoch and climate scenario. EAD is
+          calculated by summing the probability-weighted damages at different return periods.
         </ArticleParagraph>
 
         <ArticleSectionHeader>Expected Annual Economic Losses</ArticleSectionHeader>

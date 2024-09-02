@@ -75,20 +75,20 @@ export const IntroPage = () => {
               image="./card-hazard.png"
               title="Hazard"
               href="/view/hazard"
-              text="Understand hazard intensity and location"
+              text="Understand the intensity and location of weather extremes and other environmental hazards"
             />
             <Card
               image="./card-exposure.png"
               href="/view/exposure"
               title="Exposure"
-              text="Direct population and asset exposure to a variety of
+              text="Map the population, infrastructure and other assets that are exposed to a variety of
                 environmental hazards"
             />
             <Card
               image="./card-vulnerability.png"
               href="/view/vulnerability"
               title="Vulnerability"
-              text="Review vulnerability indices for nature and population"
+              text="Review indices that summarise the vulnerability of natural areas and populations"
             />
             <Card
               image="./card-risk.png"
