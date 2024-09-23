@@ -17,9 +17,8 @@ import {
 import { AppLink } from '@/lib/nav';
 import { LoaderData } from '@/lib/react/react-router';
 
+import { RegionSearchNavigation } from '@/modules/metrics/components/region-search/RegionSearchNavigation';
 import { fetchAllRegions } from '@/modules/metrics/data/fetch-regions';
-
-import { RegionSearchNavigation } from '../components/region-search/RegionSearchNavigation';
 
 export const loader = async ({ request: { signal } }: LoaderFunctionArgs) => ({
   regions: await fetchAllRegions({}, signal),
