@@ -92,6 +92,7 @@ export const Component = () => {
     [navigate, region.name],
   );
 
+  console.log('metricSelection.url', metricSelection.url);
   useEffect(() => {
     fetch(metricSelection.url)
       .then((d) => d.json())
