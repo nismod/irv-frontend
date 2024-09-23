@@ -18,7 +18,6 @@ import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 
 import { useBasemapStyle } from '@/map/use-basemap-style';
 
-// import hdiGeoJson from './geojson/gdl_v6.3_large_visvaligram_weighted_0.02.json';
 import { MapLabel } from './MapLabel';
 import { MapLegend } from './MapLegend';
 
@@ -63,7 +62,6 @@ function useViewState(initialViewStateFn: () => MapViewState) {
 
 export default function RegionMap({
   countryEnvelope,
-  // countryId,
   width: responsiveWidth,
   height: responsiveHeight,
   selectedCountryData,
@@ -75,15 +73,15 @@ export default function RegionMap({
   label,
 }: {
   countryEnvelope: Polygon;
-  countryId: String;
+  countryId: string;
   width: BoxProps['width'];
   height: BoxProps['height'];
-  selectedCountryData: any; // TODO
-  highlightRegion: String; // TODO?
-  setHighlightRegion: any; // TODO?
+  selectedCountryData: any;
+  highlightRegion: string;
+  setHighlightRegion: any;
   selectedYear: number;
-  domainY: any; // TODO
-  geojson: any; //TODO
+  domainY: any;
+  geojson: any;
   label: string;
 }) {
   const { width, height, ref: containerRef } = useResizeDetector();
@@ -102,7 +100,6 @@ export default function RegionMap({
             width={width}
             height={height}
             regionEnvelope={countryEnvelope}
-            // regionId={countryId}
             selectedCountryData={selectedCountryData}
             highlightRegion={highlightRegion}
             setHighlightRegion={setHighlightRegion}
@@ -121,7 +118,6 @@ function RegionMapViewer({
   width,
   height,
   regionEnvelope,
-  // regionId,
   selectedCountryData,
   highlightRegion,
   setHighlightRegion,
@@ -130,12 +126,6 @@ function RegionMapViewer({
   geojson,
   label,
 }) {
-  // const filteredGeoJson = useMemo(
-  //   () => hdiGeoJson['features'].filter((d) => d.properties.iso_code === regionId.toUpperCase()),
-
-  //   [regionId],
-  // );
-
   const filteredGeoJson = geojson;
 
   const calculateBoundedState = useCallback(() => {
