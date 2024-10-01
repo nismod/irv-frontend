@@ -2,7 +2,9 @@ import type { Color } from '@deck.gl/core';
 import { ZoomOutMap } from '@mui/icons-material';
 import { Box, BoxProps } from '@mui/material';
 import { Polygon } from '@nismod/irv-autopkg-client';
-import * as d3 from 'd3';
+import { color as d3color } from 'd3-color';
+import { scaleSequential as d3scaleSequential } from 'd3-scale';
+import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
 import { GeoJsonLayer, MapViewState } from 'deck.gl/typed';
 import type { Feature } from 'geojson';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
@@ -155,7 +157,7 @@ function RegionMapViewer({
   const { mapStyle } = useBasemapStyle(backgroundKey, true);
 
   const colorScale = useMemo(
-    () => d3.scaleSequential().domain(domainY).interpolator(d3.interpolateRdYlGn),
+    () => d3scaleSequential().domain(domainY).interpolator(d3interpolateRdYlGn),
     [domainY],
   );
 
@@ -179,7 +181,7 @@ function RegionMapViewer({
       if (!maybeRegionValue) return NOT_FOUND_COLOR;
 
       const colorString = colorScale(maybeRegionValue);
-      const colorObject = d3.color(colorString);
+      const colorObject = d3color(colorString).rgb();
 
       return [colorObject.r, colorObject.g, colorObject.b, 200];
     },

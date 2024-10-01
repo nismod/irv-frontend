@@ -56,3 +56,7 @@ export const useChartDimensions = (passedSettings) => {
 
   return [ref, newSettings];
 };
+
+export const numericDomain = (domain): [number, number] => {
+  return [+domain[0], +domain[1]];
+};

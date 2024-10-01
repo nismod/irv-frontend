@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+import * as d3 from 'd3-shape';
 import { FC } from 'react';
 
 type LineProps = {
@@ -6,7 +6,7 @@ type LineProps = {
   xAccessor: any;
   yAccessor: any;
   isHighlighted: boolean;
-  interpolation?: (value: number) => number; // D3 function
+  interpolation?: d3.CurveFactory;
 };
 
 const Line: FC<LineProps> = ({
@@ -17,10 +17,9 @@ const Line: FC<LineProps> = ({
   interpolation = d3.curveMonotoneX,
   ...props
 }) => {
-  const type = 'line';
-  const lineGenerator = d3[type]().x(xAccessor).y(yAccessor).curve(interpolation);
+  const lineGenerator = d3.line().x(xAccessor).y(yAccessor).curve(interpolation);
 
-  const className = isHighlighted ? `Line Line--type-${type} highlight` : `Line Line--type-${type}`;
+  const className = isHighlighted ? `Line Line--type-line highlight` : `Line Line--type-line`;
   return <path {...props} className={className} d={lineGenerator(data)} />;
 };
 

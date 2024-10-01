@@ -1,5 +1,5 @@
 import { Box, Stack } from '@mui/system';
-import * as d3 from 'd3';
+import * as d3 from 'd3-color';
 import { FC } from 'react';
 
 export const MapLegend: FC<{
@@ -17,9 +17,9 @@ export const MapLegend: FC<{
   const colorString1 = colorScale(domainY[0]);
   const colorString2 = colorScale((domainY[0] + domainY[1]) / 2);
   const colorString3 = colorScale(domainY[1]);
-  const colorObject = d3.color(colorString1);
-  const colorObject2 = d3.color(colorString2);
-  const colorObject3 = d3.color(colorString3);
+  const colorObject = d3.color(colorString1).rgb();
+  const colorObject2 = d3.color(colorString2).rgb();
+  const colorObject3 = d3.color(colorString3).rgb();
 
   if (!colorObject) {
     return <></>;

@@ -1,14 +1,16 @@
 import { Box } from '@mui/material';
-import * as d3 from 'd3';
+import { extent as d3extent, leastIndex as d3leastIndex } from 'd3-array';
+import { format as d3format } from 'd3-format';
+import { scaleLinear as d3scaleLinear } from 'd3-scale';
+import { pointer as d3pointer } from 'd3-selection';
 
 import Axis from '@/modules/metrics/components/lib/chart/axis/Axis';
 import Chart from '@/modules/metrics/components/lib/chart/Chart';
 import Line from '@/modules/metrics/components/lib/chart/Line';
-import { useChartDimensions } from '@/modules/metrics/components/lib/chart/utils';
+import Dimension from '@/modules/metrics/components/lib/chart/types/Dimension';
+import { numericDomain, useChartDimensions } from '@/modules/metrics/components/lib/chart/utils';
 
-import Dimension from '../../lib/chart/types/Dimension';
-
-const formatYear = d3.format('.0f');
+const formatYear = d3format('.0f');
 
 const findHighlightPoint = (dataByYearGroupedList, regionKey, selectedYear, xScale, yScale) => {
   const dataRecord = dataByYearGroupedList.find((d) => d.regionKey === regionKey);
@@ -37,12 +39,11 @@ const RegionsLineChart = ({
 }) => {
   const [ref, dimensions] = useChartDimensions(null);
 
-  const xScale = d3
-    .scaleLinear()
-    .domain(d3.extent(dataFiltered, xAccessor))
+  const xScale = d3scaleLinear()
+    .domain(numericDomain(d3extent(dataFiltered, xAccessor)))
     .range([0, dimensions.boundedWidth]);
 
-  const yScale = d3.scaleLinear().domain(domainY).range([dimensions.boundedHeight, 0]).nice();
+  const yScale = d3scaleLinear().domain(domainY).range([dimensions.boundedHeight, 0]).nice();
 
   const xAccessorScaled = (d) => xScale(xAccessor(d));
   const yAccessorScaled = (d) => yScale(yAccessor(d));
@@ -59,7 +60,7 @@ const RegionsLineChart = ({
     setHighlightRegion(null);
   };
 
-  const xExtent = d3.extent(dataFiltered, xAccessor);
+  const xExtent = numericDomain(d3extent(dataFiltered, xAccessor));
 
   const yearList = [];
   for (var i = xExtent[0]; i <= xExtent[1]; i++) {
@@ -71,8 +72,8 @@ const RegionsLineChart = ({
 
   const onPointerMove = (event) => {
     // Find nearest data point based on coordinates of click event
-    const [pointerX, pointerY] = d3.pointer(event);
-    const nearestIndex = d3.leastIndex(points, ([x, y]) => Math.hypot(x - pointerX, y - pointerY));
+    const [pointerX, pointerY] = d3pointer(event);
+    const nearestIndex = d3leastIndex(points, ([x, y]) => Math.hypot(x - pointerX, y - pointerY));
     const regionKey = points[nearestIndex][2];
 
     setHighlightRegion(regionKey);
@@ -84,8 +85,8 @@ const RegionsLineChart = ({
 
   const onPointerClick = (event) => {
     // Find nearest year based on x value of click event
-    const [pointerX] = d3.pointer(event);
-    const nearestIndex = d3.leastIndex(yearPoints, ([x, year]) => Math.abs(pointerX - x));
+    const [pointerX] = d3pointer(event);
+    const nearestIndex = d3leastIndex(yearPoints, ([x, year]) => Math.abs(pointerX - x));
     const year = yearPoints[nearestIndex][1];
 
     updateSelectedYear(year);

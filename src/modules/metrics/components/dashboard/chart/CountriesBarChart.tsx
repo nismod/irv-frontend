@@ -1,12 +1,11 @@
 import { Box } from '@mui/material';
-import * as d3 from 'd3';
+import * as d3 from 'd3-scale';
 import { FC } from 'react';
 
 import Axis from '@/modules/metrics/components/lib/chart/axis/Axis';
 import Chart from '@/modules/metrics/components/lib/chart/Chart';
+import Dimension from '@/modules/metrics/components/lib/chart/types/Dimension';
 import { useChartDimensions } from '@/modules/metrics/components/lib/chart/utils';
-
-import Dimension from '../../lib/chart/types/Dimension';
 
 type CountriesBarChartProps = {
   label: string;

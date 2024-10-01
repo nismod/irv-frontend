@@ -1,14 +1,16 @@
 import MapIcon from '@mui/icons-material/Map';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { Boundary } from '@nismod/irv-autopkg-client';
-import * as d3 from 'd3';
+import { extent as d3extent } from 'd3-array';
+import { scaleSequential as d3scaleSequential } from 'd3-scale';
+import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
 import { FC, useEffect, useState } from 'react';
 
+import CountriesBarChart from '@/modules/metrics/components/dashboard/chart/CountriesBarChart';
+import RegionsLineChart from '@/modules/metrics/components/dashboard/chart/RegionsLineChart';
+import RegionMap from '@/modules/metrics/components/dashboard/map/RegionMap';
+import { numericDomain } from '@/modules/metrics/components/lib/chart/utils';
 import { useIsMobile } from '@/use-is-mobile';
-
-import CountriesBarChart from './chart/CountriesBarChart';
-import RegionsLineChart from './chart/RegionsLineChart';
-import RegionMap from './map/RegionMap';
 
 const getDefaultRegionKey = (dataByYearGroupedList) => {
   const dataLength = dataByYearGroupedList.length;
@@ -29,11 +31,16 @@ const getDefaultRegionKey = (dataByYearGroupedList) => {
   return null;
 };
 
-const compileTimelineDomainY = (scaleAcrossCountries, allDataPerYear, dataFiltered, yAccessor) => {
-  if (scaleAcrossCountries) {
-    return d3.extent(allDataPerYear, yAccessor);
-  }
-  return d3.extent(dataFiltered, yAccessor);
+const compileTimelineDomainY = (
+  scaleAcrossCountries,
+  allDataPerYear,
+  dataFiltered,
+  yAccessor,
+): [number, number] => {
+  const domain = scaleAcrossCountries
+    ? d3extent(allDataPerYear, yAccessor)
+    : d3extent(dataFiltered, yAccessor);
+  return numericDomain(domain);
 };
 
 const compileDomainY = (
@@ -43,21 +50,25 @@ const compileDomainY = (
   dataFiltered,
   yAccessor,
   selectedYear,
-) => {
+): [number, number] => {
   if (scaleAcrossYears) {
     return compileTimelineDomainY(scaleAcrossCountries, allDataPerYear, dataFiltered, yAccessor);
   }
 
   if (scaleAcrossCountries) {
-    return d3.extent(
-      allDataPerYear.filter((d) => d.year === selectedYear && d.value !== null),
-      yAccessor,
+    return numericDomain(
+      d3extent(
+        allDataPerYear.filter((d) => d.year === selectedYear && d.value !== null),
+        yAccessor,
+      ),
     );
   }
 
-  return d3.extent(
-    dataFiltered.filter((d) => d.year === selectedYear),
-    yAccessor,
+  return numericDomain(
+    d3extent(
+      dataFiltered.filter((d) => d.year === selectedYear),
+      yAccessor,
+    ),
   );
 };
 
@@ -128,8 +139,8 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
     }
   };
 
-  const colorInterpolator = d3.interpolateRdYlGn;
-  const colorScale = d3.scaleSequential().domain(domainY).interpolator(colorInterpolator);
+  const colorInterpolator = d3interpolateRdYlGn;
+  const colorScale = d3scaleSequential().domain(domainY).interpolator(colorInterpolator);
 
   const xBoundsOnly = country.envelope.coordinates[0].map((d) => d[0]);
   const averageXBounds = xBoundsOnly.reduce((a, b) => a + b) / xBoundsOnly.length;
