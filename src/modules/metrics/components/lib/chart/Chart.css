@@ -1,0 +1,52 @@
+.Chart {
+  overflow: visible;
+}
+
+.Chart text {
+  fill: #898989;
+}
+
+.Chart text.highlight {
+  fill: black;
+}
+
+.Line {
+  mix-blend-mode: 'multiply';
+}
+
+.Line--type-line {
+  fill: none;
+  stroke: #808080;
+  opacity: 0.2;
+  stroke-width: 1px;
+  stroke-linecap: round;
+}
+
+.Line--type-line.highlight {
+  opacity: 1;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+.Axis__line {
+  stroke: #c6c6c6;
+}
+
+.Axis__label {
+  text-anchor: middle;
+  font-size: 0.9em;
+  letter-spacing: 0.01em;
+}
+
+.Axis__tick {
+  font-size: 0.8em;
+  transition: all 0.3s ease-out;
+}
+
+.AxisHorizontal .Axis__tick {
+  text-anchor: middle;
+}
+
+.AxisVertical .Axis__tick {
+  text-anchor: end;
+}

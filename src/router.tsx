@@ -2,6 +2,7 @@ import { redirect } from 'react-router';
 import { createBrowserRouter } from 'react-router-dom';
 
 import { downloadsRoute } from './modules/downloads/downloads-routes';
+import { metricsRoute } from './modules/metrics/metrics-routes';
 import { AboutPage } from './pages/AboutPage';
 import { DataSourcesPage } from './pages/DataSourcesPage';
 import { GuidePage } from './pages/GuidePage';
@@ -46,6 +47,7 @@ export const router = createBrowserRouter([
         element: <TermsPage />,
       },
       downloadsRoute,
+      metricsRoute,
     ],
   },
 ]);

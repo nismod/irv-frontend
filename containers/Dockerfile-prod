@@ -1,7 +1,7 @@
 # multistage build of nginx image
 
 # stage 1 of 2
-FROM node:18 AS builder
+FROM node:22 AS builder
 WORKDIR /app
 
 # install npm packages -- do this before copying everything else

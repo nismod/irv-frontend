@@ -5,22 +5,23 @@ import { NavLink } from 'react-router-dom';
 
 import { ExtLink } from '@/lib/nav';
 
-const Link = styled(MuiLink)({
+const linkStyles = {
   color: 'inherit',
   fontSize: '1em',
   fontWeight: 400,
-});
+};
+const Link = styled(MuiLink)(linkStyles);
 const FooterNavLink = forwardRef<any, any>(({ ...others }, ref) => (
   <Link variant="h6" component={NavLink} ref={ref} {...others} />
 ));
-const FooterExtLink = forwardRef<any, any>(({ children, ...others }, ref) => (
-  <Link variant="h6" component={ExtLink} ref={ref} {...others}>
+const FooterExtLink = ({ children, href }) => (
+  <ExtLink variant="h6" sx={linkStyles} href={href}>
     {children}&nbsp;
     <small>
       <OpenInNewIcon fontSize="inherit" sx={{ marginBottom: '0.25em' }} />
     </small>
-  </Link>
-));
+  </ExtLink>
+);
 
 export const PageFooter = () => (
   <Box padding={4} borderTop={'1px solid #aca2a3'}>

@@ -30,9 +30,10 @@ If using `npm` natively rather than in a docker container, then:
   To do this on Linux:
 
   1.  Create an `.npmrc` file if one doesn't already exist in your home directory (`~/.npmrc`)
-  2.  Place the following line in the file:
+  2.  Place the following lines in the file:
 
   ```
+  @nismod:registry=https://npm.pkg.github.com
   //npm.pkg.github.com/:_authToken=TOKENHERE
   ```
 
