@@ -6,6 +6,7 @@ import { makeOrderingCheck } from '@/lib/helpers';
 
 export const HAZARD_TYPES = [
   'fluvial',
+  'jrc_flood',
   'coastal',
   'cyclone',
   'cyclone_iris',
@@ -18,6 +19,11 @@ export type HazardType = (typeof HAZARD_TYPES)[number];
 
 export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
   fluvial: {
+    scheme: 'blues',
+    range: [0, 5],
+    rangeTruncated: [false, true],
+  },
+  jrc_flood: {
     scheme: 'blues',
     range: [0, 5],
     rangeTruncated: [false, true],
@@ -76,16 +82,24 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
     },
   },
   fluvial: {
-    label: 'River Flooding',
-    formatValue: makeValueFormat('_m', { maximumFractionDigits: 2 }),
+    label: 'River Flooding (Aqueduct)',
+    formatValue: makeValueFormat('_m', { maximumFractionDigits: 1 }),
     getPath: (hazardParams) => {
       const { rp, rcp, epoch, gcm } = hazardParams;
       return `aqueduct/fluvial/${rp}/${rcp}/${epoch}/${gcm}`;
     },
   },
+  jrc_flood: {
+    label: 'River Flooding (JRC)',
+    formatValue: makeValueFormat('_m', { maximumFractionDigits: 1 }),
+    getPath: (hazardParams) => {
+      const { rp } = hazardParams;
+      return `jrc_flood/${rp}`;
+    },
+  },
   coastal: {
     label: 'Coastal Flooding',
-    formatValue: makeValueFormat('_m', { maximumFractionDigits: 2 }),
+    formatValue: makeValueFormat('_m', { maximumFractionDigits: 1 }),
     getPath: (hazardParams) => {
       const { rp, rcp, epoch, gcm } = hazardParams;
       return `aqueduct/coastal/${rp}/${rcp}/${epoch}/${gcm}`;
@@ -131,11 +145,13 @@ export const HAZARDS_MAP_ORDER = hazardOrdering([
   'drought',
   'extreme_heat',
   'fluvial',
+  'jrc_flood',
   'coastal',
 ]);
 
 export const HAZARDS_UI_ORDER = hazardOrdering([
   'fluvial',
+  'jrc_flood',
   'coastal',
   'cyclone',
   'cyclone_iris',

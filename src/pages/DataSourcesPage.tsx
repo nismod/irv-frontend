@@ -117,8 +117,7 @@ export const DataSourcesPage = () => (
                   All the products, methodologies, and datasets that make up Aqueduct are available
                   for use under the{' '}
                   <ExtLink href="https://creativecommons.org/licenses/by/4.0/">
-                    {' '}
-                    Creative Commons Attribution International 4.0 License{' '}
+                    Creative Commons Attribution International 4.0 License
                   </ExtLink>
                   .
                 </TableCell>
@@ -128,6 +127,49 @@ export const DataSourcesPage = () => (
                   scenarios. Current and future maps in 2030, 2050 and 2080.
                 </TableCell>
               </TableRow>
+
+              <TableRow>
+                <TableCell>River flooding</TableCell>
+                <TableCell>
+                  <ExtLink href="data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif">
+                    JRC Global River Flood Hazard Maps
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal,
+                  Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard
+                  maps. European Commission, Joint Research Centre (JRC) [Dataset] Available online
+                  at:
+                  <ExtLink href="http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif">
+                    data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif
+                  </ExtLink>
+                  .
+                </TableCell>
+                <TableCell>
+                  <ExtLink href="http://creativecommons.org/licenses/by/4.0/legalcode">
+                    Creative Commons Attribution 4.0 International
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  <TableCellParagraph>
+                    The global river flood hazard maps are a gridded data set representing
+                    inundation along the river network, for seven different flood return periods
+                    (from 1-in-10-years to 1-in-500-years). The input river flow data for the new
+                    maps are produced by means of the open-source hydrological model LISFLOOD, while
+                    inundation simulations are performed with the hydrodynamic model LISFLOOD-FP.
+                    The extent comprises the entire world with the exception of Greenland and
+                    Antarctica and small islands with river basins smaller than 500km².
+                  </TableCellParagraph>
+                  <TableCellParagraph>
+                    Cell values indicate water depth (in m). The maps can be used to assess the
+                    exposure of population and economic assets to river floods, and to perform flood
+                    risk assessments. The dataset is created as part of the Copernicus Emergency
+                    Management Service. NOTE: this dataset is not an official flood hazard map (for
+                    details and limitations please refer to related publications).
+                  </TableCellParagraph>
+                </TableCell>
+              </TableRow>
+
               <TableRow>
                 <TableCell>Extreme Heat and Drought</TableCell>
                 <TableCell>
@@ -607,23 +649,22 @@ export const DataSourcesPage = () => (
                   </ExtLink>
                 </TableCell>
                 <TableCell>
-                  Global Data Lab (2019) Subnational Human Development Index (SHDI) Available at
-                  https://globaldatalab.org/shdi/. The SHDI is an average of the subnational values
-                  of three dimensions: education, health and standard of living. To compute the SHDI
-                  on the basis of the three dimension indices, the geometric mean of the three
-                  indices is taken. Three major data sources were used to create the SHDI database:
-                  statistical offices (including Eurostat, the statistical office of the European
-                  Union), the Area Database of the Global Data Lab, and data from the HDI website of
-                  the Human Development Report Office of the United Nations Development Program.
-                  Given that household surveys and censuses are not held every year, for many
-                  countries the indicators are only available for a restricted number of years. To
-                  obtain their values for the whole period 1990–2017, the missing information was
-                  estimated by interpolation or extrapolation techniques. This estimation process
-                  was facilitated by the fact that the UNDP Database contains the national values
-                  for all four indicators for each year in this period, which means that only the
-                  subnational variation had to be interpolated or extrapolated. For a complete list
-                  of sources and surveys used, please refer to the Area Database's Data Sources
-                  page.
+                  <TableCellParagraph>
+                    Smits, J., Permanyer, I. (2019) The Subnational Human Development Database. Sci
+                    Data 6, 190038. DOI:{' '}
+                    <ExtLink href="https://doi.org/10.1038/sdata.2019.38">
+                      10.1038/sdata.2019.38
+                    </ExtLink>
+                  </TableCellParagraph>
+                  <TableCellParagraph>
+                    Global Data Lab (2019) Subnational Human Development Index (SHDI) Available at
+                    <ExtLink href="https://globaldatalab.org/shdi/">globaldatalab.org/shdi</ExtLink>
+                  </TableCellParagraph>
+                  <TableCellParagraph>
+                    Permanyer, I., Smits, J. (2020) Inequality in Human Development across the
+                    Globe. Population and Development Review, 46: 583-601.{' '}
+                    <ExtLink href="https://doi.org/10.1111/padr.12343">10.1111/padr.12343</ExtLink>
+                  </TableCellParagraph>
                 </TableCell>
                 <TableCell>
                   Free for use with acknowledgement of data source
@@ -631,7 +672,21 @@ export const DataSourcesPage = () => (
                 </TableCell>
                 <TableCell>
                   Development, Health, Education and Income indices for 186 countries, 1783
-                  sub-national regions
+                  sub-national regions. The SHDI is an average of the subnational values of three
+                  dimensions: education, health and standard of living. To compute the SHDI on the
+                  basis of the three dimension indices, the geometric mean of the three indices is
+                  taken. Three major data sources were used to create the SHDI database: statistical
+                  offices (including Eurostat, the statistical office of the European Union), the
+                  Area Database of the Global Data Lab, and data from the HDI website of the Human
+                  Development Report Office of the United Nations Development Program. Given that
+                  household surveys and censuses are not held every year, for many countries the
+                  indicators are only available for a restricted number of years. To obtain their
+                  values for the whole period 1990–2017, the missing information was estimated by
+                  interpolation or extrapolation techniques. This estimation process was facilitated
+                  by the fact that the UNDP Database contains the national values for all four
+                  indicators for each year in this period, which means that only the subnational
+                  variation had to be interpolated or extrapolated. For a complete list of sources
+                  and surveys used, please refer to the Area Database's Data Sources page.
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -678,22 +733,52 @@ export const DataSourcesPage = () => (
                 <TableCell>
                   Grantham, H.S., Duncan, A., Evans, T.D. et al. Anthropogenic modification of
                   forests means only 40% of remaining forests have high ecosystem integrity. Nat
-                  Commun 11, 5978 (2020). https://doi.org/10.1038/s41467-020-19493-3 Data are
-                  available at www.forestlandscapeintegrity.com. The datasets used to develop the
-                  Forest Landscape Integrity Index can be found at the following websites: tree
-                  cover and loss http://earthenginepartners.appspot.com/science-2013-global-forest,
-                  tree cover loss driver
-                  https://data.globalforestwatch.org/datasets/f2b7de1bdde04f7a9034ecb363d71f0e,
-                  potential forest cover
-                  https://data.globalforestwatch.org/datasets/potential-forest-coverage ESA-CCI Land
-                  Cover https://maps.elie.ucl.ac.be/CCI/viewer/index.php Open Street Maps
-                  https://www.openstreetmap.org, croplands
-                  https://lpdaac.usgs.gov/news/release-of-gfsad-30-meter-cropland-extent-products/,
-                  surface water https://global-surface-water.appspot.com/, protected areas
-                  https://www.protectedplanet.net/en.
+                  Commun 11, 5978 (2020). https://doi.org/10.1038/s41467-020-19493-3
                 </TableCell>
                 <TableCell>Published as available with article (license not specified)</TableCell>
-                <TableCell>10 arcsec grid</TableCell>
+                <TableCell>
+                  10 arcsec grid. Data are available at www.forestlandscapeintegrity.com. The
+                  datasets used to develop the Forest Landscape Integrity Index can be found at the
+                  following websites:
+                  <ul>
+                    <li>
+                      <ExtLink href="http://earthenginepartners.appspot.com/science-2013-global-forest">
+                        tree cover and loss
+                      </ExtLink>
+                    </li>
+                    <li>
+                      <ExtLink href="https://data.globalforestwatch.org/datasets/f2b7de1bdde04f7a9034ecb363d71f0e">
+                        tree cover loss driver
+                      </ExtLink>
+                    </li>
+                    <li>
+                      <ExtLink href="https://data.globalforestwatch.org/datasets/potential-forest-coverage">
+                        potential forest cover
+                      </ExtLink>
+                    </li>
+                    <li>
+                      <ExtLink href="https://maps.elie.ucl.ac.be/CCI/viewer/index.php">
+                        ESA-CCI Land Cover{' '}
+                      </ExtLink>
+                    </li>
+                    <li>
+                      <ExtLink href="https://www.openstreetmap.org">Open Street Maps</ExtLink>
+                    </li>
+                    <li>
+                      <ExtLink href="https://lpdaac.usgs.gov/news/release-of-gfsad-30-meter-cropland-extent-products/">
+                        croplands
+                      </ExtLink>
+                    </li>
+                    <li>
+                      <ExtLink href="https://global-surface-water.appspot.com/">
+                        surface water
+                      </ExtLink>
+                    </li>
+                    <li>
+                      <ExtLink href="https://www.protectedplanet.net/en">protected areas</ExtLink>
+                    </li>
+                  </ul>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>

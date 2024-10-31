@@ -69,6 +69,20 @@ export const FluvialControl = () => {
   );
 };
 
+export const JRCFloodControl = () => {
+  return (
+    <HazardControl type="jrc_flood">
+      <DataNotice>
+        <DataNoticeTextBlock>
+          Map shows river flooding depths for different return periods, from JRC Global Flood Hazard
+          Maps (2024).
+        </DataNoticeTextBlock>
+      </DataNotice>
+      <ReturnPeriodControl />
+    </HazardControl>
+  );
+};
+
 export const CoastalControl = () => {
   return (
     <HazardControl type="coastal">
