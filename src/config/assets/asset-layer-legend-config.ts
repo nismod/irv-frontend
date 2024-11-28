@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { VectorLegend } from '@/lib/data-map/legend/VectorLegend';
-import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
+import { FieldSpec, FormatConfig, StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 
 import { getAssetDataFormats } from './data-formats';
 
@@ -11,13 +11,16 @@ import { getAssetDataFormats } from './data-formats';
  */
 export function assetLayerLegendConfig(
   styleParams?: StyleParams,
+  dataFormatFunction?: (fieldSpec: FieldSpec) => FormatConfig,
 ): Pick<ViewLayer, 'renderLegend' | 'legendKey'> {
   const { colorMap } = styleParams ?? {};
 
   return colorMap
     ? {
         renderLegend: () => {
-          const legendFormatConfig = getAssetDataFormats(colorMap.fieldSpec);
+          const legendFormatConfig = (dataFormatFunction ?? getAssetDataFormats)(
+            colorMap.fieldSpec,
+          );
 
           return React.createElement(VectorLegend, {
             colorMap,
