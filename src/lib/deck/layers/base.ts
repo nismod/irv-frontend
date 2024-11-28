@@ -17,6 +17,8 @@ import {
   makeObjectsMerger,
 } from '@/lib/nested-config/merge-objects';
 
+import { evaluateTriggers } from '../props/getters';
+
 /**
  * Special strategies for merging some of the properties inside deck.gl `updateTriggers`
  */
@@ -41,6 +43,35 @@ const mergeDeckProps = makeObjectsMerger({
 });
 
 /**
+ * Create a postprocessor function that applies a set of postprocessors to an object
+ * @param postprocessors a dictionary of postprocessor functions, keyed by the object property name to which they should be applied
+ * @param defaultPostprocessor a postprocessor function to apply to all object properties that don't have a specific postprocessor
+ * @returns function that applies the postprocessors to an object
+ */
+function makeObjectPostprocessor(
+  postprocessors: Record<string, Function>,
+  defaultPostprocessor?: Function,
+) {
+  return (obj: object) => {
+    const processed = { ...obj };
+
+    for (const [key, value] of Object.entries(obj)) {
+      const postprocessor = postprocessors[key] ?? defaultPostprocessor;
+      if (postprocessor) {
+        processed[key] = postprocessor(value);
+      }
+    }
+
+    return processed;
+  };
+}
+
+const postprocessDeckProps = makeObjectPostprocessor({
+  // evaluate all deferred triggers in `updateTriggers`
+  updateTriggers: makeObjectPostprocessor({}, evaluateTriggers),
+});
+
+/**
  * A function to merge multiple props objects passed to a Deck.GL layer.
  * This extends the base Deck.GL behaviour in a few ways:
  * - falsy elements of the array are ignored
@@ -50,7 +81,7 @@ const mergeDeckProps = makeObjectsMerger({
 function processDeckProps(...props: ConfigTree<object>): any {
   const flattenedProps = flattenConfig(props);
 
-  return mergeDeckProps(...flattenedProps);
+  return postprocessDeckProps(mergeDeckProps(...flattenedProps));
 }
 
 /** Type for a `...props` arguments of a layer factory function */
