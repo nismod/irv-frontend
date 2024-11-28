@@ -13,6 +13,7 @@ import {
   biodiversityIntactnessLayerState,
   forestLandscapeIntegrityLayerState,
 } from './data-layers/nature-vulnerability';
+import { nbsLayerState } from './data-layers/nbs';
 import { networkLayersState } from './data-layers/networks';
 import { organicCarbonLayerState } from './data-layers/organic-carbon';
 import { populationLayerState } from './data-layers/population';
@@ -54,6 +55,7 @@ export const viewLayersState = makeViewLayersState({
         protectedAreasPolygonLayerState,
         hazardLayerState,
         populationExposureLayerState,
+        nbsLayerState,
 
         // point/line layers
         networkLayersState,

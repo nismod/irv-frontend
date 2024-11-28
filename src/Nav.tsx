@@ -82,6 +82,10 @@ const navItems = [
     to: '/view/risk',
     title: 'Risk',
   },
+  {
+    to: '/view/adaptation',
+    title: 'Adaptation',
+  },
 ];
 const secondaryNavItems = [
   {
