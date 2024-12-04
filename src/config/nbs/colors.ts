@@ -5,6 +5,7 @@ import {
   invertColorScale,
 } from '@/lib/data-map/color-maps';
 import { ColorSpec } from '@/lib/data-map/view-layers';
+import { makeColorConfig } from '@/lib/helpers';
 
 export const NBS_ADAPTATION_COLORMAPS = {
   avoided_ead_mean: {
@@ -26,3 +27,8 @@ export const NBS_ADAPTATION_COLORMAPS = {
     empty: '#ccc',
   },
 } satisfies Record<string, ColorSpec>;
+
+export const NBS_LANDUSE_COLORS = makeColorConfig({
+  crops: '#f4a582',
+  other: '#92c5de',
+});

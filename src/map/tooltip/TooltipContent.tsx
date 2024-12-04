@@ -31,6 +31,7 @@ export const TooltipContent: FC = () => {
           <InteractionGroupTooltipWrapped group="hdi" />
           <InteractionGroupTooltipWrapped group="rexp" />
           <InteractionGroupTooltipWrapped group="wdpa" MergeComponent={WdpaHoverDescription} />
+          <InteractionGroupTooltipWrapped group="scope_regions" />
         </ErrorBoundary>
       </Box>
     </AutoHidePaper>

@@ -6,13 +6,20 @@ import {
   ADAPTATION_VARIABLE_LABELS,
   AdaptationVariable,
   NBS_HAZARD_LABELS,
+  NBS_REGION_SCOPE_LEVEL_LABELS,
   NbsHazardType,
+  NbsRegionScopeLevel,
 } from '@/config/nbs/metadata';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputSection } from '@/sidebar/ui/InputSection';
-import { nbsAdaptationHazardState, nbsVariableState } from '@/state/data-selection/nbs';
+import {
+  nbsAdaptationHazardState,
+  nbsRegionScopeLevelState,
+  nbsVariableState,
+} from '@/state/data-selection/nbs';
 
 export const NbsAdaptationSection = () => {
+  const [scopeLevel, setScopeLevel] = useRecoilState(nbsRegionScopeLevelState);
   const [colorBy, setColorBy] = useRecoilState(nbsVariableState);
   const [hazard, setHazard] = useRecoilState(nbsAdaptationHazardState);
   return (
@@ -22,6 +29,14 @@ export const NbsAdaptationSection = () => {
           Map shows the avoided damages for Nature-Based Solutions adaptation options
         </DataNoticeTextBlock>
       </DataNotice>
+      <InputSection>
+        <ParamDropdown<NbsRegionScopeLevel>
+          title="Geographic scope:"
+          value={scopeLevel}
+          onChange={setScopeLevel}
+          options={NBS_REGION_SCOPE_LEVEL_LABELS}
+        />
+      </InputSection>
       <InputSection>
         <ParamDropdown<AdaptationVariable>
           title="Color by:"
