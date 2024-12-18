@@ -8,7 +8,7 @@ import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import {
   nbsRegionScopeLevelIdPropertyState,
   nbsRegionScopeLevelState,
-  nbsSelectedScopeRegionState,
+  nbsSelectedScopeRegionIdState,
   nbsStyleParamsState,
 } from '@/state/data-selection/nbs';
 
@@ -26,7 +26,7 @@ export const nbsLayerState = selector<ViewLayer>({
   key: 'nbsLayerState',
   get: ({ get }) => {
     const scopeLevelIdProperty = get(nbsRegionScopeLevelIdPropertyState);
-    const selectedRegionId = get(nbsSelectedScopeRegionState);
+    const selectedRegionId = get(nbsSelectedScopeRegionIdState);
     return get(sidebarPathVisibilityState('adaptation/nbs')) && selectedRegionId
       ? nbsViewLayer(get(nbsStyleParamsState), {
           field: scopeLevelIdProperty,

@@ -48,6 +48,7 @@ export function scopeRegionsLayer(scopeRegionLevel: NbsRegionScopeLevel): ViewLa
           selectedFeatureId: selection?.target.feature.properties[idProperty],
           uniqueIdProperty: idProperty,
           selectionFillColor: [255, 255, 255, 0],
+          selectionLineColor: [40, 40, 40, 255],
         }),
       ),
 

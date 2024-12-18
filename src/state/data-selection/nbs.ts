@@ -1,8 +1,11 @@
+import { Feature } from 'geojson';
 import { atom, selector } from 'recoil';
 
+import { ScopeSpec } from '@/lib/asset-list/use-sorted-features';
+import { BoundingBox, extendBbox, geoJsonToAppBoundingBox } from '@/lib/bounding-box';
 import { selectionState } from '@/lib/data-map/interactions/interaction-state';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
-import { StyleParams } from '@/lib/data-map/view-layers';
+import { ColorSpec, FieldSpec, StyleParams } from '@/lib/data-map/view-layers';
 
 import { NBS_ADAPTATION_COLORMAPS } from '@/config/nbs/colors';
 import {
@@ -25,19 +28,42 @@ export const nbsRegionScopeLevelIdPropertyState = selector<string>({
   },
 });
 
-export const nbsSelectedScopeRegionState = selector<number | string | null>({
+export const nbsSelectedScopeRegionState = selector<Feature | null>({
   key: 'nbsSelectedScopeRegionState',
   get: ({ get }) => {
     const nbsRegionSelection = get(
       selectionState('scope_regions'),
     ) as InteractionTarget<VectorTarget>;
-    const idProperty = get(nbsRegionScopeLevelIdPropertyState);
+    return nbsRegionSelection?.target.feature ?? null;
+  },
+});
 
-    if (!nbsRegionSelection || !idProperty) {
+export const nbsSelectedScopeRegionBboxState = selector<BoundingBox | null>({
+  key: 'nbsSelectedScopeRegionBboxState',
+  get: ({ get }) => {
+    const selectedRegion = get(nbsSelectedScopeRegionState);
+    if (!selectedRegion) {
       return null;
     }
 
-    return nbsRegionSelection.target.feature.properties[idProperty];
+    const geom = selectedRegion?.geometry;
+    const bbox = extendBbox(geoJsonToAppBoundingBox(geom), 5);
+
+    return bbox;
+  },
+});
+
+export const nbsSelectedScopeRegionIdState = selector<number | string | null>({
+  key: 'nbsSelectedScopeRegionIdState',
+  get: ({ get }) => {
+    const selectedRegion = get(nbsSelectedScopeRegionState);
+    const idProperty = get(nbsRegionScopeLevelIdPropertyState);
+
+    if (!selectedRegion || !idProperty) {
+      return null;
+    }
+
+    return selectedRegion.properties[idProperty];
   },
 });
 
@@ -51,30 +77,80 @@ export const nbsAdaptationHazardState = atom<NbsHazardType>({
   default: 'ls_sum',
 });
 
-export const nbsStyleParamsState = selector<StyleParams>({
-  key: 'nbsStyleParamsState',
+export const nbsAdaptationScopeSpecState = selector<ScopeSpec>({
+  key: 'nbsAdaptationScopeSpecState',
   get: ({ get }) => {
-    const nbsVariable = get(nbsVariableState);
-    const nbsAdaptationHazard = get(nbsAdaptationHazardState);
+    const idProperty = get(nbsRegionScopeLevelIdPropertyState);
+    const selectedRegionId = get(nbsSelectedScopeRegionIdState);
 
-    if (nbsVariable === 'landuse_type') {
-      return {};
+    if (!idProperty || !selectedRegionId) {
+      return null;
     }
 
     return {
+      [idProperty]: selectedRegionId,
+    };
+  },
+});
+
+export const nbsShouldMapAdaptationDataState = selector<boolean>({
+  key: 'nbsShouldMapDataState',
+  get: ({ get }) => {
+    const nbsVariable = get(nbsVariableState);
+    return nbsVariable !== 'landuse_type';
+  },
+});
+
+export const nbsFieldSpecState = selector<FieldSpec>({
+  key: 'nbsFieldSpecState',
+  get: ({ get }) => {
+    if (!get(nbsShouldMapAdaptationDataState)) {
+      return null;
+    }
+    const nbsVariable = get(nbsVariableState);
+    const nbsAdaptationHazard = get(nbsAdaptationHazardState);
+
+    return {
+      fieldGroup: 'adaptation',
+      field: nbsVariable,
+      fieldDimensions: {
+        hazard: nbsAdaptationHazard,
+        rcp: 'baseline',
+        adaptation_name: 'standard',
+        adaptation_protection_level: 100,
+      },
+      fieldParams: {},
+    };
+  },
+});
+
+export const nbsColorSpecState = selector<ColorSpec>({
+  key: 'nbsColorSpecState',
+  get: ({ get }) => {
+    if (!get(nbsShouldMapAdaptationDataState)) {
+      return null;
+    }
+
+    const nbsVariable = get(nbsVariableState);
+
+    return NBS_ADAPTATION_COLORMAPS[nbsVariable];
+  },
+});
+
+export const nbsStyleParamsState = selector<StyleParams>({
+  key: 'nbsStyleParamsState',
+  get: ({ get }) => {
+    if (!get(nbsShouldMapAdaptationDataState)) {
+      return {};
+    }
+
+    const fieldSpec = get(nbsFieldSpecState);
+    const colorSpec = get(nbsColorSpecState);
+
+    return {
       colorMap: {
-        colorSpec: NBS_ADAPTATION_COLORMAPS[nbsVariable],
-        fieldSpec: {
-          fieldGroup: 'adaptation',
-          field: nbsVariable,
-          fieldDimensions: {
-            hazard: nbsAdaptationHazard,
-            rcp: 'baseline',
-            adaptation_name: 'standard',
-            adaptation_protection_level: 100,
-          },
-          fieldParams: {},
-        },
+        colorSpec,
+        fieldSpec,
       },
     };
   },
