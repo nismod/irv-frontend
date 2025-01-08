@@ -31,7 +31,7 @@ export function scopeRegionsLayer(scopeRegionLevel: NbsRegionScopeLevel): ViewLa
 
           filled: true,
           getFillColor: css2rgba$M('#d7dfe3'),
-          opacity: 0.5,
+          opacity: 0.3,
 
           stroked: true,
           getLineColor: css2rgba$M('#aaaaaa'),

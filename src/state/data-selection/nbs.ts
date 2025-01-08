@@ -11,9 +11,15 @@ import { NBS_ADAPTATION_COLORMAPS } from '@/config/nbs/colors';
 import {
   AdaptationVariable,
   NBS_REGION_SCOPE_LEVEL_METADATA,
+  NbsAdaptationType,
   NbsHazardType,
   NbsRegionScopeLevel,
 } from '@/config/nbs/metadata';
+
+export const nbsAdaptationTypeState = atom<NbsAdaptationType>({
+  key: 'nbsAdaptationTypeState',
+  default: 'standard',
+});
 
 export const nbsRegionScopeLevelState = atom<NbsRegionScopeLevel>({
   key: 'nbsRegionScopeLevelState',

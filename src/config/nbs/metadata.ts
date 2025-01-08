@@ -4,6 +4,14 @@ import { makeConfig, makeOptions } from '@/lib/helpers';
 import { AssetMetadata } from '../assets/metadata';
 import { NBS_LANDUSE_COLORS } from './colors';
 
+export const NBS_ADAPTATION_TYPES = ['standard'] as const;
+
+export type NbsAdaptationType = (typeof NBS_ADAPTATION_TYPES)[number];
+
+export const NBS_ADAPTATION_TYPE_LABELS: ValueLabel<NbsAdaptationType>[] = [
+  { value: 'standard', label: 'Tree Planting' },
+];
+
 export const NBS_REGION_SCOPE_LEVELS = ['adm0', 'adm1', 'adm2', 'hybas'] as const;
 
 export type NbsRegionScopeLevel = (typeof NBS_REGION_SCOPE_LEVELS)[number];

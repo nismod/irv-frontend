@@ -2,7 +2,6 @@ import { css2rgba$M } from '@/lib/colors';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { StyleParams, ViewLayer, ViewLayerDataFormatFunction } from '@/lib/data-map/view-layers';
-import { featureFilter } from '@/lib/deck/props/feature-filter';
 import { border, fillColor } from '@/lib/deck/props/style';
 
 import { SimpleAssetDetails } from '@/details/features/asset-details';
@@ -46,7 +45,6 @@ export function nbsViewLayer(
                 : css2rgba$M(NBS_LANDUSE_METADATA.other.color)),
         ),
         border([150, 150, 150]),
-        scope && featureFilter(scope.value, scope.field),
       ],
       customDataAccessFn: dataAccessFn,
     }),
@@ -72,7 +70,7 @@ export function nbsViewLayer(
 
       return (
         <SimpleAssetDetails
-          detailsComponent={NbsDetails}
+          DetailsComponent={NbsDetails}
           feature={feature}
           label={`Nature-based solutions `}
           color={landuseMetadata.color}

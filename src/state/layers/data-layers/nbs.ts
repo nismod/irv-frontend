@@ -5,12 +5,7 @@ import { ViewLayer } from '@/lib/data-map/view-layers';
 import { nbsViewLayer } from '@/config/nbs/nbs-layer';
 import { scopeRegionsLayer } from '@/config/nbs/scope-regions-layer';
 import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import {
-  nbsRegionScopeLevelIdPropertyState,
-  nbsRegionScopeLevelState,
-  nbsSelectedScopeRegionIdState,
-  nbsStyleParamsState,
-} from '@/state/data-selection/nbs';
+import { nbsRegionScopeLevelState, nbsStyleParamsState } from '@/state/data-selection/nbs';
 
 export const nbsScopeRegionLayerState = selector<ViewLayer>({
   key: 'nbsScopeRegionLayerState',
@@ -25,13 +20,8 @@ export const nbsScopeRegionLayerState = selector<ViewLayer>({
 export const nbsLayerState = selector<ViewLayer>({
   key: 'nbsLayerState',
   get: ({ get }) => {
-    const scopeLevelIdProperty = get(nbsRegionScopeLevelIdPropertyState);
-    const selectedRegionId = get(nbsSelectedScopeRegionIdState);
-    return get(sidebarPathVisibilityState('adaptation/nbs')) && selectedRegionId
-      ? nbsViewLayer(get(nbsStyleParamsState), {
-          field: scopeLevelIdProperty,
-          value: selectedRegionId,
-        })
+    return get(sidebarPathVisibilityState('adaptation/nbs'))
+      ? nbsViewLayer(get(nbsStyleParamsState))
       : null;
   },
 });
