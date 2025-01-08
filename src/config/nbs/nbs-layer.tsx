@@ -4,12 +4,12 @@ import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescri
 import { StyleParams, ViewLayer, ViewLayerDataFormatFunction } from '@/lib/data-map/view-layers';
 import { border, fillColor } from '@/lib/deck/props/style';
 
-import { SimpleAssetDetails } from '@/details/features/asset-details';
+import { ExtendedAssetDetails } from '@/details/features/asset-details';
 
 import { assetLayerLegendConfig } from '../assets/asset-layer-legend-config';
 import { makeAssetDataAccessorFactory } from '../assets/data-access';
 import { makeAssetLayerFn } from '../assets/make-asset-layer-fn';
-import { NbsDetails } from './details';
+import { NbsDetails, NbsExtendedDetails } from './details';
 import { ADAPTATION_VARIABLE_LABELS, NBS_LANDUSE_METADATA } from './metadata';
 
 export function nbsViewLayer(
@@ -69,11 +69,12 @@ export function nbsViewLayer(
       const landuseMetadata = NBS_LANDUSE_METADATA[landuse];
 
       return (
-        <SimpleAssetDetails
+        <ExtendedAssetDetails
           DetailsComponent={NbsDetails}
           feature={feature}
           label={`Nature-based solutions `}
           color={landuseMetadata.color}
+          ApiDetailsComponent={NbsExtendedDetails}
         />
       );
     },
