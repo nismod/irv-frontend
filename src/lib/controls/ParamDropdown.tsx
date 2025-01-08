@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, MenuItem, Select, SelectProps } from '@mui/material';
+import { FormControl, FormLabel, MenuItem, Select, SelectProps, Tooltip } from '@mui/material';
 import { useCallback } from 'react';
 
 import { getValueLabel, ValueLabel } from './params/value-label';
@@ -34,23 +34,29 @@ export const ParamDropdown = <V extends string | number = string>({
   return (
     <FormControl fullWidth>
       {title && <FormLabel>{title}</FormLabel>}
-      <Select
-        value={value}
-        onChange={handleChange}
-        size="small"
-        variant={variant}
-        disabled={disabled || options.length < 2}
+      <Tooltip
+        title={options.length === 1 ? 'Only one option available' : null}
+        placement="right"
+        arrow
       >
-        {options.map((option) => {
-          let { value, label } = getValueLabel(option);
+        <Select
+          value={value}
+          onChange={handleChange}
+          size="small"
+          variant={variant}
+          disabled={disabled || options.length < 2}
+        >
+          {options.map((option) => {
+            let { value, label } = getValueLabel(option);
 
-          return (
-            <MenuItem key={value} value={value}>
-              {label}
-            </MenuItem>
-          );
-        })}
-      </Select>
+            return (
+              <MenuItem key={value} value={value}>
+                {label}
+              </MenuItem>
+            );
+          })}
+        </Select>
+      </Tooltip>
     </FormControl>
   );
 };
