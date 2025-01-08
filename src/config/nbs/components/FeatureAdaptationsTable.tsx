@@ -118,8 +118,7 @@ export const FeatureAdaptationsTable = () => {
                 <ExtendedAssetDetails
                   feature={feature}
                   label="Nature-based solution"
-                  detailsComponent={NbsDetails}
-                  showRiskSection={false}
+                  DetailsComponent={NbsDetails}
                 />
               </Box>
             }

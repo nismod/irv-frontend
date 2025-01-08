@@ -27,7 +27,8 @@ export const IdSubheader: FC<{
 );
 
 export interface DetailsComponentProps {
-  f: any;
+  /** A record representing the feature properties */
+  f: Record<string, any>;
 }
 
 export type DetailsComponentType = ComponentType<DetailsComponentProps>;

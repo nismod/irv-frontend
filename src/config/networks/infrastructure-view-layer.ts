@@ -10,6 +10,7 @@ import { makeAssetDataAccessorFactory } from '@/config/assets/data-access';
 import { makeAssetLayerFn } from '@/config/assets/make-asset-layer-fn';
 import { INFRASTRUCTURE_COLORS } from '@/config/networks/colors';
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
+import { DamagesSection } from '@/details/features/damages/DamagesSection';
 
 import { assetLayerLegendConfig } from '../assets/asset-layer-legend-config';
 import { getAssetDataFormats } from '../assets/data-formats';
@@ -214,12 +215,13 @@ export function infrastructureViewLayer(
       });
     },
     renderDetails: (selection: InteractionTarget<VectorTarget>) => {
-      const detailsComponent = INFRASTRUCTURE_LAYER_DETAILS[infrastructureType];
+      const DetailsComponent = INFRASTRUCTURE_LAYER_DETAILS[infrastructureType];
       const feature = selection.target.feature;
 
       return React.createElement(ExtendedAssetDetails, {
         feature,
-        detailsComponent,
+        DetailsComponent,
+        ApiDetailsComponent: DamagesSection,
         label,
         color,
         showRiskSection: infrastructureType !== 'rail_nodes',
