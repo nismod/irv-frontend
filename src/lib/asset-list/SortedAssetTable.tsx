@@ -22,7 +22,7 @@ export const SortedAssetTable: FC<{
   apiClient: ApiClient;
   layerSpec: LayerSpec;
   fieldSpec: FieldSpec;
-  scopeSpec: ScopeSpec;
+  scopeSpec?: ScopeSpec;
   header: ReactNode;
   renderRow: (feature: ListFeature, localIndex: number, globalIndex: number) => ReactNode;
   pageSize?: number;
