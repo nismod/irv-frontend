@@ -3,28 +3,27 @@ import * as d3 from 'd3-color';
 import { FC } from 'react';
 
 export const MapLegend: FC<{
-  top?: number;
   right?: number;
   bottom?: number;
   left?: number;
   colorScale: any;
   domainY: any;
   label: string;
-}> = ({ top = 0, right = 0, bottom = 0, left = 0, colorScale, domainY, label }) => {
+}> = ({ right = 0, bottom = 0, left = 0, colorScale, domainY, label }) => {
   if (!colorScale || !domainY || !label) {
     return <></>;
   }
   const colorString1 = colorScale(domainY[0]);
   const colorString2 = colorScale((domainY[0] + domainY[1]) / 2);
   const colorString3 = colorScale(domainY[1]);
-  const colorObject = d3.color(colorString1).rgb();
-  const colorObject2 = d3.color(colorString2).rgb();
-  const colorObject3 = d3.color(colorString3).rgb();
+  const colorObject = d3.color(colorString1)?.rgb();
+  const colorObject2 = d3.color(colorString2)?.rgb();
+  const colorObject3 = d3.color(colorString3)?.rgb();
 
   if (!colorObject) {
     return <></>;
   }
-  // const rgbColor = [colorObject.r, colorObject.g, colorObject.b, 200];
+
   const aValue = 200 / 255;
 
   return (

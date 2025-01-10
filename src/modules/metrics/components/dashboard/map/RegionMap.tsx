@@ -1,7 +1,6 @@
 import type { Color } from '@deck.gl/core';
 import { ZoomOutMap } from '@mui/icons-material';
 import { Box, BoxProps } from '@mui/material';
-import { Polygon } from '@nismod/irv-autopkg-client';
 import { color as d3color } from 'd3-color';
 import { scaleSequential as d3scaleSequential } from 'd3-scale';
 import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
@@ -19,6 +18,7 @@ import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
 import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 
 import { useBasemapStyle } from '@/map/use-basemap-style';
+import { NationalGeo } from '@/modules/metrics/types/NationalGeo';
 
 import { MapLabel } from './MapLabel';
 import { MapLegend } from './MapLegend';
@@ -63,7 +63,6 @@ function useViewState(initialViewStateFn: () => MapViewState) {
 }
 
 export default function RegionMap({
-  countryEnvelope,
   width: responsiveWidth,
   height: responsiveHeight,
   selectedCountryData,
@@ -72,10 +71,9 @@ export default function RegionMap({
   selectedYear,
   domainY,
   geojson,
+  nationalGeo,
   label,
 }: {
-  countryEnvelope: Polygon;
-  countryId: string;
   width: BoxProps['width'];
   height: BoxProps['height'];
   selectedCountryData: any;
@@ -84,6 +82,7 @@ export default function RegionMap({
   selectedYear: number;
   domainY: any;
   geojson: any;
+  nationalGeo: NationalGeo;
   label: string;
 }) {
   const { width, height, ref: containerRef } = useResizeDetector();
@@ -101,13 +100,13 @@ export default function RegionMap({
           <RegionMapViewer
             width={width}
             height={height}
-            regionEnvelope={countryEnvelope}
             selectedCountryData={selectedCountryData}
             highlightRegion={highlightRegion}
             setHighlightRegion={setHighlightRegion}
             selectedYear={selectedYear}
             domainY={domainY}
             geojson={geojson}
+            nationalGeo={nationalGeo}
             label={label}
           />
         </Suspense>
@@ -119,16 +118,17 @@ export default function RegionMap({
 function RegionMapViewer({
   width,
   height,
-  regionEnvelope,
   selectedCountryData,
   highlightRegion,
   setHighlightRegion,
   selectedYear,
   domainY,
   geojson,
+  nationalGeo,
   label,
 }) {
   const filteredGeoJson = geojson;
+  const regionEnvelope = nationalGeo.envelope;
 
   const calculateBoundedState = useCallback(() => {
     const boundingBox = geoJsonToAppBoundingBox(regionEnvelope);
@@ -163,8 +163,15 @@ function RegionMapViewer({
 
   const getLineWidth = useCallback(
     (geoJsonEntry) => {
-      const gdlCode = geoJsonEntry.properties.gdlcode;
+      const gdlCode = geoJsonEntry.properties.gdl_code;
       return gdlCode === highlightRegion ? 2 : 0;
+    },
+    [highlightRegion],
+  );
+
+  const getLineWidthNational = useCallback(
+    (geoJsonEntry) => {
+      return highlightRegion.endsWith('t') ? 2 : 0;
     },
     [highlightRegion],
   );
@@ -172,13 +179,17 @@ function RegionMapViewer({
   const getColor = useCallback(
     (geoJsonEntry: Feature): Color => {
       const NOT_FOUND_COLOR = [255, 255, 255, 100];
-      const gdlCode = geoJsonEntry.properties.gdlcode;
+      const gdlCode = geoJsonEntry.properties.gdl_code;
 
-      const maybeRegionData = selectedCountryData.find((d) => d.GDLCODE === gdlCode);
+      const maybeRegionData = selectedCountryData.find(
+        (d) => d.gdlCode.toLowerCase() === gdlCode && d.year === selectedYear,
+      );
+
       if (!maybeRegionData) return NOT_FOUND_COLOR;
 
-      const maybeRegionValue = maybeRegionData[selectedYear];
-      if (!maybeRegionValue) return NOT_FOUND_COLOR;
+      // const maybeRegionValue = maybeRegionData[selectedYear];
+      // if (!maybeRegionValue) return NOT_FOUND_COLOR;
+      const maybeRegionValue = maybeRegionData.value;
 
       const colorString = colorScale(maybeRegionValue);
       const colorObject = d3color(colorString).rgb();
@@ -188,7 +199,9 @@ function RegionMapViewer({
     [selectedCountryData, selectedYear, colorScale],
   );
 
-  const highlightData = selectedCountryData.find((d) => d.GDLCODE === highlightRegion);
+  const highlightData = selectedCountryData.find(
+    (d) => d.gdlCode.toLowerCase() === highlightRegion && highlightRegion.toLowerCase(),
+  );
 
   return (
     <Map {...viewState} onMove={({ viewState }) => setViewState(viewState)} mapStyle={mapStyle}>
@@ -205,10 +218,10 @@ function RegionMapViewer({
             filled: true,
             onHover: (e) => {
               const eventObject = e.object;
-              if (!eventObject || !eventObject.properties || !eventObject.properties.gdlcode) {
+              if (!eventObject || !eventObject.properties || !eventObject.properties.gdl_code) {
                 setHighlightRegion(null);
               } else {
-                setHighlightRegion(eventObject.properties.gdlcode);
+                setHighlightRegion(eventObject.properties.gdl_code);
               }
             },
             getFillColor: (d) => getColor(d),
@@ -216,6 +229,19 @@ function RegionMapViewer({
             updateTriggers: {
               getLineWidth: [getLineWidth],
               getFillColor: [getColor],
+            },
+          }),
+          new GeoJsonLayer({
+            id: 'NationalGeo',
+            data: nationalGeo.boundary,
+            stroked: true,
+            getLineColor: [0, 0, 0, 255],
+            getLineWidth: (d) => getLineWidthNational(d),
+            lineWidthUnits: 'pixels',
+            filled: false,
+            pickable: true,
+            updateTriggers: {
+              getLineWidth: [getLineWidthNational],
             },
           }),
         ]}
