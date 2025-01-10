@@ -1,6 +1,5 @@
 import MapIcon from '@mui/icons-material/Map';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
-import { Boundary } from '@nismod/irv-autopkg-client';
 import { extent as d3extent } from 'd3-array';
 import { scaleSequential as d3scaleSequential } from 'd3-scale';
 import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
@@ -11,6 +10,8 @@ import RegionsLineChart from '@/modules/metrics/components/dashboard/chart/Regio
 import RegionMap from '@/modules/metrics/components/dashboard/map/RegionMap';
 import { numericDomain } from '@/modules/metrics/components/lib/chart/utils';
 import { useIsMobile } from '@/use-is-mobile';
+
+import { NationalGeo } from '../../types/NationalGeo';
 
 const getDefaultRegionKey = (dataByYearGroupedList) => {
   const dataLength = dataByYearGroupedList.length;
@@ -73,12 +74,11 @@ const compileDomainY = (
 };
 
 type DashboardChartsProps = {
-  country: Boundary;
   geojson: any;
+  nationalGeo: NationalGeo;
   selectedCountryData: any;
   dataFiltered: any[];
   dataByYearGroupedList: any[];
-  allData: any;
   allDataPerYear: any[];
   scaleAcrossYears: boolean;
   scaleAcrossCountries: boolean;
@@ -88,12 +88,11 @@ type DashboardChartsProps = {
 };
 
 const DashboardCharts: FC<DashboardChartsProps> = ({
-  country,
   geojson,
+  nationalGeo,
   selectedCountryData,
   dataFiltered,
   dataByYearGroupedList,
-  allData,
   allDataPerYear,
   scaleAcrossYears,
   scaleAcrossCountries,
@@ -142,10 +141,10 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
   const colorInterpolator = d3interpolateRdYlGn;
   const colorScale = d3scaleSequential().domain(domainY).interpolator(colorInterpolator);
 
-  const xBoundsOnly = country.envelope.coordinates[0].map((d) => d[0]);
+  const xBoundsOnly = nationalGeo.envelope.coordinates[0].map((d) => d[0]);
   const averageXBounds = xBoundsOnly.reduce((a, b) => a + b) / xBoundsOnly.length;
 
-  const yBoundsOnly = country.envelope.coordinates[0].map((d) => d[1]);
+  const yBoundsOnly = nationalGeo.envelope.coordinates[0].map((d) => d[1]);
   const averageYBounds = yBoundsOnly.reduce((a, b) => a + b) / yBoundsOnly.length;
 
   return (
@@ -155,6 +154,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
         width: '100%',
         padding: '25px',
         pb: '100px',
+        minWidth: '250px',
       })}
     >
       <Stack
@@ -178,7 +178,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
               <></>
             )}
             <Stack direction="row" justifyContent={'space-between'}>
-              <Typography variant="h2">{country.name_long}</Typography>
+              <Typography variant="h2">{nationalGeo.countryName}</Typography>
 
               <IconButton
                 onClick={() =>
@@ -192,8 +192,6 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
               </IconButton>
             </Stack>
             <RegionMap
-              countryEnvelope={country.envelope}
-              countryId={country.name}
               width="100%"
               height="300px"
               selectedCountryData={selectedCountryData}
@@ -202,6 +200,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
               selectedYear={selectedYear}
               domainY={domainY}
               geojson={geojson}
+              nationalGeo={nationalGeo}
               label={`${metricLabel} (${selectedYear})`}
             />
           </Stack>
@@ -238,8 +237,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
             highlightRegion={highlightRegion}
             setHighlightRegion={updateHighlightRegion}
             selectedYear={selectedYear}
-            allData={allData}
-            countryId={country.name}
+            selectedCountryData={selectedCountryData}
             domainY={domainY}
             colorScale={colorScale}
           />
