@@ -1,7 +1,7 @@
-import { BoundarySummary } from '@nismod/irv-autopkg-client';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import type { CountryOption } from '../../types/CountryOption';
 import { RegionSearch } from './RegionSearch';
 
 export function RegionSearchNavigation({
@@ -10,19 +10,21 @@ export function RegionSearchNavigation({
   metricId,
   selectedRegionSummary = null,
 }: {
-  regions: BoundarySummary[];
+  regions: CountryOption[];
   title: string;
   metricId: string;
-  selectedRegionSummary?: BoundarySummary;
+  selectedRegionSummary?: CountryOption;
 }) {
   const navigate = useNavigate();
 
   const handleRegionSelected = useCallback(
-    (reg: BoundarySummary) => {
+    // TODO type
+    (reg: any) => {
       if (reg != null) {
         setTimeout(() => {
           navigate(
-            `/metrics/regions/${reg.name}/${metricId}`,
+            // `/metrics/regions/${reg.name}/${metricId}`,
+            `/metrics/regions/${reg.code}/${metricId}`,
             { preventScrollReset: true }, // don't scroll to top on navigate
           );
         }, 100);

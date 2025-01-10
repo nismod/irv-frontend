@@ -1,6 +1,7 @@
 import { Autocomplete, InputAdornment, TextField } from '@mui/material';
-import { BoundarySummary } from '@nismod/irv-autopkg-client';
 import { ReactElement } from 'react';
+
+import type { CountryOption } from '../../types/CountryOption';
 
 export const RegionSearch = ({
   regions,
@@ -9,19 +10,23 @@ export const RegionSearch = ({
   title,
   icon,
 }: {
-  regions: BoundarySummary[];
-  selectedRegion: BoundarySummary;
-  onSelectedRegion: (x: BoundarySummary) => void;
+  regions: CountryOption[];
+  selectedRegion: CountryOption;
+  onSelectedRegion: (x: CountryOption) => void;
   title: string;
   icon?: ReactElement;
 }) => {
   return (
-    <Autocomplete<BoundarySummary>
-      sx={{ minWidth: '200px', width: '400px', maxWidth: '100%' }}
+    // TODO generic type
+    <Autocomplete<any>
+      sx={{
+        width: '100%',
+        maxWidth: '400px',
+      }}
       value={selectedRegion}
-      onChange={(e, v) => onSelectedRegion(v)}
+      onChange={(_, value) => onSelectedRegion(value)}
       options={regions}
-      getOptionLabel={(o) => o.name_long}
+      getOptionLabel={(option) => option.label}
       renderInput={(params) => (
         <TextField
           {...params}

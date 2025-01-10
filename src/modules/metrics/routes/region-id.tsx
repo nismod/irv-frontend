@@ -1,5 +1,4 @@
 import { Box, Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
-import { Boundary, BoundarySummary } from '@nismod/irv-autopkg-client';
 import { useCallback, useEffect, useState } from 'react';
 import { defer, LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
 
@@ -8,41 +7,38 @@ import { AppLink } from '@/lib/nav';
 
 import Dashboard from '@/modules/metrics/components/dashboard/Dashboard';
 import { RegionSearchNavigation } from '@/modules/metrics/components/region-search/RegionSearchNavigation';
-import { fetchAllRegions, fetchRegionById } from '@/modules/metrics/data/fetch-regions';
-import { GDL_YEAR_RANGE, gdlDatasets } from '@/modules/metrics/data/gdl-datasets';
+import { gdlDatasets } from '@/modules/metrics/data/gdl-datasets';
 import { useIsMobile } from '@/use-is-mobile';
 
-export const loader = async ({
-  request: { signal },
-  params: { regionId, metricId },
-}: LoaderFunctionArgs) => {
+import { RegionMetricsHeader } from '../components/header/RegionMetricsHeader';
+import { countriesUrl } from '../data/gdl-urls';
+import type { CountryOption } from '../types/CountryOption';
+import type { NationalGeo } from '../types/NationalGeo';
+
+export const loader = async ({ params: { regionId, metricId } }: LoaderFunctionArgs) => {
   return defer({
     regionId: regionId,
-    region: await fetchRegionById({ regionId }, signal),
-    regions: await fetchAllRegions({}, signal),
     metricId: metricId,
   });
 };
 loader.displayName = 'regionMetricsLoader';
 type RegionMetricsLoaderData = {
   regionId: string;
-  region: Boundary;
-  regions: BoundarySummary[];
   metricId: string;
 };
 
-type HasData = {
-  data: any;
-};
-
 export const Component = () => {
-  const { regionId, region, regions, metricId } = useLoaderData() as RegionMetricsLoaderData;
+  const { regionId, metricId } = useLoaderData() as RegionMetricsLoaderData;
 
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
+  const [allCountriesMeta, setAllCountriesMeta] = useState<CountryOption[]>([
+    { code: 'afg', label: 'Afghanistan' },
+  ]);
   const [chartData, setChartData] = useState(null);
-  const [geojson, setGeoJson] = useState<HasData>();
+  const [geojson, setGeoJson] = useState();
+  const [nationalGeo, setNationalGeo] = useState<NationalGeo>();
   const [scaleAcrossYears, setScaleAcrossYears] = useState(false);
   const [scaleAcrossCountries, setScaleAcrossCountries] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2010);
@@ -55,22 +51,13 @@ export const Component = () => {
   const metricSelection = maybeMetricSelection ? maybeMetricSelection : gdlDatasets[0];
   const selectedMetricId = metricSelection.value;
 
-  const selectedIsoCode = regionId.toUpperCase();
-  const selectedCountryData = chartData?.filter((d) => d.ISO_Code === selectedIsoCode);
+  // const selectedIsoCode = regionId;
+  // const selectedCountryData = chartData?.filter((d) => d.iso_code === selectedIsoCode);
   const yearOptions = new Set<number>();
 
-  if (chartData) {
-    for (var i: number = GDL_YEAR_RANGE[0]; i <= GDL_YEAR_RANGE[1]; i++) {
-      const index = i;
-      selectedCountryData.forEach((d) => {
-        const maybeYearData = d[index];
-        // falsy ok if 0
-        if (maybeYearData !== undefined && maybeYearData !== null) {
-          yearOptions.add(index);
-        }
-      });
-    }
-  }
+  // if (chartData) {
+  //   selectedCountryData.forEach((d) => yearOptions.add(d.year));
+  // }
 
   if (yearOptions.size > 0 && !yearOptions.has(selectedYear)) {
     updateSelectedYear([...yearOptions].sort((a, b) => a - b)[0]);
@@ -83,35 +70,57 @@ export const Component = () => {
       if (selection != null) {
         setTimeout(() => {
           navigate(
-            `/metrics/regions/${region.name}/${selectionId}`,
+            `/metrics/regions/${regionId}/${selectionId}`,
             { preventScrollReset: true }, // don't scroll to top on navigate
           );
         }, 100);
       }
     },
-    [navigate, region.name],
+    [navigate, regionId],
   );
 
-  console.log('metricSelection.url', metricSelection.url);
   useEffect(() => {
-    fetch(metricSelection.url)
+    fetch(countriesUrl)
+      .then((d) => d.json())
+      .then((d) => d.map((row) => ({ code: row.iso_code, label: row.country_name })))
+      .then((d) => setAllCountriesMeta(d));
+  }, []);
+
+  const metricsUrl = `http://0.0.0.0:8000/v1/gdl/data/${metricSelection.value.toLowerCase()}`;
+  useEffect(() => {
+    fetch(metricsUrl)
       .then((d) => d.json())
       .then((d) => setChartData(d));
-  }, [metricSelection.url]);
+  }, [metricsUrl]);
 
-  const geojsonUrl = `https://gri-country-api.vercel.app/api/${regionId}/geojson/subnational`;
+  const nationalGeoUrl = `http://0.0.0.0:8000/v1/gdl/geojson/national/iso/${regionId}`;
+  useEffect(() => {
+    fetch(nationalGeoUrl)
+      .then((d) => d.json())
+      .then((d) =>
+        setNationalGeo({
+          boundary: d.boundary,
+          envelope: d.envelope,
+          countryName: d.properties.country_name,
+          isoCode: d.properties.iso_code,
+        }),
+      );
+  }, [nationalGeoUrl]);
+
+  const geojsonUrl = `http://0.0.0.0:8000/v1/gdl/geojson/subnational/iso/${regionId}`;
   useEffect(() => {
     fetch(geojsonUrl)
       .then((d) => d.json())
       .then((d) => setGeoJson(d));
   }, [geojsonUrl]);
 
-  const boundarySummary = regions.find(
-    (regionBoundarySummary) => regionBoundarySummary.name === region.name,
-  );
+  if (!allCountriesMeta || !nationalGeo) {
+    return <>Loading...</>;
+  }
 
   return (
-    <Stack direction="column" gap={6} alignItems={'center'} paddingBottom={100} width={'100%'}>
+    <Stack direction="column" gap={6} alignItems={'center'} paddingBottom={20} width={'100%'}>
+      <RegionMetricsHeader />
       <Stack
         direction="column"
         gap={isMobile ? 1 : 1}
@@ -121,7 +130,7 @@ export const Component = () => {
       >
         <Stack
           direction={'column'}
-          gap={isMobile ? 1 : 3}
+          gap={isMobile ? 2 : 3}
           paddingX={0}
           sx={{ backgroundColor: 'white' }}
         >
@@ -131,11 +140,20 @@ export const Component = () => {
             gap={5}
             justifyContent={'center'}
           >
-            <Stack direction="column" alignItems={'center'} paddingX={2}>
+            <Stack
+              direction="column"
+              alignItems={'center'}
+              justifyContent={'center'}
+              paddingX={2}
+              width={'100%'}
+            >
               <RegionSearchNavigation
-                regions={regions}
+                regions={allCountriesMeta}
                 title="Select a country"
-                selectedRegionSummary={boundarySummary}
+                selectedRegionSummary={{
+                  code: nationalGeo?.isoCode,
+                  label: nationalGeo?.countryName,
+                }}
                 metricId={selectedMetricId}
               />
               <Typography textAlign="center">
@@ -150,7 +168,7 @@ export const Component = () => {
             justifyContent={'center'}
             alignItems={'center'}
           >
-            <Stack direction="column" alignItems={'center'} width={'275px'}>
+            <Stack direction="column" alignItems={'center'} width={'275px'} paddingX={2}>
               <ParamDropdown
                 title={'Metric'}
                 onChange={(selection) => handleMetricSelection(selection)}
@@ -162,6 +180,7 @@ export const Component = () => {
             <Stack
               direction={'row'}
               gap={isMobile ? 5 : 8}
+              paddingX={2}
               justifyContent={'center'}
               alignItems={'center'}
             >
@@ -203,12 +222,12 @@ export const Component = () => {
           </Stack>
         </Stack>
 
-        <Box paddingX={isMobile ? 2 : 5} width={'100%'} height={'100vh'}>
-          {chartData && geojson && geojson.data ? (
+        <Box paddingX={isMobile ? 2 : 5} width={'100%'}>
+          {chartData && geojson ? (
             <Dashboard
-              region={region}
               chartData={chartData}
-              geojson={geojson.data}
+              geojson={geojson}
+              nationalGeo={nationalGeo}
               metricLabel={metricSelection.label}
               scaleAcrossCountries={scaleAcrossCountries}
               scaleAcrossYears={scaleAcrossYears}
