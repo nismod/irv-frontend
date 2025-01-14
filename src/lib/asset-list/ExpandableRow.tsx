@@ -15,11 +15,11 @@ export const ExpandableRow = ({
       <TableRow
         className={headerRowHovered ? 'row-hovered' : ''}
         onClick={() => onExpandedChange(!expanded)}
-        onMouseOver={() => {
+        onMouseEnter={() => {
           setHeaderRowHovered(true);
           onMouseEnter?.();
         }}
-        onMouseOut={() => {
+        onMouseLeave={() => {
           setHeaderRowHovered(false);
           onMouseLeave?.();
         }}
@@ -34,8 +34,8 @@ export const ExpandableRow = ({
         {children}
       </TableRow>
       <TableRow
-        onMouseOver={() => onMouseEnter?.()}
-        onMouseOut={() => onMouseLeave?.()}
+        onMouseEnter={() => onMouseEnter?.()}
+        onMouseLeave={() => onMouseLeave?.()}
         sx={{
           bgcolor: '#eee',
           width: '100%',
