@@ -4,15 +4,26 @@ import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { nbsViewLayer } from '@/config/nbs/nbs-layer';
 import { scopeRegionsLayer } from '@/config/nbs/scope-regions-layer';
+import { backgroundState, showLabelsState } from '@/map/layers/layers-state';
 import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { nbsRegionScopeLevelState, nbsStyleParamsState } from '@/state/data-selection/nbs';
+import {
+  nbsAdaptationTypeState,
+  nbsCategoricalConfigState,
+  nbsRegionScopeLevelState,
+  nbsStyleParamsState,
+} from '@/state/data-selection/nbs';
 
-export const nbsScopeRegionLayerState = selector<ViewLayer>({
+export const nbsScopeRegionLayerState = selector<ViewLayer[]>({
   key: 'nbsScopeRegionLayerState',
   get: ({ get }) => {
-    const scopeRegionLevel = get(nbsRegionScopeLevelState);
     return get(sidebarPathVisibilityState('adaptation/nbs'))
-      ? scopeRegionsLayer(scopeRegionLevel)
+      ? [
+          scopeRegionsLayer(
+            get(nbsRegionScopeLevelState),
+            get(showLabelsState),
+            get(backgroundState),
+          ),
+        ]
       : null;
   },
 });
@@ -21,7 +32,11 @@ export const nbsLayerState = selector<ViewLayer>({
   key: 'nbsLayerState',
   get: ({ get }) => {
     return get(sidebarPathVisibilityState('adaptation/nbs'))
-      ? nbsViewLayer(get(nbsStyleParamsState))
+      ? nbsViewLayer(
+          get(nbsStyleParamsState),
+          get(nbsAdaptationTypeState),
+          get(nbsCategoricalConfigState),
+        )
       : null;
   },
 });

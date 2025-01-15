@@ -21,7 +21,7 @@ import { ApiDetailsComponentType } from '@/details/features/asset-details';
 import { DetailHeader, DetailsComponentProps } from '@/details/features/detail-components';
 import { ButtonPlacement, DownloadButton } from '@/details/features/DownloadButton';
 
-import { NBS_ADAPTATION_TYPE_LABELS, NBS_HAZARD_LABELS } from './metadata';
+import { NBS_ADAPTATION_TYPE_LABELS, NBS_HAZARD_METADATA } from './metadata';
 
 export const NbsDetails: FC<DetailsComponentProps> = ({ f }) => {
   return (
@@ -38,7 +38,6 @@ export const NbsDetails: FC<DetailsComponentProps> = ({ f }) => {
   );
 };
 
-const nbsHazardLabelLookup = toLabelLookup(NBS_HAZARD_LABELS);
 const nbsAdaptationNameLabelLookup = toLabelLookup(NBS_ADAPTATION_TYPE_LABELS);
 
 export const NbsExtendedDetails: ApiDetailsComponentType = ({ fd }) => {
@@ -114,7 +113,7 @@ const AdaptationOptionsTable: FC<{ adaptations: Adaptation[] }> = ({ adaptations
               properties: { avoided_ead_amin, avoided_ead_amax, avoided_ead_mean },
             }) => (
               <TableRow>
-                <TableCell sx={padding}>{nbsHazardLabelLookup[hazard]}</TableCell>
+                <TableCell sx={padding}>{NBS_HAZARD_METADATA[hazard]?.label}</TableCell>
                 <TableCell sx={padding}>{titleCase(rcp)}</TableCell>
                 <TableCell sx={padding}>{nbsAdaptationNameLabelLookup[adaptation_name]}</TableCell>
                 <TableCell sx={padding} align="right">

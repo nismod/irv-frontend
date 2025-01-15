@@ -1,7 +1,6 @@
-import { css2rgba$M } from '@/lib/colors';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
-import { StyleParams, ViewLayer, ViewLayerDataFormatFunction } from '@/lib/data-map/view-layers';
+import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 import { border, fillColor } from '@/lib/deck/props/style';
 
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
@@ -9,26 +8,26 @@ import { ExtendedAssetDetails } from '@/details/features/asset-details';
 import { assetLayerLegendConfig } from '../assets/asset-layer-legend-config';
 import { makeAssetDataAccessorFactory } from '../assets/data-access';
 import { makeAssetLayerFn } from '../assets/make-asset-layer-fn';
+import { getNbsDataFormatsConfig } from './data-formats';
 import { NbsDetails, NbsExtendedDetails } from './details';
-import { ADAPTATION_VARIABLE_LABELS, NBS_LANDUSE_METADATA } from './metadata';
+import {
+  NBS_VECTOR_LAYER_PER_ADAPTATION_TYPE,
+  NbsAdaptationType,
+  NbsCategoricalConfig,
+} from './metadata';
 
 export function nbsViewLayer(
   styleParams: StyleParams,
-  scope?: { field: string; value: number | string },
+  adaptationType: NbsAdaptationType,
+  categoricalConfig: NbsCategoricalConfig,
 ): ViewLayer {
-  const id = 'nbs';
+  const id = NBS_VECTOR_LAYER_PER_ADAPTATION_TYPE[adaptationType];
+
+  const { getColor: categoricalGetColor, getMetadata: categoricalGetInteractionMeta } =
+    categoricalConfig;
+
   const dataAccessFn = makeAssetDataAccessorFactory(id);
-  const dataFormatsFn: ViewLayerDataFormatFunction = ({ field }) => {
-    return {
-      getDataLabel: ({ field }) => ADAPTATION_VARIABLE_LABELS.find((x) => x.value === field)?.label,
-      getValueFormatted: (value) =>
-        typeof value === 'number'
-          ? value.toLocaleString(undefined, {
-              maximumSignificantDigits: 3,
-            })
-          : `${value}`,
-    };
-  };
+  const dataFormatsFn = getNbsDataFormatsConfig;
   return {
     id,
     interactionGroup: 'assets',
@@ -37,13 +36,7 @@ export function nbsViewLayer(
       assetId: id,
       styleParams,
       customLayerPropsFn: ({ dataStyle: { getColor = null } = {} }) => [
-        fillColor(
-          getColor ??
-            ((f) =>
-              f.properties.option_landuse === 'crops'
-                ? css2rgba$M(NBS_LANDUSE_METADATA.crops.color)
-                : css2rgba$M(NBS_LANDUSE_METADATA.other.color)),
-        ),
+        fillColor(getColor ?? categoricalGetColor),
         border([150, 150, 150]),
       ],
       customDataAccessFn: dataAccessFn,
@@ -51,29 +44,29 @@ export function nbsViewLayer(
     dataFormatsFn,
     dataAccessFn,
     renderTooltip: (hover: InteractionTarget<VectorTarget>) => {
-      const landuse = hover.target.feature.properties.option_landuse;
-      const landuseMetadata = NBS_LANDUSE_METADATA[landuse];
+      const feature = hover.target.feature;
+      const { label, color } = categoricalGetInteractionMeta(feature);
       return (
         <VectorHoverDescription
           hoveredObject={hover}
-          label={'Nature-based solutions'}
-          color={landuseMetadata.color}
-          idValue={hover.target.feature.id}
+          label={`Nature-based solutions (${label})`}
+          color={color}
+          idValue={feature.id}
         />
       );
     },
     ...assetLayerLegendConfig(styleParams, dataFormatsFn),
     renderDetails: (selection: InteractionTarget<VectorTarget>) => {
       const feature = selection.target.feature;
-      const landuse = feature.properties.option_landuse;
-      const landuseMetadata = NBS_LANDUSE_METADATA[landuse];
+
+      const { label, color } = categoricalGetInteractionMeta(feature);
 
       return (
         <ExtendedAssetDetails
           DetailsComponent={NbsDetails}
           feature={feature}
-          label={`Nature-based solutions `}
-          color={landuseMetadata.color}
+          label={`Nature-based solutions (${label})`}
+          color={color}
           ApiDetailsComponent={NbsExtendedDetails}
         />
       );

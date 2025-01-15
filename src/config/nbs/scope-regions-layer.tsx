@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { GeoJsonLayerProps, MVTLayerProps } from 'deck.gl/typed';
+import { Color, GeoJsonLayerProps, MVTLayerProps } from 'deck.gl/typed';
 
 import { css2rgba$M } from '@/lib/colors';
 import { ViewLayer } from '@/lib/data-map/view-layers';
@@ -8,16 +8,28 @@ import { Tileset2DCentered } from '@/lib/deck/layers/tileset-2d-centered';
 import { featureFilter } from '@/lib/deck/props/feature-filter';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 
+import { BackgroundName } from '../basemaps';
 import { SOURCES } from '../sources';
 import { NBS_REGION_SCOPE_LEVEL_METADATA, NbsRegionScopeLevel } from './metadata';
 
-export function scopeRegionsLayer(scopeRegionLevel: NbsRegionScopeLevel): ViewLayer {
-  const idProperty = NBS_REGION_SCOPE_LEVEL_METADATA[scopeRegionLevel]?.idProperty;
+const LIGHT_TEXT: Color = [240, 240, 240, 255];
+const DARK_TEXT: Color = [90, 90, 90, 255];
+
+export function scopeRegionsLayer(
+  scopeRegionLevel: NbsRegionScopeLevel,
+  showLabels: boolean,
+  background: BackgroundName,
+): ViewLayer {
+  const { idProperty, nameProperty, labelMinZoom } =
+    NBS_REGION_SCOPE_LEVEL_METADATA[scopeRegionLevel];
+
+  const color = background === 'satellite' ? LIGHT_TEXT : DARK_TEXT;
+
   return {
     id: 'scope_regions',
     interactionGroup: 'scope_regions',
     styleParams: {},
-    fn: ({ deckProps, selection }) =>
+    fn: ({ deckProps, selection }) => [
       mvtLayer<MVTLayerProps>(
         deckProps,
         {
@@ -51,6 +63,39 @@ export function scopeRegionsLayer(scopeRegionLevel: NbsRegionScopeLevel): ViewLa
           selectionLineColor: [40, 40, 40, 255],
         }),
       ),
+      showLabels &&
+        mvtLayer<MVTLayerProps>(
+          // don't pass deckProps here to avoid setting interactivity
+          {
+            id: `scope_region_labels@${scopeRegionLevel}`,
+            data: SOURCES.vector.getUrl(`${scopeRegionLevel}_points`),
+            TilesetClass: Tileset2DCentered,
+            binary: false,
+
+            minZoom: labelMinZoom,
+
+            pointType: 'text',
+            getText: (f) => f.properties[nameProperty] + '',
+            getTextSize: 20,
+            getTextColor: color,
+            textFontFamily: 'Arial',
+            textFontWeight: 600,
+
+            // display the labels above other deck layers
+            getPolygonOffset: ({ layerIndex }) => [0, -layerIndex * 100 - 2000],
+
+            renderSubLayers: (tileProps) => [
+              geoJsonLayer<GeoJsonLayerProps>(
+                tileProps as any,
+                featureFilter(selection?.target.feature.properties[idProperty], idProperty, true),
+              ),
+            ],
+            updateTriggers: {
+              renderSubLayers: [selection?.target, scopeRegionLevel],
+            },
+          },
+        ),
+    ],
 
     renderTooltip: () => (
       <Typography variant="body2">Click to view adaptations in this region</Typography>
