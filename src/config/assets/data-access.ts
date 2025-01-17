@@ -97,9 +97,9 @@ export function makeAssetDataAccessor(layer: string, fieldSpec: FieldSpec) {
       return totalExpectedDamagesProperty(layer, isDirect, fieldDimensions);
     }
     return featureProperty(getExpectedDamageKey(layer, isDirect, hazard, rcp, epoch));
-  } else if (fieldGroup === 'damages_return_period') {
+  } else if (['damages_return_period', 'adaptation'].includes(fieldGroup)) {
     /**
-     * return period damages are loaded dynamically from the features API
+     * return period damages and adaptation options are loaded dynamically from the features API
      */
     return extraProperty(dataLoaderManager.getDataLoader(layer, fieldSpec));
   } else {

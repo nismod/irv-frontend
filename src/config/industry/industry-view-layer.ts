@@ -67,7 +67,7 @@ export function industryViewLayer(industryType: IndustryType): ViewLayer {
         feature,
         label,
         color,
-        detailsComponent: IndustryDetails,
+        DetailsComponent: IndustryDetails,
       });
     },
   };

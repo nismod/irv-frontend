@@ -96,7 +96,7 @@ export function regionalExposureLayer(variable: RegionalExposureVariableType): V
       return React.createElement(SimpleAssetDetails, {
         feature: feature,
         label: 'Regional Exposure',
-        detailsComponent: RegionalExposureDetails,
+        DetailsComponent: RegionalExposureDetails,
       });
     },
     renderTooltip: (hover: InteractionTarget<VectorTarget>) => {

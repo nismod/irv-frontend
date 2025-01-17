@@ -5,6 +5,8 @@ import { useRecoilValue } from 'recoil';
 import { selectionState } from '@/lib/data-map/interactions/interaction-state';
 import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 
+import { NbsPrioritisationPanel } from '@/config/nbs/components/NbsPrioritisationPanel';
+
 import { DetailsPanel } from './ui/DetailsPanel';
 
 const InteractionGroupDetails = ({ group }) => {
@@ -23,6 +25,7 @@ const InteractionGroupDetails = ({ group }) => {
 export const DetailsContent: FC = () => {
   return (
     <Stack spacing={2}>
+      <NbsPrioritisationPanel />
       <InteractionGroupDetails group="assets" />
       <InteractionGroupDetails group="wdpa" />
       <InteractionGroupDetails group="hdi" />

@@ -61,7 +61,7 @@ export function protectedAreaViewLayer(shapeType: ShapeType, type: ProtectedArea
         feature,
         label,
         color: color.css,
-        detailsComponent: DefaultDetails,
+        DetailsComponent: DefaultDetails,
       });
     },
   };

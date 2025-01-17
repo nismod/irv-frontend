@@ -113,11 +113,15 @@ export function useInteractions(
       const { x, y } = info;
       for (const [groupName, layerIds] of Object.entries(activeGroupLayerIds)) {
         const interactionGroup = interactionGroupLookup[groupName];
-        const { type, pickingRadius: radius } = interactionGroup;
+        const { type, pickingRadius: radius, deselectOnClickEmpty = true } = interactionGroup;
 
         // currently only supports selecting vector features
         if (interactionGroup.type === 'vector') {
           const info = deck.pickObject({ x, y, layerIds, radius });
+          if (info == null && !deselectOnClickEmpty) {
+            // if no object was picked and we should not deselect, skip processing
+            continue;
+          }
           let selectionTarget =
             info && processPicked(info, type, groupName, viewLayerLookup, lookupViewForDeck);
 

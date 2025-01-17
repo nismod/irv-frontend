@@ -54,7 +54,7 @@ export function healthsitesViewLayer(): ViewLayer {
         label,
         color,
         feature,
-        detailsComponent: HealthsiteDetails,
+        DetailsComponent: HealthsiteDetails,
       });
     },
   };

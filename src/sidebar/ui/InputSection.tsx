@@ -1,7 +1,7 @@
-import { Box } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
+import { FC } from 'react';
 
-export const InputSection = ({ children }) => (
-  <Box mb={2} flexGrow={1} width="100%">
-    {children}
-  </Box>
+export interface InputSectionProps extends BoxProps {}
+export const InputSection: FC<InputSectionProps> = ({ ...props }) => (
+  <Box mb={2} flexGrow={1} width="100%" {...props} />
 );

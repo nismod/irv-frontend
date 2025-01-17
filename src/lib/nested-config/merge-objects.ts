@@ -7,15 +7,17 @@ type MergeStrategy<T = any> = (oldValue: T, newValue: T) => T;
  * @param mergeStrategies the merge strategies for specified fields. If not strategy is defined for a field, that field will be overwritten by later values
  * @returns a function that accepts variadic object arguments and returns a merged object
  */
-export function makeObjectsMerger(mergeStrategies: Record<string, MergeStrategy>) {
+export function makeObjectsMerger(
+  mergeStrategies: Record<string, MergeStrategy>,
+  defaultMergeStrategy?: MergeStrategy,
+) {
   return (...objects: (object | undefined)[]) => {
     const mergedProps: Record<string, any> = {};
 
     for (const props of objects) {
       for (const [key, value] of Object.entries(props ?? {})) {
-        mergedProps[key] = mergeStrategies[key]
-          ? mergeStrategies[key](mergedProps[key], value)
-          : value;
+        const strategy = mergeStrategies[key] ?? defaultMergeStrategy;
+        mergedProps[key] = strategy ? strategy(mergedProps[key], value) : value;
       }
     }
     return mergedProps;

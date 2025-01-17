@@ -40,7 +40,7 @@ export function withTriggers(fn: AccessorFunction<any>, triggers: any[]) {
  */
 export function withLoaderTriggers(fn: AccessorFunction<any>, dataLoader: DataLoader) {
   fn.dataLoader = dataLoader;
-  return withTriggers(fn, [dataLoader.id, dataLoader.updateTrigger]);
+  return withTriggers(fn, [dataLoader.id, deferredTrigger(() => dataLoader.updateTrigger)]);
 }
 
 /**
@@ -51,4 +51,36 @@ export function withLoaderTriggers(fn: AccessorFunction<any>, dataLoader: DataLo
  */
 export function getTriggers<OutT, InT>(accessor: Accessor<OutT, InT>) {
   return (accessor as any)?.updateTriggers ?? (typeof accessor === 'function' ? [] : undefined);
+}
+
+/**
+ * A deferred trigger is a value inside an `updateTriggers` array whose actual value should be evaluated when the deck.gl layer is created.
+ * This structure contains a `deferredTrigger` flag and a function to evaluate the trigger.
+ * It enables distinguishing between a deferred trigger and a regular trigger that is simply a function but shouldn't be evaluated.
+ */
+export interface DeferredTrigger {
+  deferredTrigger: true;
+  fn: () => any;
+}
+
+/**
+ * Create a deferred trigger
+ * @param triggerFn the function to call when the trigger is evaluated
+ * @returns a deferred trigger object
+ */
+export function deferredTrigger(triggerFn: () => any): DeferredTrigger {
+  return {
+    deferredTrigger: true,
+    fn: triggerFn,
+  };
+}
+
+/** Check if a trigger value is a deferred trigger (with type guard) */
+export function isDeferredTrigger(trigger: any): trigger is DeferredTrigger {
+  return trigger && trigger.deferredTrigger;
+}
+
+/** Process an `updateTriggers` array by evaluating any deferred triggers inside the array */
+export function evaluateTriggers(triggers: any[]) {
+  return triggers?.map((trigger) => (isDeferredTrigger(trigger) ? trigger.fn() : trigger));
 }

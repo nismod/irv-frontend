@@ -43,7 +43,7 @@ export function makeAssetLayerFn({
     ? {
         getColor: makeDataColorAccessor(dataAccessor, colorMap(styleParams.colorMap.colorSpec)),
       }
-    : null;
+    : undefined;
 
   return ({ deckProps, zoom, selection }) =>
     basicMvtLayer(

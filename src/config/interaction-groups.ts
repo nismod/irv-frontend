@@ -39,6 +39,13 @@ export const INTERACTION_GROUPS = makeConfig<InteractionGroupConfig, string>([
     type: 'raster',
     pickMultiple: true,
   },
+  {
+    id: 'scope_regions',
+    type: 'vector',
+    usesAutoHighlight: true,
+    pickMultiple: false,
+    deselectOnClickEmpty: false,
+  },
   /*
   {
     id: 'regions',

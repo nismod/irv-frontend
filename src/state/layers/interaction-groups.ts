@@ -13,6 +13,7 @@ export const interactionGroupsState = selector({
       INTERACTION_GROUPS.rexp,
       INTERACTION_GROUPS.hazards,
       INTERACTION_GROUPS.raster_assets,
+      INTERACTION_GROUPS.scope_regions,
     ];
   },
 });
