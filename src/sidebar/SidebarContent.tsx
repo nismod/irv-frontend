@@ -180,6 +180,22 @@ const VulnerabilitySection = () => (
       <Layer path="human-development" title="Human Development">
         <HdiControl />
       </Layer>
+      <Layer path="rwi" title="Relative Wealth Index">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Predicts the relative standard of living within countries using privacy protecting
+            connectivity data, satellite imagery, and other novel data sources.
+          </DataNoticeTextBlock>
+        </DataNotice>
+      </Layer>
+      <Layer path="hdi-grid" title="Gridded Human Development Index">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Global estimates of United Nations Human Development Index (HDI) on a global 0.1 degree
+            grid.
+          </DataNoticeTextBlock>
+        </DataNotice>
+      </Layer>
       <Layer path="travel-time" title="Travel Time to Healthcare">
         <TravelTimeControl />
       </Layer>
