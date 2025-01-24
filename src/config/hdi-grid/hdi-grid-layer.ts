@@ -13,7 +13,8 @@ import { SOURCES } from '../sources';
 export const JRC_POPULATION_COLOR_MAP: RasterColorMap = {
   scheme: 'RdYlGn',
   range: [0, 1],
-  rangeTruncated: [true, true],
+  // HDI should always be 0-1. "False" prevents showing >1 on rounding (e.g., Zurich)
+  rangeTruncated: [false, false],
 };
 
 function getPopulationUrl() {
