@@ -13,7 +13,7 @@ import { SOURCES } from '../sources';
 export const JRC_POPULATION_COLOR_MAP: RasterColorMap = {
   scheme: 'RdYlGn',
   range: [0, 1],
-  rangeTruncated: [false, true],
+  rangeTruncated: [true, true],
 };
 
 function getPopulationUrl() {
