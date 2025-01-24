@@ -10,16 +10,16 @@ import { makeValueFormat } from '@/lib/formats';
 
 import { SOURCES } from '../sources';
 
-export const JRC_POPULATION_COLOR_MAP: RasterColorMap = {
+export const COLOR_MAP: RasterColorMap = {
   scheme: 'afmhot',
   range: [-1, 2],
   rangeTruncated: [true, true],
 };
 
-function getPopulationUrl() {
+function getDataUrl() {
   return SOURCES.raster.getUrl({
     path: 'social/rwi',
-    ...JRC_POPULATION_COLOR_MAP,
+    ...COLOR_MAP,
   });
 }
 
@@ -40,7 +40,7 @@ export function rwiViewLayer(): ViewLayer {
         },
         deckProps,
         {
-          data: getPopulationUrl(),
+          data: getDataUrl(),
           refinementStrategy: 'no-overlap',
         },
       );
@@ -49,7 +49,7 @@ export function rwiViewLayer(): ViewLayer {
       return React.createElement(RasterLegend, {
         key: 'rwi',
         label,
-        colorMap: JRC_POPULATION_COLOR_MAP,
+        colorMap: COLOR_MAP,
         getValueLabel: formatValue,
       });
     },
@@ -57,7 +57,7 @@ export function rwiViewLayer(): ViewLayer {
       const { color } = hoveredObject.target;
       return React.createElement(RasterHoverDescription, {
         color,
-        colorMap: JRC_POPULATION_COLOR_MAP,
+        colorMap: COLOR_MAP,
         label,
         formatValue,
       });

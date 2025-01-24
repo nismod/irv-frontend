@@ -10,17 +10,17 @@ import { makeValueFormat } from '@/lib/formats';
 
 import { SOURCES } from '../sources';
 
-export const JRC_POPULATION_COLOR_MAP: RasterColorMap = {
+export const COLOR_MAP: RasterColorMap = {
   scheme: 'RdYlGn',
   range: [0, 1],
   // HDI should always be 0-1. "False" prevents showing >1 on rounding (e.g., Zurich)
   rangeTruncated: [false, false],
 };
 
-function getPopulationUrl() {
+function getDataUrl() {
   return SOURCES.raster.getUrl({
     path: 'social/hdi',
-    ...JRC_POPULATION_COLOR_MAP,
+    ...COLOR_MAP,
   });
 }
 
@@ -41,7 +41,7 @@ export function hdiGridViewLayer(): ViewLayer {
         },
         deckProps,
         {
-          data: getPopulationUrl(),
+          data: getDataUrl(),
           refinementStrategy: 'no-overlap',
         },
       );
@@ -50,7 +50,7 @@ export function hdiGridViewLayer(): ViewLayer {
       return React.createElement(RasterLegend, {
         key: 'hdi-grid',
         label,
-        colorMap: JRC_POPULATION_COLOR_MAP,
+        colorMap: COLOR_MAP,
         getValueLabel: formatValue,
       });
     },
@@ -58,7 +58,7 @@ export function hdiGridViewLayer(): ViewLayer {
       const { color } = hoveredObject.target;
       return React.createElement(RasterHoverDescription, {
         color,
-        colorMap: JRC_POPULATION_COLOR_MAP,
+        colorMap: COLOR_MAP,
         label,
         formatValue,
       });
