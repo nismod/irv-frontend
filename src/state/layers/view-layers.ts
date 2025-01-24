@@ -47,7 +47,6 @@ export const viewLayersState = makeViewLayersState({
         travelTimeLayerState,
         topographyLayersState,
         cddLayersState,
-        rwiLayerState,
         hdiGridLayerState,
 
         // vector layers that cover all/most of land
@@ -58,6 +57,7 @@ export const viewLayersState = makeViewLayersState({
         protectedAreasPolygonLayerState,
         hazardLayerState,
         populationExposureLayerState,
+        rwiLayerState,
 
         // point/line layers
         networkLayersState,
