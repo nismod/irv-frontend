@@ -12,8 +12,8 @@ import { SOURCES } from '../sources';
 
 export const JRC_POPULATION_COLOR_MAP: RasterColorMap = {
   scheme: 'afmhot',
-  range: [0, 2],
-  rangeTruncated: [false, true],
+  range: [-1, 2],
+  rangeTruncated: [true, true],
 };
 
 function getPopulationUrl() {

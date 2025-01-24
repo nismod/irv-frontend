@@ -600,7 +600,7 @@ export const DataSourcesPage = () => (
               </TableRow>
 
               <TableRow>
-                <TableCell>Human Development</TableCell>
+                <TableCell>Human Development (Subnational)</TableCell>
                 <TableCell>
                   <ExtLink href="https://globaldatalab.org/shdi/">
                     Global Data Lab Sub-national human development indices
@@ -632,6 +632,45 @@ export const DataSourcesPage = () => (
                 <TableCell>
                   Development, Health, Education and Income indices for 186 countries, 1783
                   sub-national regions
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Human Development (Grid)</TableCell>
+                <TableCell>
+                  <ExtLink href="https://github.com/Global-Policy-Lab/hdi_downscaling_mosaiks">
+                    Global High-Resolution Estimates of the United Nations Human Development Index
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  Global estimates of United Nations Human Development Index (HDI) on a global 0.1
+                  degree grid. Developed using a generalizable machine learning downscaling
+                  technique based on satellite imagery that allows for training and prediction with
+                  observations of arbitrary shape and size. This downscales the national HDI, which
+                  is a multi-dimensional index used for measuring national development,
+                  incorporating measures of income, education and health.
+                </TableCell>
+                <TableCell>MIT</TableCell>
+                <TableCell>
+                  <ExtLink href="https://www.mosaiks.org/hdi">Source description</ExtLink>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Relative Wealth Index</TableCell>
+                <TableCell>
+                  <ExtLink href="https://data.humdata.org/dataset/relative-wealth-index">
+                    Meta Relative Wealth Index
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  The Relative Wealth Index predicts the relative standard of living within
+                  countries using privacy protecting connectivity data, satellite imagery, and other
+                  novel data sources.
+                </TableCell>
+                <TableCell>CC-BY-NC 4.0</TableCell>
+                <TableCell>
+                  <ExtLink href="https://dataforgood.facebook.com/dfg/tools/relative-wealth-index">
+                    Source description
+                  </ExtLink>
                 </TableCell>
               </TableRow>
               <TableRow>
