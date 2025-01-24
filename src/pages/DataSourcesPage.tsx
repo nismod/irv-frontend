@@ -459,9 +459,16 @@ export const DataSourcesPage = () => (
                 </TableCell>
                 <TableCell>
                   This data was generated as an extract from the OpenStreetMap global open database
-                  (http://openstreetmap.org) by the Healthsites.io (http://healthsites.io) project.
-                  Data: Open Database License http://opendatacommons.org/licenses/odbl/ Data
-                  credits: © OpenStreetMap contributors http://www.openstreetmap.org/copyright
+                  (<ExtLink href="http://openstreetmap.org">openstreetmap.org</ExtLink>) by the
+                  Healthsites.io (<ExtLink href="http://healthsites.io">healthsites.io</ExtLink>)
+                  project. Data:{' '}
+                  <ExtLink href="http://opendatacommons.org/licenses/odbl/">
+                    Open Database License
+                  </ExtLink>{' '}
+                  Data credits: ©{' '}
+                  <ExtLink href="http://www.openstreetmap.org/copyright">
+                    OpenStreetMap contributors
+                  </ExtLink>
                 </TableCell>
                 <TableCell>ODbL</TableCell>
                 <TableCell>Health site locations as points/polygons</TableCell>
@@ -592,8 +599,10 @@ export const DataSourcesPage = () => (
                 </TableCell>
                 <TableCell>
                   Weiss, D.J., Nelson, A., Vargas-Ruiz, C.A. et al. Global maps of travel time to
-                  healthcare facilities. Nat Med 26, 1835–1838 (2020).
-                  https://doi.org/10.1038/s41591-020-1059-1
+                  healthcare facilities. Nat Med 26, 1835–1838 (2020). DOI:{' '}
+                  <ExtLink href="https://doi.org/10.1038/s41591-020-1059-1">
+                    10.1038/s41591-020-1059-1
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC BY 4.0</TableCell>
                 <TableCell>Motorised/non-motorised travel time on 30arcsec grid.</TableCell>
@@ -607,40 +616,69 @@ export const DataSourcesPage = () => (
                   </ExtLink>
                 </TableCell>
                 <TableCell>
-                  Global Data Lab (2019) Subnational Human Development Index (SHDI) Available at
-                  https://globaldatalab.org/shdi/. The SHDI is an average of the subnational values
-                  of three dimensions: education, health and standard of living. To compute the SHDI
-                  on the basis of the three dimension indices, the geometric mean of the three
-                  indices is taken. Three major data sources were used to create the SHDI database:
-                  statistical offices (including Eurostat, the statistical office of the European
-                  Union), the Area Database of the Global Data Lab, and data from the HDI website of
-                  the Human Development Report Office of the United Nations Development Program.
-                  Given that household surveys and censuses are not held every year, for many
-                  countries the indicators are only available for a restricted number of years. To
-                  obtain their values for the whole period 1990–2017, the missing information was
-                  estimated by interpolation or extrapolation techniques. This estimation process
-                  was facilitated by the fact that the UNDP Database contains the national values
-                  for all four indicators for each year in this period, which means that only the
-                  subnational variation had to be interpolated or extrapolated. For a complete list
-                  of sources and surveys used, please refer to the Area Database's Data Sources
-                  page.
+                  Global Data Lab (2019) Subnational Human Development Index (SHDI) Available
+                  online:{' '}
+                  <ExtLink href="https://globaldatalab.org/shdi/">globaldatalab.org/shdi</ExtLink>.
                 </TableCell>
                 <TableCell>
-                  Free for use with acknowledgement of data source
-                  https://globaldatalab.org/termsofuse/
+                  Free for use with acknowledgement of data source:{' '}
+                  <ExtLink href="https://globaldatalab.org/termsofuse/">
+                    globaldatalab.org/termsofuse
+                  </ExtLink>
+                  .
                 </TableCell>
                 <TableCell>
-                  Development, Health, Education and Income indices for 186 countries, 1783
-                  sub-national regions
+                  <TableCellStack>
+                    <TableCellParagraph>
+                      Development, Health, Education and Income indices for 186 countries, 1783
+                      sub-national regions.
+                    </TableCellParagraph>
+                    <TableCellParagraph>
+                      The SHDI is an average of the subnational values of three dimensions:
+                      education, health and standard of living. To compute the SHDI on the basis of
+                      the three dimension indices, the geometric mean of the three indices is taken.
+                      Three major data sources were used to create the SHDI database: statistical
+                      offices (including Eurostat, the statistical office of the European Union),
+                      the Area Database of the Global Data Lab, and data from the HDI website of the
+                      Human Development Report Office of the United Nations Development Program.
+                    </TableCellParagraph>
+                    <TableCellParagraph>
+                      Given that household surveys and censuses are not held every year, for many
+                      countries the indicators are only available for a restricted number of years.
+                      To obtain their values for the whole period 1990&ndash;2017, the missing
+                      information was estimated by interpolation or extrapolation techniques. This
+                      estimation process was facilitated by the fact that the UNDP Database contains
+                      the national values for all four indicators for each year in this period,
+                      which means that only the subnational variation had to be interpolated or
+                      extrapolated. For a complete list of sources and surveys used, please refer to
+                      the Area Database's Data Sources page.
+                    </TableCellParagraph>
+                  </TableCellStack>
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Human Development (Grid)</TableCell>
                 <TableCell>
-                  <ExtLink href="https://github.com/Global-Policy-Lab/hdi_downscaling_mosaiks">
+                  <ExtLink href="https://www.mosaiks.org/hdi">
                     Global High-Resolution Estimates of the United Nations Human Development Index
                   </ExtLink>
                 </TableCell>
+                <TableCell>
+                  Sherman, L., et al. 2023. Global High-Resolution Estimates of the United Nations
+                  Human Development Index Using Satellite Imagery and Machine-learning. Working
+                  Paper Series. 31044. National Bureau of Economic Research. DOI:{' '}
+                  <ExtLink href="https://doi.org/10.3386/w31044">10.3386/w31044</ExtLink>. Available
+                  online:{' '}
+                  <ExtLink href="http://www.nber.org/papers/w31044">
+                    www.nber.org/papers/w31044
+                  </ExtLink>
+                  . Data available at:{' '}
+                  <ExtLink href="https://github.com/Global-Policy-Lab/hdi_downscaling_mosaiks">
+                    github.com/Global-Policy-Lab/hdi_downscaling_mosaiks
+                  </ExtLink>
+                  .
+                </TableCell>
+                <TableCell>MIT</TableCell>
                 <TableCell>
                   Global estimates of United Nations Human Development Index (HDI) on a global 0.1
                   degree grid. Developed using a generalizable machine learning downscaling
@@ -649,28 +687,32 @@ export const DataSourcesPage = () => (
                   is a multi-dimensional index used for measuring national development,
                   incorporating measures of income, education and health.
                 </TableCell>
-                <TableCell>MIT</TableCell>
-                <TableCell>
-                  <ExtLink href="https://www.mosaiks.org/hdi">Source description</ExtLink>
-                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Relative Wealth Index</TableCell>
                 <TableCell>
-                  <ExtLink href="https://data.humdata.org/dataset/relative-wealth-index">
+                  <ExtLink href="https://dataforgood.facebook.com/dfg/tools/relative-wealth-index">
                     Meta Relative Wealth Index
                   </ExtLink>
                 </TableCell>
                 <TableCell>
-                  The Relative Wealth Index predicts the relative standard of living within
-                  countries using privacy protecting connectivity data, satellite imagery, and other
-                  novel data sources.
+                  Chi, G., et al. 2022. Microestimates of wealth for all low- and middle-income
+                  countries. Proceedings of the National Academy of Sciences Jan 2022, 119 (3)
+                  e2113658119; DOI:{' '}
+                  <ExtLink href="https://doi.org/10.1073/pnas.2113658119">
+                    10.1073/pnas.2113658119
+                  </ExtLink>
+                  . Data available at:{' '}
+                  <ExtLink href="https://data.humdata.org/dataset/relative-wealth-index">
+                    data.humdata.org/dataset/relative-wealth-index
+                  </ExtLink>
+                  .
                 </TableCell>
                 <TableCell>CC-BY-NC 4.0</TableCell>
                 <TableCell>
-                  <ExtLink href="https://dataforgood.facebook.com/dfg/tools/relative-wealth-index">
-                    Source description
-                  </ExtLink>
+                  The Relative Wealth Index predicts the relative standard of living within
+                  countries using privacy protecting connectivity data, satellite imagery, and other
+                  novel data sources.
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -684,8 +726,10 @@ export const DataSourcesPage = () => (
                   Tim Newbold; Lawrence Hudson; Andy Arnell; Sara Contu et al. (2016). Map of
                   Biodiversity Intactness Index (from Global map of the Biodiversity Intactness
                   Index, from Newbold et al. (2016) Science) [Data set resource]. Natural History
-                  Museum.
-                  https://data.nhm.ac.uk/dataset/global-map-of-the-biodiversity-intactness-index-from-newbold-et-al-2016-science/resource/8531b4dc-bd44-4586-8216-47b3b8d60e85
+                  Museum. Available online at:{' '}
+                  <ExtLink href="https://data.nhm.ac.uk/dataset/global-map-of-the-biodiversity-intactness-index-from-newbold-et-al-2016-science/resource/8531b4dc-bd44-4586-8216-47b3b8d60e85">
+                    data.nhm.ac.uk
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC BY 4.0</TableCell>
                 <TableCell>3 arcsec grid</TableCell>
@@ -699,8 +743,12 @@ export const DataSourcesPage = () => (
                 </TableCell>
                 <TableCell>
                   UNEP-WCMC and IUCN (2022), Protected Planet: The World Database on Protected Areas
-                  (WDPA) [On-line], [October 2022], Cambridge, UK: UNEP-WCMC and IUCN. Available at:
-                  www.protectedplanet.net.
+                  (WDPA) [On-line], [October 2022], Cambridge, UK: UNEP-WCMC and IUCN. Available
+                  online:{' '}
+                  <ExtLink href="https://www.protectedplanet.net/en/thematic-areas/wdpa?tab=WDPA">
+                    www.protectedplanet.net
+                  </ExtLink>
+                  .
                 </TableCell>
                 <TableCell>
                   No Commercial Use, No Reposting and/or Redistribution without written consent
@@ -717,22 +765,39 @@ export const DataSourcesPage = () => (
                 <TableCell>
                   Grantham, H.S., Duncan, A., Evans, T.D. et al. Anthropogenic modification of
                   forests means only 40% of remaining forests have high ecosystem integrity. Nat
-                  Commun 11, 5978 (2020). https://doi.org/10.1038/s41467-020-19493-3 Data are
-                  available at www.forestlandscapeintegrity.com. The datasets used to develop the
-                  Forest Landscape Integrity Index can be found at the following websites: tree
-                  cover and loss http://earthenginepartners.appspot.com/science-2013-global-forest,
-                  tree cover loss driver
-                  https://data.globalforestwatch.org/datasets/f2b7de1bdde04f7a9034ecb363d71f0e,
-                  potential forest cover
-                  https://data.globalforestwatch.org/datasets/potential-forest-coverage ESA-CCI Land
-                  Cover https://maps.elie.ucl.ac.be/CCI/viewer/index.php Open Street Maps
-                  https://www.openstreetmap.org, croplands
-                  https://lpdaac.usgs.gov/news/release-of-gfsad-30-meter-cropland-extent-products/,
-                  surface water https://global-surface-water.appspot.com/, protected areas
-                  https://www.protectedplanet.net/en.
+                  Commun 11, 5978 (2020). DOI:{' '}
+                  <ExtLink href="https://doi.org/10.1038/s41467-020-19493-3">
+                    10.1038/s41467-020-19493-3
+                  </ExtLink>
                 </TableCell>
                 <TableCell>Published as available with article (license not specified)</TableCell>
-                <TableCell>10 arcsec grid</TableCell>
+                <TableCell>
+                  10 arcsec grid. Data are available at www.forestlandscapeintegrity.com. The
+                  datasets used to develop the Forest Landscape Integrity Index can be found at the
+                  following websites:{' '}
+                  <ExtLink href="http://earthenginepartners.appspot.com/science-2013-global-forest">
+                    tree cover and loss
+                  </ExtLink>
+                  ,{' '}
+                  <ExtLink href="https://data.globalforestwatch.org/datasets/f2b7de1bdde04f7a9034ecb363d71f0e">
+                    tree cover loss driver
+                  </ExtLink>
+                  ,{' '}
+                  <ExtLink href="https://data.globalforestwatch.org/datasets/potential-forest-coverage">
+                    potential forest cover
+                  </ExtLink>
+                  ,{' '}
+                  <ExtLink href="https://maps.elie.ucl.ac.be/CCI/viewer/index.php">
+                    ESA-CCI Land Cover
+                  </ExtLink>
+                  , <ExtLink href="https://www.openstreetmap.org">Open Street Maps</ExtLink>,{' '}
+                  <ExtLink href="https://lpdaac.usgs.gov/news/release-of-gfsad-30-meter-cropland-extent-products/">
+                    croplands
+                  </ExtLink>
+                  ,{' '}
+                  <ExtLink href="https://global-surface-water.appspot.com/">surface water</ExtLink>,{' '}
+                  <ExtLink href="https://www.protectedplanet.net/en">protected areas</ExtLink>.
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -761,18 +826,25 @@ export const DataSourcesPage = () => (
                   Global CDD difference between 1.5°C and 2°C global warming scenarios.
                 </TableCell>
                 <TableCell>
-                  Miranda, N.D., Lizana, J., Sparrow, S.N. et al. (2023) Change in cooling degree
-                  days with global mean temperature rise increasing from 1.5°C to 2.0°C. Nature
-                  Sustainability 6, 1326-1330.{' '}
-                  <ExtLink href="https://doi.org/10.1038/s41893-023-01155-z">
-                    DOI 10.1038/s41893-023-01155-z
-                  </ExtLink>{' '}
-                  and Miranda, N. D., Lizana, J., Sparrow, S. N., Wallom, D. C. H., Zachau-Walker,
-                  M., Watson, P., Khosla, R., & McCulloch, M. (2023). Changes in Cooling Degree Days
-                  (CDD) between the 1.5°C and 2.0°C global warming scenarios. University of Oxford.{' '}
-                  <ExtLink href="https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e">
-                    https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e
-                  </ExtLink>
+                  <TableCellStack>
+                    <TableCellParagraph>
+                      Miranda, N.D., Lizana, J., Sparrow, S.N. et al. (2023) Change in cooling
+                      degree days with global mean temperature rise increasing from 1.5°C to 2.0°C.
+                      Nature Sustainability 6, 1326-1330.{' '}
+                      <ExtLink href="https://doi.org/10.1038/s41893-023-01155-z">
+                        DOI 10.1038/s41893-023-01155-z
+                      </ExtLink>
+                    </TableCellParagraph>
+                    <TableCellParagraph>
+                      Miranda, N. D., Lizana, J., Sparrow, S. N., Wallom, D. C. H., Zachau-Walker,
+                      M., Watson, P., Khosla, R., & McCulloch, M. (2023). Changes in Cooling Degree
+                      Days (CDD) between the 1.5°C and 2.0°C global warming scenarios. University of
+                      Oxford.{' '}
+                      <ExtLink href="https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e">
+                        https://ora.ox.ac.uk/objects/uuid:8d95c423-816c-4a4f-88b6-eb7a040cb40e
+                      </ExtLink>
+                    </TableCellParagraph>
+                  </TableCellStack>
                 </TableCell>
                 <TableCell>CC-BY</TableCell>
                 <TableCell>
