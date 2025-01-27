@@ -22,6 +22,8 @@ import {
   EarthquakeControl,
   ExtremeHeatControl,
   FluvialControl,
+  JRCFloodControl,
+  LandslideControl,
 } from './sections/hazards/HazardsControl';
 import { IndustryControl } from './sections/industry/IndustryControl';
 import { NetworkControl } from './sections/networks/NetworkControl';
@@ -68,10 +70,13 @@ export const sidebarPathVisibilityState: RecoilStateFamily<boolean, string> =
 
 const HazardsSection = () => (
   <Section path="hazards" title="Hazards">
-    <Layer path="fluvial" title="River Flooding">
+    <Layer path="fluvial" title="River Flooding (Aqueduct)">
       <FluvialControl />
     </Layer>
-    <Layer path="coastal" title="Coastal Flooding">
+    <Layer path="jrc_flood" title="River Flooding (JRC)">
+      <JRCFloodControl />
+    </Layer>
+    <Layer path="coastal" title="Coastal Flooding (Aqueduct)">
       <CoastalControl />
     </Layer>
     <Layer path="cyclone" title="Tropical Cyclones (STORM)">
@@ -94,6 +99,9 @@ const HazardsSection = () => (
     </Layer>
     <Layer path="drought" title="Droughts">
       <DroughtControl />
+    </Layer>
+    <Layer path="landslide" title="Landslide">
+      <LandslideControl />
     </Layer>
     <Layer path="earthquake" title="Earthquakes">
       <EarthquakeControl />

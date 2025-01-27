@@ -31,7 +31,7 @@ export const TableHeader = ({ children }) => {
 export const TableCellParagraph = ({ children }) => {
   return (
     // let parent container handle gap spacing
-    <Typography paragraph={true} variant="body2" margin={0}>
+    <Typography paragraph={true} variant="body2">
       {children}
     </Typography>
   );

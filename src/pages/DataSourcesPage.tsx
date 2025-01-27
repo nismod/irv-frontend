@@ -117,8 +117,7 @@ export const DataSourcesPage = () => (
                   All the products, methodologies, and datasets that make up Aqueduct are available
                   for use under the{' '}
                   <ExtLink href="https://creativecommons.org/licenses/by/4.0/">
-                    {' '}
-                    Creative Commons Attribution International 4.0 License{' '}
+                    Creative Commons Attribution International 4.0 License
                   </ExtLink>
                   .
                 </TableCell>
@@ -128,6 +127,49 @@ export const DataSourcesPage = () => (
                   scenarios. Current and future maps in 2030, 2050 and 2080.
                 </TableCell>
               </TableRow>
+
+              <TableRow>
+                <TableCell>River flooding</TableCell>
+                <TableCell>
+                  <ExtLink href="data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif">
+                    JRC Global River Flood Hazard Maps
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal,
+                  Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard
+                  maps. European Commission, Joint Research Centre (JRC) [Dataset] Available online
+                  at:
+                  <ExtLink href="http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif">
+                    data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif
+                  </ExtLink>
+                  .
+                </TableCell>
+                <TableCell>
+                  <ExtLink href="http://creativecommons.org/licenses/by/4.0/legalcode">
+                    Creative Commons Attribution 4.0 International
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  <TableCellParagraph>
+                    The global river flood hazard maps are a gridded data set representing
+                    inundation along the river network, for seven different flood return periods
+                    (from 1-in-10-years to 1-in-500-years). The input river flow data for the new
+                    maps are produced by means of the open-source hydrological model LISFLOOD, while
+                    inundation simulations are performed with the hydrodynamic model LISFLOOD-FP.
+                    The extent comprises the entire world with the exception of Greenland and
+                    Antarctica and small islands with river basins smaller than 500km².
+                  </TableCellParagraph>
+                  <TableCellParagraph>
+                    Cell values indicate water depth (in m). The maps can be used to assess the
+                    exposure of population and economic assets to river floods, and to perform flood
+                    risk assessments. The dataset is created as part of the Copernicus Emergency
+                    Management Service. NOTE: this dataset is not an official flood hazard map (for
+                    details and limitations please refer to related publications).
+                  </TableCellParagraph>
+                </TableCell>
+              </TableRow>
+
               <TableRow>
                 <TableCell>Extreme Heat and Drought</TableCell>
                 <TableCell>
@@ -275,6 +317,62 @@ export const DataSourcesPage = () => (
                   depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a
                   10% probability of being exceeded in 50 years, computed for reference rock
                   conditions (shear wave velocity, VS30, of 760-800 m/s).
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Landslide</TableCell>
+                <TableCell>
+                  <ExtLink href="https://datacatalog.worldbank.org/search/dataset/0037584/Global-landslide-hazard-map">
+                    Global Landslide Hazard Map
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  Arup (2021) Global Landslide Hazard Map, prepared for The World Bank and Global
+                  Facility for Disaster Risk Reduction.
+                </TableCell>
+                <TableCell>
+                  <ExtLink href="https://creativecommons.org/licenses/by-nc/4.0/">
+                    Creative Commons Attribution-NonCommercial 4.0 International License (CC
+                    BY-NC-SA){' '}
+                  </ExtLink>
+                </TableCell>
+                <TableCell>
+                  <TableCellStack>
+                    <TableCellParagraph>
+                      The Global Landslide hazard map is a gridded dataset of landslide hazard
+                      produced at the global scale. The dataset comprises gridded maps of estimated
+                      annual frequency of significant landslides per square kilometre. Significant
+                      landslides are those which are likely to have been reported had they occurred
+                      in a populated place; limited information on reported landslide size makes it
+                      difficult to tie frequencies to size ranges but broadly speaking would be at
+                      least greater than 100 m2. The data provides frequency estimates for each grid
+                      cell on land between 60°S and 72°N for landslides triggered by seismicity and
+                      rainfall.
+                    </TableCellParagraph>
+
+                    <TableCellParagraph>
+                      The dataset is publicly available for download and use and it consists of 4
+                      global map layers:
+                      <ul>
+                        <li>
+                          Mean annual rainfall-triggered landslide hazard (1980&mdash;2018): raster
+                          values represent the modelled average annual frequency of significant
+                          rainfall-triggered landslides per sq. km.
+                        </li>
+                        <li>
+                          Median annual rainfall-triggered landslide hazard (1980&mdash;2018):
+                          raster values represent the modelled median annual frequency of
+                          significant rainfall-triggered landslides per sq. km.
+                        </li>
+                        <li>
+                          Mean annual earthquake-triggered landslide hazard: raster values represent
+                          the modelled average annual frequency of significant earthquake-triggered
+                          landslides per sq. km.
+                        </li>
+                        <li>Aggregate hazard index ranging from 1 (low) to 4 (very high)</li>
+                      </ul>
+                    </TableCellParagraph>
+                  </TableCellStack>
                 </TableCell>
               </TableRow>
             </TableBody>
