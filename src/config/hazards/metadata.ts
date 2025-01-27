@@ -13,6 +13,7 @@ export const HAZARD_TYPES = [
   'extreme_heat',
   'earthquake',
   'drought',
+  'landslide',
 ] as const;
 
 export type HazardType = (typeof HAZARD_TYPES)[number];
@@ -53,6 +54,11 @@ export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
   drought: {
     scheme: 'oranges',
     range: [0, 1],
+  },
+  landslide: {
+    scheme: 'greens',
+    range: [0, 0.2],
+    rangeTruncated: [false, true],
   },
 };
 
@@ -134,12 +140,22 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
       return `isimip/drought/${metric}/${rcp}/${epoch}/${gcm}/${impact_model}`;
     },
   },
+  landslide: {
+    label: 'Landslide',
+    formatValue: makeValueFormat('_', { maximumFractionDigits: 2 }),
+    legendAnnotation: 'Annual probability of landslide',
+    getPath: (hazardParams) => {
+      const { subtype } = hazardParams;
+      return `landslide/${subtype}`;
+    },
+  },
 };
 
 const hazardOrdering = makeOrderingCheck<HazardType>();
 
 export const HAZARDS_MAP_ORDER = hazardOrdering([
   'earthquake',
+  'landslide',
   'cyclone',
   'cyclone_iris',
   'drought',
@@ -157,5 +173,6 @@ export const HAZARDS_UI_ORDER = hazardOrdering([
   'cyclone_iris',
   'drought',
   'extreme_heat',
+  'landslide',
   'earthquake',
 ]);

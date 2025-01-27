@@ -85,6 +85,13 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
       rcp: ['epoch'],
     },
   },
+  landslide: {
+    domain: 'landslide',
+    defaults: {
+      subtype: 'rainfall_mean',
+    },
+    dependencies: {},
+  },
   earthquake: {
     domain: 'earthquake',
     defaults: {

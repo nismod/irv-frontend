@@ -23,6 +23,7 @@ import {
   ExtremeHeatControl,
   FluvialControl,
   JRCFloodControl,
+  LandslideControl,
 } from './sections/hazards/HazardsControl';
 import { IndustryControl } from './sections/industry/IndustryControl';
 import { NetworkControl } from './sections/networks/NetworkControl';
@@ -98,6 +99,9 @@ const HazardsSection = () => (
     </Layer>
     <Layer path="drought" title="Droughts">
       <DroughtControl />
+    </Layer>
+    <Layer path="landslide" title="Landslide">
+      <LandslideControl />
     </Layer>
     <Layer path="earthquake" title="Earthquakes">
       <EarthquakeControl />
