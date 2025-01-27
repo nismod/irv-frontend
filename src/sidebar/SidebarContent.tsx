@@ -185,8 +185,25 @@ const ExposureSection = () => (
 const VulnerabilitySection = () => (
   <Section path="vulnerability" title="Vulnerability">
     <Section path="human" title="People">
-      <Layer path="human-development" title="Human Development">
+      <Layer path="human-development" title="Human Development (Subnational)">
         <HdiControl />
+      </Layer>
+      <Layer path="hdi-grid" title="Human Development (Grid)">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Global estimates of United Nations Human Development Index (HDI) on a global 0.1 degree
+            grid, from Sherman, L., et al. (2023).
+          </DataNoticeTextBlock>
+        </DataNotice>
+      </Layer>
+      <Layer path="rwi" title="Relative Wealth Index">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Predicts the relative standard of living within countries using privacy protecting
+            connectivity data, satellite imagery, and other novel data sources, from Chi et al.
+            (2022).
+          </DataNoticeTextBlock>
+        </DataNotice>
       </Layer>
       <Layer path="travel-time" title="Travel Time to Healthcare">
         <TravelTimeControl />
