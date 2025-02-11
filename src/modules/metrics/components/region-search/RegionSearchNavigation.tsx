@@ -18,13 +18,11 @@ export function RegionSearchNavigation({
   const navigate = useNavigate();
 
   const handleRegionSelected = useCallback(
-    // TODO type
-    (reg: any) => {
-      if (reg != null) {
+    (country: CountryOption) => {
+      if (country != null) {
         setTimeout(() => {
           navigate(
-            // `/metrics/regions/${reg.name}/${metricId}`,
-            `/metrics/regions/${reg.code}/${metricId}`,
+            `/metrics/regions/${country.code}/${metricId}`,
             { preventScrollReset: true }, // don't scroll to top on navigate
           );
         }, 100);

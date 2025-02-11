@@ -1,6 +1,5 @@
 import MapIcon from '@mui/icons-material/Map';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
-import { extent as d3extent } from 'd3-array';
 import { scaleSequential as d3scaleSequential } from 'd3-scale';
 import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
 import { FC, useEffect, useState } from 'react';
@@ -8,10 +7,12 @@ import { FC, useEffect, useState } from 'react';
 import CountriesBarChart from '@/modules/metrics/components/dashboard/chart/CountriesBarChart';
 import RegionsLineChart from '@/modules/metrics/components/dashboard/chart/RegionsLineChart';
 import RegionMap from '@/modules/metrics/components/dashboard/map/RegionMap';
-import { numericDomain } from '@/modules/metrics/components/lib/chart/utils';
 import { useIsMobile } from '@/use-is-mobile';
 
+import { AnnualGdlGrouped, AnnualGdlRecord } from '../../types/AnnualGdlData';
+import { DatasetExtent, DatasetExtentList } from '../../types/DatasetExtent';
 import { NationalGeo } from '../../types/NationalGeo';
+import { RegionGeo } from '../../types/RegionGeo';
 
 const getDefaultRegionKey = (dataByYearGroupedList) => {
   const dataLength = dataByYearGroupedList.length;
@@ -32,107 +33,45 @@ const getDefaultRegionKey = (dataByYearGroupedList) => {
   return null;
 };
 
-const compileTimelineDomainY = (
-  scaleAcrossCountries,
-  allDataPerYear,
-  dataFiltered,
-  yAccessor,
-): [number, number] => {
-  const domain = scaleAcrossCountries
-    ? d3extent(allDataPerYear, yAccessor)
-    : d3extent(dataFiltered, yAccessor);
-  return numericDomain(domain);
-};
-
-const compileDomainY = (
-  scaleAcrossCountries,
-  scaleAcrossYears,
-  allDataPerYear,
-  dataFiltered,
-  yAccessor,
-  selectedYear,
-): [number, number] => {
-  if (scaleAcrossYears) {
-    return compileTimelineDomainY(scaleAcrossCountries, allDataPerYear, dataFiltered, yAccessor);
-  }
-
-  if (scaleAcrossCountries) {
-    return numericDomain(
-      d3extent(
-        allDataPerYear.filter((d) => d.year === selectedYear && d.value !== null),
-        yAccessor,
-      ),
-    );
-  }
-
-  return numericDomain(
-    d3extent(
-      dataFiltered.filter((d) => d.year === selectedYear),
-      yAccessor,
-    ),
-  );
-};
-
 type DashboardChartsProps = {
-  geojson: any;
+  annualData: AnnualGdlRecord[];
+  annualDataGrouped: AnnualGdlGrouped[];
+  datasetExtent: DatasetExtent;
+  regionsGeo: RegionGeo[];
   nationalGeo: NationalGeo;
-  selectedCountryData: any;
-  dataFiltered: any[];
-  dataByYearGroupedList: any[];
-  allDataPerYear: any[];
-  scaleAcrossYears: boolean;
-  scaleAcrossCountries: boolean;
-  metricLabel: string;
   selectedYear: number;
+  metricLabel: string;
   updateSelectedYear: (year: any) => void;
 };
 
 const DashboardCharts: FC<DashboardChartsProps> = ({
-  geojson,
+  annualData,
+  annualDataGrouped,
+  datasetExtent,
+  regionsGeo,
   nationalGeo,
-  selectedCountryData,
-  dataFiltered,
-  dataByYearGroupedList,
-  allDataPerYear,
-  scaleAcrossYears,
-  scaleAcrossCountries,
-  metricLabel,
   selectedYear,
+  metricLabel,
   updateSelectedYear,
 }) => {
   const [highlightRegion, setHighlightRegion] = useState(null);
 
   const isMobile = useIsMobile();
 
-  const yAccessor = (d) => d.value;
-  const timelineDomainY = compileDomainY(
-    scaleAcrossCountries,
-    true,
-    allDataPerYear,
-    dataFiltered,
-    yAccessor,
-    selectedYear,
-  );
-  const domainY = compileDomainY(
-    scaleAcrossCountries,
-    scaleAcrossYears,
-    allDataPerYear,
-    dataFiltered,
-    yAccessor,
-    selectedYear,
-  );
+  const timelineDomainY: DatasetExtentList = [datasetExtent.min, datasetExtent.max];
+  const domainY: DatasetExtentList = [datasetExtent.min, datasetExtent.max];
 
-  const resetHighlightRegion = (dataByYearGroupedList) => {
-    setHighlightRegion(getDefaultRegionKey(dataByYearGroupedList));
+  const resetHighlightRegion = (annualDataGrouped) => {
+    setHighlightRegion(getDefaultRegionKey(annualDataGrouped));
   };
 
   useEffect(() => {
-    resetHighlightRegion(dataByYearGroupedList);
-  }, [dataByYearGroupedList]);
+    resetHighlightRegion(annualDataGrouped);
+  }, [annualDataGrouped]);
 
   const updateHighlightRegion = (regionId) => {
     if (!regionId) {
-      resetHighlightRegion(dataByYearGroupedList);
+      resetHighlightRegion(annualDataGrouped);
     } else {
       setHighlightRegion(regionId);
     }
@@ -170,7 +109,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
           gap={5}
         >
           <Stack sx={{ maxHeight: '500px', width: isMobile ? '100%' : '50%' }}>
-            {!selectedCountryData.length ? (
+            {!annualData.length ? (
               <Stack direction={'column'} alignItems={'center'}>
                 <Typography>No data available.</Typography>
               </Stack>
@@ -194,18 +133,18 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
             <RegionMap
               width="100%"
               height="300px"
-              selectedCountryData={selectedCountryData}
+              selectedCountryData={annualData}
               highlightRegion={highlightRegion}
               setHighlightRegion={updateHighlightRegion}
               selectedYear={selectedYear}
               domainY={domainY}
-              geojson={geojson}
+              geojson={regionsGeo}
               nationalGeo={nationalGeo}
               label={`${metricLabel} (${selectedYear})`}
             />
           </Stack>
 
-          {selectedCountryData.length ? (
+          {annualData.length ? (
             <Stack
               direction="row"
               justifyContent={'end'}
@@ -216,8 +155,8 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
                 xAccessor={(d) => d.year}
                 yAccessor={(d) => d.value}
                 label={metricLabel}
-                dataFiltered={dataFiltered}
-                dataByYearGroupedList={dataByYearGroupedList}
+                dataFiltered={annualData}
+                dataByYearGroupedList={annualDataGrouped}
                 highlightRegion={highlightRegion}
                 setHighlightRegion={updateHighlightRegion}
                 selectedYear={selectedYear}
@@ -231,13 +170,13 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
           )}
         </Stack>
 
-        {selectedCountryData.length ? (
+        {annualData.length ? (
           <CountriesBarChart
             label={`${metricLabel} (${selectedYear})`}
             highlightRegion={highlightRegion}
             setHighlightRegion={updateHighlightRegion}
             selectedYear={selectedYear}
-            selectedCountryData={selectedCountryData}
+            selectedCountryData={annualData}
             domainY={domainY}
             colorScale={colorScale}
           />

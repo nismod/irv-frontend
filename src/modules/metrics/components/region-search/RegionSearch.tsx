@@ -17,15 +17,14 @@ export const RegionSearch = ({
   icon?: ReactElement;
 }) => {
   return (
-    // TODO generic type
-    <Autocomplete<any>
+    <Autocomplete<CountryOption>
       sx={{
         width: '100%',
-        maxWidth: '400px',
       }}
       value={selectedRegion}
       onChange={(_, value) => onSelectedRegion(value)}
       options={regions}
+      isOptionEqualToValue={(option, value) => option.code === value.code}
       getOptionLabel={(option) => option.label}
       renderInput={(params) => (
         <TextField

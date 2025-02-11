@@ -3,8 +3,15 @@
  */
 export type AnnualGdlRecord = {
   year: number;
-  iso: string;
   gdlCode: string;
   regionName: string;
   value: number;
+};
+
+/**
+ * GDL records grouped by region
+ */
+export type AnnualGdlGrouped = {
+  regionKey: string;
+  indexData: AnnualGdlRecord[];
 };

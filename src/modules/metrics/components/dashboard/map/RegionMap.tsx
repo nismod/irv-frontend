@@ -18,7 +18,10 @@ import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
 import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 
 import { useBasemapStyle } from '@/map/use-basemap-style';
+import { AnnualGdlRecord } from '@/modules/metrics/types/AnnualGdlData';
+import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
 import { NationalGeo } from '@/modules/metrics/types/NationalGeo';
+import { RegionGeo } from '@/modules/metrics/types/RegionGeo';
 
 import { MapLabel } from './MapLabel';
 import { MapLegend } from './MapLegend';
@@ -76,12 +79,12 @@ export default function RegionMap({
 }: {
   width: BoxProps['width'];
   height: BoxProps['height'];
-  selectedCountryData: any;
+  selectedCountryData: AnnualGdlRecord[];
   highlightRegion: string;
-  setHighlightRegion: any;
+  setHighlightRegion: (regionId: string) => void;
   selectedYear: number;
-  domainY: any;
-  geojson: any;
+  domainY: DatasetExtentList;
+  geojson: RegionGeo[];
   nationalGeo: NationalGeo;
   label: string;
 }) {
@@ -163,7 +166,7 @@ function RegionMapViewer({
 
   const getLineWidth = useCallback(
     (geoJsonEntry) => {
-      const gdlCode = geoJsonEntry.properties.gdl_code;
+      const gdlCode = geoJsonEntry.properties.gdlCode;
       return gdlCode === highlightRegion ? 2 : 0;
     },
     [highlightRegion],
@@ -179,7 +182,7 @@ function RegionMapViewer({
   const getColor = useCallback(
     (geoJsonEntry: Feature): Color => {
       const NOT_FOUND_COLOR = [255, 255, 255, 100];
-      const gdlCode = geoJsonEntry.properties.gdl_code;
+      const gdlCode = geoJsonEntry.properties.gdlCode;
 
       const maybeRegionData = selectedCountryData.find(
         (d) => d.gdlCode.toLowerCase() === gdlCode && d.year === selectedYear,
@@ -187,8 +190,6 @@ function RegionMapViewer({
 
       if (!maybeRegionData) return NOT_FOUND_COLOR;
 
-      // const maybeRegionValue = maybeRegionData[selectedYear];
-      // if (!maybeRegionValue) return NOT_FOUND_COLOR;
       const maybeRegionValue = maybeRegionData.value;
 
       const colorString = colorScale(maybeRegionValue);
@@ -218,10 +219,10 @@ function RegionMapViewer({
             filled: true,
             onHover: (e) => {
               const eventObject = e.object;
-              if (!eventObject || !eventObject.properties || !eventObject.properties.gdl_code) {
+              if (!eventObject || !eventObject.properties || !eventObject.properties.gdlCode) {
                 setHighlightRegion(null);
               } else {
-                setHighlightRegion(eventObject.properties.gdl_code);
+                setHighlightRegion(eventObject.properties.gdlCode);
               }
             },
             getFillColor: (d) => getColor(d),
