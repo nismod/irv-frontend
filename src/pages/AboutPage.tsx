@@ -15,6 +15,34 @@ import {
 } from './ui/ArticleContainer';
 import { HeadingBox, HeadingBoxText } from './ui/HeadingBox';
 
+function dateNowString() {
+  const d = new Date(Date.now());
+  return d.toISOString().split('T')[0];
+}
+
+function yearNowString() {
+  const d = new Date(Date.now());
+  return d.toISOString().split('-')[0];
+}
+
+function localeDateNowString() {
+  const d = new Date(Date.now());
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+const BIB_TEXT = `@misc{griViewer,
+  title = {Global Resilience Index Risk Viewer},
+  author = {Russell, T. and Ziarkowski, M. and Thomas, F. and Nicholas, C. and Pant, R. and Bernhofen, M. and Jaramillo, D. and Leonova, N. and Shiarella, A. and Lestang, T. and Robertson, M. and Lemmen, R. and Glasgow, G. and Fowler, T. and Ranger, N. and Hall, J.~W.},
+  publisher={University of Oxford},
+  url = {https://global.infrastructureresilience.org/},
+  year = {${yearNowString()}}
+  urldate = {${dateNowString()}},
+}`;
+
+const CITE_TEXT = `Russell, T., et al. ${yearNowString()}. Global Resilience Index Risk Viewer.
+[online] Available at: <https://global.infrastructureresilience.org/>
+[Accessed ${localeDateNowString()}].`;
+
 export const AboutPage = () => (
   <ArticleContainer>
     <HeadingBox>
@@ -51,6 +79,31 @@ export const AboutPage = () => (
             <li>Nicola Ranger, discussion, direction and feedback</li>
             <li>Jim Hall, discussion, direction and feedback</li>
           </ul>
+        </ArticleParagraph>
+
+        <ArticleParagraph>
+          Please cite GRI Risk Viewer if you use it, and{' '}
+          <ExtLink href="mailto:tom.russell@ouce.ox.ac.uk?subject=GRI Risk Viewer">
+            contact us
+          </ExtLink>{' '}
+          if you can share evidence of use cases. Citations and impact can support continued
+          development. For example, cite as follows:
+        </ArticleParagraph>
+
+        <ArticleParagraph>
+          <blockquote style={{ borderLeft: '4px solid', marginLeft: 0, paddingLeft: '1em' }}>
+            {CITE_TEXT}
+          </blockquote>
+        </ArticleParagraph>
+
+        <ArticleParagraph>Or add this bibtex snippet to your citation manager:</ArticleParagraph>
+
+        <ArticleParagraph>
+          <pre
+            style={{ overflowX: 'scroll', fontSize: '1rem', background: '#eee', padding: '0.5em' }}
+          >
+            <code>{BIB_TEXT}</code>
+          </pre>
         </ArticleParagraph>
 
         <ArticleParagraph>
