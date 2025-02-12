@@ -59,6 +59,18 @@ export const Component = () => {
             </ArticleParagraph>
 
             <ArticleParagraph>
+              Datasets are also available for download and reference for archival purposes from{' '}
+              <ExtLink href="https://zenodo.org/communities/ccg/records?q=%22Infrastructure%20Climate%20Resilience%20Assessment%20Data%20Starter%20Kit%22&l=list&p=1&s=10&sort=newest">
+                Zenodo
+              </ExtLink>
+              . There is a full list of available records at{' '}
+              <ExtLink href="https://github.com/nismod/irv-datapkg/blob/main/records.csv">
+                nismod/irv-datapkg
+              </ExtLink>
+              .
+            </ArticleParagraph>
+
+            <ArticleParagraph>
               For programmatic interactions with this service, please also refer to the{' '}
               <ExtLink href="https://global.infrastructureresilience.org/extract/redoc">
                 API documentation
