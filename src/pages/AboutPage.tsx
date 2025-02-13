@@ -203,10 +203,10 @@ export const AboutPage = () => (
         </Stack>
 
         <ArticleParagraph>
-          This project is funded by the UK Natural Environment Research Council (NERC) through the
-          UK Centre for Greening Finance and Investment, the World Bank Group, Insurance for
-          Development Forum, and the UK Foreign Commonwealth and Development Office (FCDO) through
-          the Climate Compatible Growth (CCG) programme.
+          This project is funded by: the UK Natural Environment Research Council (NERC) through the
+          UK Centre for Greening Finance and Investment; the World Bank Group; Insurance for
+          Development Forum; the UK Foreign Commonwealth and Development Office (FCDO) through the
+          Climate Compatible Growth (CCG) programme; and the Global Centre on Adaptation (GCA).
         </ArticleParagraph>
 
         <Stack
@@ -232,14 +232,28 @@ export const AboutPage = () => (
           <ExtLink href="https://climatecompatiblegrowth.com/">
             <img height="100" src="/logo-ccg.png" alt="Climate Compatible Growth" />
           </ExtLink>
+          <ExtLink href="https://gca.org/">
+            <img height="100" src="/logo-gca.png" alt="Global Centre on Adaptation" />
+          </ExtLink>
         </Stack>
 
         <ArticleParagraph>
-          This builds on previous research and development funded by UK AID through the UK Foreign
-          and Commonwealth Development Office (FCDO) as part of a project with the Government of
-          Jamaica (GoJ) under the Coalition for Climate Resilient Investment&rsquo;s (CCRI) work on
-          "Systemic Resilience" in collaboration with the Green Climate Fund, and also through the
-          High-Volume Transport Applied Research project.
+          The University of Oxford, in partnership with the Global Centre for Adaptation (GCA),
+          developed analytical tools to identify and map opportunities for Nature-based Solutions
+          (NbS) projects that enhance infrastructure resilience. These tools establish a common set
+          of metrics to robustly quantify the benefits of NbS for infrastructure resilience,
+          alongside broader outcomes such as carbon sequestration and biodiversity gains. By
+          providing spatial and financial analytics, they help investors and governments prioritize
+          NbS investments that offer both financial returns and measurable social benefits.
+          Developed at a global scale, these tools facilitate increased financial flows toward NbS
+          for climate-resilient infrastructure systems.
+        </ArticleParagraph>
+        <ArticleParagraph>
+          This tool builds on previous research and development funded by UK AID through the UK
+          Foreign and Commonwealth Development Office (FCDO) as part of a project with the
+          Government of Jamaica (GoJ) under the Coalition for Climate Resilient Investment&rsquo;s
+          (CCRI) work on "Systemic Resilience" in collaboration with the Green Climate Fund, and
+          also through the High-Volume Transport Applied Research project.
         </ArticleParagraph>
         <ArticleParagraph>
           Similarly, earlier versions of the tool piloted in Argentina and South-East Asia were
@@ -299,14 +313,14 @@ export const AboutPage = () => (
           <ExtLink href="https://www.jbarisk.com/">JBA</ExtLink>,{' '}
           <ExtLink href="https://www.nasdaq.com/solutions/nasdaq-risk-platform">NASDAQ</ExtLink>,{' '}
           <ExtLink href="https://oasislmf.org/">OASIS Loss Modelling Framework</ExtLink>,{' '}
-          <ExtLink href="https://www.aon.com/home/index">Aon</ExtLink>, and the{' '}
+          <ExtLink href="https://www.aon.com/home/index">Aon</ExtLink>, the{' '}
           <ExtLink href="https://www.worldbank.org/en/home">World Bank</ExtLink> (
           <ExtLink href="https://www.gfdrr.org/en">GFDRR</ExtLink> and{' '}
           <ExtLink href="https://www.worldbank.org/en/programs/disaster-risk-financing-and-insurance-program">
             DRFIP
           </ExtLink>
-          ). Our ambition is to expand these technical collaborations over time to build the climate
-          risk data ecosystem.
+          ), and <ExtLink href="https://gca.org">GCA</ExtLink>. Our ambition is to expand these
+          technical collaborations over time to build the climate risk data ecosystem.
         </ArticleParagraph>
       </ArticleSection>
     </ArticleContentContainer>
