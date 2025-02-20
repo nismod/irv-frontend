@@ -233,7 +233,7 @@ export const AboutPage = () => (
             <img height="100" src="/logo-ccg.png" alt="Climate Compatible Growth" />
           </ExtLink>
           <ExtLink href="https://gca.org/">
-            <img height="100" src="/logo-gca.png" alt="Global Centre on Adaptation" />
+            <img height="80" src="/logo-gca.png" alt="Global Centre on Adaptation" />
           </ExtLink>
         </Stack>
 
