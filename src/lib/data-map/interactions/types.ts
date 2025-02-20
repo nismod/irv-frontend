@@ -17,6 +17,9 @@ export interface InteractionGroupConfig {
   pickMultiple?: boolean;
   /** Do the layers in this interaction group use deck.gl's autoHighlight feature? */
   usesAutoHighlight?: boolean;
+
+  /** Should selection be cleared if user clicks on an empty area */
+  deselectOnClickEmpty?: boolean;
 }
 
 /** Data for an interaction target with a raster layer */

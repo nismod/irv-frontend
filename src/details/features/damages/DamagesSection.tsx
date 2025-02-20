@@ -24,7 +24,7 @@ export const hazardDataParamsState = selector({
     get(waitForAll(_.mapValues(HAZARD_DOMAINS_CONFIG, (cfg, hazard) => paramsConfigState(hazard)))),
 });
 
-export const DamagesSection = ({ fd }) => {
+export const DamagesSection = ({ fd }: { fd: FeatureOut }) => {
   useSyncValueToRecoil(fd, featureState);
 
   return (

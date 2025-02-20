@@ -100,10 +100,10 @@ export function humanDevelopmentLayer(
     dataAccessFn: ({ field }) => featureProperty(field),
     renderDetails(selection: InteractionTarget<VectorTarget>) {
       const feature = selection.target.feature;
-      const detailsComponent = HDI_REGION_LEVEL_DETAILS[regionLevel];
+      const DetailsComponent = HDI_REGION_LEVEL_DETAILS[regionLevel];
 
       return React.createElement(SimpleAssetDetails, {
-        detailsComponent,
+        DetailsComponent,
         feature: feature,
         label: `Human Development (${regionLevelLabel})`,
       });

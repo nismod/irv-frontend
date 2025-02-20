@@ -7,13 +7,18 @@ import { boundingBoxLayer } from '@/lib/deck/layers/bounding-box-layer';
 
 export interface FeatureWithBbox {
   bbox: BoundingBox;
-  id: string;
+  id: string | number;
 }
 
 export const boundedFeatureState = atom<FeatureWithBbox>({
   key: 'boundedFeatureBboxState',
   default: null,
 });
+
+/** Returns buffer in kilometers for the feature bounding box, based on current zoom level */
+function calculateZoomBasedBuffer(zoom: number): number {
+  return Math.max(0.5, 1000 / Math.pow(2, zoom));
+}
 
 export const featureBoundingBoxLayerState = selector<ViewLayer>({
   key: 'featureBoundingBoxLayerState',
@@ -22,11 +27,13 @@ export const featureBoundingBoxLayerState = selector<ViewLayer>({
 
     if (!bbox) return null;
 
-    const geom = bboxPolygon(extendBbox(bbox, 5));
-
     return {
       id: `feature-bounding-box-${id}`,
-      fn: ({ deckProps }) => boundingBoxLayer({ bboxGeom: geom }, deckProps),
+      fn: ({ deckProps, zoom }) => {
+        const zoomBasedPaddingKm = calculateZoomBasedBuffer(zoom);
+        const geom = bboxPolygon(extendBbox(bbox, zoomBasedPaddingKm));
+        return boundingBoxLayer({ bboxGeom: geom }, deckProps);
+      },
     };
   },
 });

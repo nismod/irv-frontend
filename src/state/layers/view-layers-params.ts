@@ -7,7 +7,7 @@ import { IrvViewLayerParams, ViewLayer } from '@/lib/data-map/view-layers';
 import { viewLayersState } from './view-layers';
 
 export const viewLayersParamsState = makeViewLayerParamsState<IrvViewLayerParams>({
-  key: 'viewLayersState',
+  key: 'viewLayersParamsState',
   viewLayersState,
   getParamsForViewLayer:
     (viewLayer: ViewLayer) =>

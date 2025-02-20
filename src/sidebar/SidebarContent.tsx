@@ -13,6 +13,7 @@ import { RecoilStateFamily } from '@/lib/recoil/types';
 
 import { viewState, ViewType } from '@/state/view';
 
+import { NbsAdaptationSection } from './sections/adaptation/NbsAdaptationSection';
 import { BuildingDensityControl } from './sections/buildings/BuildingDensityControl';
 import {
   CoastalControl,
@@ -43,6 +44,7 @@ const viewLabels = {
   exposure: 'Exposure',
   vulnerability: 'Vulnerability',
   risk: 'Risk',
+  adaptation: 'Adaptation Options',
 };
 
 export const sidebarVisibilityToggleState = atomFamily({
@@ -246,7 +248,15 @@ const RiskSection = () => (
   </Section>
 );
 
-const TOP_LEVEL_SECTIONS = ['hazards', 'exposure', 'vulnerability', 'risk'];
+const AdaptationSection = () => (
+  <Section path="adaptation" title="Adaptation Options">
+    <Layer path="nbs" title="Nature-Based Solutions">
+      <NbsAdaptationSection />
+    </Layer>
+  </Section>
+);
+
+const TOP_LEVEL_SECTIONS = ['hazards', 'exposure', 'vulnerability', 'risk', 'adaptation'];
 
 const VIEW_TRANSITIONS: Record<ViewType, any> = {
   hazard: {
@@ -285,6 +295,15 @@ const VIEW_TRANSITIONS: Record<ViewType, any> = {
       hidePaths: ['risk'],
     },
   },
+  adaptation: {
+    enter: {
+      showPaths: ['adaptation', 'adaptation/nbs'],
+      hideRest: true,
+    },
+    exit: {
+      hidePaths: ['adaptation'],
+    },
+  },
 };
 
 const viewTransitionEffect = ({ set }, newView, previousView) => {
@@ -321,10 +340,15 @@ export const SidebarContent: FC<{}> = () => {
     exposure: <ExposureSection key="exposure" />,
     vulnerability: <VulnerabilitySection key="vulnerability" />,
     risk: null,
+    adaptation: null,
   };
 
   if (view === 'risk') {
     sections['risk'] = <RiskSection key="risk" />;
+  }
+
+  if (view === 'adaptation') {
+    sections['adaptation'] = <AdaptationSection key="adaptation" />;
   }
 
   return (

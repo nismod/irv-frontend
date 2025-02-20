@@ -169,7 +169,10 @@ export function toLabelLookup<T extends string>(valueLabels: ValueLabel<T>[]) {
  */
 export type Subset<Original extends string, SubUnion extends Original> = SubUnion;
 
-export function makeOptions<T>(values: T[], labelFn = (x: T) => x) {
+export function makeOptions<T extends string>(
+  values: T[],
+  labelFn: (x: T) => string = (x: T) => x,
+) {
   return values.map((val) => ({
     value: val,
     label: labelFn(val),

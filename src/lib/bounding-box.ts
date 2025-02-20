@@ -1,3 +1,5 @@
+import { parseSync } from '@loaders.gl/core';
+import { WKTLoader } from '@loaders.gl/wkt';
 import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import buffer from '@turf/buffer';
@@ -43,4 +45,10 @@ export function geoJsonToAppBoundingBox(geoJson: GeoJSON): BoundingBox {
 
 export function extendBbox(boundingBox: BoundingBox, kilometers: number): BoundingBox {
   return bbox(buffer(bboxPolygon(boundingBox), kilometers)) as BoundingBox;
+}
+
+/** Parse a bounding box geometry expressed as a WKT string and convert it to a `BoundingBox` object */
+export function bboxWktToAppBoundingBox(bboxWkt: string) {
+  const bboxGeom = parseSync(bboxWkt, WKTLoader);
+  return bbox(bboxGeom) as BoundingBox;
 }
