@@ -29,6 +29,13 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
       gcm: ['epoch', 'hazard'],
     },
   },
+  jrc_flood: {
+    domain: 'jrc_flood',
+    defaults: {
+      rp: 100,
+    },
+    dependencies: {},
+  },
   coastal: {
     domain: 'aqueduct',
     defaults: {
@@ -77,6 +84,13 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     dependencies: {
       rcp: ['epoch'],
     },
+  },
+  landslide: {
+    domain: 'landslide',
+    defaults: {
+      subtype: 'rainfall_mean',
+    },
+    dependencies: {},
   },
   earthquake: {
     domain: 'earthquake',

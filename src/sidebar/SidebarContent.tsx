@@ -23,6 +23,8 @@ import {
   EarthquakeControl,
   ExtremeHeatControl,
   FluvialControl,
+  JRCFloodControl,
+  LandslideControl,
 } from './sections/hazards/HazardsControl';
 import { IndustryControl } from './sections/industry/IndustryControl';
 import { NetworkControl } from './sections/networks/NetworkControl';
@@ -70,10 +72,13 @@ export const sidebarPathVisibilityState: RecoilStateFamily<boolean, string> =
 
 const HazardsSection = () => (
   <Section path="hazards" title="Hazards">
-    <Layer path="fluvial" title="River Flooding">
+    <Layer path="fluvial" title="River Flooding (Aqueduct)">
       <FluvialControl />
     </Layer>
-    <Layer path="coastal" title="Coastal Flooding">
+    <Layer path="jrc_flood" title="River Flooding (JRC)">
+      <JRCFloodControl />
+    </Layer>
+    <Layer path="coastal" title="Coastal Flooding (Aqueduct)">
       <CoastalControl />
     </Layer>
     <Layer path="cyclone" title="Tropical Cyclones (STORM)">
@@ -96,6 +101,9 @@ const HazardsSection = () => (
     </Layer>
     <Layer path="drought" title="Droughts">
       <DroughtControl />
+    </Layer>
+    <Layer path="landslide" title="Landslide">
+      <LandslideControl />
     </Layer>
     <Layer path="earthquake" title="Earthquakes">
       <EarthquakeControl />
@@ -179,8 +187,25 @@ const ExposureSection = () => (
 const VulnerabilitySection = () => (
   <Section path="vulnerability" title="Vulnerability">
     <Section path="human" title="People">
-      <Layer path="human-development" title="Human Development">
+      <Layer path="human-development" title="Human Development (Subnational)">
         <HdiControl />
+      </Layer>
+      <Layer path="hdi-grid" title="Human Development (Grid)">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Global estimates of United Nations Human Development Index (HDI) on a global 0.1 degree
+            grid, from Sherman, L., et al. (2023).
+          </DataNoticeTextBlock>
+        </DataNotice>
+      </Layer>
+      <Layer path="rwi" title="Relative Wealth Index">
+        <DataNotice>
+          <DataNoticeTextBlock>
+            Predicts the relative standard of living within countries using privacy protecting
+            connectivity data, satellite imagery, and other novel data sources, from Chi et al.
+            (2022).
+          </DataNoticeTextBlock>
+        </DataNotice>
       </Layer>
       <Layer path="travel-time" title="Travel Time to Healthcare">
         <TravelTimeControl />

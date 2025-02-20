@@ -5,6 +5,7 @@ import { makeViewLayersState } from '@/lib/data-map/state/make-view-layers-state
 import { buildingDensityLayerState } from './data-layers/building-density';
 import { cddLayersState } from './data-layers/cdd';
 import { hazardLayerState } from './data-layers/hazards';
+import { hdiGridLayerState } from './data-layers/hdi-grid';
 import { healthcareLayersState } from './data-layers/healthcare';
 import { humanDevelopmentLayerState } from './data-layers/human-development';
 import { industryLayersState } from './data-layers/industry';
@@ -23,6 +24,7 @@ import {
   protectedAreasPolygonLayerState,
 } from './data-layers/protected-areas';
 import { regionalExposureLayerState } from './data-layers/regional-risk';
+import { rwiLayerState } from './data-layers/rwi';
 import { topographyLayersState } from './data-layers/topography';
 import { travelTimeLayerState } from './data-layers/travel-time';
 import { featureBoundingBoxLayerState } from './ui-layers/feature-bbox';
@@ -46,6 +48,7 @@ export const viewLayersState = makeViewLayersState({
         travelTimeLayerState,
         topographyLayersState,
         cddLayersState,
+        hdiGridLayerState,
 
         // vector layers that cover all/most of land
         humanDevelopmentLayerState,
@@ -56,6 +59,7 @@ export const viewLayersState = makeViewLayersState({
         hazardLayerState,
         populationExposureLayerState,
         nbsLayerState,
+        rwiLayerState,
 
         // point/line layers
         networkLayersState,

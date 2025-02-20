@@ -13,6 +13,7 @@ import { GCMControl } from '@/sidebar/ui/params/GCMControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
 import { ReturnPeriodControl } from '@/sidebar/ui/params/ReturnPeriodControl';
 import { SSPControl } from '@/sidebar/ui/params/SSPControl';
+import { TriggerControl } from '@/sidebar/ui/params/TriggerControl';
 import { hazardDomainsConfigState } from '@/state/data-domains/hazards';
 import { paramsConfigState, useLoadParamsConfig } from '@/state/data-params';
 
@@ -65,6 +66,20 @@ export const FluvialControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
+    </HazardControl>
+  );
+};
+
+export const JRCFloodControl = () => {
+  return (
+    <HazardControl type="jrc_flood">
+      <DataNotice>
+        <DataNoticeTextBlock>
+          Map shows river flooding depths for different return periods, from JRC Global Flood Hazard
+          Maps (2024).
+        </DataNoticeTextBlock>
+      </DataNotice>
+      <ReturnPeriodControl />
     </HazardControl>
   );
 };
@@ -166,6 +181,22 @@ export const DroughtControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
+    </HazardControl>
+  );
+};
+
+export const LandslideControl = () => {
+  return (
+    <HazardControl type="landslide">
+      <DataNotice>
+        <DataNoticeTextBlock>
+          Map shows landslide susceptibility, from Arup (2021) Global Landslide Hazard Map produced
+          for the World Bank and GFDRR.
+        </DataNoticeTextBlock>
+      </DataNotice>
+      <InputRow>
+        <TriggerControl />
+      </InputRow>
     </HazardControl>
   );
 };

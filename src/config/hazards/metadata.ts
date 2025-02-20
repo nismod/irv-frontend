@@ -6,18 +6,25 @@ import { makeOrderingCheck } from '@/lib/helpers';
 
 export const HAZARD_TYPES = [
   'fluvial',
+  'jrc_flood',
   'coastal',
   'cyclone',
   'cyclone_iris',
   'extreme_heat',
   'earthquake',
   'drought',
+  'landslide',
 ] as const;
 
 export type HazardType = (typeof HAZARD_TYPES)[number];
 
 export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
   fluvial: {
+    scheme: 'blues',
+    range: [0, 5],
+    rangeTruncated: [false, true],
+  },
+  jrc_flood: {
     scheme: 'blues',
     range: [0, 5],
     rangeTruncated: [false, true],
@@ -48,6 +55,11 @@ export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
     scheme: 'oranges',
     range: [0, 1],
   },
+  landslide: {
+    scheme: 'greens',
+    range: [0, 0.2],
+    rangeTruncated: [false, true],
+  },
 };
 
 export interface HazardMetadata {
@@ -76,16 +88,24 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
     },
   },
   fluvial: {
-    label: 'River Flooding',
-    formatValue: makeValueFormat('_m', { maximumFractionDigits: 2 }),
+    label: 'River Flooding (Aqueduct)',
+    formatValue: makeValueFormat('_m', { maximumFractionDigits: 1 }),
     getPath: (hazardParams) => {
       const { rp, rcp, epoch, gcm } = hazardParams;
       return `aqueduct/fluvial/${rp}/${rcp}/${epoch}/${gcm}`;
     },
   },
+  jrc_flood: {
+    label: 'River Flooding (JRC)',
+    formatValue: makeValueFormat('_m', { maximumFractionDigits: 1 }),
+    getPath: (hazardParams) => {
+      const { rp } = hazardParams;
+      return `jrc_flood/${rp}`;
+    },
+  },
   coastal: {
     label: 'Coastal Flooding',
-    formatValue: makeValueFormat('_m', { maximumFractionDigits: 2 }),
+    formatValue: makeValueFormat('_m', { maximumFractionDigits: 1 }),
     getPath: (hazardParams) => {
       const { rp, rcp, epoch, gcm } = hazardParams;
       return `aqueduct/coastal/${rp}/${rcp}/${epoch}/${gcm}`;
@@ -120,26 +140,39 @@ export const HAZARDS_METADATA: Record<HazardType, HazardMetadata> = {
       return `isimip/drought/${metric}/${rcp}/${epoch}/${gcm}/${impact_model}`;
     },
   },
+  landslide: {
+    label: 'Landslide',
+    formatValue: makeValueFormat('_', { maximumFractionDigits: 2 }),
+    legendAnnotation: 'Annual probability of landslide',
+    getPath: (hazardParams) => {
+      const { subtype } = hazardParams;
+      return `landslide/${subtype}`;
+    },
+  },
 };
 
 const hazardOrdering = makeOrderingCheck<HazardType>();
 
 export const HAZARDS_MAP_ORDER = hazardOrdering([
   'earthquake',
+  'landslide',
   'cyclone',
   'cyclone_iris',
   'drought',
   'extreme_heat',
   'fluvial',
+  'jrc_flood',
   'coastal',
 ]);
 
 export const HAZARDS_UI_ORDER = hazardOrdering([
   'fluvial',
+  'jrc_flood',
   'coastal',
   'cyclone',
   'cyclone_iris',
   'drought',
   'extreme_heat',
+  'landslide',
   'earthquake',
 ]);
