@@ -76,11 +76,11 @@ export function scopeRegionsLayer(
 
             pointType: 'text',
             getText: (f) => f.properties[nameProperty] + '',
-            getTextSize: 20,
+            getTextSize: 14,
             getTextColor: color,
-            textFontFamily: 'Arial',
+            textFontFamily: 'sans-serif',
             textFontWeight: 600,
-
+            textCharacterSet: 'auto',
             // display the labels above other deck layers
             getPolygonOffset: ({ layerIndex }) => [0, -layerIndex * 100 - 2000],
 

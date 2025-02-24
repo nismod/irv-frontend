@@ -28,11 +28,16 @@ export const NbsDetails: FC<DetailsComponentProps> = ({ f }) => {
     <>
       <DetailHeader>{f.id}</DetailHeader>
       <List>
-        <DataItem label="Land use" value={f.option_landuse} />
-        <DataItem label="GADM 0" value={f.GID_0} />
-        <DataItem label="GADM 1" value={f.GID_1} />
-        <DataItem label="GADM 2" value={f.GID_2} />
-        <DataItem label="HYBAS ID" value={f.HYBAS_ID} maximumSignificantDigits={10} />
+        <DataItem label="Cost of natural regeneration (USD/ha)" value={f.regen_cost_usd_per_ha} />
+        <DataItem label="Cost of native planting (USD/ha)" value={f.planting_cost_usd_per_ha} />
+        <DataItem label="Relative biodiversity benefit score" value={f.biodiversity_benefit} />
+        <DataItem label="Carbon benefit (t/ha)" value={f.carbon_benefit_t_per_ha} />
+        <DataItem label="Area (ha)" value={f.area_ha} />
+        {f.option_landuse ? <DataItem label="Current land use" value={f.option_landuse} /> : null}
+        {f.option_shoreline ? (
+          <DataItem label="Shoreline dynamics" value={f.option_shoreline} />
+        ) : null}
+        <DataItem label="HYBAS ID" value={'#' + f.HYBAS_ID} />
       </List>
     </>
   );
@@ -100,7 +105,7 @@ const AdaptationOptionsTable: FC<{ adaptations: Adaptation[] }> = ({ adaptations
             </TableCell>
             <TableCell sx={padding}>Adaptation type</TableCell>
             <TableCell sx={padding} align="right">
-              Avoided <abbr title="Expected Annual Damages">EAD</abbr>
+              Baseline <abbr title="Expected Annual Damages">EAD</abbr>
             </TableCell>
           </TableRow>
         </TableHead>

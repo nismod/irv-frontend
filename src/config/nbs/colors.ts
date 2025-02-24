@@ -31,4 +31,11 @@ export const NBS_ADAPTATION_COLORMAPS = {
 export const NBS_LANDUSE_COLORS = makeColorConfig({
   crops: '#f4a582',
   other: '#92c5de',
+  bare: '#eeeeee',
+});
+
+export const NBS_SHORELINE_COLORS = makeColorConfig({
+  accreting: '#f4a582',
+  retreating: '#92c5de',
+  fast_retreating: '#eeeeee',
 });

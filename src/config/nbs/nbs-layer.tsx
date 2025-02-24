@@ -51,7 +51,7 @@ export function nbsViewLayer(
           hoveredObject={hover}
           label={`Nature-based solutions (${label})`}
           color={color}
-          idValue={feature.id}
+          idValue={'#' + feature.id}
         />
       );
     },

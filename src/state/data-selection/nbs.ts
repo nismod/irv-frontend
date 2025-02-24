@@ -22,7 +22,7 @@ import {
 
 export const nbsAdaptationTypeState = atom<NbsAdaptationType>({
   key: 'nbsAdaptationTypeState',
-  default: 'tree_planting',
+  default: 'slope_vegetation:natural_regeneration',
 });
 
 export const nbsRegionScopeLevelState = atom<NbsRegionScopeLevel>({
@@ -111,7 +111,7 @@ export const nbsAdaptationScopeSpecState = selector<ScopeSpec>({
 
 export const nbsAdaptationHazardState = atom<NbsHazardType>({
   key: 'nbsAdaptationHazardState',
-  default: 'ls_sum',
+  default: 'ls',
 });
 
 // === NBS Data Variable State ===
@@ -159,7 +159,7 @@ export const nbsFieldSpecState = selector<FieldSpec>({
         hazard: nbsAdaptationHazard,
         rcp: 'baseline',
         adaptation_name: nbsAdaptationType,
-        adaptation_protection_level: 100,
+        adaptation_protection_level: 1,
       },
       fieldParams: {},
     };
