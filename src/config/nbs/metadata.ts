@@ -184,7 +184,6 @@ export const NBS_DATA_VARIABLE_METADATA = makeConfig<NbsDataVariableMetadata, Nb
       },
       getMetadata: (f) => {
         const shoreline_type = f.properties.option_shoreline;
-        console.log(f.properties);
         const { label, color } = NBS_SHORELINE_METADATA[shoreline_type];
         return { label, color };
       },
