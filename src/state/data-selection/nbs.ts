@@ -27,7 +27,7 @@ export const nbsAdaptationTypeState = atom<NbsAdaptationType>({
 
 export const nbsRegionScopeLevelState = atom<NbsRegionScopeLevel>({
   key: 'nbsRegionScopeLevelState',
-  default: 'adm1',
+  default: 'adm0',
 });
 
 export const nbsRegionScopeLevelIdPropertyState = selector<string>({

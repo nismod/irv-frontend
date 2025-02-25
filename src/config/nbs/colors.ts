@@ -10,8 +10,14 @@ import { makeColorConfig } from '@/lib/helpers';
 export const NBS_ADAPTATION_COLORMAPS = {
   avoided_ead_mean: {
     scale: d3Scale.scaleSequential,
-    scheme: discardSides(d3ScaleChromatic.interpolateBlues, 0.2, 0.2),
-    range: [0, 1e5],
+    scheme: discardSides(
+      (n) => {
+        return d3ScaleChromatic.interpolateMagma(1 - n);
+      },
+      0.2,
+      0.2,
+    ),
+    range: [0, 1e6],
     empty: '#ccc',
   },
   adaptation_cost: {
@@ -28,14 +34,11 @@ export const NBS_ADAPTATION_COLORMAPS = {
   },
 } satisfies Record<string, ColorSpec>;
 
-export const NBS_LANDUSE_COLORS = makeColorConfig({
+export const NBS_COLORS = makeColorConfig({
   crops: '#f4a582',
   other: '#92c5de',
   bare: '#eeeeee',
-});
-
-export const NBS_SHORELINE_COLORS = makeColorConfig({
-  accreting: '#f4a582',
-  retreating: '#92c5de',
-  fast_retreating: '#eeeeee',
+  accreting: '#25d582',
+  retreating: '#ebca36',
+  retreating_fast: '#a81a1a',
 });

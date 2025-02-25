@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { selectionState } from '@/lib/data-map/interactions/interaction-state';
@@ -17,7 +17,7 @@ import {
   NbsHazardType,
   NbsRegionScopeLevel,
 } from '@/config/nbs/metadata';
-import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
+import { DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import {
   nbsAdaptationHazardState,
@@ -30,29 +30,47 @@ export const NbsAdaptationSection = () => {
   const [adaptationType, setAdaptationType] = useRecoilState(nbsAdaptationTypeState);
   const [scopeLevel, setScopeLevel] = useRecoilState(nbsRegionScopeLevelState);
   const [colorBy, setColorBy] = useRecoilState(nbsVariableState);
-  const [, setScopeRegionSelection] = useRecoilState(selectionState('scope_regions'));
+  const setScopeRegionSelection = useSetRecoilState(selectionState('scope_regions'));
+  const setHazard = useSetRecoilState(nbsAdaptationHazardState);
 
   const handleScopeLevelChange = (newScopeLevel: NbsRegionScopeLevel) => {
     setScopeLevel(newScopeLevel);
     setScopeRegionSelection(null);
   };
 
-  const { showHazard } = NBS_DATA_VARIABLE_METADATA[colorBy];
-
   const colorByOptions = useDataVariableOptions(adaptationType);
+
+  const useAdaptationTypeChange = (newAdaptationType: NbsAdaptationType) => {
+    setAdaptationType(newAdaptationType);
+    setHazard(NBS_HAZARDS_PER_ADAPTATION_TYPE[newAdaptationType][0]);
+    const newColorByOptions = useDataVariableOptions(newAdaptationType);
+    const colorByOptionValues = newColorByOptions.map((o) => o.value);
+    if (!colorByOptionValues.includes(colorBy)) {
+      setColorBy(colorByOptionValues[0]);
+    }
+  };
+
+  const { showHazard } = NBS_DATA_VARIABLE_METADATA[colorBy];
 
   return (
     <>
-      <DataNotice>
-        <DataNoticeTextBlock>
-          Map shows the avoided damages for Nature-Based Solutions adaptation options
-        </DataNoticeTextBlock>
-      </DataNotice>
+      <DataNoticeTextBlock>
+        Map shows <strong>preliminary</strong> results from a University of Oxford and GCA project
+        for global screening of nature-based solutions (NbS) "opportunity areas" for infrastructure
+        resilience.
+        <br />
+        <br />
+        Baseline EAD is the modelled expected annual damages (from coastal flooding, river flooding
+        or landslides) to transport infrastructure within an estimated area of effect of the NbS
+        areas.
+        <br />
+        <br />
+      </DataNoticeTextBlock>
       <InputSection>
         <ParamDropdown<NbsAdaptationType>
           title="Adaptation type:"
           value={adaptationType}
-          onChange={setAdaptationType}
+          onChange={useAdaptationTypeChange}
           options={NBS_ADAPTATION_TYPE_LABELS}
         />
       </InputSection>

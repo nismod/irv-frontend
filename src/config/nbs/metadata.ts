@@ -6,7 +6,7 @@ import { FormatFunction, makeValueFormat } from '@/lib/formats';
 import { makeConfig, makeOptions } from '@/lib/helpers';
 
 import { AssetMetadata } from '../assets/metadata';
-import { NBS_LANDUSE_COLORS, NBS_SHORELINE_COLORS } from './colors';
+import { NBS_COLORS } from './colors';
 
 // === Adaptation Type ===
 
@@ -47,6 +47,14 @@ export const NBS_ADAPTATION_TYPE_LABELS: ValueLabel<NbsAdaptationType>[] = [
     label: 'River catchment restoration (native planting)',
   },
 ];
+export const NBS_ADAPTATION_TYPE_LABEL_LOOKUP: Record<NbsAdaptationType, string> = {
+  'slope_vegetation:natural_regeneration': 'Slope Vegetation',
+  'slope_vegetation:native_planting': 'Slope Vegetation',
+  'mangrove:natural_regeneration': 'Mangroves',
+  'mangrove:native_planting': 'Mangroves',
+  'catchment_restoration:natural_regeneration': 'Catchment Restoration',
+  'catchment_restoration:native_planting': 'Catchment Restoration',
+};
 
 // === Adaptation Type Vector Tilesets ===
 
@@ -155,7 +163,7 @@ export const NBS_DATA_VARIABLE_METADATA = makeConfig<NbsDataVariableMetadata, Nb
     categoricalConfig: {
       getColor: (f) => {
         const landuse_type = f.properties.option_landuse;
-        return NBS_LANDUSE_COLORS[landuse_type]?.deck ?? [200, 200, 200];
+        return NBS_COLORS[landuse_type]?.deck ?? [200, 200, 200];
       },
       getMetadata: (f) => {
         const landuse_type = f.properties.option_landuse;
@@ -171,19 +179,34 @@ export const NBS_DATA_VARIABLE_METADATA = makeConfig<NbsDataVariableMetadata, Nb
     dataType: 'categorical',
     categoricalConfig: {
       getColor: (f) => {
-        const landuse_type = f.properties.option_shoreline;
-        return NBS_LANDUSE_COLORS[landuse_type]?.deck ?? [200, 200, 200];
+        const shoreline_type = f.properties.option_shoreline;
+        return NBS_COLORS[shoreline_type]?.deck ?? [200, 200, 200];
       },
       getMetadata: (f) => {
-        const landuse_type = f.properties.option_shoreline;
-        const { label, color } = NBS_LANDUSE_METADATA[landuse_type];
+        const shoreline_type = f.properties.option_shoreline;
+        console.log(f.properties);
+        const { label, color } = NBS_SHORELINE_METADATA[shoreline_type];
         return { label, color };
       },
     },
   },
   {
+    id: 'tree_suitability',
+    label: 'Tree Suitability',
+    showHazard: false,
+    dataType: 'categorical',
+    categoricalConfig: {
+      getColor: (f) => {
+        return [21, 106, 21];
+      },
+      getMetadata: (f) => {
+        return { label: 'Tree Suitability', color: '#156a15' };
+      },
+    },
+  },
+  {
     id: 'avoided_ead_mean',
-    label: 'Avoided EAD (mean)',
+    label: 'Baseline EAD (mean)',
     showHazard: true,
     dataType: 'continuous',
     continuousConfig: {
@@ -218,8 +241,16 @@ export const NBS_DATA_VARIABLES_PER_ADAPTATION_TYPE: Record<NbsAdaptationType, N
     ],
     'mangrove:natural_regeneration': ['shoreline', 'avoided_ead_mean', 'adaptation_cost'],
     'mangrove:native_planting': ['shoreline', 'avoided_ead_mean', 'adaptation_cost'],
-    'catchment_restoration:natural_regeneration': ['avoided_ead_mean', 'adaptation_cost'],
-    'catchment_restoration:native_planting': ['avoided_ead_mean', 'adaptation_cost'],
+    'catchment_restoration:natural_regeneration': [
+      'tree_suitability',
+      'avoided_ead_mean',
+      'adaptation_cost',
+    ],
+    'catchment_restoration:native_planting': [
+      'tree_suitability',
+      'avoided_ead_mean',
+      'adaptation_cost',
+    ],
   };
 
 /**
@@ -271,25 +302,25 @@ export const NBS_LANDUSE_METADATA = makeConfig<AssetMetadata, NbsLanduseType>([
     id: 'crops',
     type: 'polygon',
     label: 'Land Use (Crops)',
-    color: NBS_LANDUSE_COLORS.crops.css,
+    color: NBS_COLORS.crops.css,
   },
   {
     id: 'other',
     type: 'polygon',
     label: 'Land Use (Other)',
-    color: NBS_LANDUSE_COLORS.other.css,
+    color: NBS_COLORS.other.css,
   },
   {
     id: 'bare',
     type: 'polygon',
     label: 'Land Use (Bare)',
-    color: NBS_LANDUSE_COLORS.bare.css,
+    color: NBS_COLORS.bare.css,
   },
 ]);
 
 // === Mangrove: Shoreline Types ===
 
-export const NBS_SHORELINE_TYPES = ['accreting', 'retreating', 'fast_retreating'] as const;
+export const NBS_SHORELINE_TYPES = ['accreting', 'retreating', 'retreating_fast'] as const;
 
 export type NbsShorelineType = (typeof NBS_SHORELINE_TYPES)[number];
 
@@ -298,18 +329,18 @@ export const NBS_SHORELINE_METADATA = makeConfig<AssetMetadata, NbsShorelineType
     id: 'accreting',
     type: 'polygon',
     label: 'Shoreline (accreting)',
-    color: NBS_SHORELINE_COLORS.accreting.css,
+    color: NBS_COLORS.accreting.css,
   },
   {
     id: 'retreating',
     type: 'polygon',
     label: 'Shoreline (retreating)',
-    color: NBS_SHORELINE_COLORS.retreating.css,
+    color: NBS_COLORS.retreating.css,
   },
   {
-    id: 'fast_retreating',
+    id: 'retreating_fast',
     type: 'polygon',
     label: 'Shoreline (fast retreating)',
-    color: NBS_SHORELINE_COLORS.fast_retreating.css,
+    color: NBS_COLORS.retreating_fast.css,
   },
 ]);

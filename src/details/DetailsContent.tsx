@@ -25,8 +25,8 @@ const InteractionGroupDetails = ({ group }) => {
 export const DetailsContent: FC = () => {
   return (
     <Stack spacing={2}>
-      <NbsPrioritisationPanel />
       <InteractionGroupDetails group="assets" />
+      <NbsPrioritisationPanel />
       <InteractionGroupDetails group="wdpa" />
       <InteractionGroupDetails group="hdi" />
       <InteractionGroupDetails group="rexp" />

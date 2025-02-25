@@ -42,7 +42,7 @@ export function scopeRegionsLayer(
           uniqueIdProperty: idProperty,
 
           filled: true,
-          getFillColor: css2rgba$M('#d7dfe3'),
+          getFillColor: css2rgba$M('#ffffff00'),
           opacity: 0.3,
 
           stroked: true,

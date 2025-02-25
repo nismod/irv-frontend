@@ -74,6 +74,13 @@ export const SortedAssetTable: FC<{
               features.map((feature, index) =>
                 renderRow(feature, index, currentPageFirstItemIndex + index),
               )}
+            {!loading && !error && !features.length ? (
+              <TableRow>
+                <TableCell colSpan={10} align="center">
+                  <Typography variant="body2">No results found.</Typography>
+                </TableCell>
+              </TableRow>
+            ) : null}
           </TableBody>
         </Table>
       </TableContainer>

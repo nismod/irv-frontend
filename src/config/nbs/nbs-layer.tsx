@@ -1,7 +1,7 @@
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
-import { border, fillColor } from '@/lib/deck/props/style';
+import { fillColor } from '@/lib/deck/props/style';
 
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
 
@@ -11,6 +11,7 @@ import { makeAssetLayerFn } from '../assets/make-asset-layer-fn';
 import { getNbsDataFormatsConfig } from './data-formats';
 import { NbsDetails, NbsExtendedDetails } from './details';
 import {
+  NBS_ADAPTATION_TYPE_LABEL_LOOKUP,
   NBS_VECTOR_LAYER_PER_ADAPTATION_TYPE,
   NbsAdaptationType,
   NbsCategoricalConfig,
@@ -37,7 +38,6 @@ export function nbsViewLayer(
       styleParams,
       customLayerPropsFn: ({ dataStyle: { getColor = null } = {} }) => [
         fillColor(getColor ?? categoricalGetColor),
-        border([150, 150, 150]),
       ],
       customDataAccessFn: dataAccessFn,
     }),
@@ -45,11 +45,11 @@ export function nbsViewLayer(
     dataAccessFn,
     renderTooltip: (hover: InteractionTarget<VectorTarget>) => {
       const feature = hover.target.feature;
-      const { label, color } = categoricalGetInteractionMeta(feature);
+      const { color } = categoricalGetInteractionMeta(feature);
       return (
         <VectorHoverDescription
           hoveredObject={hover}
-          label={`Nature-based solutions (${label})`}
+          label={`Nature-based solutions: ${NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]})`}
           color={color}
           idValue={'#' + feature.id}
         />
@@ -59,13 +59,13 @@ export function nbsViewLayer(
     renderDetails: (selection: InteractionTarget<VectorTarget>) => {
       const feature = selection.target.feature;
 
-      const { label, color } = categoricalGetInteractionMeta(feature);
+      const { color } = categoricalGetInteractionMeta(feature);
 
       return (
         <ExtendedAssetDetails
           DetailsComponent={NbsDetails}
           feature={feature}
-          label={`Nature-based solutions (${label})`}
+          label={`Nature-based solutions: ${NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]})`}
           color={color}
           ApiDetailsComponent={NbsExtendedDetails}
         />

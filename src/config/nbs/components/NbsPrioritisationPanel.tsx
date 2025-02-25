@@ -7,10 +7,12 @@ import { extendBbox } from '@/lib/bounding-box';
 import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
+import { NBS_ADAPTATION_TYPE_LABEL_LOOKUP } from '@/config/nbs/metadata';
 import { SidePanel } from '@/details/ui/SidePanel';
 import { useMapFitBounds } from '@/map/use-map-fit-bounds';
 import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import {
+  nbsAdaptationTypeState,
   nbsIsDataVariableContinuous,
   nbsSelectedScopeRegionBboxState,
   nbsSelectedScopeRegionIdState,
@@ -31,6 +33,7 @@ export const showPrioritisationState = selector<boolean>({
 });
 
 export const NbsPrioritisationPanel: FC = () => {
+  const adaptationType = useRecoilValue(nbsAdaptationTypeState);
   const showPrioritisation = useRecoilValue(showPrioritisationState);
   const selectedRegionName = useRecoilValue(nbsSelectedScopeRegionNameState);
 
@@ -64,7 +67,8 @@ export const NbsPrioritisationPanel: FC = () => {
       <ErrorBoundary message="There was a problem displaying these details.">
         <Box px={2} pt={2}>
           <Typography variant="h6" gutterBottom>
-            Adaptation Options{selectedRegionName ? ` - ${selectedRegionName}` : ''}
+            {NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]}
+            {selectedRegionName ? ` - ${selectedRegionName}` : ''}
           </Typography>
         </Box>
         <Box height="60vh" position="relative">
