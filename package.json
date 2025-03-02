@@ -80,7 +80,6 @@
     "eslint-config-react-app": "^7.0.1",
     "eslint-import-resolver-typescript": "^3.8.3",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-watch": "^8.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.4.3",
     "npm-check-updates": "^16.14.20",
@@ -102,7 +101,6 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "lint-watch": "esw --watch --changed --ext .ts --ext .tsx --color --clear",
     "test:type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "prepare": "husky install"
