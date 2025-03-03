@@ -96,7 +96,7 @@
     "vitest": "^3.0.7"
   },
   "scripts": {
-    "update": "ncu -i --reject react,react-dom,@types/react,@types/react-dom,mapbox-gl,@types/mapbox-gl,react-map-gl",
+    "update": "ncu -i --reject react,react-dom,@types/react,@types/react-dom",
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
