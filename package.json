@@ -105,7 +105,7 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "test:type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "browserslist": [
     ">0.2%",
