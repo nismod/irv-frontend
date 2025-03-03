@@ -117,7 +117,7 @@ const AdaptationOptionsTable: FC<{ adaptations: Adaptation[] }> = ({ adaptations
               adaptation_name,
               properties: { avoided_ead_amin, avoided_ead_amax, avoided_ead_mean },
             }) => (
-              <TableRow>
+              <TableRow key={`${hazard}-${rcp}-${adaptation_name}`}>
                 <TableCell sx={padding}>{NBS_HAZARD_METADATA[hazard]?.label}</TableCell>
                 <TableCell sx={padding}>{titleCase(rcp)}</TableCell>
                 <TableCell sx={padding}>{nbsAdaptationNameLabelLookup[adaptation_name]}</TableCell>

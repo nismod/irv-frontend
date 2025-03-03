@@ -122,7 +122,7 @@ export function useInteractions(
             // if no object was picked and we should not deselect, skip processing
             continue;
           }
-          let selectionTarget =
+          const selectionTarget =
             info && processPicked(info, type, groupName, viewLayerLookup, lookupViewForDeck);
 
           setInteractionGroupSelection(groupName, selectionTarget);

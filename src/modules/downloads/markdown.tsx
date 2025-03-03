@@ -9,10 +9,11 @@ export const MdLink = ({ to, title, children }) => {
     <AppLink
       to={to}
       title={title}
-      children={children}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-    />
+    >
+      {children}
+    </AppLink>
   );
 };
 

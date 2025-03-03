@@ -14,8 +14,8 @@ export function commas(x) {
 
 export function titleCase(str: string) {
   if (str == null) return `${str}`;
-  var splitStr = str.toLowerCase().split(' ');
-  for (var k = 0; k < splitStr.length; k++) {
+  const splitStr = str.toLowerCase().split(' ');
+  for (let k = 0; k < splitStr.length; k++) {
     splitStr[k] = splitStr[k].charAt(0).toUpperCase() + splitStr[k].substring(1);
   }
   return splitStr.join(' ');
