@@ -5,7 +5,7 @@ import { Polygon } from '@nismod/irv-autopkg-client';
 import { color as d3color } from 'd3-color';
 import { scaleSequential as d3scaleSequential } from 'd3-scale';
 import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
-import { GeoJsonLayer, MapViewState } from 'deck.gl/typed';
+import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import type { Feature } from 'geojson';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Map } from 'react-map-gl/maplibre';
@@ -171,7 +171,7 @@ function RegionMapViewer({
 
   const getColor = useCallback(
     (geoJsonEntry: Feature): Color => {
-      const NOT_FOUND_COLOR = [255, 255, 255, 100];
+      const NOT_FOUND_COLOR = [255, 255, 255, 100] as Color;
       const gdlCode = geoJsonEntry.properties.gdlcode;
 
       const maybeRegionData = selectedCountryData.find((d) => d.GDLCODE === gdlCode);

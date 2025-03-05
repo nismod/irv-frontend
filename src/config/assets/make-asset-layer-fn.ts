@@ -1,4 +1,4 @@
-import { MVTLayerProps } from 'deck.gl/typed';
+import { MVTLayerProps } from 'deck.gl';
 
 import { colorMap } from '@/lib/color-map';
 import { StyleParams, ViewLayerDataAccessFunction } from '@/lib/data-map/view-layers';

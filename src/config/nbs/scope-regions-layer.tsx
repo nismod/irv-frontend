@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { Color, GeoJsonLayerProps, MVTLayerProps } from 'deck.gl/typed';
+import { Color, GeoJsonLayerProps, MVTLayerProps } from 'deck.gl';
 
 import { css2rgba$M } from '@/lib/colors';
 import { ViewLayer } from '@/lib/data-map/view-layers';

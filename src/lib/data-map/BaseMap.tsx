@@ -1,4 +1,4 @@
-import { MapViewState } from 'deck.gl/typed';
+import { MapViewState } from 'deck.gl';
 import { ComponentProps, FC, ReactNode, useCallback } from 'react';
 import { Map } from 'react-map-gl/maplibre';
 
@@ -36,7 +36,9 @@ export const BaseMap: FC<BaseMapProps> = ({ mapStyle, viewState, onViewState, ch
       keyboard={false}
       touchZoomRotate={true}
       touchPitch={false}
-      antialias={true}
+      canvasContextAttributes={{
+        antialias: true,
+      }}
       attributionControl={false}
     >
       {children}

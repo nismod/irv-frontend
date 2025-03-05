@@ -1,4 +1,3 @@
-import GL from '@luma.gl/constants';
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
@@ -34,7 +33,7 @@ export function rwiViewLayer(): ViewLayer {
       return rasterTileLayer(
         {
           textureParameters: {
-            [GL.TEXTURE_MAG_FILTER]: zoom >= 7 ? GL.NEAREST : GL.LINEAR,
+            magFilter: zoom >= 7 ? 'nearest' : 'linear',
           },
           transparentColor: [255, 255, 255, 0],
         },

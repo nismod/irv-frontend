@@ -1,4 +1,4 @@
-import { Color, GeoJsonLayerProps } from 'deck.gl/typed';
+import { Color, GeoJsonLayerProps } from 'deck.gl';
 import { Feature } from 'geojson';
 
 import { Accessor, getTriggers } from './getters';
