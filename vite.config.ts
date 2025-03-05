@@ -3,9 +3,8 @@
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { defineConfig, PluginOption } from 'vite';
+import { defineConfig } from 'vite';
 import { qrcode } from 'vite-plugin-qrcode';
-import pluginRewriteAll from 'vite-plugin-rewrite-all';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
@@ -31,7 +30,6 @@ export default defineConfig({
     react(),
     viteTsconfigPaths(),
     svgrPlugin(),
-    pluginRewriteAll(),
     qrcode({
       filter: (url) => url.startsWith('http://192'),
     }),
@@ -41,7 +39,7 @@ export default defineConfig({
       gzipSize: true,
       brotliSize: true,
       filename: 'bundle-analyse.html',
-    }) as PluginOption,
+    }),
   ],
   build: {
     outDir: 'build',

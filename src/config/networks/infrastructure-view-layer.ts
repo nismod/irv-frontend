@@ -7,14 +7,13 @@ import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { border, fillColor, lineStyle, pointRadius, strokeColor } from '@/lib/deck/props/style';
 
 import { makeAssetDataAccessorFactory } from '@/config/assets/data-access';
-import { makeAssetLayerFn } from '@/config/assets/make-asset-layer-fn';
+import { AssetCustomPropsFunction, makeAssetLayerFn } from '@/config/assets/make-asset-layer-fn';
 import { INFRASTRUCTURE_COLORS } from '@/config/networks/colors';
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
 import { DamagesSection } from '@/details/features/damages/DamagesSection';
 
 import { assetLayerLegendConfig } from '../assets/asset-layer-legend-config';
 import { getAssetDataFormats } from '../assets/data-formats';
-import { AssetCustomPropsFunction } from '../assets/make-asset-layer-fn';
 import { INFRASTRUCTURE_LAYER_DETAILS } from './details';
 import { NetworkLayerType, NETWORKS_METADATA } from './metadata';
 

@@ -10,7 +10,7 @@ const YEAR_RANGE = GDL_YEAR_RANGE;
 const compileDataPerYear = (dataPerRegion) => {
   const dataByYear = [];
 
-  for (var i = YEAR_RANGE[0]; i <= YEAR_RANGE[1]; i++) {
+  for (let i = YEAR_RANGE[0]; i <= YEAR_RANGE[1]; i++) {
     const year = i;
     const index = dataByYear.push({ year: year });
     dataPerRegion.forEach((d) => {
@@ -22,7 +22,7 @@ const compileDataPerYear = (dataPerRegion) => {
 
   const dataPerYearTidy = [];
   dataPerRegion.forEach((d) => {
-    for (var i = YEAR_RANGE[0]; i <= YEAR_RANGE[1]; i++) {
+    for (let i = YEAR_RANGE[0]; i <= YEAR_RANGE[1]; i++) {
       dataPerYearTidy.push({
         year: i,
         value: d[i],

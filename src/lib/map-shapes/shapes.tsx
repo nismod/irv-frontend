@@ -1,12 +1,17 @@
-import { ReactComponent as CircleShape, default as CircleShapeSrc } from './shapes/circle.svg';
-import { ReactComponent as DiamondShape, default as DiamondShapeSrc } from './shapes/diamond.svg';
-import {
-  ReactComponent as InvTriangleShape,
-  default as InvTriangleShapeSrc,
-} from './shapes/inv-triangle.svg';
-import { ReactComponent as LineShape, default as LineShapeSrc } from './shapes/line.svg';
-import { ReactComponent as PolygonShape, default as PolygonShapeSrc } from './shapes/polygon.svg';
-import { ReactComponent as SquareShape, default as SquareShapeSrc } from './shapes/square.svg';
+/* eslint import/no-duplicates: 0 */
+
+import CircleShapeSrc from './shapes/circle.svg';
+import CircleShape from './shapes/circle.svg?react';
+import DiamondShapeSrc from './shapes/diamond.svg';
+import DiamondShape from './shapes/diamond.svg?react';
+import InvTriangleShapeSrc from './shapes/inv-triangle.svg';
+import InvTriangleShape from './shapes/inv-triangle.svg?react';
+import LineShapeSrc from './shapes/line.svg';
+import LineShape from './shapes/line.svg?react';
+import PolygonShapeSrc from './shapes/polygon.svg';
+import PolygonShape from './shapes/polygon.svg?react';
+import SquareShapeSrc from './shapes/square.svg';
+import SquareShape from './shapes/square.svg?react';
 
 export const MAP_SHAPE_TYPES = [
   'line',

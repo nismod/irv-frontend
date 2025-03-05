@@ -47,7 +47,7 @@ export const ParamDropdown = <V extends string | number = string>({
           disabled={disabled || options.length < 2}
         >
           {options.map((option) => {
-            let { value, label } = getValueLabel(option);
+            const { value, label } = getValueLabel(option);
 
             return (
               <MenuItem key={value} value={value}>

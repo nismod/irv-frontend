@@ -63,7 +63,7 @@ const RegionsLineChart = ({
   const xExtent = numericDomain(d3extent(dataFiltered, xAccessor));
 
   const yearList = [];
-  for (var i = xExtent[0]; i <= xExtent[1]; i++) {
+  for (let i = xExtent[0]; i <= xExtent[1]; i++) {
     yearList.push(i);
   }
 

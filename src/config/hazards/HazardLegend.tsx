@@ -13,12 +13,10 @@ export const HazardLegend: FC<{ viewLayer: ViewLayer<{ hazardType: HazardType }>
     params: { hazardType },
   } = viewLayer;
 
-  let {
-    label,
-    formatValue,
-    labelAbbreviations = {},
-    legendAnnotation,
-  } = HAZARDS_METADATA[hazardType];
+  const metadata = HAZARDS_METADATA[hazardType];
+  let { label } = metadata;
+  const { formatValue, labelAbbreviations = {}, legendAnnotation } = metadata;
+
   const colorMap = HAZARD_COLOR_MAPS[hazardType];
 
   label = formatAbbreviations(label, labelAbbreviations);
