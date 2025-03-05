@@ -79,7 +79,7 @@ export const FeatureAdaptationsTable: FC<{
         }
         renderRow={(feature, localIndex, globalIndex) => (
           <ExpandableRow
-            key={feature.string_id}
+            key={feature.id}
             expanded={feature === selectedFeature}
             onExpandedChange={(expanded) => setSelectedFeature(expanded ? feature : null)}
             onMouseEnter={() => setBoundedFeature(feature)}
