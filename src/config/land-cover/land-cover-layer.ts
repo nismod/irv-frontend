@@ -1,4 +1,3 @@
-import GL from '@luma.gl/constants';
 import _ from 'lodash';
 import React from 'react';
 
@@ -28,7 +27,7 @@ export function landCoverViewLayer(): ViewLayer {
       rasterTileLayer(
         {
           textureParameters: {
-            [GL.TEXTURE_MAG_FILTER]: GL.LINEAR,
+            magFilter: 'linear',
           },
         },
         deckProps,

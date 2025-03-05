@@ -1,4 +1,4 @@
-import { PathStyleExtension, PathStyleExtensionProps } from '@deck.gl/extensions/typed';
+import { PathStyleExtension, PathStyleExtensionProps } from '@deck.gl/extensions';
 import { Feature, Polygon } from 'geojson';
 
 import { geoJsonLayer } from './base';

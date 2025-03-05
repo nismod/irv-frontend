@@ -1,4 +1,4 @@
-import { MVTLayerProps } from 'deck.gl/typed';
+import { MVTLayerProps } from 'deck.gl';
 
 import { tileSelectionLayer, TileSelectionLayerOptions } from '../layers/tile-selection-layer';
 

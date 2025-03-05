@@ -1,5 +1,5 @@
-import { readPixelsToArray } from '@luma.gl/core';
-import { BitmapLayer, PickingInfo } from 'deck.gl/typed';
+import { Texture } from '@luma.gl/core';
+import { BitmapLayer, PickingInfo } from 'deck.gl';
 
 import { ViewLayer } from '../view-layers';
 import { InteractionStyle, RasterTarget, VectorTarget } from './types';
@@ -14,19 +14,23 @@ type BitmapPickingInfo = PickingInfo & {
 };
 
 function processRasterTarget(info: BitmapPickingInfo): RasterTarget {
-  const { bitmap, sourceLayer } = info;
+  const { bitmap, sourceLayer, layer } = info;
   if (bitmap) {
-    const pixelColor = readPixelsToArray((sourceLayer as BitmapLayer).props.image, {
-      sourceX: bitmap.pixel[0],
-      sourceY: bitmap.pixel[1],
-      sourceWidth: 1,
-      sourceHeight: 1,
-      sourceType: undefined,
-    });
+    const { device } = layer.context;
+    // the current deck.gl docs suggest using the deprecated function - see https://github.com/visgl/deck.gl/issues/9493
+    const pixelColor = device.readPixelsToArrayWebGL(
+      (sourceLayer as BitmapLayer).props.image as Texture,
+      {
+        sourceX: bitmap.pixel[0],
+        sourceY: bitmap.pixel[1],
+        sourceWidth: 1,
+        sourceHeight: 1,
+      },
+    );
 
     return pixelColor[3]
       ? {
-          color: pixelColor,
+          color: Array.from(pixelColor) as [number, number, number, number],
         }
       : null;
   }

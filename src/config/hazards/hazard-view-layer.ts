@@ -1,4 +1,3 @@
-import GL from '@luma.gl/constants';
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
@@ -16,7 +15,7 @@ export function getHazardId(hazardType: HazardType, hazardParams: any) {
 
 export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLayer {
   const isCyclone = hazardType === 'cyclone' || hazardType === 'cyclone_iris';
-  const magFilter = isCyclone ? GL.NEAREST : GL.LINEAR;
+  const magFilter = isCyclone ? 'nearest' : 'linear';
 
   const id = hazardType;
   const deckId = getHazardId(hazardType as HazardType, hazardParams);
@@ -31,7 +30,7 @@ export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLaye
       return rasterTileLayer(
         {
           textureParameters: {
-            [GL.TEXTURE_MAG_FILTER]: magFilter,
+            magFilter,
           },
           opacity: isCyclone ? 0.6 : 1,
 

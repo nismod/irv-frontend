@@ -80,7 +80,9 @@ const LayerImpl: FC<LayerProps> = ({
                 visibility={visible}
                 onVisibility={(visible) => {
                   setVisible(visible);
-                  hasChildren && setExpanded(visible);
+                  if (hasChildren) {
+                    setExpanded(visible);
+                  }
                 }}
               />
             )

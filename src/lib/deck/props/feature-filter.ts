@@ -1,5 +1,5 @@
-import { DataFilterExtension, DataFilterExtensionProps } from '@deck.gl/extensions/typed';
-import { LayerProps } from 'deck.gl/typed';
+import { DataFilterExtension, DataFilterExtensionProps } from '@deck.gl/extensions';
+import { LayerProps } from 'deck.gl';
 
 /**
  * Filter features by ID (or unique ID property) using the GPU extension
@@ -25,6 +25,7 @@ export function featureFilter(
 
     getFilterValue: filterFn,
     filterRange: invert ? [0, 0] : [1, 1],
+    filterCategories: [], // unnecesary here, but required in the type - see https://github.com/visgl/deck.gl/issues/9494
     extensions: [new DataFilterExtension({ filterSize: 1 })],
   };
 }

@@ -1,4 +1,4 @@
-import { Color } from 'deck.gl/typed';
+import { Color } from 'deck.gl';
 
 /**
  * Returns color with alpha set to new value.

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 export const combineChartDimensions = (dimensions) => {
-  let parsedDimensions = {
+  const parsedDimensions = {
     marginTop: 40,
     marginRight: 30,
     marginBottom: 40,

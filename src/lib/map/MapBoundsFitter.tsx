@@ -1,4 +1,4 @@
-import { WebMercatorViewport } from 'deck.gl/typed';
+import { WebMercatorViewport } from 'deck.gl';
 import { FC, useEffect } from 'react';
 import { useMap } from 'react-map-gl/maplibre';
 

@@ -25,6 +25,7 @@ const LoadDetails: FC<{
 
 interface SimpleFeature {
   id: number;
+  properties?: Record<string, any>;
 }
 
 interface DetailsFeature extends SimpleFeature {
@@ -120,7 +121,8 @@ export const ExtendedAssetDetails: FC<ExtendedAssetDetailsProps> = ({
   feature,
   showRiskSection = true,
 }) => {
-  const featureDetailsState = apiFeatureQuery(feature.id);
+  const id = feature.id ?? feature.properties?.id; // fix in case the dataset has `id` property instead of actual feature IDs
+  const featureDetailsState = apiFeatureQuery(id);
 
   return (
     <AssetDetailsWrapper>

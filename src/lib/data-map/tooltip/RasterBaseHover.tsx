@@ -1,4 +1,4 @@
-import { Color } from 'deck.gl/typed';
+import { Color } from 'deck.gl';
 import { FC, ReactNode, useMemo } from 'react';
 
 import { colorDeckToCss } from '@/lib/colors';

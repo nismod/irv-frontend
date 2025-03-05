@@ -1,5 +1,5 @@
-import type { TileLayerProps } from '@deck.gl/geo-layers/typed';
-import type { BitmapBoundingBox, BitmapLayerProps } from '@deck.gl/layers/typed';
+import type { TileLayerProps } from '@deck.gl/geo-layers';
+import type { BitmapBoundingBox, BitmapLayerProps } from '@deck.gl/layers';
 
 import { ConfigTree } from '@/lib/nested-config/config-tree';
 

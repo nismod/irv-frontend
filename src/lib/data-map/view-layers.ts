@@ -1,5 +1,5 @@
 import { ScaleSequential } from 'd3-scale';
-import { LayersList } from 'deck.gl/typed';
+import { LayersList } from 'deck.gl';
 import { ReactNode } from 'react';
 
 import { InteractionTarget } from '@/lib/data-map/interactions/types';

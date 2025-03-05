@@ -19,7 +19,7 @@ export const RegionalExposureDetails: FC<DetailsComponentProps> = ({ f }) => {
       <List>
         <Typography variant="subtitle2">Population exposed to:</Typography>
         {REGIONAL_EXPOSURE_VARIABLE_LABELS.map(({ value, label }) => (
-          <DataItem label={label} value={f[value]} />
+          <DataItem key={value} label={label} value={f[value]} />
         ))}
       </List>
     </>

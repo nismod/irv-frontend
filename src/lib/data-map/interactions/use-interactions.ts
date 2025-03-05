@@ -1,4 +1,4 @@
-import type { MapboxOverlay } from '@deck.gl/mapbox/typed';
+import type { MapboxOverlay } from '@deck.gl/mapbox';
 import _ from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useSetRecoilState } from 'recoil';
@@ -122,7 +122,7 @@ export function useInteractions(
             // if no object was picked and we should not deselect, skip processing
             continue;
           }
-          let selectionTarget =
+          const selectionTarget =
             info && processPicked(info, type, groupName, viewLayerLookup, lookupViewForDeck);
 
           setInteractionGroupSelection(groupName, selectionTarget);

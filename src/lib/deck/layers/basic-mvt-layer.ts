@@ -1,4 +1,4 @@
-import { MVTLayerProps } from 'deck.gl/typed';
+import { MVTLayerProps } from 'deck.gl';
 
 import { geoJsonLayer, MultiProps, mvtLayer } from './base';
 import { Tileset2DCentered } from './tileset-2d-centered';

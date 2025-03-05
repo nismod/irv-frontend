@@ -1,7 +1,6 @@
-import { ZRange } from '@deck.gl/geo-layers/typed/tileset-2d';
-import { TileIndex } from '@deck.gl/geo-layers/typed/tileset-2d/types';
+import { TileIndex, ZRange } from '@deck.gl/geo-layers/src/tileset-2d/types';
 import { Matrix4 } from '@math.gl/core';
-import { _Tileset2D, Viewport } from 'deck.gl/typed';
+import { _Tileset2D, Viewport } from 'deck.gl';
 import _ from 'lodash';
 
 /**
@@ -10,7 +9,7 @@ import _ from 'lodash';
  * This assumes the base OSM indexing system.
  */
 export class Tileset2DCentered extends _Tileset2D {
-  getTileIndices(props: {
+  override getTileIndices(props: {
     viewport: Viewport;
     maxZoom?: number;
     minZoom?: number;

@@ -1,4 +1,4 @@
-import type { MapboxOverlay } from '@deck.gl/mapbox/typed';
+import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { FC, useCallback, useMemo, useRef } from 'react';
 import { useMap } from 'react-map-gl/maplibre';
 
