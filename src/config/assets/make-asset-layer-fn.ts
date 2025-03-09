@@ -7,6 +7,7 @@ import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { GetColor } from '@/lib/deck/props/style';
 import { tiledDataLoading } from '@/lib/deck/props/tiled-data-loading';
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 
 import { SOURCES } from '../sources';
 
@@ -56,7 +57,7 @@ export function makeAssetLayerFn({
         uniqueIdProperty,
       },
       mvtSelection({
-        selectedFeatureId: selection?.target.feature.properties[uniqueIdProperty],
+        selectedFeatureId: getFeatureId(selection?.target.feature, uniqueIdProperty),
         polygonOffset: selectionPolygonOffset,
         uniqueIdProperty,
       }),

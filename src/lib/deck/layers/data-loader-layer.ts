@@ -2,6 +2,8 @@ import { GeoJSONFeature } from 'maplibre-gl';
 
 import { DataLoader } from '@/lib/data-loader/data-loader';
 
+import { getFeatureId } from '../utils/get-feature-id';
+
 export interface DataLoaderOptions {
   dataLoader: DataLoader;
 }
@@ -14,7 +16,7 @@ export function dataLoaderLayer(tileProps, { dataLoader }: DataLoaderOptions) {
     tile: { content },
   } = tileProps;
   if (content && dataLoader) {
-    const ids: number[] = content.map((f: GeoJSONFeature) => f.id);
+    const ids: number[] = content.map((f: GeoJSONFeature) => getFeatureId(f));
 
     dataLoader.loadDataForIds(ids);
   }

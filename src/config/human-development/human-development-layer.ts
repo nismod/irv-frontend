@@ -10,6 +10,7 @@ import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { featureProperty } from '@/lib/deck/props/data-source';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { border, fillColor } from '@/lib/deck/props/style';
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 import { toLabelLookup } from '@/lib/helpers';
 
 import { SimpleAssetDetails } from '@/details/features/asset-details';
@@ -63,6 +64,8 @@ export function humanDevelopmentLayer(
 
   const id = `hdi_${regionLevel}`;
 
+  const uniqueIdProperty = 'id';
+
   return {
     id,
     interactionGroup: 'hdi',
@@ -87,7 +90,8 @@ export function humanDevelopmentLayer(
         border([40, 40, 40, 255]),
         fillColor(dataStyleColor),
         mvtSelection({
-          selectedFeatureId: selection?.target.feature.id,
+          selectedFeatureId: getFeatureId(selection?.target.feature, uniqueIdProperty),
+          uniqueIdProperty,
           selectionFillColor: [0, 0, 0, 0],
           selectionLineColor: [0, 255, 255, 255],
         }),

@@ -3,6 +3,7 @@ import { GeoJSONFeature } from 'maplibre-gl';
 
 import { DataLoader } from '@/lib/data-loader/data-loader';
 
+import { getFeatureId } from '../utils/get-feature-id';
 import { AccessorFunction, withLoaderTriggers, withTriggers } from './getters';
 
 /**
@@ -23,5 +24,5 @@ export const featureProperty = _.memoize(
  * Factory function to create a deck.gl-compatible accessor function that, for each feature, returns a data value from an external data loader
  */
 export function extraProperty(dataLoader: DataLoader): AccessorFunction<any> {
-  return withLoaderTriggers((f) => dataLoader.getData(f.id), dataLoader);
+  return withLoaderTriggers((f) => dataLoader.getData(getFeatureId(f)), dataLoader);
 }

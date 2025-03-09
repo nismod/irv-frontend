@@ -5,6 +5,7 @@ import { csvFormat as d3CsvFormat } from 'd3-dsv';
 import { ComponentType, FC, ReactElement, Suspense } from 'react';
 import { RecoilValue, useRecoilValue } from 'recoil';
 
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 
 import { apiFeatureQuery } from '@/state/queries';
@@ -121,7 +122,7 @@ export const ExtendedAssetDetails: FC<ExtendedAssetDetailsProps> = ({
   feature,
   showRiskSection = true,
 }) => {
-  const id = feature.id ?? feature.properties?.id; // fix in case the dataset has `id` property instead of actual feature IDs
+  const id = getFeatureId(feature);
   const featureDetailsState = apiFeatureQuery(id);
 
   return (

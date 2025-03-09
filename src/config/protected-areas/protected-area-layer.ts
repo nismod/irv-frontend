@@ -6,6 +6,7 @@ import { withAlpha } from '@/lib/deck/color';
 import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { border, fillColor, pointRadius } from '@/lib/deck/props/style';
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 import { toLabelLookup } from '@/lib/helpers';
 
 import { SimpleAssetDetails } from '@/details/features/asset-details';
@@ -48,7 +49,7 @@ export function protectedAreaViewLayer(shapeType: ShapeType, type: ProtectedArea
           fillColor(withAlpha(color.deck, 100)),
         ],
         mvtSelection({
-          selectedFeatureId: selection?.target.feature.properties[uniqueIdProperty],
+          selectedFeatureId: getFeatureId(selection?.target.feature, uniqueIdProperty),
           uniqueIdProperty,
           selectionFillColor: shapeType === 'polygons' ? [0, 0, 0, 0] : undefined,
         }),

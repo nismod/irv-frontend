@@ -5,6 +5,8 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 import { selector, useRecoilValue } from 'recoil';
 
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
+
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
 import {
   buildOrdering,
@@ -125,7 +127,7 @@ export const ExpectedDamagesSection = () => {
               <DownloadButton
                 title="Download CSV with damages data"
                 makeContent={() => makeDamagesCsv(damagesData)}
-                filename={`feature_${fd.id}_damages.csv`}
+                filename={`feature_${getFeatureId(fd)}_damages.csv`}
               />
             </ButtonPlacement>
           )}
