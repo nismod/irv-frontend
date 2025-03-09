@@ -6,7 +6,6 @@ import { RecoilRoot } from 'recoil';
 import { theme } from './theme';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
-import 'react-spring-bottom-sheet/dist/style.css';
 import './index.css';
 
 import { QueryClientProvider } from 'react-query';
