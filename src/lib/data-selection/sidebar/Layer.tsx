@@ -1,6 +1,6 @@
 import { ArrowRight } from '@mui/icons-material';
 import { Icon, styled } from '@mui/material';
-import { FC, Suspense } from 'react';
+import { FC, ReactNode, Suspense } from 'react';
 
 import { usePath } from '@/lib/paths/paths';
 import { SubPath } from '@/lib/paths/sub-path';
@@ -18,6 +18,7 @@ interface LayerProps {
   title: string;
   disabled?: boolean;
   unmountOnHide?: boolean;
+  children?: ReactNode;
 }
 export const Layer: FC<{ path: string } & LayerProps> = ({ path, children, ...otherProps }) => {
   return (

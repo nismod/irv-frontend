@@ -1,10 +1,10 @@
 import { List, Typography } from '@mui/material';
-import { ComponentType, FC } from 'react';
+import { ComponentType, FC, ReactNode } from 'react';
 
 import { titleCase } from '@/lib/helpers';
 import { DataItem } from '@/lib/ui/data-display/DataItem';
 
-export const DetailHeader: FC = ({ children }) => {
+export const DetailHeader: FC<{ children?: ReactNode }> = ({ children }) => {
   return (
     <Typography variant="h6" component="h1">
       {children}
@@ -12,7 +12,7 @@ export const DetailHeader: FC = ({ children }) => {
   );
 };
 
-export const DetailSubheader: FC = ({ children }) => (
+export const DetailSubheader: FC<{ children?: ReactNode }> = ({ children }) => (
   <Typography variant="caption" component="p">
     {children}
   </Typography>

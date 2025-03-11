@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { FeatureOut } from '@nismod/irv-api-client';
 import { csvFormat as d3CsvFormat } from 'd3-dsv';
-import { ComponentType, FC, ReactElement, Suspense } from 'react';
+import { ComponentType, FC, ReactElement, ReactNode, Suspense } from 'react';
 import { RecoilValue, useRecoilValue } from 'recoil';
 
 import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
@@ -33,7 +33,7 @@ interface DetailsFeature extends SimpleFeature {
   properties: Record<string, any>;
 }
 
-const AssetDetailsWrapper: FC = ({ children }) => {
+const AssetDetailsWrapper: FC<{ children?: ReactNode }> = ({ children }) => {
   return <Box position="relative">{children}</Box>;
 };
 

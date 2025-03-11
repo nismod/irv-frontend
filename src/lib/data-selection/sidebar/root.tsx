@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 import { PathContext } from '@/lib/paths/paths';
@@ -12,6 +12,7 @@ export const SidebarRoot: FC<{
   expandedState: RecoilStateFamily<boolean, string>;
   pathChildrenState: RecoilStateFamily<string[], string>;
   pathChildrenLoadingState: RecoilStateFamily<boolean, string>;
+  children?: ReactNode;
 }> = ({
   visibilityState,
   expandedState,

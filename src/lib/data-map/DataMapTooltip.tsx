@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { hoverPositionState } from './interactions/interaction-state';
@@ -7,7 +7,7 @@ import { hoverPositionState } from './interactions/interaction-state';
  *
  * Only outputs content if hover state exists and the children are non-empty.
  */
-export const DataMapTooltip: FC<{}> = ({ children }) => {
+export const DataMapTooltip: FC<{ children?: ReactNode }> = ({ children }) => {
   const tooltipXY = useRecoilValue(hoverPositionState);
 
   return tooltipXY && React.Children.count(children) ? (

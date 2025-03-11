@@ -26,7 +26,7 @@ export const InteractionGroupTooltip = ({
    */
   MergeComponent?: React.ComponentType<{ hoveredObjects: InteractionTarget[] }>;
 
-  WrapperComponent?: React.ComponentType;
+  WrapperComponent?: React.ComponentType<{ children?: ReactNode }>;
 }) => {
   const hoveredObjects = useRecoilValue(hoverState(group));
 

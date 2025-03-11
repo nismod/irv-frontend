@@ -1,7 +1,7 @@
 import { ErrorOutline } from '@mui/icons-material';
 import { Paper, Stack, StackProps, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -9,6 +9,7 @@ interface ErrorBoundaryState {
 }
 
 interface ErrorBoundaryProps {
+  children?: ReactNode;
   message: string;
   justifyErrorContent?: StackProps['justifyContent'];
 }

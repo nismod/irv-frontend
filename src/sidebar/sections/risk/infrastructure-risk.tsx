@@ -1,6 +1,6 @@
 import { FormControlLabel, Switch } from '@mui/material';
 import _ from 'lodash';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { atom, useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
@@ -107,7 +107,9 @@ export const InfrastructureRiskSection = () => {
   );
 
   return (
-    <>
+    // the top-level Suspense prevents deadlock between the `useLoadParamConfig()` and components that use the state that hook loads
+    // both the hook and the components suspend, and in React 18 concurrent mode, this makes React suspend the tree indefinitely
+    <Suspense>
       <InitInfrastructureView />
       <InputSection>
         <StateEffectRoot
@@ -164,6 +166,6 @@ export const InfrastructureRiskSection = () => {
           label="Hazard layer"
         />
       </InputSection>
-    </>
+    </Suspense>
   );
 };
