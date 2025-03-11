@@ -7,18 +7,19 @@ import {
   List,
   ListItem,
   Link as MuiLink,
+  LinkProps as MuiLinkProps,
   styled,
   Toolbar,
 } from '@mui/material';
 import { FC, forwardRef, useCallback, useState } from 'react';
-import { NavLink as RouterNavLink } from 'react-router-dom';
+import { NavLink as RouterNavLink, NavLinkProps as RouterNavLinkProps } from 'react-router-dom';
 
 import { useIsMobile } from './use-is-mobile';
 
 const Link = styled(MuiLink)({
   color: 'inherit',
   textDecoration: 'none',
-});
+}) as typeof MuiLink;
 
 const DrawerLink = styled(Link)({
   color: '#ffffff',
@@ -28,7 +29,7 @@ const DrawerLink = styled(Link)({
   '&:active,&.active': {
     backgroundColor: '#213621',
   },
-});
+}) as typeof Link;
 
 const ToolbarLink = styled(Link)({
   padding: '0 0 1px 0',
@@ -42,12 +43,16 @@ const ToolbarLink = styled(Link)({
   '&:active,&.active': {
     borderBottomColor: '#ffffff',
   },
-});
+}) as typeof Link;
 
-const ToolbarNavLink = forwardRef<any, any>(({ ...others }, ref) => (
-  <ToolbarLink variant="h6" component={RouterNavLink} ref={ref} {...others} />
-));
-const ToolbarNavLinkSecondary = forwardRef<any, any>(({ ...others }, ref) => (
+const ToolbarNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<MuiLinkProps>>(
+  (others, ref) => <ToolbarLink variant="h6" component={RouterNavLink} ref={ref} {...others} />,
+);
+
+const ToolbarNavLinkSecondary = forwardRef<
+  HTMLAnchorElement,
+  RouterNavLinkProps & Partial<MuiLinkProps>
+>((others, ref) => (
   <ToolbarLink
     variant="h6"
     sx={{ fontWeight: 400, fontSize: '1.3rem' }}
@@ -57,9 +62,9 @@ const ToolbarNavLinkSecondary = forwardRef<any, any>(({ ...others }, ref) => (
   />
 ));
 
-const DrawerNavLink = forwardRef<any, any>(({ ...others }, ref) => (
-  <DrawerLink variant="h6" component={RouterNavLink} ref={ref} {...others} />
-));
+const DrawerNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<MuiLinkProps>>(
+  (others, ref) => <DrawerLink variant="h6" component={RouterNavLink} ref={ref} {...others} />,
+);
 
 const GrowingDivider = styled(Divider)({
   flexGrow: 1,

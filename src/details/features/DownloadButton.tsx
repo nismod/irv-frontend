@@ -1,7 +1,7 @@
 import { Download } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { Box } from '@mui/system';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 interface DownloadButtonProps {
   makeContent: () => string;
@@ -23,9 +23,10 @@ export const DownloadButton: FC<DownloadButtonProps> = ({
   );
 };
 
-export const ButtonPlacement: FC<{ right?: number }> = ({ children, right = 0 }) => (
-  <Box sx={{ position: 'absolute', top: 0, right }}>{children}</Box>
-);
+export const ButtonPlacement: FC<{ right?: number; children?: ReactNode }> = ({
+  children,
+  right = 0,
+}) => <Box sx={{ position: 'absolute', top: 0, right }}>{children}</Box>;
 
 // adapted from https://stackoverflow.com/a/44661948/1478817
 export function downloadFile(content: string, mimeType: string, fileName: string) {

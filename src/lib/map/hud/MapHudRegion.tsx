@@ -1,5 +1,5 @@
 import { Box, Stack } from '@mui/material';
-import React, { ComponentProps, FC } from 'react';
+import React, { ComponentProps, FC, ReactNode } from 'react';
 
 import { eventPreventDefault } from '@/lib/helpers';
 
@@ -38,6 +38,7 @@ export interface MapHudProps {
   position: keyof typeof hudRegions;
   style?: ComponentProps<typeof Box>['style'];
   StackProps?: ComponentProps<typeof Stack>;
+  children?: ReactNode;
 }
 export const MapHudRegion: FC<MapHudProps> = ({ position, style = {}, StackProps, children }) => {
   const { style: defaultRegionStyle, justifyContent } = hudRegions[position];

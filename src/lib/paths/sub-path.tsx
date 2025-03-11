@@ -1,4 +1,4 @@
-import { createContext, FC, useContext, useEffect } from 'react';
+import { createContext, FC, ReactNode, useContext, useEffect } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { RecoilStateFamily } from '../recoil/types';
@@ -62,7 +62,7 @@ export function PathChildrenEnd() {
   return null;
 }
 
-export const SubPath: FC<{ path: string }> = ({ path, children }) => {
+export const SubPath: FC<{ path: string; children?: ReactNode }> = ({ path, children }) => {
   const parentPath = usePath();
   const subPath = getSubPath(parentPath, path);
 

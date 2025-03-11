@@ -1,5 +1,5 @@
 import { Stack } from '@mui/material';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 import { usePath } from '@/lib/paths/paths';
 import { SubPath } from '@/lib/paths/sub-path';
@@ -10,6 +10,7 @@ import { VisibilityToggle } from './VisibilityToggle';
 
 interface SectionProps {
   title: string;
+  children?: ReactNode;
 }
 export const Section: FC<{ path: string } & SectionProps> = ({ path, ...otherProps }) => {
   return (

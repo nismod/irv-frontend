@@ -10,6 +10,7 @@ const ContentWatcherContext = createContext<ReactNode>(null);
  */
 export const ContentWatcherScope: FC<{
   watcher: ReactNode;
+  children?: ReactNode;
 }> = ({ watcher, children }) => {
   return (
     <ContentWatcherContext.Provider value={watcher}>{children}</ContentWatcherContext.Provider>
