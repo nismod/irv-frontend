@@ -5,6 +5,7 @@ import { csvFormat as d3CsvFormat } from 'd3-dsv';
 import { ComponentType, FC, ReactElement, Suspense } from 'react';
 import { RecoilValue, useRecoilValue } from 'recoil';
 
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 
 import { apiFeatureQuery } from '@/state/queries';
@@ -25,6 +26,7 @@ const LoadDetails: FC<{
 
 interface SimpleFeature {
   id: number;
+  properties?: Record<string, any>;
 }
 
 interface DetailsFeature extends SimpleFeature {
@@ -120,7 +122,8 @@ export const ExtendedAssetDetails: FC<ExtendedAssetDetailsProps> = ({
   feature,
   showRiskSection = true,
 }) => {
-  const featureDetailsState = apiFeatureQuery(feature.id);
+  const id = getFeatureId(feature);
+  const featureDetailsState = apiFeatureQuery(id);
 
   return (
     <AssetDetailsWrapper>

@@ -1,5 +1,5 @@
 import * as d3 from 'd3-color';
-import { Color } from 'deck.gl/typed';
+import { Color } from 'deck.gl';
 import _ from 'lodash';
 
 export function colorCssToRgb(cssColor: string): Color {

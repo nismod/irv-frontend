@@ -1,4 +1,4 @@
-import { Color } from 'deck.gl/typed';
+import { Color } from 'deck.gl';
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';

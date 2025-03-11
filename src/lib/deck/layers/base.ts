@@ -7,7 +7,7 @@ import {
   MVTLayerProps,
   TileLayer,
   TileLayerProps,
-} from 'deck.gl/typed';
+} from 'deck.gl';
 
 import { ConfigTree } from '@/lib/nested-config/config-tree';
 import { flattenConfig } from '@/lib/nested-config/flatten-config';

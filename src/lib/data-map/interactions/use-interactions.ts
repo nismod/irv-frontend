@@ -1,4 +1,4 @@
-import type { MapboxOverlay } from '@deck.gl/mapbox/typed';
+import type { MapboxOverlay } from '@deck.gl/mapbox';
 import _ from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useSetRecoilState } from 'recoil';

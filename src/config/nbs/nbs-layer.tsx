@@ -2,6 +2,7 @@ import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/typ
 import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 import { fillColor } from '@/lib/deck/props/style';
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
 
@@ -49,9 +50,9 @@ export function nbsViewLayer(
       return (
         <VectorHoverDescription
           hoveredObject={hover}
-          label={`Nature-based solutions: ${NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]})`}
+          label={`Nature-based solutions: ${NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]}`}
           color={color}
-          idValue={'#' + feature.id}
+          idValue={'#' + getFeatureId(feature)}
         />
       );
     },
@@ -65,7 +66,7 @@ export function nbsViewLayer(
         <ExtendedAssetDetails
           DetailsComponent={NbsDetails}
           feature={feature}
-          label={`Nature-based solutions: ${NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]})`}
+          label={`Nature-based solutions: ${NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]}`}
           color={color}
           ApiDetailsComponent={NbsExtendedDetails}
         />

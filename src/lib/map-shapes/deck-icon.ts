@@ -21,7 +21,7 @@ const iconAtlas = (async function () {
   const offscreen = new OffscreenCanvas(canvasWidth, iconHeight);
   const ctx = offscreen.getContext('2d');
 
-  images.map((img, i) => ctx.drawImage(img, i * iconWidthAtlas, 0));
+  images.map((img, i) => ctx.drawImage(img as ImageBitmap, i * iconWidthAtlas, 0));
 
   return ctx.getImageData(0, 0, canvasWidth, iconHeight);
 })();

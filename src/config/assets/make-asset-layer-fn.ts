@@ -1,4 +1,4 @@
-import { MVTLayerProps } from 'deck.gl/typed';
+import { MVTLayerProps } from 'deck.gl';
 
 import { colorMap } from '@/lib/color-map';
 import { StyleParams, ViewLayerDataAccessFunction } from '@/lib/data-map/view-layers';
@@ -7,6 +7,7 @@ import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { GetColor } from '@/lib/deck/props/style';
 import { tiledDataLoading } from '@/lib/deck/props/tiled-data-loading';
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 
 import { SOURCES } from '../sources';
 
@@ -39,6 +40,9 @@ export function makeAssetLayerFn({
   const dataAccessor = customDataAccessFn?.(styleParams?.colorMap?.fieldSpec);
   const dataLoader = dataAccessor?.dataLoader;
 
+  // need to specify `id` as unique ID property because loading MVT with binary:false moves the id into properties (seems like a deck.gl bug)
+  const uniqueIdProperty = 'id';
+
   const dataStyle: DataStyle = styleParams?.colorMap
     ? {
         getColor: makeDataColorAccessor(dataAccessor, colorMap(styleParams.colorMap.colorSpec)),
@@ -50,10 +54,12 @@ export function makeAssetLayerFn({
       deckProps,
       {
         data: SOURCES.vector.getUrl(assetId),
+        uniqueIdProperty,
       },
       mvtSelection({
-        selectedFeatureId: selection?.target.feature.id,
+        selectedFeatureId: getFeatureId(selection?.target.feature, uniqueIdProperty),
         polygonOffset: selectionPolygonOffset,
+        uniqueIdProperty,
       }),
       dataLoader && tiledDataLoading({ dataLoader }),
       ...(customLayerPropsFn?.({ zoom, dataStyle }) ?? []),
