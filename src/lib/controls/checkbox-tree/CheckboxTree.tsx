@@ -1,5 +1,5 @@
 import { SimpleTreeView } from '@mui/x-tree-view';
-import produce from 'immer';
+import { produce } from 'immer';
 import React, { useCallback } from 'react';
 
 import { CheckboxTreeItem } from './CheckboxTreeItem';
