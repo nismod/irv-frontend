@@ -1,11 +1,11 @@
-import { ArgumentsType, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { computeDatasetStatus, DatasetStatus, JobQueryStatus } from './dataset-status';
 import { JobStatusType } from './job-status';
 import { PackageDataStatus } from './package-data';
 import { QueryResultStatus } from './query-status';
 
-type ComputeStatusArgs = ArgumentsType<typeof computeDatasetStatus>;
+type ComputeStatusArgs = Parameters<typeof computeDatasetStatus>;
 
 describe('compute dataset status', () => {
   it.each<ComputeStatusArgs>([

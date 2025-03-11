@@ -16,7 +16,7 @@ export const WdpaHoverDescription: FC<{
         const feature = ho.target.feature;
         const color = PROTECTED_AREA_COLORS[ho.viewLayer.params.type].css;
         return (
-          <Box>
+          <Box key={feature.properties.WDPA_PID}>
             <ColorBox color={color} />
             {feature.properties.NAME}
           </Box>

@@ -43,10 +43,9 @@ export const Component = () => {
       <Box mt={5}>
         <Typography variant="h3">Datasets</Typography>
         <Suspense fallback={<DatasetsSkeleton />}>
-          <Await
-            resolve={datasets}
-            children={(datasets) => <DatasetsList datasets={datasets} region={region} />}
-          />
+          <Await resolve={datasets}>
+            {(datasets) => <DatasetsList datasets={datasets} region={region} />}
+          </Await>
         </Suspense>
       </Box>
     </CenteredLayout>

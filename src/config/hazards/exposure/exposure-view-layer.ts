@@ -35,7 +35,7 @@ export function exposureViewLayer(hazardType: ExposureSource, hazardParams: any)
   const id = `${hazardType}_exposure`;
   const deckId = getHazardDataPath({ hazardType, hazardParams, metric: 'exposure' });
 
-  let { label: hazardLabel } = HAZARDS_METADATA[hazardType];
+  const { label: hazardLabel } = HAZARDS_METADATA[hazardType];
   const colorMap = EXPOSURE_COLOR_MAPS[hazardType];
 
   const label = `Expected Annual Population Exposed (${hazardLabel})`;

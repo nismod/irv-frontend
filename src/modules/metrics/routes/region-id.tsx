@@ -60,7 +60,7 @@ export const Component = () => {
   const yearOptions = new Set<number>();
 
   if (chartData) {
-    for (var i: number = GDL_YEAR_RANGE[0]; i <= GDL_YEAR_RANGE[1]; i++) {
+    for (let i: number = GDL_YEAR_RANGE[0]; i <= GDL_YEAR_RANGE[1]; i++) {
       const index = i;
       selectedCountryData.forEach((d) => {
         const maybeYearData = d[index];
@@ -77,7 +77,7 @@ export const Component = () => {
   }
 
   const handleMetricSelection = useCallback(
-    (selection: String) => {
+    (selection: string) => {
       const maybeMetricMatch = gdlDatasets.find((option) => option.value === selection);
       const selectionId = maybeMetricMatch ? maybeMetricMatch.value : gdlDatasets[0].value;
       if (selection != null) {
