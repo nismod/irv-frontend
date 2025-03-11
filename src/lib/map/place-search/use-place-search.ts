@@ -1,6 +1,6 @@
-import { useDebounceCallback } from '@react-hook/debounce';
 import { useEffect, useState } from 'react';
-import { useFetch } from 'use-http';
+import { useQuery } from 'react-query';
+import { useDebounceValue } from 'usehooks-ts';
 
 import { BoundingBox, NominatimBoundingBox, nominatimToAppBoundingBox } from '@/lib/bounding-box';
 
@@ -30,35 +30,41 @@ function processNominatimData(data: NominatimSearchResult[]): PlaceSearchResult[
   }));
 }
 
-export function usePlaceSearch(searchValue: string) {
-  const { get, error } = useFetch(
+async function fetchPlaces(searchValue: string) {
+  const response = await fetch(
     `https://nominatim.openstreetmap.org/search.php?format=jsonv2&q=${searchValue}`,
   );
+  if (!response.ok) {
+    throw new Error('Failed to fetch places');
+  }
+  return response.json();
+}
 
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+export function usePlaceSearch(searchValue: string) {
+  const [isSearching, setIsSearching] = useState(false);
+  const [debouncedSearchValue] = useDebounceValue(searchValue, 1500);
+  const enabled = Boolean(debouncedSearchValue);
 
-  const debouncedGet = useDebounceCallback(async () => {
-    try {
-      const data = await get();
-      setData(data);
-    } finally {
-      setLoading(false);
-    }
-  }, 1500);
-
+  // return loading=true immediately when search text changes, even before the query is fired off
   useEffect(() => {
-    if (searchValue !== '') {
-      setLoading(true);
-      debouncedGet();
+    if (searchValue.trim()) {
+      setIsSearching(true);
     }
-  }, [searchValue, debouncedGet]);
+  }, [searchValue]);
 
-  const searchResults: PlaceSearchResult[] = processNominatimData(data) ?? [];
+  const { data, error, isLoading } = useQuery(
+    ['places', debouncedSearchValue],
+    () => fetchPlaces(debouncedSearchValue),
+    {
+      enabled,
+      select: processNominatimData, // Transform the response
+      onSettled: () => setIsSearching(false),
+    },
+  );
 
   return {
-    loading,
+    loading: isSearching || isLoading,
     error,
-    searchResults,
+    searchResults: data ?? [],
   };
 }
