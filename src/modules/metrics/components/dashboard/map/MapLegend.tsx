@@ -2,17 +2,23 @@ import { Box, Stack } from '@mui/system';
 import * as d3 from 'd3-color';
 import { FC } from 'react';
 
+import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
+
+import { ColorScale } from '../../lib/chart/types/ColorScale';
+
 export const MapLegend: FC<{
   right?: number;
   bottom?: number;
   left?: number;
-  colorScale: any;
-  domainY: any;
+  colorScale: ColorScale;
+  domainY: DatasetExtentList;
   label: string;
 }> = ({ right = 0, bottom = 0, left = 0, colorScale, domainY, label }) => {
   if (!colorScale || !domainY || !label) {
     return <></>;
   }
+
+  // Simple gradient stops
   const colorString1 = colorScale(domainY[0]);
   const colorString2 = colorScale((domainY[0] + domainY[1]) / 2);
   const colorString3 = colorScale(domainY[1]);
@@ -20,7 +26,7 @@ export const MapLegend: FC<{
   const colorObject2 = d3.color(colorString2)?.rgb();
   const colorObject3 = d3.color(colorString3)?.rgb();
 
-  if (!colorObject) {
+  if (!(colorObject && colorObject2 && colorObject3)) {
     return <></>;
   }
 

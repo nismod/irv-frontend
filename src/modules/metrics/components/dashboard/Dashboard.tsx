@@ -14,7 +14,7 @@ type DashboardProps = {
   nationalGeo: NationalGeo;
   selectedYear: number;
   metricLabel: string;
-  updateSelectedYear: (year: any) => void;
+  updateSelectedYear: (year: number) => void;
 };
 const Dashboard: FC<DashboardProps> = ({
   annualData,
@@ -29,6 +29,7 @@ const Dashboard: FC<DashboardProps> = ({
 
   // group the data - one line per group
   const dataByYearGrouped = d3group(annualDataFiltered, (d) => d.gdlCode);
+
   const dataByYearGroupedList = [];
   dataByYearGrouped.forEach((value, key) => {
     dataByYearGroupedList.push({ regionKey: key, indexData: value });

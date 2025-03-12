@@ -41,7 +41,7 @@ type DashboardChartsProps = {
   nationalGeo: NationalGeo;
   selectedYear: number;
   metricLabel: string;
-  updateSelectedYear: (year: any) => void;
+  updateSelectedYear: (year: number) => void;
 };
 
 const DashboardCharts: FC<DashboardChartsProps> = ({
@@ -54,7 +54,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
   metricLabel,
   updateSelectedYear,
 }) => {
-  const [highlightRegion, setHighlightRegion] = useState(null);
+  const [highlightRegion, setHighlightRegion] = useState<string>('');
 
   const isMobile = useIsMobile();
 
@@ -152,8 +152,8 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
               width={isMobile ? '100%' : '50%'}
             >
               <RegionsLineChart
-                xAccessor={(d) => d.year}
-                yAccessor={(d) => d.value}
+                xAccessor={(d: AnnualGdlRecord) => d.year}
+                yAccessor={(d: AnnualGdlRecord) => d.value}
                 label={metricLabel}
                 dataFiltered={annualData}
                 dataByYearGroupedList={annualDataGrouped}

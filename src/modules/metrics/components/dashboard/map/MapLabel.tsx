@@ -1,12 +1,13 @@
 import { Box } from '@mui/system';
 import { FC } from 'react';
 
+import { AnnualGdlRecord } from '@/modules/metrics/types/AnnualGdlData';
+
 export const MapLabel: FC<{
   top?: number;
   right?: number;
-  highlightData: any;
-  selectedYear: number;
-}> = ({ top = 0, right = 0, highlightData, selectedYear = 2021 }) => {
+  highlightData: AnnualGdlRecord | undefined;
+}> = ({ top = 0, right = 0, highlightData }) => {
   return highlightData ? (
     <Box
       position="absolute"

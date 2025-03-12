@@ -16,6 +16,10 @@ import { DatasetExtent } from '../types/DatasetExtent';
 import type { NationalGeo } from '../types/NationalGeo';
 import { RegionGeo } from '../types/RegionGeo';
 
+const GRI_BASE = 'https://global.infrastructureresilience.org';
+// const LOCAL_BASE = 'http://127.0.0.1:8889';
+const API_BASE = `${GRI_BASE}/metrics/gdl`;
+
 export const loader = async ({ params: { regionId, metricId } }: LoaderFunctionArgs) => {
   return defer({
     regionId: regionId,
@@ -49,8 +53,10 @@ export const Component = () => {
 
   const [selectedYear, setSelectedYear] = useState<number>(2010);
 
+  const [countryFetchError, setCountryFetchError] = useState(null);
+
   // fetch list of countries
-  const countryMetaUrl = `http://127.0.0.1:8889/metrics/gdl/meta/countries`;
+  const countryMetaUrl = `${API_BASE}/meta/countries`;
   useEffect(() => {
     fetch(countryMetaUrl)
       .then((response) => response.json())
@@ -62,26 +68,34 @@ export const Component = () => {
       )
       .then((dataList) => {
         setCountryOptions(dataList);
+      })
+      .catch((error) => {
+        setCountryFetchError(error);
       });
   }, [countryMetaUrl]);
 
   // fetch national boundaries
-  const nationalGeoUrl = `http://127.0.0.1:8889/metrics/gdl/geojson/national/iso/${regionId}`;
+  const nationalGeoUrl = `${API_BASE}/geojson/national/iso/${regionId}`;
   useEffect(() => {
     fetch(nationalGeoUrl)
       .then((d) => d.json())
-      .then((d) =>
+      .then((d) => {
         setNationalGeo({
           boundary: d.boundary,
           envelope: d.envelope,
           countryName: d.properties.country_name,
           isoCode: d.properties.iso_code,
-        }),
-      );
+        });
+
+        setCountryFetchError(false);
+      })
+      .catch((error) => {
+        setNationalGeo(null);
+      });
   }, [nationalGeoUrl]);
 
   // fetch subnational boundaries
-  const geojsonUrl = `http://127.0.0.1:8889/metrics/gdl/geojson/subnational/iso/${regionId}`;
+  const geojsonUrl = `${API_BASE}/geojson/subnational/iso/${regionId}`;
   useEffect(() => {
     fetch(geojsonUrl)
       .then((response) => response.json())
@@ -97,11 +111,14 @@ export const Component = () => {
           },
         })),
       )
-      .then((d) => setRegionsGeo(d));
+      .then((d) => setRegionsGeo(d))
+      .catch((error) => {
+        setRegionsGeo(null);
+      });
   }, [geojsonUrl]);
 
   // fetch annual data for country and dataset
-  const annualDataUrl = `http://127.0.0.1:8889/metrics/gdl/data/${metricId}/${regionId}`;
+  const annualDataUrl = `${API_BASE}/data/${metricId}/${regionId}`;
   useEffect(() => {
     fetch(annualDataUrl)
       .then((response) => response.json())
@@ -113,15 +130,21 @@ export const Component = () => {
           value: record.value,
         })),
       )
-      .then((dataList) => setAnnualData(dataList));
+      .then((dataList) => setAnnualData(dataList))
+      .catch((error) => {
+        setAnnualData(null);
+      });
   }, [annualDataUrl]);
 
   // fetch extents of full dataset for color/axis scaling
-  const extentUrl = `http://127.0.0.1:8889/metrics/gdl/data/${metricId}/extent`;
+  const extentUrl = `${API_BASE}/data/${metricId}/extent`;
   useEffect(() => {
     fetch(extentUrl)
       .then((d) => d.json())
-      .then((d) => setDatasetExtent(d));
+      .then((d) => setDatasetExtent(d))
+      .catch((error) => {
+        setDatasetExtent(null);
+      });
   }, [extentUrl]);
 
   const updateSelectedYear = (year) => {
@@ -146,8 +169,11 @@ export const Component = () => {
     [navigate, regionId],
   );
 
-  if (!(countryOptions && regionsGeo && nationalGeo && datasetExtent && annualData)) {
-    return <>Loading data...</>;
+  if (!countryOptions) {
+    if (countryFetchError) {
+      return <>There was an error loading the data</>;
+    }
+    return <>Loading country options...</>;
   }
 
   const selectedMetric = selectedMetricOrDefault(metricId);
@@ -228,7 +254,7 @@ export const Component = () => {
         </Stack>
 
         <Box paddingX={isMobile ? 2 : 5} width={'100%'}>
-          {annualData && nationalGeo && regionsGeo ? (
+          {annualData && nationalGeo && regionsGeo && datasetExtent ? (
             <Dashboard
               annualData={annualData}
               datasetExtent={datasetExtent}
@@ -239,7 +265,7 @@ export const Component = () => {
               metricLabel={selectedMetricLabel}
             />
           ) : (
-            <div>Loading data...</div>
+            <div>No data available</div>
           )}
         </Box>
       </Stack>

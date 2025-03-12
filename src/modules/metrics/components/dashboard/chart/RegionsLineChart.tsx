@@ -3,12 +3,15 @@ import { extent as d3extent, leastIndex as d3leastIndex } from 'd3-array';
 import { format as d3format } from 'd3-format';
 import { scaleLinear as d3scaleLinear } from 'd3-scale';
 import { pointer as d3pointer } from 'd3-selection';
+import { FC } from 'react';
 
 import Axis from '@/modules/metrics/components/lib/chart/axis/Axis';
 import Chart from '@/modules/metrics/components/lib/chart/Chart';
 import Line from '@/modules/metrics/components/lib/chart/Line';
 import Dimension from '@/modules/metrics/components/lib/chart/types/Dimension';
 import { numericDomain, useChartDimensions } from '@/modules/metrics/components/lib/chart/utils';
+import { AnnualGdlGrouped, AnnualGdlRecord } from '@/modules/metrics/types/AnnualGdlData';
+import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
 
 const formatYear = d3format('.0f');
 
@@ -25,7 +28,20 @@ const findHighlightPoint = (dataByYearGroupedList, regionKey, selectedYear, xSca
   };
 };
 
-const RegionsLineChart = ({
+type RegionsLineChartProps = {
+  xAccessor: (record: AnnualGdlRecord) => number;
+  yAccessor: (record: AnnualGdlRecord) => number;
+  label: string;
+  dataFiltered: AnnualGdlRecord[];
+  dataByYearGroupedList: AnnualGdlGrouped[];
+  highlightRegion: string;
+  setHighlightRegion: (regionId: string) => void;
+  selectedYear: number;
+  updateSelectedYear: (year: number) => void;
+  domainY: DatasetExtentList;
+};
+
+const RegionsLineChart: FC<RegionsLineChartProps> = ({
   xAccessor,
   yAccessor,
   label,
@@ -67,12 +83,16 @@ const RegionsLineChart = ({
     yearList.push(i);
   }
 
-  const points = dataFiltered.map((d) => [xAccessorScaled(d), yAccessorScaled(d), d.gdlCode]);
+  const points: [number, number, string][] = dataFiltered.map((d) => [
+    xAccessorScaled(d),
+    yAccessorScaled(d),
+    d.gdlCode,
+  ]);
   const yearPoints = yearList.map((d) => [xScale(d), d]);
 
   const onPointerMove = (event) => {
     // Find nearest data point based on coordinates of click event
-    const [pointerX, pointerY] = d3pointer(event);
+    const [pointerX, pointerY]: [number, number] = d3pointer(event);
     const nearestIndex = d3leastIndex(points, ([x, y]) => Math.hypot(x - pointerX, y - pointerY));
     const regionKey = points[nearestIndex][2];
 

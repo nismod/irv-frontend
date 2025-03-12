@@ -6,15 +6,19 @@ import Axis from '@/modules/metrics/components/lib/chart/axis/Axis';
 import Chart from '@/modules/metrics/components/lib/chart/Chart';
 import Dimension from '@/modules/metrics/components/lib/chart/types/Dimension';
 import { useChartDimensions } from '@/modules/metrics/components/lib/chart/utils';
+import { AnnualGdlRecord } from '@/modules/metrics/types/AnnualGdlData';
+import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
+
+import { ColorScale } from '../../lib/chart/types/ColorScale';
 
 type CountriesBarChartProps = {
   label: string;
-  highlightRegion: any;
-  setHighlightRegion: (regionId: any) => void;
+  highlightRegion: string;
+  setHighlightRegion: (regionId: string) => void;
   selectedYear: number;
-  selectedCountryData: any;
-  domainY: any;
-  colorScale: any;
+  selectedCountryData: AnnualGdlRecord[];
+  domainY: DatasetExtentList;
+  colorScale: ColorScale;
 };
 
 const CountriesBarChart: FC<CountriesBarChartProps> = ({

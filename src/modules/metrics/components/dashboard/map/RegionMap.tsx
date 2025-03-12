@@ -23,6 +23,7 @@ import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
 import { NationalGeo } from '@/modules/metrics/types/NationalGeo';
 import { RegionGeo } from '@/modules/metrics/types/RegionGeo';
 
+import { ColorScale } from '../../lib/chart/types/ColorScale';
 import { MapLabel } from './MapLabel';
 import { MapLegend } from './MapLegend';
 
@@ -159,7 +160,7 @@ function RegionMapViewer({
   const backgroundKey = 'light';
   const { mapStyle } = useBasemapStyle(backgroundKey, true);
 
-  const colorScale = useMemo(
+  const colorScale: ColorScale = useMemo(
     () => d3scaleSequential().domain(domainY).interpolator(d3interpolateRdYlGn),
     [domainY],
   );
@@ -200,8 +201,8 @@ function RegionMapViewer({
     [selectedCountryData, selectedYear, colorScale],
   );
 
-  const highlightData = selectedCountryData.find(
-    (d) => d.gdlCode.toLowerCase() === highlightRegion && highlightRegion.toLowerCase(),
+  const highlightData: AnnualGdlRecord = selectedCountryData.find(
+    (d) => d.gdlCode.toLowerCase() === highlightRegion && d.year === selectedYear,
   );
 
   return (
@@ -262,7 +263,7 @@ function RegionMapViewer({
 
       <MapLegend colorScale={colorScale} domainY={domainY} label={label} />
 
-      <MapLabel highlightData={highlightData} selectedYear={selectedYear} />
+      <MapLabel highlightData={highlightData} />
     </Map>
   );
 }
