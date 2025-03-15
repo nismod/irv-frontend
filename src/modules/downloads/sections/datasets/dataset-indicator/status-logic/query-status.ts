@@ -1,4 +1,4 @@
-import { QueryStatus } from 'react-query';
+import { FetchStatus, QueryStatus } from '@tanstack/react-query';
 
 export enum QueryResultStatus {
   Idle = 'idle',
@@ -15,29 +15,35 @@ export type QueryStatusResult<ResultT> =
 
 export interface IUseQueryResult<DataT, ErrorT = any> {
   status: QueryStatus;
+  fetchStatus: FetchStatus;
   error?: ErrorT;
   data?: DataT;
 }
 
 export function computeQueryStatus<DataT, ResultT>(
-  { status: queryStatus, data, error }: IUseQueryResult<DataT>,
+  { status, fetchStatus, data, error }: IUseQueryResult<DataT>,
   pvFullName: string,
   dataStatusFn: (data: DataT, pvName: string) => ResultT,
   queryErrorFn?: (error) => QueryStatusResult<ResultT>,
 ): QueryStatusResult<ResultT> {
-  if (queryStatus === 'idle') {
-    return {
-      status: QueryResultStatus.Idle,
-      data: null,
-    };
+  if (status === 'loading') {
+    // The query is actively loading (initial load)
+    if (fetchStatus === 'fetching') {
+      return {
+        status: QueryResultStatus.Loading,
+        data: null,
+      };
+    } else {
+      // The query is completely idle (has not started, no data)
+      return {
+        status: QueryResultStatus.Idle,
+        data: null,
+      };
+    }
   }
-  if (queryStatus === 'loading') {
-    return {
-      status: QueryResultStatus.Loading,
-      data: null,
-    };
-  }
-  if (queryStatus === 'error') {
+
+  // The query failed
+  if (status === 'error') {
     if (queryErrorFn != null) {
       const errResult = queryErrorFn(error);
 
@@ -52,5 +58,6 @@ export function computeQueryStatus<DataT, ResultT>(
     };
   }
 
-  return dataStatusFn(data, pvFullName);
+  // If the query is successful, use the data status function
+  return dataStatusFn(data!, pvFullName);
 }

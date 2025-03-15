@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { useDebounceValue } from 'usehooks-ts';
 
 import { BoundingBox, NominatimBoundingBox, nominatimToAppBoundingBox } from '@/lib/bounding-box';

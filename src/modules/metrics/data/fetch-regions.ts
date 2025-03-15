@@ -2,7 +2,7 @@ import { autopkgClient, cancelOnAbort } from '@/api-client';
 import { makeQueryAndPrefetch } from '@/query-client';
 
 export const [useAllRegions, fetchAllRegions] = makeQueryAndPrefetch(
-  () => 'AllRegions',
+  () => ['AllRegions'],
   () =>
     ({ signal }) =>
       cancelOnAbort(autopkgClient.boundaries.getAllBoundarySummariesV1BoundariesGet(), signal),

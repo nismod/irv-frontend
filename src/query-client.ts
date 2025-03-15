@@ -1,4 +1,10 @@
-import { QueryClient, QueryFunction, QueryKey, useQuery, UseQueryOptions } from 'react-query';
+import {
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  useQuery,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import { Simplify } from 'type-fest';
 
 export const queryClient = new QueryClient();

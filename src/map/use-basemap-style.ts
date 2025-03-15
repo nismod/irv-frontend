@@ -1,7 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import _ from 'lodash';
 import { StyleSpecification } from 'maplibre-gl';
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
 
 import {
   BACKGROUND_ATTRIBUTIONS,
@@ -49,7 +49,7 @@ export function useBasemapStyle(
   const backgroundConfig = BACKGROUNDS[background];
 
   const { data: baseStyle = { version: 8, sources: {}, layers: [] } } = useQuery(
-    'basemapStyle',
+    ['basemapStyle'],
     fetchBasemapStyle,
   );
 
