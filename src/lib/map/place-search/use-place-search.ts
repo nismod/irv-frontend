@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 
 import { BoundingBox, NominatimBoundingBox, nominatimToAppBoundingBox } from '@/lib/bounding-box';
@@ -41,29 +40,27 @@ async function fetchPlaces(searchValue: string) {
 }
 
 export function usePlaceSearch(searchValue: string) {
-  const [isSearching, setIsSearching] = useState(false);
-  const [debouncedSearchValue] = useDebounceValue(searchValue, 1500);
-  const enabled = Boolean(debouncedSearchValue);
+  const trimmedValue = searchValue.trim();
+  let [debouncedSearchValue] = useDebounceValue(trimmedValue, 1500);
 
-  // return loading=true immediately when search text changes, even before the query is fired off
-  useEffect(() => {
-    if (searchValue.trim()) {
-      setIsSearching(true);
-    }
-  }, [searchValue]);
+  // propagate empty search value immediately, bypassing the debounce
+  if (!trimmedValue) {
+    debouncedSearchValue = '';
+  }
 
-  const { data, error, isLoading } = useQuery(
-    ['places', debouncedSearchValue],
-    () => fetchPlaces(debouncedSearchValue),
-    {
-      enabled,
-      select: processNominatimData, // Transform the response
-      onSettled: () => setIsSearching(false),
-    },
-  );
+  const isDebouncing = trimmedValue && trimmedValue !== debouncedSearchValue;
+
+  const { data, error, isFetching } = useQuery({
+    queryKey: ['places', debouncedSearchValue],
+    queryFn: () => fetchPlaces(debouncedSearchValue),
+    enabled: !!debouncedSearchValue,
+    select: processNominatimData, // Transform the response
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
 
   return {
-    loading: isSearching || isLoading,
+    // return loading=true if the search value has changed, even before the query is sent
+    loading: isDebouncing || isFetching,
     error,
     searchResults: data ?? [],
   };

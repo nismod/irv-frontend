@@ -21,16 +21,20 @@ export function makeQueryAndPrefetch<
         Omit<UseQueryOptions<TResult, unknown, TResult, QueryKey>, 'queryKey' | 'queryFn'>
       >,
     ) => {
-      return useQuery(keyFn(args), makeFetcher(args), reactQueryOptions);
+      return useQuery({
+        queryKey: keyFn(args),
+        queryFn: makeFetcher(args),
+        ...reactQueryOptions,
+      });
     },
     (args: TArgs, signal?: AbortSignal) => {
       const key = keyFn(args);
 
       signal?.addEventListener('abort', () => {
-        queryClient.cancelQueries(key);
+        queryClient.cancelQueries({ queryKey: key });
       });
 
-      return queryClient.fetchQuery(key, makeFetcher(args));
+      return queryClient.fetchQuery({ queryKey: key, queryFn: makeFetcher(args) });
     },
   ] as const;
 }

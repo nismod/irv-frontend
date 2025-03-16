@@ -26,7 +26,7 @@ export function computeQueryStatus<DataT, ResultT>(
   dataStatusFn: (data: DataT, pvName: string) => ResultT,
   queryErrorFn?: (error) => QueryStatusResult<ResultT>,
 ): QueryStatusResult<ResultT> {
-  if (status === 'loading') {
+  if (status === 'pending') {
     // The query is actively loading (initial load)
     if (fetchStatus === 'fetching') {
       return {

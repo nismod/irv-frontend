@@ -7,7 +7,7 @@ describe('Compute state of API query with specified data status function', () =>
 
   it('returns status:idle and no data when API query has not started', () => {
     const { status, data } = computeQueryStatus(
-      { status: 'loading', fetchStatus: 'idle', data: null },
+      { status: 'pending', fetchStatus: 'idle', data: null },
       PV_NAME,
       vi.fn(),
     );
@@ -18,7 +18,7 @@ describe('Compute state of API query with specified data status function', () =>
 
   it('returns status:loading and no data when API query is actively loading', () => {
     const { status, data } = computeQueryStatus(
-      { status: 'loading', fetchStatus: 'fetching', data: null },
+      { status: 'pending', fetchStatus: 'fetching', data: null },
       PV_NAME,
       vi.fn(),
     );
