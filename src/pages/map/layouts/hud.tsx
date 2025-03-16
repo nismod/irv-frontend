@@ -17,7 +17,7 @@ export const AppPlaceSearch = () => {
 
   const handleSelectedSearchResult = useCallback(
     (result: PlaceSearchResult) => {
-      setFitBounds(result.boundingBox);
+      setFitBounds(result?.boundingBox ?? null);
     },
     [setFitBounds],
   );
