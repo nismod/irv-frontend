@@ -38,10 +38,11 @@ export const MapSearchField = ({ onSelectedResult }) => {
       inputValue={searchValue}
       onInputChange={(e, value, reason) => {
         /*
-        Ignore the change if it's triggered by the user selecting an option
+        Ignore the change if it's triggered by the user selecting an option.
+        When user selects an option, it seems that both a `selectedOption` and a `reset` reason is fired.
         This is so that the actual search query stays in the input field
         */
-        if (reason !== 'reset') {
+        if (reason !== 'selectOption' && reason !== 'reset') {
           setSearchValue(value);
         }
       }}
