@@ -1,4 +1,4 @@
-import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterLegend';
 
 import { SOURCES } from '../sources';
 import { HAZARDS_METADATA, HazardType } from './metadata';
@@ -13,7 +13,10 @@ export function getHazardDataPath({ hazardType, hazardParams, metric }: HazardSo
   return HAZARDS_METADATA[hazardType].getPath(hazardParams, metric);
 }
 
-export function getHazardDataUrl(params: HazardSourceParams, { scheme, range }: RasterColorMap) {
+export function getHazardDataUrl(
+  params: HazardSourceParams,
+  { scheme, range }: RasterContinuousColorMap,
+) {
   const path = getHazardDataPath(params);
 
   return SOURCES.raster.getUrl({

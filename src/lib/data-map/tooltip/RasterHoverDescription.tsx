@@ -1,12 +1,12 @@
 import { FC, ReactNode } from 'react';
 
-import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterLegend';
 import { useRasterColorMapValues } from '@/lib/data-map/legend/use-raster-color-map-values';
 
 import { RasterBaseHover } from './RasterBaseHover';
 
 export interface RasterHoverDescriptionProps {
-  colorMap: RasterColorMap;
+  colorMap: RasterContinuousColorMap;
   color: [number, number, number, number];
   label: string;
   formatValue: (x: any) => ReactNode | string;

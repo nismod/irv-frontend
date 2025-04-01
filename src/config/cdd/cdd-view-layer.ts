@@ -2,7 +2,7 @@ import { Color } from 'deck.gl';
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
-import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
@@ -14,7 +14,7 @@ import { CDDType, METRIC_VALUE_LABELS } from './metadata';
 const METRIC_FORMATS: Record<
   CDDType,
   {
-    colorMap: RasterColorMap;
+    colorMap: RasterContinuousColorMap;
     formatValue: (x: number) => string;
     transparentColor?: Color;
   }

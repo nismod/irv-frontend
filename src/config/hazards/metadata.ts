@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterLegend';
 import { makeValueFormat } from '@/lib/formats';
 import { makeOrderingCheck } from '@/lib/helpers';
 
@@ -18,7 +18,7 @@ export const HAZARD_TYPES = [
 
 export type HazardType = (typeof HAZARD_TYPES)[number];
 
-export const HAZARD_COLOR_MAPS: Record<HazardType, RasterColorMap> = {
+export const HAZARD_COLOR_MAPS: Record<HazardType, RasterContinuousColorMap> = {
   fluvial: {
     scheme: 'blues',
     range: [0, 5],

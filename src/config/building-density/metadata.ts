@@ -1,5 +1,5 @@
 import { ValueLabel } from '@/lib/controls/params/value-label';
-import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterLegend';
 
 export const BUILDING_DENSITY_TYPES = ['all', 'non_residential'] as const;
 
@@ -16,7 +16,7 @@ export const BUILDING_DENSITY_TYPE_LABELS: ValueLabel<BuildingDensityType>[] = [
   },
 ];
 
-export const BUILDING_DENSITY_COLORMAPS: Record<BuildingDensityType, RasterColorMap> = {
+export const BUILDING_DENSITY_COLORMAPS: Record<BuildingDensityType, RasterContinuousColorMap> = {
   all: {
     scheme: 'orrd',
     range: [0, 500_000],

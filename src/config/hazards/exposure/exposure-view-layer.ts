@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
-import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
@@ -12,7 +12,7 @@ import { getHazardDataPath, getHazardDataUrl } from '../source';
 
 export type ExposureSource = Subset<HazardType, 'extreme_heat' | 'drought'>;
 
-export const EXPOSURE_COLOR_MAPS: Record<ExposureSource, RasterColorMap> = {
+export const EXPOSURE_COLOR_MAPS: Record<ExposureSource, RasterContinuousColorMap> = {
   extreme_heat: {
     scheme: 'gist_heat_r',
     range: [1000, 2_000_000],

@@ -5,7 +5,7 @@ import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 import { GradientLegend } from './GradientLegend';
 import { useRasterColorMapValues } from './use-raster-color-map-values';
 
-export interface RasterColorMap {
+export interface RasterContinuousColorMap {
   scheme: string;
   range: [number, number];
 
@@ -23,7 +23,7 @@ export interface RasterColorMap {
 export const RasterLegend: FC<{
   label: string;
   description?: string;
-  colorMap: RasterColorMap;
+  colorMap: RasterContinuousColorMap;
   getValueLabel: (x: any) => ReactNode | string;
 }> = React.memo(
   ({
