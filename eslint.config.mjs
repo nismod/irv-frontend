@@ -9,6 +9,7 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   {
     ignores: [
+      '.local/*',
       'build/*',
       // top-level JS files
       '*.js',
