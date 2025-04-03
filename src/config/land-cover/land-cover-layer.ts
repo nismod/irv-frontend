@@ -10,6 +10,7 @@ import { ViewLayer } from '@/lib/data-map/view-layers';
 import { withoutAlpha } from '@/lib/deck/color';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 
+import { SOURCES } from '../sources';
 import landCoverLegend from './land-cover-legend.json';
 
 const landCoverColorMap: RasterCategoricalColorMap = {
@@ -41,7 +42,10 @@ export function landCoverViewLayer(): ViewLayer {
         },
         deckProps,
         {
-          data: '/api/tiles/land_cover/land_cover/{z}/{x}/{y}.png?colormap=explicit',
+          data: SOURCES.raster.getUrl({
+            path: 'land_cover/land_cover',
+            scheme: 'explicit',
+          }),
           refinementStrategy: 'no-overlap',
         },
       ),
