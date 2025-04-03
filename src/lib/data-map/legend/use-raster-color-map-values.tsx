@@ -25,7 +25,7 @@ export function RasterColorMapSourceProvider({
   return <ColorMapSourceContext.Provider value={state}>{children}</ColorMapSourceContext.Provider>;
 }
 
-export function useRasterColorMapValues(
+export function useRasterContinuousColorMapValues(
   colorScheme: string,
   stretchRange: [number, number],
 ): ColorValue[] {

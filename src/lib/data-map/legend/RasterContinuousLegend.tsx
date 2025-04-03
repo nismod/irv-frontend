@@ -4,7 +4,7 @@ import { FormatFunction } from '@/lib/formats';
 import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 
 import { GradientLegend } from './GradientLegend';
-import { useRasterColorMapValues } from './use-raster-color-map-values';
+import { useRasterContinuousColorMapValues } from './use-raster-color-map-values';
 
 export interface RasterContinuousColorMap {
   type: 'continuous';
@@ -34,7 +34,7 @@ export const RasterContinuousLegend: FC<{
     colorMap: { scheme, range, rangeTruncated = [false, false] as [boolean, boolean] },
     getValueLabel,
   }) => {
-    const colorMapValues = useRasterColorMapValues(scheme, range);
+    const colorMapValues = useRasterContinuousColorMapValues(scheme, range);
 
     const colorMap = useObjectMemo({
       colorMapValues,

@@ -5,7 +5,7 @@ import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuous
 import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
 import {
   useRasterCategoricalColorMapValues,
-  useRasterColorMapValues,
+  useRasterContinuousColorMapValues,
 } from '@/lib/data-map/legend/use-raster-color-map-values';
 import { FormatFunction, nullFormat } from '@/lib/formats';
 
@@ -35,21 +35,17 @@ export const RasterHoverDescription: FC<RasterHoverDescriptionProps> = ({
   return null;
 };
 
-function useRasterColorMapLookup(
-  colorMapValues: ColorValue[],
-): Record<string, { value: any; i: number }> {
-  return useMemo(
-    () =>
-      colorMapValues &&
-      Object.fromEntries(colorMapValues.map(({ value, color }, i) => [color, { value, i }])),
-    [colorMapValues],
-  );
+function getColorValueLookup(colorValues: ColorValue[]) {
+  return Object.fromEntries(colorValues.map(({ color, value }, i) => [color, value]));
 }
 
-function useGetValueForColor(colorLookup: Record<string, { value: any; i: number }>) {
+function getValueIndexLookup(colorValues: ColorValue[]) {
+  return Object.fromEntries(colorValues.map(({ value }, i) => [value, i]));
+}
+
+function makeValueGetter(colorValueLookup: Record<string, any>) {
   return (color: string) => {
-    const { value } = colorLookup?.[color] ?? {};
-    return value;
+    return colorValueLookup?.[color];
   };
 }
 
@@ -60,9 +56,12 @@ const RasterCategoricalHoverDescription: FC<
 > = ({ colorMap, ...otherProps }) => {
   const colorValues = useRasterCategoricalColorMapValues(colorMap.scheme);
 
-  const colorValueLookup = useRasterColorMapLookup(colorValues);
+  const colorValueLookup = useMemo(
+    () => colorValues && getColorValueLookup(colorValues),
+    [colorValues],
+  );
 
-  const getValueForColor = useGetValueForColor(colorValueLookup);
+  const getValueForColor = makeValueGetter(colorValueLookup);
 
   return <RasterBaseHover getValueForColor={getValueForColor} {...otherProps} />;
 };
@@ -73,13 +72,21 @@ const RasterContinuousHoverDescription: FC<
   } & RasterHoverSharedProps
 > = ({ colorMap, formatValue, ...otherProps }) => {
   const { scheme, range, rangeTruncated = [false, false] } = colorMap;
-  const colorMapValues = useRasterColorMapValues(scheme, range);
-  const colorValueLookup = useRasterColorMapLookup(colorMapValues);
 
-  const getValueForColor = useGetValueForColor(colorValueLookup);
+  const colorValues = useRasterContinuousColorMapValues(scheme, range);
+  const colorValueLookup = useMemo(
+    () => colorValues && getColorValueLookup(colorValues),
+    [colorValues],
+  );
+  const valueIndexLookup = useMemo(
+    () => colorValues && getValueIndexLookup(colorValues),
+    [colorValues],
+  );
+
+  const getValueForColor = makeValueGetter(colorValueLookup);
 
   const formatValueWithRangeTruncation = nullFormat((value: any) => {
-    const { i } = colorValueLookup?.[value] ?? {};
+    const i = valueIndexLookup?.[value];
     return formatRangeTruncation(formatValue(value), i, rangeTruncated);
   });
 
