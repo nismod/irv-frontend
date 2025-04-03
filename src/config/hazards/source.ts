@@ -1,4 +1,4 @@
-import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
 
 import { SOURCES } from '../sources';
 import { HAZARDS_METADATA, HazardType } from './metadata';

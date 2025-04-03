@@ -33,3 +33,20 @@ export function useRasterColorMapValues(
 
   return useRecoilValue(colorMapValuesState({ scheme: colorScheme, range: stretchRange }));
 }
+
+// === Categorical schemes - temporary solution until backend is updated ===
+
+const categoricalColorMapStore = new Map<string, ColorValue[]>();
+
+export function registerCategoricalColorScheme(
+  categoricalScheme: string,
+  colorValues: ColorValue[],
+) {
+  if (!categoricalColorMapStore.has(categoricalScheme)) {
+    categoricalColorMapStore.set(categoricalScheme, colorValues);
+  }
+}
+
+export function useRasterCategoricalColorMapValues(categoricalScheme: string): ColorValue[] {
+  return categoricalColorMapStore.get(categoricalScheme);
+}

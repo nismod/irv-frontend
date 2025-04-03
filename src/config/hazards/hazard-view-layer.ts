@@ -25,7 +25,7 @@ export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLaye
     interactionGroup: 'hazards',
     params: { hazardType, hazardParams },
     fn: ({ deckProps, zoom }) => {
-      const { scheme, range } = HAZARD_COLOR_MAPS[hazardType];
+      const colorMap = HAZARD_COLOR_MAPS[hazardType];
 
       return rasterTileLayer(
         {
@@ -43,7 +43,7 @@ export function hazardViewLayer(hazardType: string, hazardParams: any): ViewLaye
           id: `${id}@${deckId}`, // follow the convention viewLayerId@deckLayerId
           data: getHazardDataUrl(
             { hazardType: hazardType as HazardType, metric: 'occurrence', hazardParams },
-            { scheme, range },
+            colorMap,
           ),
           refinementStrategy: 'no-overlap',
         },

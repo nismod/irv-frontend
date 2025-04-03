@@ -2,7 +2,8 @@ import { Color } from 'deck.gl';
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
-import { RasterContinuousColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
+import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
@@ -21,6 +22,7 @@ const METRIC_FORMATS: Record<
 > = {
   relative: {
     colorMap: {
+      type: 'continuous',
       scheme: 'magma',
       range: [0, 1],
     },
@@ -28,6 +30,7 @@ const METRIC_FORMATS: Record<
   },
   absolute: {
     colorMap: {
+      type: 'continuous',
       scheme: 'magma',
       range: [0, 360],
     },

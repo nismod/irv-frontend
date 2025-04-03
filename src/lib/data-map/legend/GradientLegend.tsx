@@ -1,6 +1,8 @@
 import { Box, Fade, Tooltip, Typography } from '@mui/material';
 import { FC, memo, ReactNode } from 'react';
 
+import { LegendLayout } from './LegendLayout';
+
 export interface ColorValue {
   color: string;
   value: any;
@@ -79,34 +81,32 @@ export interface GradientLegendProps {
 
 /** Base UI component for a color scale legend represented by a color gradient with labels for min/max value */
 export const GradientLegend: FC<GradientLegendProps> = memo(
-  ({ label, description, range, colorMap, getValueLabel }) => (
-    <Box mb={2}>
-      <Box mb={1}>
-        <Typography variant="body1">{label}</Typography>
-        {description && <Typography variant="body2">{description}</Typography>}
-      </Box>
-      <Box
-        height={legendHeight + 2}
-        width={256}
-        bgcolor="#ccc"
-        display="flex"
-        flexDirection="row"
-        border="1px solid gray"
-      >
-        {colorMap && <LegendGradient colorMap={colorMap} getValueLabel={getValueLabel} />}
-      </Box>
-      <Box height={10} position="relative">
-        {colorMap && (
-          <>
-            <Box position="absolute" left={0}>
-              <Typography>{getValueLabel(range[0])}</Typography>
-            </Box>
-            <Box position="absolute" right={0}>
-              <Typography>{getValueLabel(range[1])}</Typography>
-            </Box>
-          </>
-        )}
-      </Box>
-    </Box>
-  ),
+  ({ label, description, range, colorMap, getValueLabel }) => {
+    return (
+      <LegendLayout label={label} description={description}>
+        <Box
+          height={legendHeight + 2}
+          width={256}
+          bgcolor="#ccc"
+          display="flex"
+          flexDirection="row"
+          border="1px solid gray"
+        >
+          {colorMap && <LegendGradient colorMap={colorMap} getValueLabel={getValueLabel} />}
+        </Box>
+        <Box height={10} position="relative">
+          {colorMap && (
+            <>
+              <Box position="absolute" left={0}>
+                <Typography>{getValueLabel(range[0])}</Typography>
+              </Box>
+              <Box position="absolute" right={0}>
+                <Typography>{getValueLabel(range[1])}</Typography>
+              </Box>
+            </>
+          )}
+        </Box>
+      </LegendLayout>
+    );
+  },
 );

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
 import { makeValueFormat } from '@/lib/formats';
 import { makeOrderingCheck } from '@/lib/helpers';
 
@@ -20,42 +20,51 @@ export type HazardType = (typeof HAZARD_TYPES)[number];
 
 export const HAZARD_COLOR_MAPS: Record<HazardType, RasterContinuousColorMap> = {
   fluvial: {
+    type: 'continuous',
     scheme: 'blues',
     range: [0, 5],
     rangeTruncated: [false, true],
   },
   jrc_flood: {
+    type: 'continuous',
     scheme: 'blues',
     range: [0, 5],
     rangeTruncated: [false, true],
   },
   coastal: {
+    type: 'continuous',
     scheme: 'greens',
     range: [0, 5],
     rangeTruncated: [false, true],
   },
   cyclone: {
+    type: 'continuous',
     scheme: 'reds',
     range: [0, 90],
   },
   cyclone_iris: {
+    type: 'continuous',
     scheme: 'reds',
     range: [0, 90],
   },
   extreme_heat: {
+    type: 'continuous',
     scheme: 'reds',
     range: [0, 1],
   },
   earthquake: {
+    type: 'continuous',
     scheme: 'reds',
     range: [0, 1.4],
     rangeTruncated: [false, true],
   },
   drought: {
+    type: 'continuous',
     scheme: 'oranges',
     range: [0, 1],
   },
   landslide: {
+    type: 'continuous',
     scheme: 'greens',
     range: [0, 0.2],
     rangeTruncated: [false, true],

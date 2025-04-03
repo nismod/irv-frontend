@@ -1,52 +1,27 @@
-import React, { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
-import { useObjectMemo } from '@/lib/hooks/use-object-memo';
+import { FormatFunction } from '@/lib/formats';
 
-import { GradientLegend } from './GradientLegend';
-import { useRasterColorMapValues } from './use-raster-color-map-values';
+import { RasterCategoricalColorMap, RasterCategoricalLegend } from './RasterCategoricalLegend';
+import { RasterContinuousColorMap, RasterContinuousLegend } from './RasterContinuousLegend';
 
-export interface RasterContinuousColorMap {
-  scheme: string;
-  range: [number, number];
+export type RasterColorMap = RasterContinuousColorMap | RasterCategoricalColorMap;
 
-  /**
-   * If specified, determines whether the UI should indicate to the user that
-   * a value at the min/max end of the range also represents values
-   * below/above that end of the range.
-   */
-  rangeTruncated?: [boolean, boolean];
-}
-
-/** UI component displaying a legend for a raster layer.
- * Needs to be a descendant of a `RasterColorMapSourceProvider` that sets a source for fetching color map values
- **/
-export const RasterLegend: FC<{
+export interface RasterLegendProps {
   label: string;
   description?: string;
-  colorMap: RasterContinuousColorMap;
-  getValueLabel: (x: any) => ReactNode | string;
-}> = React.memo(
-  ({
-    label,
-    description,
-    colorMap: { scheme, range, rangeTruncated = [false, false] as [boolean, boolean] },
-    getValueLabel,
-  }) => {
-    const colorMapValues = useRasterColorMapValues(scheme, range);
+  colorMap: RasterColorMap;
+  getValueLabel: FormatFunction;
+}
 
-    const colorMap = useObjectMemo({
-      colorMapValues,
-      rangeTruncated,
-    });
+export const RasterLegend: FC<RasterLegendProps> = ({ colorMap, ...props }) => {
+  if (colorMap.type === 'categorical') {
+    return <RasterCategoricalLegend {...props} colorMap={colorMap} />;
+  }
 
-    return (
-      <GradientLegend
-        label={label}
-        description={description}
-        range={range}
-        colorMap={colorMap}
-        getValueLabel={getValueLabel}
-      />
-    );
-  },
-);
+  if (colorMap.type === 'continuous') {
+    return <RasterContinuousLegend {...props} colorMap={colorMap} />;
+  }
+
+  return null;
+};
