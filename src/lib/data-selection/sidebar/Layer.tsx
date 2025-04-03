@@ -101,26 +101,4 @@ const LayerImpl: FC<LayerProps> = ({
       </AccordionDetails>
     </Accordion>
   );
-  /*
-    return (
-      <ExpandablePanel
-        disabled={disabled}
-        title={title}
-        expanded={expanded}
-        onExpanded={setExpanded}
-        allowExpand={visible && children != null}
-        actions={
-          <VisibilityToggle
-            visibility={visible}
-            onVisibility={(visible) => {
-              setVisible(visible);
-              setExpanded(visible);
-            }}
-          ></VisibilityToggle>
-        }
-      >
-        {children}
-      </ExpandablePanel>
-    );
-    */
 };

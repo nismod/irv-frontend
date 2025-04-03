@@ -3,21 +3,6 @@ import { RecoilValue, selectorFamily } from 'recoil';
 
 import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
 
-/**
- * Maps hazard type visibility toggle to sidebar sections
- */
-export const hazardToggleState = selectorFamily({
-  key: 'hazardToggleState',
-  get:
-    (hazard: string) =>
-    ({ get }) =>
-      get(sidebarVisibilityToggleState(`hazards/${hazard}`)),
-  set:
-    (hazard: string) =>
-    ({ set }, newValue) =>
-      set(sidebarVisibilityToggleState(`hazards/${hazard}`), newValue),
-});
-
 export const hazardSelectionState = selectorFamily({
   key: 'hazardSelectionState',
   get:

@@ -1,12 +1,5 @@
 import { HazardType } from './metadata';
 
-export interface HazardParams {
-  returnPeriod: number;
-  epoch: string;
-  rcp: string;
-  gcm: string;
-}
-
 interface HazardDomainConfig {
   defaults: Record<string, any>;
   dependencies: Record<string, string[]>;
