@@ -5,16 +5,20 @@ import { computeQueryStatus, QueryResultStatus } from './query-status';
 describe('Compute state of API query with specified data status function', () => {
   const PV_NAME = 'processor.version';
 
-  it('returns status:idle and no data for when API query is not started', () => {
-    const { status, data } = computeQueryStatus({ status: 'idle', data: null }, PV_NAME, vi.fn());
+  it('returns status:idle and no data when API query has not started', () => {
+    const { status, data } = computeQueryStatus(
+      { status: 'pending', fetchStatus: 'idle', data: null },
+      PV_NAME,
+      vi.fn(),
+    );
 
-    expect(status).toBe('idle');
+    expect(status).toBe(QueryResultStatus.Idle);
     expect(data).toBe(null);
   });
 
-  it('returns status:loading and no data when API query is loading', () => {
+  it('returns status:loading and no data when API query is actively loading', () => {
     const { status, data } = computeQueryStatus(
-      { status: 'loading', data: null },
+      { status: 'pending', fetchStatus: 'fetching', data: null },
       PV_NAME,
       vi.fn(),
     );
@@ -24,7 +28,11 @@ describe('Compute state of API query with specified data status function', () =>
   });
 
   it('returns status:queryError and no data when API query errored', () => {
-    const { status, data } = computeQueryStatus({ status: 'error', data: null }, PV_NAME, vi.fn());
+    const { status, data } = computeQueryStatus(
+      { status: 'error', fetchStatus: 'idle', data: null },
+      PV_NAME,
+      vi.fn(),
+    );
 
     expect(status).toBe(QueryResultStatus.QueryError);
     expect(data).toBe(null);
@@ -39,7 +47,7 @@ describe('Compute state of API query with specified data status function', () =>
     }));
 
     const { status, data } = computeQueryStatus(
-      { status: 'success', data: INPUT },
+      { status: 'success', fetchStatus: 'idle', data: INPUT },
       PV_NAME,
       dataStatusFn,
     );
@@ -57,7 +65,7 @@ describe('Compute state of API query with specified data status function', () =>
     const ERROR = { status: 404 };
 
     const result = computeQueryStatus(
-      { status: 'error', data: null, error: ERROR },
+      { status: 'error', fetchStatus: 'idle', data: null, error: ERROR },
       PV_NAME,
       dataStatusFn,
       errFn,
@@ -76,7 +84,7 @@ describe('Compute state of API query with specified data status function', () =>
     const ERROR = { status: 404 };
 
     const { status, data } = computeQueryStatus(
-      { status: 'error', data: null, error: ERROR },
+      { status: 'error', fetchStatus: 'idle', data: null, error: ERROR },
       PV_NAME,
       dataStatusFn,
       errFn,

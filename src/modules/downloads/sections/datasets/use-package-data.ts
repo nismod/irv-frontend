@@ -10,7 +10,7 @@ import {
 import { computeQueryStatus } from './dataset-indicator/status-logic/query-status';
 
 export function usePackageData(boundaryName: string, pvName: string) {
-  const { status, error, data } = usePackageByRegion(
+  const { status, fetchStatus, error, data } = usePackageByRegion(
     {
       regionId: boundaryName,
     },
@@ -19,7 +19,7 @@ export function usePackageData(boundaryName: string, pvName: string) {
       retry: 0,
     },
   );
-  const packageQueryObj = useObjectMemo({ status, error, data });
+  const packageQueryObj = useObjectMemo({ status, fetchStatus, error, data });
 
   return useMemo(
     () =>

@@ -87,11 +87,11 @@ function useLastSubmittedJob(boundaryName: string, pvName: string) {
 }
 
 function useSubmittedJobData(job: SavedJob | null, pvName: string, refetchInterval = 10_000) {
-  const { status, data, error } = useJobById(
+  const { status, fetchStatus, data, error } = useJobById(
     { jobId: job?.jobId },
     { enabled: job != null, refetchInterval },
   );
-  const jobQueryObj = useObjectMemo({ status, data, error });
+  const jobQueryObj = useObjectMemo({ status, fetchStatus, data, error });
 
   const jobResult = useMemo(
     () => computeQueryStatus(jobQueryObj, pvName, computeJobStatus),
