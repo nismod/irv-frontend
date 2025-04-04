@@ -236,7 +236,7 @@ registerHazardMetadata('landslide', () => {
   const LANDSLIDE_SUSCEPTIBILITY_VALUE_LABELS = {
     '1': 'Very Low',
     '2': 'Low',
-    '3': 'Moderate',
+    '3': 'Medium',
     '4': 'High',
   };
 
