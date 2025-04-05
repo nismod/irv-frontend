@@ -2,17 +2,11 @@ import { Box, Divider, Paper, Stack } from '@mui/material';
 import { FC, Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { GradientLegend } from '@/lib/data-map/legend/GradientLegend';
+import { LegendLoading } from '@/lib/data-map/legend/LegendLoading';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 
 import { viewLayersState } from '@/state/layers/view-layers';
-
-const LegendLoading = () => {
-  return (
-    <GradientLegend label="Loading..." colorMap={null} range={[0, 1]} getValueLabel={() => ''} />
-  );
-};
 
 /**
  * An object holding information about multiple view layers represented by one legend element

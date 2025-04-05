@@ -2,7 +2,8 @@ import { capitalize } from 'lodash';
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
-import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
+import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 import { makeValueFormat, nullFormat } from '@/lib/formats';
@@ -23,7 +24,8 @@ export const TRAVELTIME_VALUE_LABELS = TRAVELTIME_TYPES.map((x) => ({
   label: capitalize(makeBritish(x)),
 }));
 
-const TRAVELTIME_COLORMAP: RasterColorMap = {
+const TRAVELTIME_COLORMAP: RasterContinuousColorMap = {
+  type: 'continuous',
   scheme: 'rdbu_r',
   range: [0, 240],
   rangeTruncated: [false, true],

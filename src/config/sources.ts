@@ -4,7 +4,15 @@ function paramString(params: string[]) {
 
 export const SOURCES = {
   raster: {
-    getUrl: ({ path, scheme, range }) => {
+    getUrl: ({
+      path,
+      scheme,
+      range,
+    }: {
+      path: string;
+      scheme?: string;
+      range?: [number, number];
+    }) => {
       const params = [];
       if (scheme) {
         params.push(`colormap=${scheme}`);

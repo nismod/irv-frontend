@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
-import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
+import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
@@ -9,7 +10,8 @@ import { makeValueFormat } from '@/lib/formats';
 
 import { SOURCES } from '../sources';
 
-export const JRC_POPULATION_COLOR_MAP: RasterColorMap = {
+export const JRC_POPULATION_COLOR_MAP: RasterContinuousColorMap = {
+  type: 'continuous',
   scheme: 'purd',
   range: [0, 1e4],
   rangeTruncated: [false, true],

@@ -20,13 +20,11 @@ export const TriggerControl = () => {
             onChange={(e) => onChange(e.target.value)}
             fullWidth
           >
-            {options.map((trigger) =>
-              trigger === 'susceptibility' ? null : (
-                <MenuItem key={trigger} value={trigger}>
-                  {titleCase(trigger.replace('_', ' '))}
-                </MenuItem>
-              ),
-            )}
+            {options.map((trigger) => (
+              <MenuItem key={trigger} value={trigger}>
+                {titleCase(trigger.replace('_', ' '))}
+              </MenuItem>
+            ))}
           </Select>
         )}
       </DataParam>

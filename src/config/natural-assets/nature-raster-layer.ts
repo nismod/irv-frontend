@@ -2,7 +2,8 @@ import { Color } from 'deck.gl';
 import React from 'react';
 
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
-import { RasterColorMap, RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
+import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
@@ -14,13 +15,14 @@ import { NATURE_RASTER_VALUE_LABELS, NatureRasterType } from './metadata';
 export const NATURE_RASTER_FORMATS: Record<
   NatureRasterType,
   {
-    colorMap: RasterColorMap;
+    colorMap: RasterContinuousColorMap;
     formatValue: (x: number) => string;
     transparentColor?: Color;
   }
 > = {
   biodiversity_intactness: {
     colorMap: {
+      type: 'continuous',
       scheme: 'rdbu', //TODO - original dataset colormap has middle around 0.9
       range: [0.6, 1],
       rangeTruncated: [true, false],
@@ -29,6 +31,7 @@ export const NATURE_RASTER_FORMATS: Record<
   },
   forest_landscape_integrity: {
     colorMap: {
+      type: 'continuous',
       scheme: 'ylgn', //TODO - original dataset colormap is more like gold-yellow-green
       range: [0, 10],
     },
@@ -37,6 +40,7 @@ export const NATURE_RASTER_FORMATS: Record<
   },
   organic_carbon: {
     colorMap: {
+      type: 'continuous',
       scheme: 'binary',
       range: [0, 150],
       rangeTruncated: [false, true],
