@@ -23,6 +23,7 @@ import {
   damageSourceState,
   syncHazardsWithDamageSourceStateEffect,
 } from '@/state/data-selection/damage-mapping/damage-map';
+import { hazardSelectionState } from '@/state/data-selection/hazards/hazard-selection';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
 import { hideExposure, syncExposure } from './population-exposure';
@@ -102,14 +103,12 @@ export const InfrastructureRiskSection = () => {
   useLoadParamsConfig(infrastructureRiskConfig, 'infrastructure-risk');
   const damageSource = useRecoilValue(damageSourceState);
 
-  const [showHazard, setShowHazard] = useRecoilState(
-    sidebarPathVisibilityState(`hazards/${damageSource}`),
-  );
+  const [showHazard, setShowHazard] = useRecoilState(hazardSelectionState(damageSource));
 
   return (
     // the top-level Suspense prevents deadlock between the `useLoadParamConfig()` and components that use the state that hook loads
     // both the hook and the components suspend, and in React 18 concurrent mode, this makes React suspend the tree indefinitely
-    <Suspense>
+    <Suspense fallback="Loading data...">
       <InitInfrastructureView />
       <InputSection>
         <StateEffectRoot

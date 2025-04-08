@@ -1,11 +1,12 @@
-import _ from 'lodash';
 import { atom, selector } from 'recoil';
 
 import { CurrentStateEffect } from '@/lib/recoil/state-effects/types';
 
-import { HAZARD_DOMAINS_CONFIG } from '@/config/hazards/domains';
+import { HAZARDS_METADATA } from '@/config/hazards/metadata';
 import { sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
 import { viewState } from '@/state/view';
+
+import { hazardSelectionState } from '../hazards/hazard-selection';
 
 export const showInfrastructureDamagesState = selector({
   key: 'showInfrastructureDamagesState',
@@ -24,10 +25,10 @@ export const damageTypeState = atom({
 });
 
 export const syncHazardsWithDamageSourceStateEffect: CurrentStateEffect<string> = (
-  { get, set },
+  { set },
   damageSource,
 ) => {
-  _.forEach(HAZARD_DOMAINS_CONFIG, (groupConfig, group) => {
-    set(sidebarVisibilityToggleState(`hazards/${group}`), group === damageSource);
+  Object.keys(HAZARDS_METADATA).map((hazardType) => {
+    set(hazardSelectionState(hazardType), hazardType === damageSource);
   });
 };

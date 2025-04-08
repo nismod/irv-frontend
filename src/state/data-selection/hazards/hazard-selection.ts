@@ -1,14 +1,9 @@
 import _ from 'lodash';
-import { RecoilValue, selectorFamily } from 'recoil';
+import { atomFamily, RecoilValue } from 'recoil';
 
-import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
-
-export const hazardSelectionState = selectorFamily({
+export const hazardSelectionState = atomFamily({
   key: 'hazardSelectionState',
-  get:
-    (hazard: string) =>
-    ({ get }) =>
-      get(sidebarPathVisibilityState(`hazards/${hazard}`)),
+  default: false,
 });
 
 interface TransactionGetterInterface {

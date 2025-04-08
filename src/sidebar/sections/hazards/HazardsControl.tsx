@@ -1,11 +1,16 @@
-import { Stack } from '@mui/material';
-import { Suspense } from 'react';
-import { useRecoilValue } from 'recoil';
+import { Box, Collapse, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { FC, ReactNode, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { RecoilState, useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
+import { useTwoWaySync } from '@/lib/hooks/use-two-way-sync';
+import { usePath } from '@/lib/paths/paths';
+import { SubPath } from '@/lib/paths/sub-path';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
+import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
 
 import { HazardType } from '@/config/hazards/metadata';
+import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
@@ -16,11 +21,12 @@ import { SSPControl } from '@/sidebar/ui/params/SSPControl';
 import { TriggerControl } from '@/sidebar/ui/params/TriggerControl';
 import { hazardDomainsConfigState } from '@/state/data-domains/hazards';
 import { paramsConfigState, useLoadParamsConfig } from '@/state/data-params';
+import { hazardSelectionState } from '@/state/data-selection/hazards/hazard-selection';
 
 /**
  * Takes the config for the specified hazard type and loads all the param domains/dependencies from the backend
  */
-export const InitHazardData = ({ type }: { type: HazardType }) => {
+export const LoadHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
   useLoadParamsConfig(hazardDomainsConfigState(type), type);
 
   return null;
@@ -29,32 +35,216 @@ export const InitHazardData = ({ type }: { type: HazardType }) => {
 /**
  *  Ensures the config for the specified data param group has been loaded
  */
-const EnsureHazardData = ({ type }) => {
+const EnsureHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
   useRecoilValue(paramsConfigState(type));
 
   return null;
 };
 
-const HazardControl = ({ type, children }) => {
+const HazardErrorBoundary: FC<{ children?: ReactNode }> = ({ children }) => {
   return (
     <ErrorBoundary message="There was a problem loading configuration for this layer">
+      {children}
+    </ErrorBoundary>
+  );
+};
+
+const HazardTypeInit: FC<{ types: HazardType[]; children: ReactNode }> = ({ types, children }) => {
+  return (
+    <HazardErrorBoundary>
       {/* Wrap the data init and usage in separate Suspenses to prevent deadlock */}
       <Suspense fallback={null}>
-        <InitHazardData type={type} />
+        {types.map((type) => (
+          <LoadHazardConfig key={type} type={type} />
+        ))}
       </Suspense>
       <Suspense fallback="Loading data...">
-        <EnsureHazardData type={type} />
-        <DataGroup group={type}>
-          <Stack spacing={3}>{children}</Stack>
-        </DataGroup>
+        {types.map((type) => (
+          <EnsureHazardConfig key={type} type={type} />
+        ))}
+        {children}
       </Suspense>
-    </ErrorBoundary>
+    </HazardErrorBoundary>
+  );
+};
+
+const HazardControlLayout = ({ children }) => {
+  return <Stack spacing={3}>{children}</Stack>;
+};
+
+const PathVisibilityCollapse: FC<{
+  children?: ReactNode;
+  onVisibility?: (visible: boolean) => void;
+}> = ({ children, onVisibility }) => {
+  const path = usePath();
+  const visible = useRecoilValue(sidebarPathVisibilityState(path));
+
+  useEffect(() => {
+    onVisibility?.(visible);
+  }, [onVisibility, visible]);
+
+  return (
+    <Collapse in={visible} unmountOnExit={false} timeout={0}>
+      {children}
+    </Collapse>
+  );
+};
+
+const HazardSubSection: FC<{
+  subPath: string;
+  onVisbility?: (visible: boolean) => void;
+  children: ReactNode;
+}> = ({ subPath, onVisbility, children }) => {
+  return (
+    <SubPath path={subPath}>
+      <PathVisibilityCollapse onVisibility={onVisbility}>{children}</PathVisibilityCollapse>
+    </SubPath>
+  );
+};
+
+const LinkViewLayerToPath: FC<{ state: RecoilState<boolean> }> = ({ state }) => {
+  const path = usePath();
+  const [pathVisible, setPathVisible] = useRecoilState(sidebarPathVisibilityState(path));
+  const [layerEnabled, setLayerEnabled] = useRecoilState(state);
+
+  useTwoWaySync([pathVisible, setPathVisible], [layerEnabled, setLayerEnabled]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     setLayerEnabled(false);
+  //   };
+  // }, [setLayerEnabled]);
+
+  return null;
+};
+
+function ActivateHazardViewLayer({ type }: { type: HazardType }) {
+  return <LinkViewLayerToPath state={hazardSelectionState(type)} />;
+}
+
+/** Packages up all functionality for a hazard layer control that only controls one hazard type. */
+const SimpleHazardControl = ({ type, children }) => {
+  return (
+    <HazardTypeInit types={[type]}>
+      <DataGroup group={type}>
+        <HazardControlLayout>{children}</HazardControlLayout>
+      </DataGroup>
+      <ActivateHazardViewLayer type={type} />
+    </HazardTypeInit>
+  );
+};
+
+function useSubSectionToggle(subsections: string[]) {
+  const path = usePath();
+
+  const isPathVisible = useRecoilCallback(({ snapshot }) => {
+    return (path: string) => {
+      const loadable = snapshot.getLoadable(sidebarVisibilityToggleState(path));
+
+      if (loadable.state === 'hasValue') {
+        return loadable.getValue();
+      } else {
+        console.log(`isPathVisible: ${path} is not loaded yet`);
+        return false;
+      }
+    };
+  }, []);
+
+  const [subsection, setSubsection] = useState<string>();
+
+  const setPathVisible = useSetRecoilStateFamily(sidebarVisibilityToggleState);
+
+  const handleSubsectionChange = useCallback(
+    (newSubsection: string) => {
+      for (const subsection of subsections) {
+        setPathVisible(`${path}/${subsection}`, subsection === newSubsection);
+      }
+      setSubsection(newSubsection);
+    },
+    [path, setPathVisible, subsections],
+  );
+
+  useEffect(() => {
+    for (const subsection of subsections) {
+      if (isPathVisible(`${path}/${subsection}`)) {
+        handleSubsectionChange(subsection);
+        return;
+      }
+    }
+    handleSubsectionChange(subsections[0]);
+  }, [subsections, path, isPathVisible, handleSubsectionChange]);
+
+  return [subsection, handleSubsectionChange] as const;
+}
+
+const SubsectionToggle: FC<{
+  sections: {
+    subpath: string;
+    label: string | ReactNode;
+    content: ReactNode;
+  }[];
+}> = ({ sections }) => {
+  const sectionIds = useMemo(() => sections.map((section) => section.subpath), [sections]);
+
+  const [source, setSource] = useSubSectionToggle(sectionIds);
+
+  return (
+    <Stack spacing={3}>
+      <ToggleButtonGroup
+        exclusive
+        value={source}
+        onChange={(e, model) => {
+          if (model) {
+            setSource(model);
+          }
+        }}
+        fullWidth
+      >
+        {sections.map((section) => (
+          <ToggleButton
+            key={section.subpath}
+            value={section.subpath}
+            sx={{ textTransform: 'none' }}
+          >
+            {section.label}
+          </ToggleButton>
+        ))}
+      </ToggleButtonGroup>
+      <Box>
+        {sections.map((section) => (
+          <HazardSubSection key={section.subpath} subPath={section.subpath}>
+            {section.content}
+          </HazardSubSection>
+        ))}
+      </Box>
+    </Stack>
   );
 };
 
 export const FluvialControl = () => {
   return (
-    <HazardControl type="fluvial">
+    <HazardTypeInit types={['fluvial', 'jrc_flood']}>
+      <SubsectionToggle
+        sections={[
+          {
+            subpath: 'aqueduct',
+            label: 'Aqueduct',
+            content: <FluvialAqueductSubsection />,
+          },
+          {
+            subpath: 'jrc',
+            label: 'JRC',
+            content: <FluvialJRCSubsection />,
+          },
+        ]}
+      />
+    </HazardTypeInit>
+  );
+};
+
+const FluvialAqueductSubsection = () => {
+  return (
+    <SimpleHazardControl type="fluvial">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows river flooding depths for different return periods, from WRI Aqueduct (2020).
@@ -66,13 +256,13 @@ export const FluvialControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
-export const JRCFloodControl = () => {
+const FluvialJRCSubsection = () => {
   return (
-    <HazardControl type="jrc_flood">
+    <SimpleHazardControl type="jrc_flood">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows river flooding depths for different return periods, from JRC Global Flood Hazard
@@ -80,13 +270,13 @@ export const JRCFloodControl = () => {
         </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const CoastalControl = () => {
   return (
-    <HazardControl type="coastal">
+    <SimpleHazardControl type="coastal">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows coastal flooding depths for different return periods, from WRI Aqueduct (2020).
@@ -97,13 +287,13 @@ export const CoastalControl = () => {
         <EpochControl />
         <RCPControl />
       </InputRow>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const CycloneControl = () => {
   return (
-    <HazardControl type="cyclone">
+    <SimpleHazardControl type="cyclone">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows tropical cyclone maximum wind speed (in m/s) for different return periods, from
@@ -119,13 +309,13 @@ export const CycloneControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const CycloneIrisControl = () => {
   return (
-    <HazardControl type="cyclone_iris">
+    <SimpleHazardControl type="cyclone_iris">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods,
@@ -140,13 +330,13 @@ export const CycloneIrisControl = () => {
         <EpochControl />
         <SSPControl />
       </InputRow>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const ExtremeHeatControl = () => {
   return (
-    <HazardControl type="extreme_heat">
+    <SimpleHazardControl type="extreme_heat">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows the annual probability of an "extreme heat event" in each grid cell. Extreme
@@ -161,13 +351,13 @@ export const ExtremeHeatControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const DroughtControl = () => {
   return (
-    <HazardControl type="drought">
+    <SimpleHazardControl type="drought">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows annual probability of a "drought event", defined by Lange et al (2020) as
@@ -181,13 +371,13 @@ export const DroughtControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const LandslideControl = () => {
   return (
-    <HazardControl type="landslide">
+    <SimpleHazardControl type="landslide">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows landslide susceptibility, from Arup (2021) Global Landslide Hazard Map produced
@@ -197,13 +387,13 @@ export const LandslideControl = () => {
       <InputRow>
         <TriggerControl />
       </InputRow>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const EarthquakeControl = () => {
   return (
-    <HazardControl type="earthquake">
+    <SimpleHazardControl type="earthquake">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows seismic hazard as the peak ground acceleration (PGA) with a 10% probability of
@@ -215,6 +405,6 @@ export const EarthquakeControl = () => {
 
         <DataNoticeTextBlock>Return Period: 475 years</DataNoticeTextBlock>
       </DataNotice>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
