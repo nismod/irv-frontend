@@ -350,6 +350,7 @@ export const SidebarContent: FC<{}> = () => {
   return (
     <SidebarRoot
       visibilityState={sidebarVisibilityToggleState}
+      hierarchicalVisibilityState={sidebarPathVisibilityState}
       expandedState={sidebarExpandedState}
       pathChildrenState={sidebarPathChildrenState}
       pathChildrenLoadingState={sidebarPathChildrenLoadingState}
