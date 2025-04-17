@@ -7,7 +7,7 @@ import { makeHierarchicalVisibilityState } from '@/lib/data-selection/make-hiera
 import { Layer } from '@/lib/data-selection/sidebar/Layer';
 import { SidebarRoot } from '@/lib/data-selection/sidebar/root';
 import { Section } from '@/lib/data-selection/sidebar/Section';
-import { EnforceSingleChild } from '@/lib/data-selection/sidebar/single-child';
+import { EnforceSingleChildVisible } from '@/lib/data-selection/sidebar/single-child';
 import { StateEffectRootAsync } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
@@ -231,7 +231,7 @@ const VulnerabilitySection = () => (
 
 const RiskSection = () => (
   <Section path="risk" title="Risk">
-    <EnforceSingleChild />
+    <EnforceSingleChildVisible />
     <Layer path="population" title="Population Exposure" unmountOnHide={true}>
       <PopulationExposureSection />
     </Layer>

@@ -2,8 +2,8 @@ import { ArrowRight } from '@mui/icons-material';
 import { Icon, styled } from '@mui/material';
 import { FC, ReactNode, Suspense } from 'react';
 
-import { usePath } from '@/lib/paths/paths';
-import { SubPath } from '@/lib/paths/sub-path';
+import { usePath } from '@/lib/paths/context';
+import { SubPath } from '@/lib/paths/SubPath';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { Accordion, AccordionDetails, AccordionSummary, AccordionTitle } from './accordion';

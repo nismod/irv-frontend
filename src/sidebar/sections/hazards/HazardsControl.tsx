@@ -4,8 +4,8 @@ import { RecoilState, useRecoilCallback, useRecoilState, useRecoilValue } from '
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { useTwoWaySync } from '@/lib/hooks/use-two-way-sync';
-import { usePath } from '@/lib/paths/paths';
-import { SubPath } from '@/lib/paths/sub-path';
+import { usePath } from '@/lib/paths/context';
+import { SubPath } from '@/lib/paths/SubPath';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
 

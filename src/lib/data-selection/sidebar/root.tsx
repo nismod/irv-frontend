@@ -1,8 +1,6 @@
 import { FC, ReactNode } from 'react';
 
-import { useObjectMemo } from '@/lib/hooks/use-object-memo';
-import { PathContext } from '@/lib/paths/paths';
-import { PathChildrenEnd, PathChildrenStart, PathChildrenStateContext } from '@/lib/paths/sub-path';
+import { PathRoot } from '@/lib/paths/PathRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
 import { ExpandedStateContext, VisibilityStateContext } from './context';
@@ -20,21 +18,16 @@ export const SidebarRoot: FC<{
   pathChildrenLoadingState,
   children,
 }) => {
-  const pathChildrenContextValue = useObjectMemo({
-    childrenState: pathChildrenState,
-    childrenLoadingState: pathChildrenLoadingState,
-  });
   return (
-    <PathContext.Provider value="">
-      <VisibilityStateContext.Provider value={visibilityState}>
-        <ExpandedStateContext.Provider value={expandedState}>
-          <PathChildrenStateContext.Provider value={pathChildrenContextValue}>
-            <PathChildrenStart />
-            {children}
-            <PathChildrenEnd />
-          </PathChildrenStateContext.Provider>
-        </ExpandedStateContext.Provider>
-      </VisibilityStateContext.Provider>
-    </PathContext.Provider>
+    <VisibilityStateContext.Provider value={visibilityState}>
+      <ExpandedStateContext.Provider value={expandedState}>
+        <PathRoot
+          pathChildrenState={pathChildrenState}
+          pathChildrenLoadingState={pathChildrenLoadingState}
+        >
+          {children}
+        </PathRoot>
+      </ExpandedStateContext.Provider>
+    </VisibilityStateContext.Provider>
   );
 };

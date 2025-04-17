@@ -1,8 +1,8 @@
 import { Stack } from '@mui/material';
 import { FC, ReactNode } from 'react';
 
-import { usePath } from '@/lib/paths/paths';
-import { SubPath } from '@/lib/paths/sub-path';
+import { usePath } from '@/lib/paths/context';
+import { SubPath } from '@/lib/paths/SubPath';
 
 import { Accordion, AccordionDetails, AccordionSummary, AccordionTitle } from './accordion';
 import { useExpandedState, useVisibilityState } from './context';
