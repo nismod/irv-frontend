@@ -1,16 +1,13 @@
-import { Box, Collapse, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { FC, ReactNode, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import { RecoilState, useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { Stack } from '@mui/material';
+import { FC, ReactNode, Suspense, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
-import { useTwoWaySync } from '@/lib/hooks/use-two-way-sync';
-import { usePath } from '@/lib/paths/context';
-import { SubPath } from '@/lib/paths/SubPath';
+import { SubSectionToggle } from '@/lib/data-selection/sidebar/SubSectionToggle';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
-import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
 
 import { HazardType } from '@/config/hazards/metadata';
-import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
+import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
@@ -72,52 +69,6 @@ const HazardControlLayout = ({ children }) => {
   return <Stack spacing={3}>{children}</Stack>;
 };
 
-const PathVisibilityCollapse: FC<{
-  children?: ReactNode;
-  onVisibility?: (visible: boolean) => void;
-}> = ({ children, onVisibility }) => {
-  const path = usePath();
-  const visible = useRecoilValue(sidebarPathVisibilityState(path));
-
-  useEffect(() => {
-    onVisibility?.(visible);
-  }, [onVisibility, visible]);
-
-  return (
-    <Collapse in={visible} unmountOnExit={false} timeout={0}>
-      {children}
-    </Collapse>
-  );
-};
-
-const HazardSubSection: FC<{
-  subPath: string;
-  onVisbility?: (visible: boolean) => void;
-  children: ReactNode;
-}> = ({ subPath, onVisbility, children }) => {
-  return (
-    <SubPath path={subPath}>
-      <PathVisibilityCollapse onVisibility={onVisbility}>{children}</PathVisibilityCollapse>
-    </SubPath>
-  );
-};
-
-const LinkViewLayerToPath: FC<{ state: RecoilState<boolean> }> = ({ state }) => {
-  const path = usePath();
-  const [pathVisible, setPathVisible] = useRecoilState(sidebarPathVisibilityState(path));
-  const [layerEnabled, setLayerEnabled] = useRecoilState(state);
-
-  useTwoWaySync([pathVisible, setPathVisible], [layerEnabled, setLayerEnabled]);
-
-  // useEffect(() => {
-  //   return () => {
-  //     setLayerEnabled(false);
-  //   };
-  // }, [setLayerEnabled]);
-
-  return null;
-};
-
 function ActivateHazardViewLayer({ type }: { type: HazardType }) {
   return <LinkViewLayerToPath state={hazardSelectionState(type)} />;
 }
@@ -134,110 +85,22 @@ const SimpleHazardControl = ({ type, children }) => {
   );
 };
 
-function useSubSectionToggle(subsections: string[]) {
-  const path = usePath();
-
-  const isPathVisible = useRecoilCallback(({ snapshot }) => {
-    return (path: string) => {
-      const loadable = snapshot.getLoadable(sidebarVisibilityToggleState(path));
-
-      if (loadable.state === 'hasValue') {
-        return loadable.getValue();
-      } else {
-        console.log(`isPathVisible: ${path} is not loaded yet`);
-        return false;
-      }
-    };
-  }, []);
-
-  const [subsection, setSubsection] = useState<string>();
-
-  const setPathVisible = useSetRecoilStateFamily(sidebarVisibilityToggleState);
-
-  const handleSubsectionChange = useCallback(
-    (newSubsection: string) => {
-      for (const subsection of subsections) {
-        setPathVisible(`${path}/${subsection}`, subsection === newSubsection);
-      }
-      setSubsection(newSubsection);
-    },
-    [path, setPathVisible, subsections],
-  );
-
-  useEffect(() => {
-    for (const subsection of subsections) {
-      if (isPathVisible(`${path}/${subsection}`)) {
-        handleSubsectionChange(subsection);
-        return;
-      }
-    }
-    handleSubsectionChange(subsections[0]);
-  }, [subsections, path, isPathVisible, handleSubsectionChange]);
-
-  return [subsection, handleSubsectionChange] as const;
-}
-
-const SubsectionToggle: FC<{
-  sections: {
-    subpath: string;
-    label: string | ReactNode;
-    content: ReactNode;
-  }[];
-}> = ({ sections }) => {
-  const sectionIds = useMemo(() => sections.map((section) => section.subpath), [sections]);
-
-  const [source, setSource] = useSubSectionToggle(sectionIds);
-
-  return (
-    <Stack spacing={3}>
-      <ToggleButtonGroup
-        exclusive
-        value={source}
-        onChange={(e, model) => {
-          if (model) {
-            setSource(model);
-          }
-        }}
-        fullWidth
-      >
-        {sections.map((section) => (
-          <ToggleButton
-            key={section.subpath}
-            value={section.subpath}
-            sx={{ textTransform: 'none' }}
-          >
-            {section.label}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-      <Box>
-        {sections.map((section) => (
-          <HazardSubSection key={section.subpath} subPath={section.subpath}>
-            {section.content}
-          </HazardSubSection>
-        ))}
-      </Box>
-    </Stack>
-  );
-};
-
 export const FluvialControl = () => {
+  const [subsections] = useState(() => [
+    {
+      subPath: 'aqueduct',
+      label: 'Aqueduct',
+      content: <FluvialAqueductSubsection />,
+    },
+    {
+      subPath: 'jrc',
+      label: 'JRC',
+      content: <FluvialJRCSubsection />,
+    },
+  ]);
   return (
     <HazardTypeInit types={['fluvial', 'jrc_flood']}>
-      <SubsectionToggle
-        sections={[
-          {
-            subpath: 'aqueduct',
-            label: 'Aqueduct',
-            content: <FluvialAqueductSubsection />,
-          },
-          {
-            subpath: 'jrc',
-            label: 'JRC',
-            content: <FluvialJRCSubsection />,
-          },
-        ]}
-      />
+      <SubSectionToggle sections={subsections} />
     </HazardTypeInit>
   );
 };
