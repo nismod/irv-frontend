@@ -21,7 +21,7 @@ import { SSPControl } from '@/sidebar/ui/params/SSPControl';
 import { TriggerControl } from '@/sidebar/ui/params/TriggerControl';
 import { hazardDomainsConfigState } from '@/state/data-domains/hazards';
 import { paramsConfigState, useLoadParamsConfig } from '@/state/data-params';
-import { hazardSelectionState } from '@/state/data-selection/hazards/hazard-selection';
+import { hazardSelectionState } from '@/state/data-selection/hazards';
 
 /**
  * Takes the config for the specified hazard type and loads all the param domains/dependencies from the backend

@@ -6,7 +6,7 @@ import { HAZARDS_METADATA } from '@/config/hazards/metadata';
 import { sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
 import { viewState } from '@/state/view';
 
-import { hazardSelectionState } from '../hazards/hazard-selection';
+import { hazardSelectionState } from '../hazards';
 
 export const showInfrastructureDamagesState = selector({
   key: 'showInfrastructureDamagesState',
