@@ -11,7 +11,7 @@ import { StateEffect } from '@/lib/recoil/state-effects/types';
 
 import { HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { DataParam } from '@/sidebar/ui/DataParam';
 import { InputRow } from '@/sidebar/ui/InputRow';
@@ -21,6 +21,7 @@ import { RCPControl } from '@/sidebar/ui/params/RCPControl';
 import { paramValueState, useLoadParamsConfig } from '@/state/data-params';
 import {
   damageSourceState,
+  showInfrastructureRiskState,
   syncHazardsWithDamageSourceStateEffect,
 } from '@/state/data-selection/damage-mapping/damage-map';
 import { hazardSelectionState } from '@/state/data-selection/hazards';
@@ -109,6 +110,7 @@ export const InfrastructureRiskSection = () => {
     // the top-level Suspense prevents deadlock between the `useLoadParamConfig()` and components that use the state that hook loads
     // both the hook and the components suspend, and in React 18 concurrent mode, this makes React suspend the tree indefinitely
     <Suspense fallback="Loading data...">
+      <LinkViewLayerToPath state={showInfrastructureRiskState} />
       <InitInfrastructureView />
       <InputSection>
         <StateEffectRoot

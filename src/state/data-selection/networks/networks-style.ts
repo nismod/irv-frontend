@@ -1,12 +1,8 @@
 import { selector } from 'recoil';
 
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { viewState } from '@/state/view';
+import { showInfrastructureDamagesState } from '../damage-mapping/damage-map';
 
 export const networksStyleState = selector<string>({
   key: 'networksStyleState',
-  get: ({ get }) =>
-    get(viewState) === 'risk' && get(sidebarPathVisibilityState('risk/infrastructure'))
-      ? 'damages'
-      : 'type',
+  get: ({ get }) => (get(showInfrastructureDamagesState) ? 'damages' : 'type'),
 });

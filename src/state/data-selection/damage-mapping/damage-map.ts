@@ -2,19 +2,25 @@ import { atom, selector } from 'recoil';
 
 import { CurrentStateEffect } from '@/lib/recoil/state-effects/types';
 
-import { HAZARDS_METADATA } from '@/config/hazards/metadata';
-import { sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
-import { viewState } from '@/state/view';
+import { HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 
 import { hazardSelectionState } from '../hazards';
 
-export const showInfrastructureDamagesState = selector({
-  key: 'showInfrastructureDamagesState',
-  get: ({ get }) =>
-    get(viewState) === 'risk' && get(sidebarVisibilityToggleState('risk/infrastructure')),
+/** Is the Infrastructure Risk sidebar section shown */
+export const showInfrastructureRiskState = atom({
+  key: 'infrastructureRiskShownState',
+  default: false,
 });
 
-export const damageSourceState = atom({
+/** Should infrastructure layers visualise damage values */
+export const showInfrastructureDamagesState = selector({
+  key: 'showInfrastructureDamagesState',
+  get: ({ get }) => get(showInfrastructureRiskState),
+});
+
+export type DamageSource = HazardType;
+
+export const damageSourceState = atom<DamageSource>({
   key: 'damageSourceState',
   default: 'fluvial',
 });
