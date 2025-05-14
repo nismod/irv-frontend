@@ -9,9 +9,10 @@ import { makeOptions } from '@/lib/helpers';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { StateEffect } from '@/lib/recoil/state-effects/types';
 
-import { HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
+import { getHazardSidebarPath, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
 import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
+import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { DataParam } from '@/sidebar/ui/DataParam';
 import { InputRow } from '@/sidebar/ui/InputRow';
@@ -22,9 +23,8 @@ import { paramValueState, useLoadParamsConfig } from '@/state/data-params';
 import {
   damageSourceState,
   showInfrastructureRiskState,
-  syncHazardsWithDamageSourceStateEffect,
 } from '@/state/data-selection/damage-mapping/damage-map';
-import { hazardSelectionState } from '@/state/data-selection/hazards';
+import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
 import { hideExposure, syncExposure } from './population-exposure';
@@ -71,7 +71,7 @@ const syncInfrastructureWithSectorEffect: StateEffect<SectorType> = (iface, sect
 };
 
 const syncHazardEffect: StateEffect<HazardType> = (iface, hazard) => {
-  syncHazardsWithDamageSourceStateEffect(iface, hazard);
+  showOneHazardStateEffect(iface, hazard);
 
   iface.set(damageSourceState, hazard);
 };
@@ -104,7 +104,9 @@ export const InfrastructureRiskSection = () => {
   useLoadParamsConfig(infrastructureRiskConfig, 'infrastructure-risk');
   const damageSource = useRecoilValue(damageSourceState);
 
-  const [showHazard, setShowHazard] = useRecoilState(hazardSelectionState(damageSource));
+  const [showHazard, setShowHazard] = useRecoilState(
+    sidebarPathVisibilityState(getHazardSidebarPath(damageSource)),
+  );
 
   return (
     // the top-level Suspense prevents deadlock between the `useLoadParamConfig()` and components that use the state that hook loads

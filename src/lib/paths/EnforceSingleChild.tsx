@@ -1,20 +1,11 @@
-import { FC, useCallback, useEffect } from 'react';
-import { useRecoilCallback, useRecoilValue } from 'recoil';
+import { FC, useCallback } from 'react';
+import { useRecoilCallback } from 'recoil';
 
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
+import { StateWatcher } from '../recoil/StateWatcher';
 import { usePath, usePathChildren } from './context';
 import { makeChildPath } from './utils';
-
-function StateWatcher({ state, onValue }) {
-  const value = useRecoilValue(state);
-
-  useEffect(() => {
-    onValue(value);
-  }, [onValue, value]);
-
-  return null;
-}
 
 export const EnforceSingleChild: FC<{ attributeState: RecoilStateFamily<boolean, string> }> = ({
   attributeState,

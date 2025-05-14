@@ -1,10 +1,6 @@
 import { atom, selector } from 'recoil';
 
-import { CurrentStateEffect } from '@/lib/recoil/state-effects/types';
-
-import { HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
-
-import { hazardSelectionState } from '../hazards';
+import { HazardType } from '@/config/hazards/metadata';
 
 /** Is the Infrastructure Risk sidebar section shown */
 export const showInfrastructureRiskState = atom({
@@ -29,12 +25,3 @@ export const damageTypeState = atom({
   key: 'damageTypeState',
   default: 'direct',
 });
-
-export const syncHazardsWithDamageSourceStateEffect: CurrentStateEffect<string> = (
-  { set },
-  damageSource,
-) => {
-  Object.keys(HAZARDS_METADATA).map((hazardType) => {
-    set(hazardSelectionState(hazardType), hazardType === damageSource);
-  });
-};
