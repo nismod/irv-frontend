@@ -65,3 +65,45 @@ export function makeAssetLayerFn({
       ...(customLayerPropsFn?.({ zoom, dataStyle }) ?? []),
     );
 }
+
+export function makeAssetRenderMapLayers({
+  assetId,
+  styleParams,
+  customDataAccessFn,
+  customLayerPropsFn,
+  selectionPolygonOffset = -1000,
+}: {
+  assetId: string;
+  styleParams?: StyleParams;
+  customDataAccessFn?: ViewLayerDataAccessFunction;
+  customLayerPropsFn?: AssetCustomPropsFunction;
+  selectionPolygonOffset?: number;
+}) {
+  const dataAccessor = customDataAccessFn?.(styleParams?.colorMap?.fieldSpec);
+  const dataLoader = dataAccessor?.dataLoader;
+
+  // need to specify `id` as unique ID property because loading MVT with binary:false moves the id into properties (seems like a deck.gl bug)
+  const uniqueIdProperty = 'id';
+
+  const dataStyle: DataStyle = styleParams?.colorMap
+    ? {
+        getColor: makeDataColorAccessor(dataAccessor, colorMap(styleParams.colorMap.colorSpec)),
+      }
+    : undefined;
+
+  return ({ autoProps, viewState: { zoom }, state: { selection } }) =>
+    basicMvtLayer(
+      autoProps,
+      {
+        data: SOURCES.vector.getUrl(assetId),
+        uniqueIdProperty,
+      },
+      mvtSelection({
+        selectedFeatureId: getFeatureId(selection?.target.feature, uniqueIdProperty),
+        polygonOffset: selectionPolygonOffset,
+        uniqueIdProperty,
+      }),
+      dataLoader && tiledDataLoading({ dataLoader }),
+      ...(customLayerPropsFn?.({ zoom, dataStyle }) ?? []),
+    );
+}

@@ -9,6 +9,12 @@ import { NbsPrioritisationPanel } from '@/config/nbs/components/NbsPrioritisatio
 
 import { DetailsPanel } from './ui/DetailsPanel';
 
+declare module '@/lib/data-map/view-layers' {
+  interface KnownViewLayerSlots {
+    Details?: NoProps;
+  }
+}
+
 const InteractionGroupDetails = ({ group }) => {
   const selection = useRecoilValue(selectionState(group));
 
