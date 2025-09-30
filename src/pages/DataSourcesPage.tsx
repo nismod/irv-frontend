@@ -247,6 +247,11 @@ export const DataSourcesPage = () => (
                   <ExtLink href="https://doi.org/10.4121/14510817.v3">
                     DOI 10.4121/14510817.v3
                   </ExtLink>
+                  , aggregated as Russell, Tom. (2022). STORM tropical cyclone wind speed return
+                  periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo.{' '}
+                  <ExtLink href="https://doi.org/10.5281/zenodo.7438145">
+                    DOI 10.5281/zenodo.7438145
+                  </ExtLink>
                 </TableCell>
                 <TableCell>CC0 1.0</TableCell>
                 <TableCell>
@@ -974,6 +979,10 @@ export const DataSourcesPage = () => (
                   heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo.{' '}
                   <ExtLink href="https://doi.org/10.5281/zenodo.11582369">
                     10.5281/zenodo.11582369
+                  </ExtLink>{' '}
+                  Derived using{' '}
+                  <ExtLink href="https://github.com/nismod/isimip-exposure">
+                    github.com/nismod/isimip-exposure
                   </ExtLink>
                 </TableCell>
                 <TableCell>CC BY-SA 4.0 International</TableCell>
