@@ -7,7 +7,7 @@ import { DeckGLOverlay } from '../map/DeckGLOverlay';
 import { InteractionGroupConfig } from './interactions/types';
 import { useInteractions } from './interactions/use-interactions';
 import { useDataLoadTrigger } from './use-data-load-trigger';
-import { ViewLayer } from './view-layers';
+import { ViewLayer, ViewLayerNew, ViewLayerOld } from './view-layers';
 
 export interface DataMapProps {
   /** ID of the react-map-gl layer before which the deck.gl layers should be inserted */
@@ -39,18 +39,19 @@ export const DataMap: FC<DataMapProps> = ({
   viewLayersParams,
   interactionGroups,
 }) => {
+  const oldViewLayers = useMemo(() => viewLayers.filter((vl) => vl.type === 'old'), [viewLayers]);
   const { onHover, onClick, layerFilter, pickingRadius } = useInteractions(
-    viewLayers,
+    oldViewLayers,
     lookupViewForDeck,
     interactionGroups,
   );
 
   const dataLoaders = useMemo(
     () =>
-      viewLayers
+      oldViewLayers
         .map((vl) => vl.dataAccessFn?.(vl.styleParams?.colorMap?.fieldSpec)?.dataLoader)
         .filter(Boolean),
-    [viewLayers],
+    [oldViewLayers],
   );
 
   const dataLoadTrigger = useDataLoadTrigger(dataLoaders);
@@ -58,9 +59,18 @@ export const DataMap: FC<DataMapProps> = ({
   /** Function called every time the map zoom changes, to calculate new list of deck layers */
   const layersFunction = useCallback(
     ({ zoom }: { zoom: number }) =>
-      viewLayers.map((viewLayer) =>
-        makeDeckLayers(viewLayer, viewLayersParams[viewLayer.id], zoom, beforeId),
-      ),
+      viewLayers.map((viewLayer) => {
+        if (viewLayer.type === 'old') {
+          return makeDeckLayersOld(viewLayer, viewLayersParams[viewLayer.id], zoom, beforeId);
+        } else {
+          return makeDeckLayersNew(
+            viewLayer,
+            viewLayersParams[viewLayer.id], // TODO
+            zoom,
+            beforeId,
+          );
+        }
+      }),
     [beforeId, viewLayers, viewLayersParams],
   );
 
@@ -96,9 +106,8 @@ export const DataMap: FC<DataMapProps> = ({
   );
 };
 
-/** Utility function to create deck layers for a list of view layers */
-function makeDeckLayers(
-  viewLayer: ViewLayer,
+function makeDeckLayersOld(
+  viewLayer: ViewLayerOld,
   viewLayerParams: any,
   zoom: number,
   beforeId: string | undefined,
@@ -111,5 +120,25 @@ function makeDeckLayers(
     },
     zoom,
     ...viewLayerParams,
+  });
+}
+
+function makeDeckLayersNew(
+  viewLayer: ViewLayerNew,
+  viewLayerState: ViewLayerState,
+  zoom: number,
+  beforeId: string | undefined,
+) {
+  return viewLayer.renderMapLayers({
+    autoProps: {
+      id: viewLayer.id,
+      pickable: !!viewLayer.interactions,
+      beforeId,
+    },
+    viewState: {
+      zoom,
+    },
+    params: viewLayer.params,
+    state: viewLayerState,
   });
 }
