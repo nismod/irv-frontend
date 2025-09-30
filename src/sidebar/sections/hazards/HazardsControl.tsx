@@ -97,9 +97,14 @@ export const FluvialControl = () => {
       label: 'JRC',
       content: <FluvialJRCSubsection />,
     },
+    {
+      subPath: 'giri',
+      label: 'GIRI',
+      content: <FluvialGIRISubsection />,
+    },
   ]);
   return (
-    <HazardTypeInit types={['fluvial', 'jrc_flood']}>
+    <HazardTypeInit types={['fluvial', 'jrc_flood', 'giri_flood']}>
       <SubSectionToggle sections={subsections} />
     </HazardTypeInit>
   );
@@ -130,6 +135,20 @@ const FluvialJRCSubsection = () => {
         <DataNoticeTextBlock>
           Map shows river flooding depths for different return periods, from JRC Global Flood Hazard
           Maps (2024).
+        </DataNoticeTextBlock>
+      </DataNotice>
+      <ReturnPeriodControl />
+    </SimpleHazardControl>
+  );
+};
+
+const FluvialGIRISubsection = () => {
+  return (
+    <SimpleHazardControl type="giri_flood">
+      <DataNotice>
+        <DataNoticeTextBlock>
+          Map shows river flooding depths for different return periods, from GIRI Global Flood
+          Hazard Maps (2023).
         </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl />
