@@ -1,10 +1,10 @@
 import { bool, dict, lazy, union } from '@recoiljs/refine';
-import { Suspense, useContext } from 'react';
-import { atom, GetRecoilValue, selector, useRecoilValue } from 'recoil';
+import { Suspense } from 'react';
+import { atom, GetRecoilValue, selector } from 'recoil';
 import { syncEffect, urlSyncEffect } from 'recoil-sync';
 
-import { getSubPath } from '@/lib/paths/paths';
-import { PathChildrenStateContext } from '@/lib/paths/sub-path';
+import { usePathChildrenLoading } from '@/lib/paths/context';
+import { makeChildPath } from '@/lib/paths/utils';
 import { StateSyncRoot } from '@/lib/recoil/state-sync/StateSyncRoot';
 
 import { sidebarPathChildrenState, sidebarVisibilityToggleState } from './SidebarContent';
@@ -21,7 +21,7 @@ function constructObject(get: GetRecoilValue, path: string) {
 
   return Object.fromEntries(
     children
-      .map((c) => [c, constructObject(get, getSubPath(path, c))])
+      .map((c) => [c, constructObject(get, makeChildPath(path, c))])
       .filter(([path, val]) => val != null),
   );
 }
@@ -89,15 +89,14 @@ function pathToVisibility(obj: any, path: string) {
 }
 
 export function SidebarUrlStateSyncRoot() {
-  const childrenLoadingState = useContext(PathChildrenStateContext).childrenLoadingState;
-  const childrenLoading = useRecoilValue(childrenLoadingState(''));
+  const sidebarRootLoading = usePathChildrenLoading('');
 
   return (
     <Suspense fallback={null}>
       <StateSyncRoot
         state={sidebarSectionsUrlOutwardState}
         replicaState={sidebarSectionsUrlParamsState}
-        doSync={!childrenLoading}
+        doSync={!sidebarRootLoading}
       />
     </Suspense>
   );

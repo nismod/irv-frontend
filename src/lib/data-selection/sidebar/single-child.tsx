@@ -1,56 +1,11 @@
-import { useCallback, useContext, useEffect } from 'react';
-import { useRecoilCallback } from 'recoil';
+import { useContext } from 'react';
 
-import { getSubPath, usePath } from '@/lib/paths/paths';
-import { usePathChildrenState } from '@/lib/paths/sub-path';
+import { EnforceSingleChild } from '@/lib/paths/EnforceSingleChild';
 
-import { useVisibilityState, VisibilityStateContext } from './context';
+import { VisibilityStateContext } from './context';
 
-const ChildVisibilityWatcher = ({ childPath, onVisibility }) => {
-  const [visible] = useVisibilityState(childPath);
-
-  useEffect(() => {
-    onVisibility(visible);
-  }, [onVisibility, visible]);
-
-  return null;
-};
-
-export const EnforceSingleChild = () => {
-  const path = usePath();
-  const [subPaths] = usePathChildrenState(path);
+export const EnforceSingleChildVisible = () => {
   const visibilityState = useContext(VisibilityStateContext);
 
-  const enforceLimit = useRecoilCallback(
-    ({ set }) =>
-      (newShown: string) => {
-        for (const sp of subPaths) {
-          if (sp !== newShown) {
-            set(visibilityState(getSubPath(path, sp)), false);
-          }
-        }
-      },
-    [path, subPaths, visibilityState],
-  );
-
-  const handleChange = useCallback(
-    (subPath, visibility) => {
-      if (visibility) {
-        enforceLimit(subPath);
-      }
-    },
-    [enforceLimit],
-  );
-
-  return (
-    <>
-      {subPaths.map((sp) => (
-        <ChildVisibilityWatcher
-          key={sp}
-          childPath={getSubPath(path, sp)}
-          onVisibility={(v) => handleChange(sp, v)}
-        />
-      ))}
-    </>
-  );
+  return <EnforceSingleChild attributeState={visibilityState} />;
 };

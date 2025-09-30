@@ -1,11 +1,13 @@
 import { Stack } from '@mui/material';
-import { Suspense } from 'react';
+import { FC, ReactNode, Suspense, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
+import { SubSectionToggle } from '@/lib/data-selection/sidebar/SubSectionToggle';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { HazardType } from '@/config/hazards/metadata';
+import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
@@ -16,11 +18,12 @@ import { SSPControl } from '@/sidebar/ui/params/SSPControl';
 import { TriggerControl } from '@/sidebar/ui/params/TriggerControl';
 import { hazardDomainsConfigState } from '@/state/data-domains/hazards';
 import { paramsConfigState, useLoadParamsConfig } from '@/state/data-params';
+import { hazardSelectionState } from '@/state/data-selection/hazards';
 
 /**
  * Takes the config for the specified hazard type and loads all the param domains/dependencies from the backend
  */
-export const InitHazardData = ({ type }: { type: HazardType }) => {
+export const LoadHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
   useLoadParamsConfig(hazardDomainsConfigState(type), type);
 
   return null;
@@ -29,32 +32,82 @@ export const InitHazardData = ({ type }: { type: HazardType }) => {
 /**
  *  Ensures the config for the specified data param group has been loaded
  */
-const EnsureHazardData = ({ type }) => {
+const EnsureHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
   useRecoilValue(paramsConfigState(type));
 
   return null;
 };
 
-const HazardControl = ({ type, children }) => {
+const HazardErrorBoundary: FC<{ children?: ReactNode }> = ({ children }) => {
   return (
     <ErrorBoundary message="There was a problem loading configuration for this layer">
-      {/* Wrap the data init and usage in separate Suspenses to prevent deadlock */}
-      <Suspense fallback={null}>
-        <InitHazardData type={type} />
-      </Suspense>
-      <Suspense fallback="Loading data...">
-        <EnsureHazardData type={type} />
-        <DataGroup group={type}>
-          <Stack spacing={3}>{children}</Stack>
-        </DataGroup>
-      </Suspense>
+      {children}
     </ErrorBoundary>
   );
 };
 
-export const FluvialControl = () => {
+const HazardTypeInit: FC<{ types: HazardType[]; children: ReactNode }> = ({ types, children }) => {
   return (
-    <HazardControl type="fluvial">
+    <HazardErrorBoundary>
+      {/* Wrap the data init and usage in separate Suspenses to prevent deadlock */}
+      <Suspense fallback={null}>
+        {types.map((type) => (
+          <LoadHazardConfig key={type} type={type} />
+        ))}
+      </Suspense>
+      <Suspense fallback="Loading data...">
+        {types.map((type) => (
+          <EnsureHazardConfig key={type} type={type} />
+        ))}
+        {children}
+      </Suspense>
+    </HazardErrorBoundary>
+  );
+};
+
+const HazardControlLayout = ({ children }) => {
+  return <Stack spacing={3}>{children}</Stack>;
+};
+
+function ActivateHazardViewLayer({ type }: { type: HazardType }) {
+  return <LinkViewLayerToPath state={hazardSelectionState(type)} />;
+}
+
+/** Packages up all functionality for a hazard layer control that only controls one hazard type. */
+const SimpleHazardControl = ({ type, children }) => {
+  return (
+    <HazardTypeInit types={[type]}>
+      <DataGroup group={type}>
+        <HazardControlLayout>{children}</HazardControlLayout>
+      </DataGroup>
+      <ActivateHazardViewLayer type={type} />
+    </HazardTypeInit>
+  );
+};
+
+export const FluvialControl = () => {
+  const [subsections] = useState(() => [
+    {
+      subPath: 'aqueduct',
+      label: 'Aqueduct',
+      content: <FluvialAqueductSubsection />,
+    },
+    {
+      subPath: 'jrc',
+      label: 'JRC',
+      content: <FluvialJRCSubsection />,
+    },
+  ]);
+  return (
+    <HazardTypeInit types={['fluvial', 'jrc_flood']}>
+      <SubSectionToggle sections={subsections} />
+    </HazardTypeInit>
+  );
+};
+
+const FluvialAqueductSubsection = () => {
+  return (
+    <SimpleHazardControl type="fluvial">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows river flooding depths for different return periods, from WRI Aqueduct (2020).
@@ -66,13 +119,13 @@ export const FluvialControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
-export const JRCFloodControl = () => {
+const FluvialJRCSubsection = () => {
   return (
-    <HazardControl type="jrc_flood">
+    <SimpleHazardControl type="jrc_flood">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows river flooding depths for different return periods, from JRC Global Flood Hazard
@@ -80,13 +133,13 @@ export const JRCFloodControl = () => {
         </DataNoticeTextBlock>
       </DataNotice>
       <ReturnPeriodControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const CoastalControl = () => {
   return (
-    <HazardControl type="coastal">
+    <SimpleHazardControl type="coastal">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows coastal flooding depths for different return periods, from WRI Aqueduct (2020).
@@ -97,13 +150,13 @@ export const CoastalControl = () => {
         <EpochControl />
         <RCPControl />
       </InputRow>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const CycloneControl = () => {
   return (
-    <HazardControl type="cyclone">
+    <SimpleHazardControl type="cyclone">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows tropical cyclone maximum wind speed (in m/s) for different return periods, from
@@ -119,13 +172,13 @@ export const CycloneControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const CycloneIrisControl = () => {
   return (
-    <HazardControl type="cyclone_iris">
+    <SimpleHazardControl type="cyclone_iris">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows tropical cyclone maximum wind speeds (in m/s) for different return periods,
@@ -140,13 +193,13 @@ export const CycloneIrisControl = () => {
         <EpochControl />
         <SSPControl />
       </InputRow>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const ExtremeHeatControl = () => {
   return (
-    <HazardControl type="extreme_heat">
+    <SimpleHazardControl type="extreme_heat">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows the annual probability of an "extreme heat event" in each grid cell. Extreme
@@ -161,13 +214,13 @@ export const ExtremeHeatControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const DroughtControl = () => {
   return (
-    <HazardControl type="drought">
+    <SimpleHazardControl type="drought">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows annual probability of a "drought event", defined by Lange et al (2020) as
@@ -181,13 +234,13 @@ export const DroughtControl = () => {
         <RCPControl />
       </InputRow>
       <GCMControl />
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const LandslideControl = () => {
   return (
-    <HazardControl type="landslide">
+    <SimpleHazardControl type="landslide">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows landslide susceptibility, from Arup (2021) Global Landslide Hazard Map produced
@@ -197,13 +250,13 @@ export const LandslideControl = () => {
       <InputRow>
         <TriggerControl />
       </InputRow>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };
 
 export const EarthquakeControl = () => {
   return (
-    <HazardControl type="earthquake">
+    <SimpleHazardControl type="earthquake">
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows seismic hazard as the peak ground acceleration (PGA) with a 10% probability of
@@ -215,6 +268,6 @@ export const EarthquakeControl = () => {
 
         <DataNoticeTextBlock>Return Period: 475 years</DataNoticeTextBlock>
       </DataNotice>
-    </HazardControl>
+    </SimpleHazardControl>
   );
 };

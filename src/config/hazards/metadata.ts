@@ -45,6 +45,26 @@ export const HAZARDS_UI_ORDER = hazardOrdering([
   'earthquake',
 ]);
 
+const HAZARD_SIDEBAR_PATH_MAPPING: Record<HazardType, string> = {
+  fluvial: 'fluvial/aqueduct',
+  jrc_flood: 'fluvial/jrc',
+  coastal: 'coastal',
+  cyclone: 'cyclone',
+  cyclone_iris: 'cyclone_iris',
+  extreme_heat: 'extreme_heat',
+  earthquake: 'earthquake',
+  drought: 'drought',
+  landslide: 'landslide',
+};
+
+/**
+ * Get sidebar section path for the given hazard type.
+ * The configuration in HAZARD_SIDEBAR_PATH_MAPPING needs to match the paths in the layer selection sidebar
+ */
+export function getHazardSidebarPath(hazardType: HazardType) {
+  return `hazards/${HAZARD_SIDEBAR_PATH_MAPPING[hazardType]}`;
+}
+
 export interface HazardMetadata {
   label: string;
   getFormatFn: (hazardParams: any) => FormatFunction<number>;

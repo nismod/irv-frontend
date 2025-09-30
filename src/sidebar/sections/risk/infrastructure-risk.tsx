@@ -9,8 +9,9 @@ import { makeOptions } from '@/lib/helpers';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { StateEffect } from '@/lib/recoil/state-effects/types';
 
-import { HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
+import { getHazardSidebarPath, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
+import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
 import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { DataParam } from '@/sidebar/ui/DataParam';
@@ -21,8 +22,9 @@ import { RCPControl } from '@/sidebar/ui/params/RCPControl';
 import { paramValueState, useLoadParamsConfig } from '@/state/data-params';
 import {
   damageSourceState,
-  syncHazardsWithDamageSourceStateEffect,
+  showInfrastructureRiskState,
 } from '@/state/data-selection/damage-mapping/damage-map';
+import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
 import { hideExposure, syncExposure } from './population-exposure';
@@ -69,7 +71,7 @@ const syncInfrastructureWithSectorEffect: StateEffect<SectorType> = (iface, sect
 };
 
 const syncHazardEffect: StateEffect<HazardType> = (iface, hazard) => {
-  syncHazardsWithDamageSourceStateEffect(iface, hazard);
+  showOneHazardStateEffect(iface, hazard);
 
   iface.set(damageSourceState, hazard);
 };
@@ -103,13 +105,14 @@ export const InfrastructureRiskSection = () => {
   const damageSource = useRecoilValue(damageSourceState);
 
   const [showHazard, setShowHazard] = useRecoilState(
-    sidebarPathVisibilityState(`hazards/${damageSource}`),
+    sidebarPathVisibilityState(getHazardSidebarPath(damageSource)),
   );
 
   return (
     // the top-level Suspense prevents deadlock between the `useLoadParamConfig()` and components that use the state that hook loads
     // both the hook and the components suspend, and in React 18 concurrent mode, this makes React suspend the tree indefinitely
-    <Suspense>
+    <Suspense fallback="Loading data...">
+      <LinkViewLayerToPath state={showInfrastructureRiskState} />
       <InitInfrastructureView />
       <InputSection>
         <StateEffectRoot

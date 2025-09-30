@@ -11,6 +11,14 @@ export function useVisibilityState(path: string) {
   return useRecoilState(visibilityState(path));
 }
 
+export const HierarchicalVisibilityStateContext =
+  createContext<RecoilStateFamily<boolean, string>>(null);
+
+export function useHierarchicalVisibilityState(path: string) {
+  const visibilityState = useContext(HierarchicalVisibilityStateContext);
+  return useRecoilState(visibilityState(path));
+}
+
 export const ExpandedStateContext = createContext<RecoilStateFamily<boolean, string>>(null);
 
 export function useExpandedState(path: string) {

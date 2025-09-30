@@ -1,40 +1,41 @@
 import { FC, ReactNode } from 'react';
 
-import { useObjectMemo } from '@/lib/hooks/use-object-memo';
-import { PathContext } from '@/lib/paths/paths';
-import { PathChildrenEnd, PathChildrenStart, PathChildrenStateContext } from '@/lib/paths/sub-path';
+import { PathRoot } from '@/lib/paths/PathRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
-import { ExpandedStateContext, VisibilityStateContext } from './context';
+import {
+  ExpandedStateContext,
+  HierarchicalVisibilityStateContext,
+  VisibilityStateContext,
+} from './context';
 
 export const SidebarRoot: FC<{
   visibilityState: RecoilStateFamily<boolean, string>;
+  hierarchicalVisibilityState: RecoilStateFamily<boolean, string>;
   expandedState: RecoilStateFamily<boolean, string>;
   pathChildrenState: RecoilStateFamily<string[], string>;
   pathChildrenLoadingState: RecoilStateFamily<boolean, string>;
   children?: ReactNode;
 }> = ({
   visibilityState,
+  hierarchicalVisibilityState,
   expandedState,
   pathChildrenState,
   pathChildrenLoadingState,
   children,
 }) => {
-  const pathChildrenContextValue = useObjectMemo({
-    childrenState: pathChildrenState,
-    childrenLoadingState: pathChildrenLoadingState,
-  });
   return (
-    <PathContext.Provider value="">
-      <VisibilityStateContext.Provider value={visibilityState}>
+    <VisibilityStateContext.Provider value={visibilityState}>
+      <HierarchicalVisibilityStateContext.Provider value={hierarchicalVisibilityState}>
         <ExpandedStateContext.Provider value={expandedState}>
-          <PathChildrenStateContext.Provider value={pathChildrenContextValue}>
-            <PathChildrenStart />
+          <PathRoot
+            pathChildrenState={pathChildrenState}
+            pathChildrenLoadingState={pathChildrenLoadingState}
+          >
             {children}
-            <PathChildrenEnd />
-          </PathChildrenStateContext.Provider>
+          </PathRoot>
         </ExpandedStateContext.Provider>
-      </VisibilityStateContext.Provider>
-    </PathContext.Provider>
+      </HierarchicalVisibilityStateContext.Provider>
+    </VisibilityStateContext.Provider>
   );
 };

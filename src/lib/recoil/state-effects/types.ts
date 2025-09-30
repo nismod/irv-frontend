@@ -1,6 +1,6 @@
 import { CallbackInterface, TransactionInterface_UNSTABLE } from 'recoil';
 
-type StateEffectAtomicInterface = TransactionInterface_UNSTABLE;
+export type StateEffectAtomicInterface = TransactionInterface_UNSTABLE;
 
 /**
  * Type for a function to be used as a state effect.
@@ -14,7 +14,7 @@ export type StateEffect<T> = (ops: StateEffectAtomicInterface, value: T, previou
  */
 export type CurrentStateEffect<T> = (ops: StateEffectAtomicInterface, value: T) => void;
 
-type StateEffectAsyncInterface = Pick<CallbackInterface, 'snapshot' | 'set' | 'reset'>;
+export type StateEffectAsyncInterface = Pick<CallbackInterface, 'snapshot' | 'set' | 'reset'>;
 
 /**
  * Type for a function to be used as an async state effect.

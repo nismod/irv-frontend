@@ -7,7 +7,7 @@ import { makeHierarchicalVisibilityState } from '@/lib/data-selection/make-hiera
 import { Layer } from '@/lib/data-selection/sidebar/Layer';
 import { SidebarRoot } from '@/lib/data-selection/sidebar/root';
 import { Section } from '@/lib/data-selection/sidebar/Section';
-import { EnforceSingleChild } from '@/lib/data-selection/sidebar/single-child';
+import { EnforceSingleChildVisible } from '@/lib/data-selection/sidebar/single-child';
 import { StateEffectRootAsync } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { RecoilStateFamily } from '@/lib/recoil/types';
 
@@ -23,7 +23,6 @@ import {
   EarthquakeControl,
   ExtremeHeatControl,
   FluvialControl,
-  JRCFloodControl,
   LandslideControl,
 } from './sections/hazards/HazardsControl';
 import { IndustryControl } from './sections/industry/IndustryControl';
@@ -72,11 +71,8 @@ export const sidebarPathVisibilityState: RecoilStateFamily<boolean, string> =
 
 const HazardsSection = () => (
   <Section path="hazards" title="Hazards">
-    <Layer path="fluvial" title="River Flooding (Aqueduct)">
+    <Layer path="fluvial" title="River Flooding">
       <FluvialControl />
-    </Layer>
-    <Layer path="jrc_flood" title="River Flooding (JRC)">
-      <JRCFloodControl />
     </Layer>
     <Layer path="coastal" title="Coastal Flooding (Aqueduct)">
       <CoastalControl />
@@ -235,7 +231,7 @@ const VulnerabilitySection = () => (
 
 const RiskSection = () => (
   <Section path="risk" title="Risk">
-    <EnforceSingleChild />
+    <EnforceSingleChildVisible />
     <Layer path="population" title="Population Exposure" unmountOnHide={true}>
       <PopulationExposureSection />
     </Layer>
@@ -354,6 +350,7 @@ export const SidebarContent: FC<{}> = () => {
   return (
     <SidebarRoot
       visibilityState={sidebarVisibilityToggleState}
+      hierarchicalVisibilityState={sidebarPathVisibilityState}
       expandedState={sidebarExpandedState}
       pathChildrenState={sidebarPathChildrenState}
       pathChildrenLoadingState={sidebarPathChildrenLoadingState}

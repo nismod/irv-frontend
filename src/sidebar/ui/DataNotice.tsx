@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 
 /* Container for siderbar section or control description. */
 export const DataNotice = ({ children }) => {
-  return <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, m: 1 }}>{children}</Box>;
+  return <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, my: 1 }}>{children}</Box>;
 };
 
 /* Block of text within a DataNotice. */

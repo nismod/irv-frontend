@@ -12,6 +12,7 @@ import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
 
 import { ExposureSource } from '@/config/hazards/exposure/exposure-view-layer';
+import { getHazardSidebarPath } from '@/config/hazards/metadata';
 import {
   sidebarPathChildrenState,
   sidebarPathVisibilityState,
@@ -22,7 +23,7 @@ import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
-import { syncHazardsWithDamageSourceStateEffect } from '@/state/data-selection/damage-mapping/damage-map';
+import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 
 export const populationExposureHazardState = atom<ExposureSource>({
   key: 'populationExposureHazardState',
@@ -75,7 +76,7 @@ export const PopulationExposureSection = () => {
   const [hazard, setHazard] = useRecoilState(populationExposureHazardState);
 
   const [showHazards, setShowHazards] = useRecoilState(
-    sidebarPathVisibilityState(`hazards/${hazard}`),
+    sidebarPathVisibilityState(getHazardSidebarPath(hazard)),
   );
   const [showPopulation, setShowPopulation] = useRecoilState(
     sidebarPathVisibilityState('exposure/population'),
@@ -84,10 +85,7 @@ export const PopulationExposureSection = () => {
   return (
     <>
       <InitPopulationView />
-      <StateEffectRoot
-        state={populationExposureHazardState}
-        effect={syncHazardsWithDamageSourceStateEffect}
-      />
+      <StateEffectRoot state={populationExposureHazardState} effect={showOneHazardStateEffect} />
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows expected annual population exposed to extreme events, based on the annual

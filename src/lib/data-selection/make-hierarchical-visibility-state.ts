@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil';
 
-import { getParentPath } from '../paths/paths';
+import { getParentPath } from '../paths/utils';
 import { RecoilStateFamily } from '../recoil/types';
 
 export function makeHierarchicalVisibilityState(
