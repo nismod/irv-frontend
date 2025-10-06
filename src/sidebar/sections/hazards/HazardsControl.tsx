@@ -97,14 +97,14 @@ export const FluvialControl = () => {
       label: 'JRC',
       content: <FluvialJRCSubsection />,
     },
-    {
-      subPath: 'giri',
-      label: 'GIRI',
-      content: <FluvialGIRISubsection />,
-    },
+    // {
+    //   subPath: 'giri',
+    //   label: 'GIRI',
+    //   content: <FluvialGIRISubsection />,
+    // },
   ]);
   return (
-    <HazardTypeInit types={['fluvial', 'jrc_flood', 'giri_flood']}>
+    <HazardTypeInit types={['fluvial', 'jrc_flood']}>
       <SubSectionToggle sections={subsections} />
     </HazardTypeInit>
   );
@@ -142,19 +142,19 @@ const FluvialJRCSubsection = () => {
   );
 };
 
-const FluvialGIRISubsection = () => {
-  return (
-    <SimpleHazardControl type="giri_flood">
-      <DataNotice>
-        <DataNoticeTextBlock>
-          Map shows river flooding depths for different return periods, from GIRI Global Flood
-          Hazard Maps (2023).
-        </DataNoticeTextBlock>
-      </DataNotice>
-      <ReturnPeriodControl />
-    </SimpleHazardControl>
-  );
-};
+// const FluvialGIRISubsection = () => {
+//   return (
+//     <SimpleHazardControl type="giri_flood">
+//       <DataNotice>
+//         <DataNoticeTextBlock>
+//           Map shows river flooding depths for different return periods, from GIRI Global Flood
+//           Hazard Maps (2023).
+//         </DataNoticeTextBlock>
+//       </DataNotice>
+//       <ReturnPeriodControl />
+//     </SimpleHazardControl>
+//   );
+// };
 
 export const CoastalControl = () => {
   return (
@@ -174,6 +174,26 @@ export const CoastalControl = () => {
 };
 
 export const CycloneControl = () => {
+  const [subsections] = useState(() => [
+    {
+      subPath: 'storm',
+      label: 'STORM',
+      content: <CycloneStormSubsection />,
+    },
+    {
+      subPath: 'iris',
+      label: 'IRIS',
+      content: <CycloneIrisSubsection />,
+    },
+  ]);
+  return (
+    <HazardTypeInit types={['cyclone', 'cyclone_iris']}>
+      <SubSectionToggle sections={subsections} />
+    </HazardTypeInit>
+  );
+};
+
+const CycloneStormSubsection = () => {
   return (
     <SimpleHazardControl type="cyclone">
       <DataNotice>
@@ -195,7 +215,7 @@ export const CycloneControl = () => {
   );
 };
 
-export const CycloneIrisControl = () => {
+const CycloneIrisSubsection = () => {
   return (
     <SimpleHazardControl type="cyclone_iris">
       <DataNotice>
