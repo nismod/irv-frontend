@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@loaders.gl/core": "^4.3.3",
     "@loaders.gl/wkt": "^4.3.3",
     "@math.gl/core": "^4.1.0",
