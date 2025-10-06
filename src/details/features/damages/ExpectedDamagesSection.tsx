@@ -1,5 +1,6 @@
-import { Stack, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { ExpectedDamage } from '@nismod/irv-api-client';
 import _ from 'lodash';
 import { useMemo } from 'react';

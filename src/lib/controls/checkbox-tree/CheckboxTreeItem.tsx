@@ -1,4 +1,5 @@
-import { Checkbox, FormControlLabel } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { TreeItem } from '@mui/x-tree-view';
 import { MouseEventHandler, useCallback } from 'react';
 

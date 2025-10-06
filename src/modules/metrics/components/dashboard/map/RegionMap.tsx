@@ -1,6 +1,6 @@
 import type { Color } from '@deck.gl/core';
-import { ZoomOutMap } from '@mui/icons-material';
-import { Box, BoxProps } from '@mui/material';
+import ZoomOutMap from '@mui/icons-material/ZoomOutMap';
+import Box, { BoxProps } from '@mui/material/Box';
 import { Polygon } from '@nismod/irv-autopkg-client';
 import { color as d3color } from 'd3-color';
 import { scaleSequential as d3scaleSequential } from 'd3-scale';

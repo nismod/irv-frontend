@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { FeatureOut } from '@nismod/irv-api-client';
 import { csvFormat as d3CsvFormat } from 'd3-dsv';
 import { ComponentType, FC, ReactElement, ReactNode, Suspense } from 'react';

@@ -1,4 +1,5 @@
-import { List, Typography } from '@mui/material';
+import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
 import { ComponentType, FC, ReactNode } from 'react';
 
 import { titleCase } from '@/lib/helpers';

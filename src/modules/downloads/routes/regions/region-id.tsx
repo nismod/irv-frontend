@@ -1,4 +1,7 @@
-import { Box, Skeleton, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { Boundary, Processor } from '@nismod/irv-autopkg-client';
 import { MultiPolygon, Polygon } from 'geojson';
 import { range } from 'lodash';

@@ -1,5 +1,7 @@
 import { TabContext } from '@mui/lab';
-import { BottomNavigation, Box, Paper } from '@mui/material';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Drawer } from 'vaul';
 

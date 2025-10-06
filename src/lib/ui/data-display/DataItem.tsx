@@ -1,4 +1,5 @@
-import { ListItem, ListItemText } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import { FC } from 'react';
 
 import { isNumeric, numFormat } from '@/lib/helpers';

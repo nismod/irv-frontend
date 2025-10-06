@@ -1,5 +1,5 @@
 import { useTabContext } from '@mui/lab';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 
 /**
  * TabPanel that doesn't unmount inactive tabs, only uses display:none

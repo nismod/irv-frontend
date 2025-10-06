@@ -1,5 +1,5 @@
-import { Error } from '@mui/icons-material';
-import { Chip } from '@mui/material';
+import Error from '@mui/icons-material/Error';
+import Chip from '@mui/material/Chip';
 import { JobProgress } from '@nismod/irv-autopkg-client';
 import { ComponentProps, ElementType, FC } from 'react';
 

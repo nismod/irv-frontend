@@ -1,4 +1,7 @@
-import { FormControl, FormLabel, MenuItem, Select } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 import { useDataGroup } from '@/lib/data-selection/DataGroup';
 import { useInputDisabled } from '@/lib/data-selection/DisabledInput';

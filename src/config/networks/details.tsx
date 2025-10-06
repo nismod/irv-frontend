@@ -1,4 +1,4 @@
-import { List } from '@mui/material';
+import List from '@mui/material/List';
 import { FC } from 'react';
 
 import { numFormat, numRangeFormat, paren } from '@/lib/helpers';

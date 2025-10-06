@@ -1,11 +1,8 @@
-import {
-  Box,
-  Collapse,
-  CollapseProps,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Collapse, { CollapseProps } from '@mui/material/Collapse';
+import Stack from '@mui/material/Stack';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { FC, Fragment, ReactNode, useContext, useMemo, useState } from 'react';
 import { useRecoilCallback } from 'recoil';
 

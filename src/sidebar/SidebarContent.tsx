@@ -1,4 +1,5 @@
-import { Alert, Stack } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 import _ from 'lodash';
 import { FC, ReactElement } from 'react';
 import { atomFamily, useRecoilValue } from 'recoil';

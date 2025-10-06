@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import { FC, ReactNode, Suspense, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
