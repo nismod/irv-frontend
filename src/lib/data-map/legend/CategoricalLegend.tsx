@@ -48,7 +48,11 @@ export interface CategoricalLegendProps {
 export const CategoricalLegend: FC<CategoricalLegendProps> = memo(
   ({ label, description, items }) => (
     <LegendLayout label={label} description={description}>
-      <Stack gap={0.5}>{items?.map((item, i) => <LegendItem key={i} {...item} />)}</Stack>
+      <Stack gap={0.5}>
+        {items?.map((item, i) => (
+          <LegendItem key={i} {...item} />
+        ))}
+      </Stack>
     </LegendLayout>
   ),
 );
