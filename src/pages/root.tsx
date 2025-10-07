@@ -1,5 +1,7 @@
-import { Error } from '@mui/icons-material';
-import { Box, Container, Typography } from '@mui/material';
+import Error from '@mui/icons-material/Error';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import { Outlet, useRouteError } from 'react-router-dom';
 
 import { CustomScrollRestoration } from '@/lib/nav';

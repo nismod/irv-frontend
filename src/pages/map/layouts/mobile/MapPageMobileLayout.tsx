@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 
 import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';

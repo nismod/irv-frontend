@@ -1,6 +1,8 @@
-import { ErrorOutline } from '@mui/icons-material';
-import { Paper, Stack, StackProps, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Stack, { StackProps } from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { Component, ReactNode } from 'react';
 
 interface ErrorBoundaryState {

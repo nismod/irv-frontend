@@ -1,4 +1,8 @@
-import { Box, Checkbox, FormControlLabel, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { Boundary, BoundarySummary } from '@nismod/irv-autopkg-client';
 import { useCallback, useEffect, useState } from 'react';
 import { defer, LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';

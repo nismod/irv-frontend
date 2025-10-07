@@ -1,5 +1,5 @@
-import { BoxProps, Paper } from '@mui/material';
-import { Box } from '@mui/system';
+import Box, { BoxProps } from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { FC } from 'react';
 
 export const SidePanel: FC<BoxProps> = ({ children }) => {

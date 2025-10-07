@@ -1,5 +1,6 @@
-import { Paper, Typography } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 export const HeadingBox = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,

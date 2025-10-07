@@ -1,5 +1,6 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 import { FC } from 'react';
 
 export interface VisibilityToggleProps {

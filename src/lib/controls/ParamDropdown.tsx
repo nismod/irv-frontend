@@ -1,4 +1,8 @@
-import { FormControl, FormLabel, MenuItem, Select, SelectProps, Tooltip } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectProps } from '@mui/material/Select';
+import Tooltip from '@mui/material/Tooltip';
 import { useCallback } from 'react';
 
 import { getValueLabel, ValueLabel } from './params/value-label';

@@ -1,4 +1,5 @@
-import { FormControl, FormLabel } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 import { CustomNumberSlider } from '@/lib/controls/CustomSlider';
 

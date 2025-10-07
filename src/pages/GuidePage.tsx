@@ -1,4 +1,4 @@
-import { Link } from '@mui/material';
+import Link from '@mui/material/Link';
 
 import { ExtLink } from '@/lib/nav';
 

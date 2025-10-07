@@ -1,4 +1,4 @@
-import { Paper } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const AutoHideContext = createContext<[hide: boolean, setHide: (empty: boolean) => void]>(null);

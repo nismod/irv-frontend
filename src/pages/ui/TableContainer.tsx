@@ -1,5 +1,8 @@
-import { Box, Paper, TableContainer, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import TableContainer from '@mui/material/TableContainer';
+import Typography from '@mui/material/Typography';
 
 export const TableSectionContainer = ({ children }) => {
   return (

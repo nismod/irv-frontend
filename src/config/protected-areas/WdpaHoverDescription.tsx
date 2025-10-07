@@ -1,4 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
 import { InteractionTarget } from '@/lib/data-map/interactions/types';

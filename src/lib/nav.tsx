@@ -1,4 +1,5 @@
-import { LinkProps, Button as MuiButton, Link as MuiLink } from '@mui/material';
+import MuiButton from '@mui/material/Button';
+import MuiLink, { LinkProps } from '@mui/material/Link';
 import { ComponentProps } from 'react';
 import {
   Link as RouterLink,

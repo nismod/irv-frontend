@@ -1,5 +1,5 @@
-import { ZoomOutMap } from '@mui/icons-material';
-import { Box, BoxProps } from '@mui/material';
+import ZoomOutMap from '@mui/icons-material/ZoomOutMap';
+import Box, { BoxProps } from '@mui/material/Box';
 import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import { MultiPolygon, Polygon } from 'geojson';
 import { Suspense, useCallback, useState } from 'react';

@@ -1,6 +1,8 @@
-import { Box, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 
 const ParagraphTypography = styled(Typography)(({ theme }) => ({
   fontFamily: 'Georgia, Times New Roman, Times, serif',

@@ -1,4 +1,6 @@
-import { Autocomplete, InputAdornment, TextField } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 import { BoundarySummary } from '@nismod/irv-autopkg-client';
 import { ReactElement } from 'react';
 

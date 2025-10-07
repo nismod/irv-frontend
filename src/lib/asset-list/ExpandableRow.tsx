@@ -1,4 +1,6 @@
-import { Collapse, TableCell, TableRow } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import { useState } from 'react';
 
 export const ExpandableRow = ({

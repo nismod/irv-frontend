@@ -1,4 +1,5 @@
-import { Box, Stack } from '@mui/material';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import React, { ComponentProps, FC, ReactNode } from 'react';
 
 import { eventPreventDefault } from '@/lib/helpers';

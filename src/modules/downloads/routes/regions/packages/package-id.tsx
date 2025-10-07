@@ -1,4 +1,5 @@
-import { Container, Typography } from '@mui/material';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import { useParams } from 'react-router-dom';
 
 import { BackLink } from '@/lib/nav';

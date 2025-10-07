@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import { Link } from 'react-router-dom';
 
 import { ExtLink } from '@/lib/nav';

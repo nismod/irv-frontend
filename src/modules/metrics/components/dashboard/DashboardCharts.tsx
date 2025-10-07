@@ -1,5 +1,8 @@
 import MapIcon from '@mui/icons-material/Map';
-import { Box, IconButton, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { Boundary } from '@nismod/irv-autopkg-client';
 import { extent as d3extent } from 'd3-array';
 import { scaleSequential as d3scaleSequential } from 'd3-scale';

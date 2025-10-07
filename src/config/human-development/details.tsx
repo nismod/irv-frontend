@@ -1,4 +1,4 @@
-import { List } from '@mui/material';
+import List from '@mui/material/List';
 import { FC } from 'react';
 
 import { DataItem } from '@/lib/ui/data-display/DataItem';

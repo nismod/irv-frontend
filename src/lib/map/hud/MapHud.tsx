@@ -1,4 +1,4 @@
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
 import { FC, ReactNode } from 'react';
 
 export const MapHud: FC<{

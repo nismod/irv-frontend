@@ -1,5 +1,3 @@
-import { GeoJSONFeature } from 'maplibre-gl';
-
 export interface FeatureWithIdAndProperties {
   id?: number | string;
   properties?: { id?: number | string } & Record<string, unknown>;

@@ -1,5 +1,6 @@
-import { ArrowRight } from '@mui/icons-material';
-import { Icon, styled } from '@mui/material';
+import ArrowRight from '@mui/icons-material/ArrowRight';
+import Icon from '@mui/material/Icon';
+import { styled } from '@mui/material/styles';
 import { FC, ReactNode, Suspense } from 'react';
 
 import { usePath } from '@/lib/paths/context';

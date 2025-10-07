@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import { extent as d3extent, leastIndex as d3leastIndex } from 'd3-array';
 import { format as d3format } from 'd3-format';
 import { scaleLinear as d3scaleLinear } from 'd3-scale';

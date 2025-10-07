@@ -1,27 +1,25 @@
-import { Close, Menu } from '@mui/icons-material';
-import {
-  AppBar,
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  Link as MuiLink,
-  LinkProps as MuiLinkProps,
-  styled,
-  Toolbar,
-} from '@mui/material';
+import Close from '@mui/icons-material/Close';
+import Menu from '@mui/icons-material/Menu';
+import AppBar from '@mui/material/AppBar';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import Link, { LinkProps } from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import { styled } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
 import { FC, forwardRef, useCallback, useState } from 'react';
 import { NavLink as RouterNavLink, NavLinkProps as RouterNavLinkProps } from 'react-router-dom';
 
 import { useIsMobile } from './use-is-mobile';
 
-const Link = styled(MuiLink)({
+const BaseLink = styled(Link)({
   color: 'inherit',
   textDecoration: 'none',
-}) as typeof MuiLink;
+}) as typeof Link;
 
-const DrawerLink = styled(Link)({
+const DrawerLink = styled(BaseLink)({
   color: '#ffffff',
   '&:hover,&:focus': {
     backgroundColor: '#213621',
@@ -29,9 +27,9 @@ const DrawerLink = styled(Link)({
   '&:active,&.active': {
     backgroundColor: '#213621',
   },
-}) as typeof Link;
+}) as typeof BaseLink;
 
-const ToolbarLink = styled(Link)({
+const ToolbarLink = styled(BaseLink)({
   padding: '0 0 1px 0',
   margin: '0 9px -10px 9px',
   whiteSpace: 'nowrap',
@@ -43,15 +41,15 @@ const ToolbarLink = styled(Link)({
   '&:active,&.active': {
     borderBottomColor: '#ffffff',
   },
-}) as typeof Link;
+}) as typeof BaseLink;
 
-const ToolbarNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<MuiLinkProps>>(
+const ToolbarNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<LinkProps>>(
   (others, ref) => <ToolbarLink variant="h6" component={RouterNavLink} ref={ref} {...others} />,
 );
 
 const ToolbarNavLinkSecondary = forwardRef<
   HTMLAnchorElement,
-  RouterNavLinkProps & Partial<MuiLinkProps>
+  RouterNavLinkProps & Partial<LinkProps>
 >((others, ref) => (
   <ToolbarLink
     variant="h6"
@@ -62,7 +60,7 @@ const ToolbarNavLinkSecondary = forwardRef<
   />
 ));
 
-const DrawerNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<MuiLinkProps>>(
+const DrawerNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<LinkProps>>(
   (others, ref) => <DrawerLink variant="h6" component={RouterNavLink} ref={ref} {...others} />,
 );
 

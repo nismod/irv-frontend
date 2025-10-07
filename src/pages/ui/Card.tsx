@@ -1,5 +1,7 @@
-import { ArrowForward } from '@mui/icons-material';
-import { Box, CardActionArea, Card as MuiCard } from '@mui/material';
+import ArrowForward from '@mui/icons-material/ArrowForward';
+import Box from '@mui/material/Box';
+import MuiCard from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 

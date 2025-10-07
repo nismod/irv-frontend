@@ -1,5 +1,10 @@
-import { Button, Checkbox, FormControlLabel, FormGroup, FormLabel, Stack } from '@mui/material';
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import Stack from '@mui/material/Stack';
 import { ReactElement, useMemo } from 'react';
 
 import { fromKeys } from '@/lib/helpers';

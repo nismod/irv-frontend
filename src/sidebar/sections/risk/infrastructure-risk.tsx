@@ -1,4 +1,5 @@
-import { FormControlLabel, Switch } from '@mui/material';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import _ from 'lodash';
 import { Suspense, useEffect } from 'react';
 import { atom, useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';

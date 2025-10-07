@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { Color, GeoJsonLayerProps, MVTLayerProps } from 'deck.gl';
 
 import { css2rgba$M } from '@/lib/colors';

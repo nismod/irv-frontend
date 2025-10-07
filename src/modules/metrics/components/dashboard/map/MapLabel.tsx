@@ -1,4 +1,4 @@
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
 import { FC } from 'react';
 
 export const MapLabel: FC<{

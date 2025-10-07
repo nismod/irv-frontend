@@ -1,4 +1,4 @@
-import { Slider, SliderProps } from '@mui/material';
+import Slider, { SliderProps } from '@mui/material/Slider';
 import { FC, useCallback, useMemo } from 'react';
 
 type CustomSliderProps<T> = {

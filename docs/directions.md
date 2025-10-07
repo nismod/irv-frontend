@@ -91,9 +91,7 @@ time to provide better organisation.
 
 1. All code related to a single data module, should be concentrated as much as
    possible in a single location
-
    - examples of how this is currently not the case:
-
      - `config/`
      - `state/`
        - `data-domains/`
@@ -113,7 +111,6 @@ time to provide better organisation.
 
 2. Make usage of formatting functions more consistent. Two approaches are
    currently used in different parts of the code:
-
    - the old approach uses functions such as `numFormat` (in `lib/helpers.ts`)
      - currently no way to tweak the formatting parameters, would need to create
        a completely new function
@@ -135,7 +132,6 @@ time to provide better organisation.
      - easier to compose e.g. with `nullFormat`
 
 3. Gather app-specific code in one place.
-
    - currently, the root `src/` folder contains several files and folders with
      app-specific React code:
      - `details/`
@@ -168,7 +164,6 @@ time to provide better organisation.
 1. Metadata class - most view layer definitions need to define some metadata
    which usually contains the definitions of some important aspects of the view
    layer
-
    - for example:
      - a list of string IDs representing some different variants of the data
        layer (e.g. `config/protected-areas/metadata.ts` lists `land` and
@@ -185,7 +180,6 @@ time to provide better organisation.
    - the introduction of a helper class for working with the metadata, together
      with supporting TS helper types, could decrease the repetition and need to
      deal with built-in types like object or arrays, in a couple of ways:
-
      - enable defining most aspects of the metadata in one go:
 
        ```ts
@@ -214,7 +208,6 @@ time to provide better organisation.
      - ideally, the class should allow for defining multiple instances of the
        labels/orderings etc - a `default` one, and potentially more for other
        use cases
-
        - consider that the most desirable ordering of different variants of a
          layer can be different for ordering UI controls in the sidebar (e.g.
          because there is a logical/semantic ordering that makes most sense) vs
@@ -236,7 +229,6 @@ time to provide better organisation.
 
      - another useful feature would be to allow the deriving of new metadata
        sets from existing ones, by:
-
        - removing certain keys from the list of available keys
        - adding new keys (and defining the required metadata values for them)
        - combining two sets of metadata, provided that they share the required

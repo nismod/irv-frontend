@@ -1,5 +1,7 @@
-import { Layers, Palette, TableRows } from '@mui/icons-material';
-import { SvgIconProps } from '@mui/material';
+import Layers from '@mui/icons-material/Layers';
+import Palette from '@mui/icons-material/Palette';
+import TableRows from '@mui/icons-material/TableRows';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 import { ComponentType } from 'react';
 
 import { DetailsContent } from '@/details/DetailsContent';

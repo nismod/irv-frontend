@@ -1,5 +1,8 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { Box, Link as MuiLink, LinkProps as MuiLinkProps, Stack, styled } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link, { LinkProps } from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
+import { styled } from '@mui/material/styles';
 import { forwardRef } from 'react';
 import { NavLink as RouterNavLink, NavLinkProps as RouterNavLinkProps } from 'react-router-dom';
 
@@ -10,9 +13,9 @@ const linkStyles = {
   fontSize: '1em',
   fontWeight: 400,
 };
-const Link = styled(MuiLink)(linkStyles);
-const FooterNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<MuiLinkProps>>(
-  (others, ref) => <Link variant="h6" component={RouterNavLink} ref={ref} {...others} />,
+const StyledLink = styled(Link)(linkStyles);
+const FooterNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial<LinkProps>>(
+  (others, ref) => <StyledLink variant="h6" component={RouterNavLink} ref={ref} {...others} />,
 );
 const FooterExtLink = ({ children, href }) => (
   <ExtLink variant="h6" sx={linkStyles} href={href}>

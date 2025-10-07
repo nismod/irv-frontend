@@ -28,7 +28,6 @@ If using `npm` natively rather than in a docker container, then:
 - Copy the token and instruct npm to [use it when authenticating to the GitHub
   registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token).
   To do this on Linux:
-
   1.  Create an `.npmrc` file if one doesn't already exist in your home directory (`~/.npmrc`)
   2.  Place the following lines in the file:
 

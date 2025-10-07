@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import Button from '@mui/material/Button';
 
 import { withProps } from '@/lib/react/with-props';
 

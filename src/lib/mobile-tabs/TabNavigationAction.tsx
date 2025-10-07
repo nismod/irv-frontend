@@ -1,4 +1,5 @@
-import { BottomNavigationAction, SvgIconProps } from '@mui/material';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 import React, { ComponentType, FC } from 'react';
 import { useRecoilValue } from 'recoil';
 

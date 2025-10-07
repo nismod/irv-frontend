@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import * as d3 from 'd3-scale';
 import { FC } from 'react';
 

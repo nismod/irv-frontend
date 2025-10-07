@@ -1,4 +1,5 @@
-import { Square, SquareOutlined } from '@mui/icons-material';
+import Square from '@mui/icons-material/Square';
+import SquareOutlined from '@mui/icons-material/SquareOutlined';
 import { FC } from 'react';
 
 export const ColorBox: FC<{ color: string; empty?: boolean }> = ({ color, empty = false }) => {
