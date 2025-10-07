@@ -29,13 +29,13 @@ export const HAZARD_DOMAINS_CONFIG: Record<HazardType, HazardDomainConfig> = {
     },
     dependencies: {},
   },
-  giri_flood: {
-    domain: 'giri_flood',
-    defaults: {
-      rp: 100,
-    },
-    dependencies: {},
-  },
+  // giri_flood: {
+  //   domain: 'giri_flood',
+  //   defaults: {
+  //     rp: 100,
+  //   },
+  //   dependencies: {},
+  // },
   coastal: {
     domain: 'aqueduct',
     defaults: {

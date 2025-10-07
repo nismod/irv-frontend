@@ -8,7 +8,7 @@ import { makeOrderingCheck } from '@/lib/helpers';
 export const HAZARD_TYPES = [
   'fluvial',
   'jrc_flood',
-  'giri_flood',
+  // 'giri_flood',
   'coastal',
   'cyclone',
   'cyclone_iris',
@@ -31,14 +31,14 @@ export const HAZARDS_MAP_ORDER = hazardOrdering([
   'extreme_heat',
   'fluvial',
   'jrc_flood',
-  'giri_flood',
+  // 'giri_flood',
   'coastal',
 ]);
 
 export const HAZARDS_UI_ORDER = hazardOrdering([
   'fluvial',
   'jrc_flood',
-  'giri_flood',
+  // 'giri_flood',
   'coastal',
   'cyclone',
   'cyclone_iris',
@@ -51,7 +51,7 @@ export const HAZARDS_UI_ORDER = hazardOrdering([
 const HAZARD_SIDEBAR_PATH_MAPPING: Record<HazardType, string> = {
   fluvial: 'fluvial/aqueduct',
   jrc_flood: 'fluvial/jrc',
-  giri_flood: 'fluvial/giri',
+  // giri_flood: 'fluvial/giri',
   coastal: 'coastal',
   cyclone: 'cyclone/storm',
   cyclone_iris: 'cyclone/iris',
@@ -156,16 +156,16 @@ registerHazardMetadata('jrc_flood', {
   },
 });
 
-// GIRI
-registerHazardMetadata('giri_flood', {
-  label: 'River Flooding (GIRI)',
-  getFormatFn: () => riverFloodingFormat,
-  getColorMap: () => riverFloodingColorMap,
-  getPath: (hazardParams) => {
-    const { rp } = hazardParams;
-    return `giri_flood/${rp}`;
-  },
-});
+// // GIRI
+// registerHazardMetadata('giri_flood', {
+//   label: 'River Flooding (GIRI)',
+//   getFormatFn: () => riverFloodingFormat,
+//   getColorMap: () => riverFloodingColorMap,
+//   getPath: (hazardParams) => {
+//     const { rp } = hazardParams;
+//     return `giri_flood/${rp}`;
+//   },
+// });
 
 // === Coastal Flooding ======================================================
 
