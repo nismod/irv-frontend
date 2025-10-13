@@ -1,4 +1,9 @@
-import { Box, List, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import {
   LoaderFunctionArgs,
   Link as RouterLink,

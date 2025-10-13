@@ -1,4 +1,8 @@
-import { Box, Collapse, ListItemButton, ListItemText, Stack } from '@mui/material';
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Stack from '@mui/material/Stack';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 import { useCallback, useRef } from 'react';
 import { atomFamily, useRecoilState } from 'recoil';

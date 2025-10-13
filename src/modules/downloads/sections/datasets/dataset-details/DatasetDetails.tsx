@@ -1,4 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 import Markdown from 'markdown-to-jsx';
 import prettyBytes from 'pretty-bytes';

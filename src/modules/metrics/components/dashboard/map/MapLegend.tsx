@@ -1,4 +1,5 @@
-import { Box, Stack } from '@mui/system';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import * as d3 from 'd3-color';
 import { FC } from 'react';
 

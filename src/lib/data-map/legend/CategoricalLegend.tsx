@@ -1,4 +1,6 @@
-import { Box, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { FC, memo, ReactNode } from 'react';
 
 import { MapShapeType, shapeComponents } from '@/lib/map-shapes/shapes';
@@ -46,7 +48,11 @@ export interface CategoricalLegendProps {
 export const CategoricalLegend: FC<CategoricalLegendProps> = memo(
   ({ label, description, items }) => (
     <LegendLayout label={label} description={description}>
-      <Stack gap={0.5}>{items?.map((item, i) => <LegendItem key={i} {...item} />)}</Stack>
+      <Stack gap={0.5}>
+        {items?.map((item, i) => (
+          <LegendItem key={i} {...item} />
+        ))}
+      </Stack>
     </LegendLayout>
   ),
 );

@@ -1,4 +1,4 @@
-import { List } from '@mui/material';
+import List from '@mui/material/List';
 import { Boundary, Processor } from '@nismod/irv-autopkg-client';
 import { FC } from 'react';
 

@@ -1,4 +1,4 @@
-import { List } from '@mui/material';
+import List from '@mui/material/List';
 
 import { DetailHeader, IdSubheader } from '@/details/features/detail-components';
 

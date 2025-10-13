@@ -1,5 +1,6 @@
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { IconButton, Link } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
 
 import { ArticleSection, NarrowContainer } from './ArticleContainer';
 

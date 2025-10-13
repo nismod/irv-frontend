@@ -1,6 +1,6 @@
-import { Download } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import { Box } from '@mui/system';
+import Download from '@mui/icons-material/Download';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { FC, ReactNode } from 'react';
 
 interface DownloadButtonProps {

@@ -1,6 +1,8 @@
-import { ZoomIn, ZoomOut } from '@mui/icons-material';
-import { IconButton, TableCell } from '@mui/material';
-import { Box } from '@mui/system';
+import ZoomIn from '@mui/icons-material/ZoomIn';
+import ZoomOut from '@mui/icons-material/ZoomOut';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import TableCell from '@mui/material/TableCell';
 import { FC, useMemo } from 'react';
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 

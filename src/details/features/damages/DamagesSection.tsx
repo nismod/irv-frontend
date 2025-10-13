@@ -1,6 +1,6 @@
 import { FeatureOut } from '@nismod/irv-api-client';
 import _ from 'lodash';
-import { atom, selector, waitForAll } from 'recoil';
+import { atom, noWait, selector } from 'recoil';
 
 import { DataParamGroupConfig, ParamGroup } from '@/lib/controls/data-params';
 import { cartesian } from '@/lib/helpers';
@@ -20,8 +20,12 @@ export const featureState = atom<FeatureOut>({
 
 export const hazardDataParamsState = selector({
   key: 'DamagesSection/hazardDataParams',
-  get: ({ get }) =>
-    get(waitForAll(_.mapValues(HAZARD_DOMAINS_CONFIG, (cfg, hazard) => paramsConfigState(hazard)))),
+  get: ({ get }) => {
+    return _.mapValues(HAZARD_DOMAINS_CONFIG, (_, hazard) => {
+      const c = get(noWait(paramsConfigState(hazard)));
+      return c.state === 'hasValue' ? c.contents : undefined;
+    });
+  },
 });
 
 export const DamagesSection = ({ fd }: { fd: FeatureOut }) => {
@@ -63,8 +67,15 @@ export function buildOrdering<PGT extends ParamGroup>(
   fields: (keyof PGT)[],
 ) {
   const ordering = [];
+  if (!allParamDomains) {
+    return ordering;
+  }
 
-  for (const [hazard, { paramDomains }] of Object.entries(allParamDomains)) {
+  for (const [hazard, config] of Object.entries(allParamDomains)) {
+    if (!config.paramDomains) {
+      continue;
+    }
+    const paramDomains = config.paramDomains;
     if (fields.every((key) => paramDomains[key])) {
       const prod = cartesian(...fields.map((f) => paramDomains[f]));
 

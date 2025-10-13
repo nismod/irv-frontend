@@ -1,5 +1,5 @@
-import { CssBaseline, StyledEngineProvider } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';

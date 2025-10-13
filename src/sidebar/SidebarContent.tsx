@@ -1,4 +1,5 @@
-import { Alert, Stack } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 import _ from 'lodash';
 import { FC, ReactElement } from 'react';
 import { atomFamily, useRecoilValue } from 'recoil';
@@ -18,7 +19,6 @@ import { BuildingDensityControl } from './sections/buildings/BuildingDensityCont
 import {
   CoastalControl,
   CycloneControl,
-  CycloneIrisControl,
   DroughtControl,
   EarthquakeControl,
   ExtremeHeatControl,
@@ -77,11 +77,8 @@ const HazardsSection = () => (
     <Layer path="coastal" title="Coastal Flooding (Aqueduct)">
       <CoastalControl />
     </Layer>
-    <Layer path="cyclone" title="Tropical Cyclones (STORM)">
+    <Layer path="cyclone" title="Tropical Cyclones">
       <CycloneControl />
-    </Layer>
-    <Layer path="cyclone_iris" title="Tropical Cyclones (IRIS)">
-      <CycloneIrisControl />
     </Layer>
     <Layer path="cdd" title="Cooling degree days">
       <DataNotice>

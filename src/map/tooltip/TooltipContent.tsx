@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import React, { FC } from 'react';
+import Box from '@mui/material/Box';
+import { FC } from 'react';
 
 import { AutoHidePaper, PreventHide } from '@/lib/data-map/tooltip/auto-hide';
 import { InteractionGroupTooltip } from '@/lib/data-map/tooltip/InteractionGroupTooltip';

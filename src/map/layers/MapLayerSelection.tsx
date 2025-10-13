@@ -1,14 +1,12 @@
-import { Layers as LayersIcon } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  Checkbox,
-  ClickAwayListener,
-  FormControlLabel,
-  Paper,
-  ToggleButton,
-  ToggleButtonGroup,
-} from '@mui/material';
+import LayersIcon from '@mui/icons-material/Layers';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Paper from '@mui/material/Paper';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
 

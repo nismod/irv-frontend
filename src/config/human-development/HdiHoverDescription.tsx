@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';

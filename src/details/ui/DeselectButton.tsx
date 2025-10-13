@@ -1,5 +1,5 @@
-import { Close } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import Close from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 import { useResetRecoilState } from 'recoil';
 
 import { selectionState } from '@/lib/data-map/interactions/interaction-state';

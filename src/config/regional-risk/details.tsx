@@ -1,4 +1,5 @@
-import { List, Typography } from '@mui/material';
+import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
 import { DataItem } from '@/lib/ui/data-display/DataItem';

@@ -1,4 +1,5 @@
-import { Stack, Typography } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
 import { MapShapeType, ShapeLegend } from '@/lib/map-shapes/ShapeLegend';

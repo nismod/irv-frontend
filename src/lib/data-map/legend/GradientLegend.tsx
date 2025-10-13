@@ -1,4 +1,7 @@
-import { Box, Fade, Tooltip, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Fade from '@mui/material/Fade';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { FC, memo, ReactNode } from 'react';
 
 import { LegendLayout } from './LegendLayout';
