@@ -10,3 +10,4 @@ dev-proxy/proxy-table.ts
 
 .vscode
 .local
+*.log
