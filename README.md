@@ -28,6 +28,7 @@ If using `npm` natively rather than in a docker container, then:
 - Copy the token and instruct npm to [use it when authenticating to the GitHub
   registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token).
   To do this on Linux:
+
   1.  Create an `.npmrc` file if one doesn't already exist in your home directory (`~/.npmrc`)
   2.  Place the following lines in the file:
 
@@ -65,20 +66,20 @@ For example, to build the container (replace `/PATH/TO/TOKEN`, but not
 DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-dev \
-   -t ghcr.io/nismod/irv-frontend:0.27-dev .
+   -t ghcr.io/nismod/irv-frontend:0.37-dev .
 ```
 
 To run:
 
 ```bash
-docker run -it -p 5173:5173 -v $(pwd)/src:/app/src ghcr.io/nismod/irv-frontend:0.27-dev
+docker run -it -p 5173:5173 -v $(pwd)/src:/app/src ghcr.io/nismod/irv-frontend:0.37-dev
 ```
 
 Or to run inside an infra-risk-vis network (allowing DNS resolution for
 connection to the backend services via the vite reverse proxy):
 
 ```bash
-docker run -it -p 5173:5173 -v $(pwd)/src:/app/src --network infra-risk-vis_default ghcr.io/nismod/irv-frontend:0.27-dev
+docker run -it -p 5173:5173 -v $(pwd)/src:/app/src --network infra-risk-vis_default ghcr.io/nismod/irv-frontend:0.37-dev
 ```
 
 Then visit http://localhost:5173
@@ -90,9 +91,9 @@ then make a GitHub Release with a new tag, which will be used as the version num
 
 - test changes locally (`npm test`, and manual check)
 - push/merge to `main`
-- review logs since previous release `git log 0.26..HEAD`
+- review logs since previous release `git log 0.36..HEAD`
 - [Draft a new release](https://github.com/nismod/irv-frontend/releases)
-- Choose a tag > create a new tag with new version, e.g. `0.27`
+- Choose a tag > create a new tag with new version, e.g. `0.37`
 - summarise changes as lists of Features and Fixes
 - Publish Release
 - Wait for [Actions](https://github.com/nismod/irv-frontend/actions) to complete
@@ -106,15 +107,15 @@ Alternatively, to build and push an update to the container registry manually:
 - Build and push the production container
   - replace `/PATH/TO/TOKEN` with the path to a file containing GitHub personal
     access token with `write:packages` permissions)
-  - replace `0.27` with the latest version number
+  - replace `0.37` with the latest version number
 
 ```bash
 DOCKER_BUILDKIT=1 docker build \
    --secret id=GH_TOKEN,src=/PATH/TO/TOKEN \
    -f containers/Dockerfile-prod \
-   -t ghcr.io/nismod/irv-frontend:0.27 .
+   -t ghcr.io/nismod/irv-frontend:0.37 .
 
-docker push ghcr.io/nismod/irv-frontend:0.27
+docker push ghcr.io/nismod/irv-frontend:0.37
 ```
 
 See https://github.com/nismod/infra-risk-vis/ for `docker-compose.yml` and how
