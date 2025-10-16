@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import * as d3 from 'd3-color';
 import { FC } from 'react';
+
+import { d3 } from '@/lib/d3';
 
 export const MapLegend: FC<{
   top?: number;
@@ -18,9 +19,9 @@ export const MapLegend: FC<{
   const colorString1 = colorScale(domainY[0]);
   const colorString2 = colorScale((domainY[0] + domainY[1]) / 2);
   const colorString3 = colorScale(domainY[1]);
-  const colorObject = d3.color(colorString1).rgb();
-  const colorObject2 = d3.color(colorString2).rgb();
-  const colorObject3 = d3.color(colorString3).rgb();
+  const colorObject = d3.color.color(colorString1).rgb();
+  const colorObject2 = d3.color.color(colorString2).rgb();
+  const colorObject3 = d3.color.color(colorString3).rgb();
 
   if (!colorObject) {
     return <></>;

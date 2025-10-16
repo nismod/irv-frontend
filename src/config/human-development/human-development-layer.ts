@@ -1,8 +1,7 @@
-import * as d3Scale from 'd3-scale';
-import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import React from 'react';
 
 import { colorMap } from '@/lib/color-map';
+import { d3 } from '@/lib/d3';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ColorSpec, FieldSpec, ViewLayer } from '@/lib/data-map/view-layers';
 import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
@@ -23,26 +22,26 @@ import { HDI_REGION_LEVEL_LABELS, HdiRegionLevel, HdiVariableType } from './meta
 
 const hdiColorLookup: Record<HdiVariableType, ColorSpec> = {
   subnational_hdi: {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolateBlues,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolateBlues,
     range: [0, 1],
     empty: '#ccc',
   },
   educational_index: {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolatePurples,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolatePurples,
     range: [0, 1],
     empty: '#ccc',
   },
   health_index: {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolateGreens,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolateGreens,
     range: [0, 1],
     empty: '#ccc',
   },
   income_index: {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolateOranges,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolateOranges,
     range: [0, 1],
     empty: '#ccc',
   },

@@ -2,9 +2,6 @@ import type { Color } from '@deck.gl/core';
 import ZoomOutMap from '@mui/icons-material/ZoomOutMap';
 import Box, { BoxProps } from '@mui/material/Box';
 import { Polygon } from '@nismod/irv-autopkg-client';
-import { color as d3color } from 'd3-color';
-import { scaleSequential as d3scaleSequential } from 'd3-scale';
-import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
 import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import type { Feature } from 'geojson';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,6 +9,7 @@ import { Map } from 'react-map-gl/maplibre';
 import { useResizeDetector } from 'react-resize-detector';
 
 import { extendBbox, geoJsonToAppBoundingBox } from '@/lib/bounding-box';
+import { d3 } from '@/lib/d3';
 import { DeckGLOverlay } from '@/lib/map/DeckGLOverlay';
 import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudButton } from '@/lib/map/hud/MapHudButton';
@@ -157,7 +155,8 @@ function RegionMapViewer({
   const { mapStyle } = useBasemapStyle(backgroundKey, true);
 
   const colorScale = useMemo(
-    () => d3scaleSequential().domain(domainY).interpolator(d3interpolateRdYlGn),
+    () =>
+      d3.scale.scaleSequential().domain(domainY).interpolator(d3.scaleChromatic.interpolateRdYlGn),
     [domainY],
   );
 
@@ -181,7 +180,7 @@ function RegionMapViewer({
       if (!maybeRegionValue) return NOT_FOUND_COLOR;
 
       const colorString = colorScale(maybeRegionValue);
-      const colorObject = d3color(colorString).rgb();
+      const colorObject = d3.color.color(colorString).rgb();
 
       return [colorObject.r, colorObject.g, colorObject.b, 200];
     },

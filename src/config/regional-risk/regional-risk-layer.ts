@@ -1,8 +1,7 @@
-import * as d3Scale from 'd3-scale';
-import * as d3ScaleChromatic from 'd3-scale-chromatic';
 import React from 'react';
 
 import { colorMap } from '@/lib/color-map';
+import { d3 } from '@/lib/d3';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { ColorSpec, FieldSpec, ViewLayer } from '@/lib/data-map/view-layers';
@@ -22,26 +21,26 @@ import { RegionalExposureVariableType } from './metadata';
 
 const rexpColorLookup: Record<RegionalExposureVariableType, ColorSpec> = {
   'pop_exposed_seismic_threshold0.1g': {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolateBlues,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolateBlues,
     range: [0, 100_000_000],
     empty: '#ccc',
   },
   'pop_exposed_seismic_threshold0.2g': {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolateBlues,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolateBlues,
     range: [0, 100_000_000],
     empty: '#ccc',
   },
   pop_exposed_river_historical_WATCH_1980_thresholdNone: {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolateBlues,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolateBlues,
     range: [0, 100_000_000],
     empty: '#ccc',
   },
   'pop_exposed_river_rcp4p5_MIROC-ESM-CHEM_2050_thresholdNone': {
-    scale: d3Scale.scaleSequential,
-    scheme: d3ScaleChromatic.interpolateBlues,
+    scale: d3.scale.scaleSequential,
+    scheme: d3.scaleChromatic.interpolateBlues,
     range: [0, 100_000_000],
     empty: '#ccc',
   },

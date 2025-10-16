@@ -1,9 +1,10 @@
-import * as d3 from 'd3-color';
 import { Color } from 'deck.gl';
 import _ from 'lodash';
 
+import { d3 } from '@/lib/d3';
+
 export function colorCssToRgb(cssColor: string): Color {
-  const color = d3.color(cssColor);
+  const color = d3.color.color(cssColor);
   const { r, g, b } = color.rgb();
   const a = color.opacity;
   return a === 1 ? [r, g, b] : [r, g, b, a * 256];

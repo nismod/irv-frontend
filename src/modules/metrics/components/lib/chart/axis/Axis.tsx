@@ -1,6 +1,6 @@
-import * as d3 from 'd3-format';
-import * as d3Scale from 'd3-scale';
 import { FC } from 'react';
+
+import { d3, type D3 } from '@/lib/d3';
 
 import { useDimensionsContext } from '../Chart';
 import { formatter } from '../types/d3';
@@ -8,7 +8,7 @@ import Dimension from '../types/Dimension';
 import AxisHorizontal from './AxisHorizontal';
 import AxisVertical from './AxisVertical';
 
-const defaultTickFormatter: formatter = d3.format(',');
+const defaultTickFormatter: formatter = d3.format.format(',');
 
 const axisByDimension = (dimension: Dimension) => {
   if (dimension === Dimension.X) {
@@ -19,7 +19,7 @@ const axisByDimension = (dimension: Dimension) => {
 };
 
 type AxisProps = {
-  scale: d3Scale.ScaleContinuousNumeric<number, number>;
+  scale: D3.scale.ScaleContinuousNumeric<number, number>;
   label?: string;
   formatTick?: formatter;
   dimension: Dimension;
