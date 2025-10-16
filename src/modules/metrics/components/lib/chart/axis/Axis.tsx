@@ -10,14 +10,6 @@ import AxisVertical from './AxisVertical';
 
 const defaultTickFormatter: formatter = d3.format.format(',');
 
-const axisByDimension = (dimension: Dimension) => {
-  if (dimension === Dimension.X) {
-    return AxisHorizontal;
-  }
-
-  return AxisVertical;
-};
-
 type AxisProps = {
   scale: D3.scale.ScaleContinuousNumeric<number, number>;
   label?: string;
@@ -28,10 +20,11 @@ type AxisProps = {
 const Axis: FC<AxisProps> = ({ dimension, formatTick = defaultTickFormatter, ...props }) => {
   const dimensions = useDimensionsContext();
 
-  const Component = axisByDimension(dimension);
-  if (!Component) return null;
+  if (dimension === Dimension.X) {
+    return <AxisHorizontal dimensions={dimensions} formatTick={formatTick} {...props} />;
+  }
 
-  return <Component dimensions={dimensions} formatTick={formatTick} {...props} />;
+  return <AxisVertical dimensions={dimensions} formatTick={formatTick} {...props} />;
 };
 
 export default Axis;
