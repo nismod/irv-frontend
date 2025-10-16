@@ -3,7 +3,7 @@ import { WKTLoader } from '@loaders.gl/wkt';
 import { ApiClient, FeatureListItemOut_float_ } from '@nismod/irv-api-client';
 import bbox from '@turf/bbox';
 import pick from 'lodash/pick';
-import { useCallback, useEffect, useState } from 'react';
+import { startTransition, useCallback, useEffect, useState } from 'react';
 
 import { BoundingBox } from '@/lib/bounding-box';
 import { FieldSpec } from '@/lib/data-map/view-layers';
@@ -50,9 +50,15 @@ export const useSortedFeatures = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const scheduleUpdate = useCallback((updater: () => void) => {
+    startTransition(updater);
+  }, []);
+
   const fetchFeatures = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    scheduleUpdate(() => {
+      setLoading(true);
+      setError(null);
+    });
 
     try {
       const { fieldGroup, fieldDimensions, field, fieldParams } = fieldSpec;
@@ -75,15 +81,20 @@ export const useSortedFeatures = (
         size: pageSize,
       });
       const features = (response.items as FeatureListItemOut_float_[]).map(processFeature);
-      setFeatures(features);
-
-      setPageInfo(pick(response, ['page', 'size', 'total']));
+      scheduleUpdate(() => {
+        setFeatures(features);
+        setPageInfo(pick(response, ['page', 'size', 'total']));
+      });
     } catch (error) {
-      setError(error);
+      scheduleUpdate(() => {
+        setError(error);
+      });
     }
 
-    setLoading(false);
-  }, [apiClient, fieldSpec, scopeSpec, layerSpec, page, pageSize]);
+    scheduleUpdate(() => {
+      setLoading(false);
+    });
+  }, [apiClient, fieldSpec, scopeSpec, layerSpec, page, pageSize, scheduleUpdate]);
 
   useEffect(() => {
     fetchFeatures();

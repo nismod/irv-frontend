@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Boundary } from '@nismod/irv-autopkg-client';
-import { FC, useEffect, useState } from 'react';
+import { FC, startTransition, useEffect, useState } from 'react';
 
 import { d3 } from '@/lib/d3';
 
@@ -126,7 +126,10 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
   );
 
   const resetHighlightRegion = (dataByYearGroupedList) => {
-    setHighlightRegion(getDefaultRegionKey(dataByYearGroupedList));
+    const defaultRegion = getDefaultRegionKey(dataByYearGroupedList);
+    startTransition(() => {
+      setHighlightRegion(defaultRegion);
+    });
   };
 
   useEffect(() => {
