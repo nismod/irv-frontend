@@ -1,5 +1,5 @@
 import { throttle } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useTrackingRef } from './use-tracking-ref';
 
@@ -10,24 +10,26 @@ export function useThrottledCallback<Args extends any[]>(
   trailing: boolean = true,
 ) {
   const callbackRef = useTrackingRef(callback);
-
-  const throttledHandler = useMemo(
-    () =>
-      throttle(
-        (...args: Args) => {
-          callbackRef.current(...args);
-        },
-        ms,
-        { leading, trailing },
-      ),
-    [ms, callbackRef, leading, trailing],
-  );
+  const throttledRef = useRef<ReturnType<typeof throttle>>();
 
   useEffect(() => {
-    return () => {
-      throttledHandler.cancel();
-    };
-  }, [throttledHandler]);
+    const handler = throttle(
+      (...args: Args) => {
+        callbackRef.current(...args);
+      },
+      ms,
+      { leading, trailing },
+    );
 
-  return throttledHandler;
+    throttledRef.current = handler;
+
+    return () => {
+      handler.cancel();
+      throttledRef.current = undefined;
+    };
+  }, [callbackRef, leading, trailing, ms]);
+
+  return useCallback((...args: Args) => {
+    throttledRef.current?.(...args);
+  }, []);
 }

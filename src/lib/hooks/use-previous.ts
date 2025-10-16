@@ -1,9 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { startTransition, useEffect, useRef, useState } from 'react';
 
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>();
+  const currentRef = useRef(value);
+  const isFirstRenderRef = useRef(true);
+  const [previous, setPrevious] = useState<T | undefined>(undefined);
+
   useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
+    const priorValue = currentRef.current;
+    currentRef.current = value;
+
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+
+    startTransition(() => {
+      setPrevious(priorValue);
+    });
+  }, [value]);
+
+  return previous;
 }
