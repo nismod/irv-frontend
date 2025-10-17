@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { FeatureOut } from '@nismod/irv-api-client';
-import { csvFormat as d3CsvFormat } from 'd3-dsv';
 import { ComponentType, FC, ReactElement, ReactNode, Suspense } from 'react';
 import { RecoilValue, useRecoilValue } from 'recoil';
 
+import { d3 } from '@/lib/d3';
 import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 
@@ -49,7 +49,7 @@ const AssetDetailsHeader: FC<{ label: string; color: string }> = ({ label, color
 };
 
 function makeDetailsCsv(fp: Record<string, any>) {
-  return d3CsvFormat(Object.entries(fp).map(([variable, value]) => ({ variable, value })));
+  return d3.dsv.csvFormat(Object.entries(fp).map(([variable, value]) => ({ variable, value })));
 }
 
 const AssetDetailsDownloadButton: FC<{ feature: DetailsFeature }> = ({ feature }) => {

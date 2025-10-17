@@ -9,9 +9,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { Adaptation } from '@nismod/irv-api-client';
-import { csvFormat as d3CsvFormat } from 'd3-dsv';
 import { FC } from 'react';
 
+import { d3 } from '@/lib/d3';
 import { numFormat, numRangeFormat, titleCase, toLabelLookup } from '@/lib/helpers';
 import { DataItem } from '@/lib/ui/data-display/DataItem';
 
@@ -67,7 +67,7 @@ export const NbsExtendedDetails: ApiDetailsComponentType = ({ fd }) => {
 };
 
 function makeAdaptationsCsv(adaptations: Adaptation[]) {
-  return d3CsvFormat(
+  return d3.dsv.csvFormat(
     adaptations.map(
       ({
         hazard,

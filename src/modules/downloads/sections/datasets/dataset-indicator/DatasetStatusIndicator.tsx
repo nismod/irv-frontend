@@ -1,5 +1,5 @@
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
-import { useEffect, useMemo, useState } from 'react';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { inlist } from '@/lib/helpers';
@@ -43,15 +43,19 @@ export function DatasetStatusIndicator({
   const dataStatus = computeDatasetStatus(jobStatus, packageStatus);
 
   useEffect(() => {
+    let nextInterval = 2_000;
+
     if (inlist(jobStatus, [JobStatusType.Skipped, JobStatusType.Success])) {
       // slow down querying after job successful
-      setJobRefetchInterval(10_000);
+      nextInterval = 10_000;
     } else if (jobStatus === JobStatusType.Failed) {
       // turn off refetching for failed jobs
-      setJobRefetchInterval(0);
-    } else {
-      setJobRefetchInterval(2_000);
+      nextInterval = 0;
     }
+
+    startTransition(() => {
+      setJobRefetchInterval(nextInterval);
+    });
   }, [jobStatus]);
 
   useRefetchPackageUponComplete(dataStatus, boundary.name);

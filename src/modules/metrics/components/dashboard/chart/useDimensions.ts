@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { startTransition, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 export const useDimensions = (targetRef: any) => {
   const getDimensions = useCallback(() => {
@@ -8,10 +8,13 @@ export const useDimensions = (targetRef: any) => {
     };
   }, [targetRef]);
 
-  const [dimensions, setDimensions] = useState(getDimensions);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   const handleResize = useCallback(() => {
-    setDimensions(getDimensions());
+    const nextDimensions = getDimensions();
+    startTransition(() => {
+      setDimensions(nextDimensions);
+    });
   }, [getDimensions]);
 
   useEffect(() => {

@@ -1,4 +1,12 @@
-import { DependencyList, useMemo } from 'react';
+import { DependencyList, startTransition, useEffect, useRef, useState } from 'react';
+
+const areDependenciesEqual = (prev: DependencyList, next: DependencyList) => {
+  if (prev.length !== next.length) {
+    return false;
+  }
+
+  return prev.every((value, index) => Object.is(value, next[index]));
+};
 
 /**
  * Standard useMemo that accepts an additional trigger that is not a dependency of the callback,
@@ -10,6 +18,31 @@ import { DependencyList, useMemo } from 'react';
  * @param trigger trigger which will cause recalculation. It shouldn't be a dependency of the callback
  * @returns memoed result of the callback
  */
-export function useTriggerMemo<T>(callback: () => T, dependencies: DependencyList, trigger: any) {
-  return useMemo(callback, [callback, ...dependencies, trigger]);
+export function useTriggerMemo<T>(
+  callback: () => T,
+  dependencies: DependencyList,
+  trigger: unknown,
+) {
+  const [memoValue, setMemoValue] = useState(() => callback());
+  const dependenciesRef = useRef<DependencyList>(dependencies);
+  const triggerRef = useRef(trigger);
+
+  useEffect(() => {
+    const depsChanged = !areDependenciesEqual(dependenciesRef.current, dependencies);
+    const triggerChanged = !Object.is(triggerRef.current, trigger);
+
+    if (!depsChanged && !triggerChanged) {
+      return;
+    }
+
+    dependenciesRef.current = dependencies;
+    triggerRef.current = trigger;
+
+    const nextValue = callback();
+    startTransition(() => {
+      setMemoValue(nextValue);
+    });
+  }, [callback, dependencies, trigger]);
+
+  return memoValue;
 }

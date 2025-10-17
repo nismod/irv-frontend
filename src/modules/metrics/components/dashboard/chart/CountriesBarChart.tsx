@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
-import * as d3 from 'd3-scale';
 import { FC } from 'react';
+
+import { d3 } from '@/lib/d3';
 
 import Axis from '@/modules/metrics/components/lib/chart/axis/Axis';
 import Chart from '@/modules/metrics/components/lib/chart/Chart';
@@ -37,13 +38,13 @@ const CountriesBarChart: FC<CountriesBarChartProps> = ({
 
   const chartData = regionalDataOnly;
 
-  const xScale = d3
+  const xScale = d3.scale
     .scaleBand()
     .domain(chartData.map((d) => d.GDLCODE))
     .range([0, dimensions.boundedWidth])
     .padding(0.1);
 
-  const yScale = d3
+  const yScale = d3.scale
     .scaleLinear()
     .domain([domainY[0] - 0.01, domainY[1]])
     .range([dimensions.boundedHeight, 0])

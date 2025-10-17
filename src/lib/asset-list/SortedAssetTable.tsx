@@ -8,7 +8,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { ApiClient } from '@nismod/irv-api-client';
-import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
+import { FC, ReactNode, startTransition, useCallback, useEffect, useState } from 'react';
 
 import { FieldSpec } from '@/lib/data-map/view-layers';
 
@@ -28,7 +28,9 @@ export const SortedAssetTable: FC<{
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    setPage(1);
+    startTransition(() => {
+      setPage(1);
+    });
   }, [layerSpec, fieldSpec]);
 
   const { features, pageInfo, loading, error } = useSortedFeatures(

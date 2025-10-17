@@ -1,6 +1,7 @@
 import { Boundary } from '@nismod/irv-autopkg-client';
-import { group as d3group } from 'd3-array';
 import { FC } from 'react';
+
+import { d3 } from '@/lib/d3';
 
 import { GDL_YEAR_RANGE } from '../../data/gdl-datasets';
 import DashboardCharts from './DashboardCharts';
@@ -71,7 +72,7 @@ const Dashboard: FC<DashboardProps> = ({
   const dataFiltered = countryDataPerYear.filter((d) => d.value !== null);
 
   // group the data - one line per group
-  const dataByYearGrouped = d3group(dataFiltered, (d) => d.gdlCode);
+  const dataByYearGrouped = d3.array.group(dataFiltered, (d) => d.gdlCode);
   const dataByYearGroupedList = [];
 
   dataByYearGrouped.forEach((value, key) => {

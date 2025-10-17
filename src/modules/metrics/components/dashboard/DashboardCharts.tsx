@@ -4,10 +4,9 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Boundary } from '@nismod/irv-autopkg-client';
-import { extent as d3extent } from 'd3-array';
-import { scaleSequential as d3scaleSequential } from 'd3-scale';
-import { interpolateRdYlGn as d3interpolateRdYlGn } from 'd3-scale-chromatic';
-import { FC, useEffect, useState } from 'react';
+import { FC, startTransition, useEffect, useState } from 'react';
+
+import { d3 } from '@/lib/d3';
 
 import CountriesBarChart from '@/modules/metrics/components/dashboard/chart/CountriesBarChart';
 import RegionsLineChart from '@/modules/metrics/components/dashboard/chart/RegionsLineChart';
@@ -41,8 +40,8 @@ const compileTimelineDomainY = (
   yAccessor,
 ): [number, number] => {
   const domain = scaleAcrossCountries
-    ? d3extent(allDataPerYear, yAccessor)
-    : d3extent(dataFiltered, yAccessor);
+    ? d3.array.extent(allDataPerYear, yAccessor)
+    : d3.array.extent(dataFiltered, yAccessor);
   return numericDomain(domain);
 };
 
@@ -60,7 +59,7 @@ const compileDomainY = (
 
   if (scaleAcrossCountries) {
     return numericDomain(
-      d3extent(
+      d3.array.extent(
         allDataPerYear.filter((d) => d.year === selectedYear && d.value !== null),
         yAccessor,
       ),
@@ -68,7 +67,7 @@ const compileDomainY = (
   }
 
   return numericDomain(
-    d3extent(
+    d3.array.extent(
       dataFiltered.filter((d) => d.year === selectedYear),
       yAccessor,
     ),
@@ -127,7 +126,10 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
   );
 
   const resetHighlightRegion = (dataByYearGroupedList) => {
-    setHighlightRegion(getDefaultRegionKey(dataByYearGroupedList));
+    const defaultRegion = getDefaultRegionKey(dataByYearGroupedList);
+    startTransition(() => {
+      setHighlightRegion(defaultRegion);
+    });
   };
 
   useEffect(() => {
@@ -142,8 +144,8 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
     }
   };
 
-  const colorInterpolator = d3interpolateRdYlGn;
-  const colorScale = d3scaleSequential().domain(domainY).interpolator(colorInterpolator);
+  const colorInterpolator = d3.scaleChromatic.interpolateRdYlGn;
+  const colorScale = d3.scale.scaleSequential().domain(domainY).interpolator(colorInterpolator);
 
   const xBoundsOnly = country.envelope.coordinates[0].map((d) => d[0]);
   const averageXBounds = xBoundsOnly.reduce((a, b) => a + b) / xBoundsOnly.length;

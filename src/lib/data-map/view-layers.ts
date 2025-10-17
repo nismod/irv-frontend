@@ -1,7 +1,7 @@
-import { ScaleSequential } from 'd3-scale';
 import { LayersList } from 'deck.gl';
 import { ReactNode } from 'react';
 
+import { type D3 } from '@/lib/d3';
 import { InteractionTarget } from '@/lib/data-map/interactions/types';
 import { AccessorFunction } from '@/lib/deck/props/getters';
 
@@ -120,7 +120,7 @@ export interface ColorSpec {
   scale: (
     domain: [number, number],
     interpolator: (t: number) => string,
-  ) => ScaleSequential<any, any>;
+  ) => D3.scale.ScaleSequential<any, any>;
   range: [number, number];
   empty: string;
   zeroIsEmpty?: boolean;
