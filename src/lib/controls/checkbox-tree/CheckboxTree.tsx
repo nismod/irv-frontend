@@ -1,6 +1,6 @@
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { produce } from 'immer';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { CheckboxTreeItem } from './CheckboxTreeItem';
 import { dfs, getDescendants, TreeNode } from './tree-node';
@@ -155,11 +155,18 @@ export function CheckboxTree<T>({
     [checkboxState, config, onCheckboxState],
   );
 
+  const selectedItems = useMemo(
+    () => Object.keys(checkboxState.checked).filter((id) => checkboxState.checked[id]),
+    [checkboxState.checked],
+  );
+
   return (
     <>
       <SimpleTreeView
         expandedItems={expanded}
         onExpandedItemsChange={(e, nodeIds) => onExpanded(nodeIds)}
+        multiSelect
+        selectedItems={selectedItems}
       >
         {nodes.map((node) => (
           <CheckboxTreeItem

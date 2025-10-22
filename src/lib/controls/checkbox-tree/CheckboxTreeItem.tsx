@@ -1,7 +1,7 @@
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { TreeItem } from '@mui/x-tree-view';
-import { MouseEventHandler, useCallback } from 'react';
+import { ChangeEvent, KeyboardEvent, MouseEvent, MouseEventHandler, useCallback } from 'react';
 
 import { CheckboxTreeState } from './CheckboxTree';
 import { TreeNode } from './tree-node';
@@ -38,16 +38,54 @@ export function CheckboxTreeItem<T>({
   const isLeaf = !root.children || root.children.length === 0;
   const handleLeafClick = useCallback<MouseEventHandler<HTMLLIElement>>(
     (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       handleChange(!effectiveChecked, root);
     },
     [effectiveChecked, handleChange, root],
   );
 
+  const handleCheckboxChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      handleChange(event.currentTarget.checked, root);
+    },
+    [handleChange, root],
+  );
+
+  const handleCheckboxClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+  }, []);
+
+  const handleItemKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLLIElement>) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        event.stopPropagation();
+        handleChange(!effectiveChecked, root);
+      }
+    },
+    [effectiveChecked, handleChange, root],
+  );
+
+  const ariaChecked = checkboxState.indeterminate[root.id]
+    ? 'mixed'
+    : checkboxState.checked[root.id]
+      ? 'true'
+      : 'false';
+
+  const labelContent = getLabel(root);
+  const ariaLabel =
+    typeof labelContent === 'string'
+      ? labelContent
+      : ((root as { label?: string }).label ?? undefined);
+
   return (
     <TreeItem
       key={root.id}
       itemId={root.id}
+      aria-checked={ariaChecked}
       onClick={toggleOnLeafClick && isLeaf ? handleLeafClick : undefined}
+      onKeyDown={handleItemKeyDown}
       label={
         <FormControlLabel
           key={root.id}
@@ -57,10 +95,11 @@ export function CheckboxTreeItem<T>({
             <Checkbox
               checked={effectiveChecked}
               indeterminate={checkboxState.indeterminate[root.id]}
-              onChange={(event) => handleChange(event.currentTarget.checked, root)}
-              onClick={(e) => e.stopPropagation()}
-              style={{ pointerEvents: 'auto' }}
+              onChange={handleCheckboxChange}
+              onClick={handleCheckboxClick}
               disabled={disableCheck}
+              slotProps={{ input: ariaLabel ? { 'aria-label': ariaLabel } : undefined }}
+              sx={{ mr: 1 }}
             />
           }
         ></FormControlLabel>
