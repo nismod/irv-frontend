@@ -1,14 +1,10 @@
 /* @vitest-environment jsdom */
 
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { act , useMemo, useState } from 'react';
+import { act, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-  buildTreeConfig,
-  CheckboxTree,
-  CheckboxTreeState,
-} from './CheckboxTree';
+import { buildTreeConfig, CheckboxTree, CheckboxTreeState } from './CheckboxTree';
 import { TreeNode } from './tree-node';
 
 function TestTree() {
