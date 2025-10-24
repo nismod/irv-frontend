@@ -1,9 +1,5 @@
 import MapIcon from '@mui/icons-material/Map';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { Boundary } from '@nismod/irv-autopkg-client';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { FC, startTransition, useEffect, useState } from 'react';
 
 import { d3 } from '@/lib/d3';
@@ -11,8 +7,12 @@ import { d3 } from '@/lib/d3';
 import CountriesBarChart from '@/modules/metrics/components/dashboard/chart/CountriesBarChart';
 import RegionsLineChart from '@/modules/metrics/components/dashboard/chart/RegionsLineChart';
 import RegionMap from '@/modules/metrics/components/dashboard/map/RegionMap';
-import { numericDomain } from '@/modules/metrics/components/lib/chart/utils';
 import { useIsMobile } from '@/use-is-mobile';
+
+import { AnnualGdlGrouped, AnnualGdlRecord } from '../../types/AnnualGdlData';
+import { DatasetExtent, DatasetExtentList } from '../../types/DatasetExtent';
+import { NationalGeo } from '../../types/NationalGeo';
+import { RegionGeo } from '../../types/RegionGeo';
 
 const getDefaultRegionKey = (dataByYearGroupedList) => {
   const dataLength = dataByYearGroupedList.length;
@@ -33,97 +33,33 @@ const getDefaultRegionKey = (dataByYearGroupedList) => {
   return null;
 };
 
-const compileTimelineDomainY = (
-  scaleAcrossCountries,
-  allDataPerYear,
-  dataFiltered,
-  yAccessor,
-): [number, number] => {
-  const domain = scaleAcrossCountries
-    ? d3.array.extent(allDataPerYear, yAccessor)
-    : d3.array.extent(dataFiltered, yAccessor);
-  return numericDomain(domain);
-};
-
-const compileDomainY = (
-  scaleAcrossCountries,
-  scaleAcrossYears,
-  allDataPerYear,
-  dataFiltered,
-  yAccessor,
-  selectedYear,
-): [number, number] => {
-  if (scaleAcrossYears) {
-    return compileTimelineDomainY(scaleAcrossCountries, allDataPerYear, dataFiltered, yAccessor);
-  }
-
-  if (scaleAcrossCountries) {
-    return numericDomain(
-      d3.array.extent(
-        allDataPerYear.filter((d) => d.year === selectedYear && d.value !== null),
-        yAccessor,
-      ),
-    );
-  }
-
-  return numericDomain(
-    d3.array.extent(
-      dataFiltered.filter((d) => d.year === selectedYear),
-      yAccessor,
-    ),
-  );
-};
-
 type DashboardChartsProps = {
-  country: Boundary;
-  geojson: any;
-  selectedCountryData: any;
-  dataFiltered: any[];
-  dataByYearGroupedList: any[];
-  allData: any;
-  allDataPerYear: any[];
-  scaleAcrossYears: boolean;
-  scaleAcrossCountries: boolean;
-  metricLabel: string;
+  annualData: AnnualGdlRecord[];
+  annualDataGrouped: AnnualGdlGrouped[];
+  datasetExtent: DatasetExtent;
+  regionsGeo: RegionGeo[];
+  nationalGeo: NationalGeo;
   selectedYear: number;
-  updateSelectedYear: (year: any) => void;
+  metricLabel: string;
+  updateSelectedYear: (year: number) => void;
 };
 
 const DashboardCharts: FC<DashboardChartsProps> = ({
-  country,
-  geojson,
-  selectedCountryData,
-  dataFiltered,
-  dataByYearGroupedList,
-  allData,
-  allDataPerYear,
-  scaleAcrossYears,
-  scaleAcrossCountries,
-  metricLabel,
+  annualData,
+  annualDataGrouped,
+  datasetExtent,
+  regionsGeo,
+  nationalGeo,
   selectedYear,
+  metricLabel,
   updateSelectedYear,
 }) => {
-  const [highlightRegion, setHighlightRegion] = useState(null);
+  const [highlightRegion, setHighlightRegion] = useState<string>('');
 
   const isMobile = useIsMobile();
 
-  const yAccessor = (d) => d.value;
-  const timelineDomainY = compileDomainY(
-    scaleAcrossCountries,
-    true,
-    allDataPerYear,
-    dataFiltered,
-    yAccessor,
-    selectedYear,
-  );
-  const domainY = compileDomainY(
-    scaleAcrossCountries,
-    scaleAcrossYears,
-    allDataPerYear,
-    dataFiltered,
-    yAccessor,
-    selectedYear,
-  );
+  const timelineDomainY: DatasetExtentList = [datasetExtent.min, datasetExtent.max];
+  const domainY: DatasetExtentList = [datasetExtent.min, datasetExtent.max];
 
   const resetHighlightRegion = (dataByYearGroupedList) => {
     const defaultRegion = getDefaultRegionKey(dataByYearGroupedList);
@@ -133,12 +69,12 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
   };
 
   useEffect(() => {
-    resetHighlightRegion(dataByYearGroupedList);
-  }, [dataByYearGroupedList]);
+    resetHighlightRegion(annualDataGrouped);
+  }, [annualDataGrouped]);
 
   const updateHighlightRegion = (regionId) => {
     if (!regionId) {
-      resetHighlightRegion(dataByYearGroupedList);
+      resetHighlightRegion(annualDataGrouped);
     } else {
       setHighlightRegion(regionId);
     }
@@ -147,11 +83,13 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
   const colorInterpolator = d3.scaleChromatic.interpolateRdYlGn;
   const colorScale = d3.scale.scaleSequential().domain(domainY).interpolator(colorInterpolator);
 
-  const xBoundsOnly = country.envelope.coordinates[0].map((d) => d[0]);
+  const xBoundsOnly = nationalGeo.envelope.coordinates[0].map((d) => d[0]);
   const averageXBounds = xBoundsOnly.reduce((a, b) => a + b) / xBoundsOnly.length;
 
-  const yBoundsOnly = country.envelope.coordinates[0].map((d) => d[1]);
+  const yBoundsOnly = nationalGeo.envelope.coordinates[0].map((d) => d[1]);
   const averageYBounds = yBoundsOnly.reduce((a, b) => a + b) / yBoundsOnly.length;
+
+  const zoomLevel = 5;
 
   return (
     <Box
@@ -160,6 +98,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
         width: '100%',
         padding: '25px',
         pb: '100px',
+        minWidth: '250px',
       })}
     >
       <Stack
@@ -175,7 +114,7 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
           gap={5}
         >
           <Stack sx={{ maxHeight: '500px', width: isMobile ? '100%' : '50%' }}>
-            {!selectedCountryData.length ? (
+            {!annualData.length ? (
               <Stack direction={'column'} alignItems={'center'}>
                 <Typography>No data available.</Typography>
               </Stack>
@@ -183,12 +122,12 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
               <></>
             )}
             <Stack direction="row" justifyContent={'space-between'}>
-              <Typography variant="h2">{country.name_long}</Typography>
+              <Typography variant="h2">{nationalGeo.countryName}</Typography>
 
               <IconButton
                 onClick={() =>
                   window.open(
-                    `https://global.infrastructureresilience.org/view/vulnerability?y=${averageYBounds}&x=${averageXBounds}&z=3&sections=%7B%22hazards%22%3A%7B%7D%2C%22vulnerability%22%3A%7B%22human%22%3A%7B%22human-development%22%3Atrue%7D%7D%7D`,
+                    `/view/vulnerability?y=${averageYBounds}&x=${averageXBounds}&z=${zoomLevel}&sections=%7B%22hazards%22%3A%7B%7D%2C%22vulnerability%22%3A%7B%22human%22%3A%7B%22human-development%22%3Atrue%7D%7D%7D`,
                     '_blank',
                   )
                 }
@@ -197,21 +136,20 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
               </IconButton>
             </Stack>
             <RegionMap
-              countryEnvelope={country.envelope}
-              countryId={country.name}
               width="100%"
               height="300px"
-              selectedCountryData={selectedCountryData}
+              selectedCountryData={annualData}
               highlightRegion={highlightRegion}
               setHighlightRegion={updateHighlightRegion}
               selectedYear={selectedYear}
               domainY={domainY}
-              geojson={geojson}
+              geojson={regionsGeo}
+              nationalGeo={nationalGeo}
               label={`${metricLabel} (${selectedYear})`}
             />
           </Stack>
 
-          {selectedCountryData.length ? (
+          {annualData.length ? (
             <Stack
               direction="row"
               justifyContent={'end'}
@@ -219,11 +157,11 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
               width={isMobile ? '100%' : '50%'}
             >
               <RegionsLineChart
-                xAccessor={(d) => d.year}
-                yAccessor={(d) => d.value}
+                xAccessor={(d: AnnualGdlRecord) => d.year}
+                yAccessor={(d: AnnualGdlRecord) => d.value}
                 label={metricLabel}
-                dataFiltered={dataFiltered}
-                dataByYearGroupedList={dataByYearGroupedList}
+                dataFiltered={annualData}
+                dataByYearGroupedList={annualDataGrouped}
                 highlightRegion={highlightRegion}
                 setHighlightRegion={updateHighlightRegion}
                 selectedYear={selectedYear}
@@ -237,14 +175,13 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
           )}
         </Stack>
 
-        {selectedCountryData.length ? (
+        {annualData.length ? (
           <CountriesBarChart
             label={`${metricLabel} (${selectedYear})`}
             highlightRegion={highlightRegion}
             setHighlightRegion={updateHighlightRegion}
             selectedYear={selectedYear}
-            allData={allData}
-            countryId={country.name}
+            selectedCountryData={annualData}
             domainY={domainY}
             colorScale={colorScale}
           />

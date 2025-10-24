@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import { FC } from 'react';
 
 import { d3 } from '@/lib/d3';
 
@@ -7,6 +8,8 @@ import Chart from '@/modules/metrics/components/lib/chart/Chart';
 import Line from '@/modules/metrics/components/lib/chart/Line';
 import Dimension from '@/modules/metrics/components/lib/chart/types/Dimension';
 import { numericDomain, useChartDimensions } from '@/modules/metrics/components/lib/chart/utils';
+import { AnnualGdlGrouped, AnnualGdlRecord } from '@/modules/metrics/types/AnnualGdlData';
+import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
 
 const formatYear = d3.format.format('.0f');
 
@@ -23,7 +26,20 @@ const findHighlightPoint = (dataByYearGroupedList, regionKey, selectedYear, xSca
   };
 };
 
-const RegionsLineChart = ({
+type RegionsLineChartProps = {
+  xAccessor: (record: AnnualGdlRecord) => number;
+  yAccessor: (record: AnnualGdlRecord) => number;
+  label: string;
+  dataFiltered: AnnualGdlRecord[];
+  dataByYearGroupedList: AnnualGdlGrouped[];
+  highlightRegion: string;
+  setHighlightRegion: (regionId: string) => void;
+  selectedYear: number;
+  updateSelectedYear: (year: number) => void;
+  domainY: DatasetExtentList;
+};
+
+const RegionsLineChart: FC<RegionsLineChartProps> = ({
   xAccessor,
   yAccessor,
   label,
@@ -66,7 +82,11 @@ const RegionsLineChart = ({
     yearList.push(i);
   }
 
-  const points = dataFiltered.map((d) => [xAccessorScaled(d), yAccessorScaled(d), d.gdlCode]);
+  const points: [number, number, string][] = dataFiltered.map((d) => [
+    xAccessorScaled(d),
+    yAccessorScaled(d),
+    d.gdlCode,
+  ]);
   const yearPoints = yearList.map((d) => [xScale(d), d]);
 
   const onPointerMove = (event) => {

@@ -1,7 +1,6 @@
 import type { Color } from '@deck.gl/core';
 import ZoomOutMap from '@mui/icons-material/ZoomOutMap';
 import Box, { BoxProps } from '@mui/material/Box';
-import { Polygon } from '@nismod/irv-autopkg-client';
 import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import type { Feature } from 'geojson';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
@@ -17,6 +16,11 @@ import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
 import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 
 import { useBasemapStyle } from '@/map/use-basemap-style';
+import { ColorScale } from '@/modules/metrics/components/lib/chart/types/ColorScale';
+import { AnnualGdlRecord } from '@/modules/metrics/types/AnnualGdlData';
+import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
+import { NationalGeo } from '@/modules/metrics/types/NationalGeo';
+import { RegionGeo } from '@/modules/metrics/types/RegionGeo';
 
 import { MapLabel } from './MapLabel';
 import { MapLegend } from './MapLegend';
@@ -61,7 +65,6 @@ function useViewState(initialViewStateFn: () => MapViewState) {
 }
 
 export default function RegionMap({
-  countryEnvelope,
   width: responsiveWidth,
   height: responsiveHeight,
   selectedCountryData,
@@ -70,18 +73,18 @@ export default function RegionMap({
   selectedYear,
   domainY,
   geojson,
+  nationalGeo,
   label,
 }: {
-  countryEnvelope: Polygon;
-  countryId: string;
   width: BoxProps['width'];
   height: BoxProps['height'];
-  selectedCountryData: any;
+  selectedCountryData: AnnualGdlRecord[];
   highlightRegion: string;
-  setHighlightRegion: any;
+  setHighlightRegion: (regionId: string) => void;
   selectedYear: number;
-  domainY: any;
-  geojson: any;
+  domainY: DatasetExtentList;
+  geojson: RegionGeo[];
+  nationalGeo: NationalGeo;
   label: string;
 }) {
   const { width, height, ref: containerRef } = useResizeDetector();
@@ -99,13 +102,13 @@ export default function RegionMap({
           <RegionMapViewer
             width={width}
             height={height}
-            regionEnvelope={countryEnvelope}
             selectedCountryData={selectedCountryData}
             highlightRegion={highlightRegion}
             setHighlightRegion={setHighlightRegion}
             selectedYear={selectedYear}
             domainY={domainY}
             geojson={geojson}
+            nationalGeo={nationalGeo}
             label={label}
           />
         </Suspense>
@@ -117,16 +120,17 @@ export default function RegionMap({
 function RegionMapViewer({
   width,
   height,
-  regionEnvelope,
   selectedCountryData,
   highlightRegion,
   setHighlightRegion,
   selectedYear,
   domainY,
   geojson,
+  nationalGeo,
   label,
 }) {
   const filteredGeoJson = geojson;
+  const regionEnvelope = nationalGeo.envelope;
 
   const calculateBoundedState = useCallback(() => {
     const boundingBox = geoJsonToAppBoundingBox(regionEnvelope);
@@ -154,7 +158,7 @@ function RegionMapViewer({
   const backgroundKey = 'light';
   const { mapStyle } = useBasemapStyle(backgroundKey, true);
 
-  const colorScale = useMemo(
+  const colorScale: ColorScale = useMemo(
     () =>
       d3.scale.scaleSequential().domain(domainY).interpolator(d3.scaleChromatic.interpolateRdYlGn),
     [domainY],
@@ -162,22 +166,28 @@ function RegionMapViewer({
 
   const getLineWidth = useCallback(
     (geoJsonEntry) => {
-      const gdlCode = geoJsonEntry.properties.gdlcode;
+      const gdlCode = geoJsonEntry.properties.gdlCode;
       return gdlCode === highlightRegion ? 2 : 0;
     },
     [highlightRegion],
   );
 
+  const getLineWidthNational = useCallback(() => {
+    return highlightRegion.endsWith('t') ? 2 : 0;
+  }, [highlightRegion]);
+
   const getColor = useCallback(
     (geoJsonEntry: Feature): Color => {
-      const NOT_FOUND_COLOR = [255, 255, 255, 100] as Color;
-      const gdlCode = geoJsonEntry.properties.gdlcode;
+      const NOT_FOUND_COLOR: Color = [255, 255, 255, 100];
+      const gdlCode = geoJsonEntry.properties.gdlCode;
 
-      const maybeRegionData = selectedCountryData.find((d) => d.GDLCODE === gdlCode);
+      const maybeRegionData = selectedCountryData.find(
+        (d) => d.gdlCode.toLowerCase() === gdlCode && d.year === selectedYear,
+      );
+
       if (!maybeRegionData) return NOT_FOUND_COLOR;
 
-      const maybeRegionValue = maybeRegionData[selectedYear];
-      if (!maybeRegionValue) return NOT_FOUND_COLOR;
+      const maybeRegionValue = maybeRegionData.value;
 
       const colorString = colorScale(maybeRegionValue);
       const colorObject = d3.color.color(colorString).rgb();
@@ -187,7 +197,9 @@ function RegionMapViewer({
     [selectedCountryData, selectedYear, colorScale],
   );
 
-  const highlightData = selectedCountryData.find((d) => d.GDLCODE === highlightRegion);
+  const highlightData: AnnualGdlRecord = selectedCountryData.find(
+    (d) => d.gdlCode.toLowerCase() === highlightRegion && d.year === selectedYear,
+  );
 
   return (
     <Map {...viewState} onMove={({ viewState }) => setViewState(viewState)} mapStyle={mapStyle}>
@@ -204,10 +216,10 @@ function RegionMapViewer({
             filled: true,
             onHover: (e) => {
               const eventObject = e.object;
-              if (!eventObject || !eventObject.properties || !eventObject.properties.gdlcode) {
+              if (!eventObject || !eventObject.properties || !eventObject.properties.gdlCode) {
                 setHighlightRegion(null);
               } else {
-                setHighlightRegion(eventObject.properties.gdlcode);
+                setHighlightRegion(eventObject.properties.gdlCode);
               }
             },
             getFillColor: (d) => getColor(d),
@@ -215,6 +227,19 @@ function RegionMapViewer({
             updateTriggers: {
               getLineWidth: [getLineWidth],
               getFillColor: [getColor],
+            },
+          }),
+          new GeoJsonLayer({
+            id: 'NationalGeo',
+            data: nationalGeo.boundary,
+            stroked: true,
+            getLineColor: [0, 0, 0, 255],
+            getLineWidth: () => getLineWidthNational(),
+            lineWidthUnits: 'pixels',
+            filled: false,
+            pickable: true,
+            updateTriggers: {
+              getLineWidth: [getLineWidthNational],
             },
           }),
         ]}
@@ -234,7 +259,7 @@ function RegionMapViewer({
 
       <MapLegend colorScale={colorScale} domainY={domainY} label={label} />
 
-      <MapLabel highlightData={highlightData} selectedYear={selectedYear} />
+      <MapLabel highlightData={highlightData} />
     </Map>
   );
 }

@@ -1,8 +1,9 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import { BoundarySummary } from '@nismod/irv-autopkg-client';
 import { ReactElement } from 'react';
+
+import type { CountryOption } from '../../types/CountryOption';
 
 export const RegionSearch = ({
   regions,
@@ -11,31 +12,36 @@ export const RegionSearch = ({
   title,
   icon,
 }: {
-  regions: BoundarySummary[];
-  selectedRegion: BoundarySummary;
-  onSelectedRegion: (x: BoundarySummary) => void;
+  regions: CountryOption[];
+  selectedRegion: CountryOption;
+  onSelectedRegion: (x: CountryOption) => void;
   title: string;
   icon?: ReactElement;
 }) => {
   return (
-    <Autocomplete<BoundarySummary>
-      sx={{ minWidth: '200px', width: '400px', maxWidth: '100%' }}
+    <Autocomplete<CountryOption>
+      sx={{
+        width: '100%',
+      }}
       value={selectedRegion}
-      onChange={(e, v) => onSelectedRegion(v)}
+      onChange={(_, value) => onSelectedRegion(value)}
       options={regions}
-      getOptionLabel={(o) => o.name_long}
+      isOptionEqualToValue={(option, value) => option.code === value.code}
+      getOptionLabel={(option) => option.label}
       renderInput={(params) => (
         <TextField
           {...params}
           label={title}
           fullWidth
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: icon ? (
-              <InputAdornment position="end">{icon}</InputAdornment>
-            ) : (
-              params.InputProps.endAdornment
-            ),
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: icon ? (
+                <InputAdornment position="end">{icon}</InputAdornment>
+              ) : (
+                params.InputProps.endAdornment
+              ),
+            },
           }}
         />
       )}

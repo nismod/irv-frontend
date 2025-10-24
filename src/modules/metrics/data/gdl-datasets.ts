@@ -15,10 +15,8 @@ export const gdlDatasets = [
     url: '/gdl-data/education.json',
   },
   {
-    value: 'Income',
+    value: 'income',
     label: 'Income Index',
     url: '/gdl-data/income.json',
   },
 ];
-
-export const GDL_YEAR_RANGE = [1990, 2021];

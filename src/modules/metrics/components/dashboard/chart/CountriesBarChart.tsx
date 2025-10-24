@@ -7,16 +7,19 @@ import Axis from '@/modules/metrics/components/lib/chart/axis/Axis';
 import Chart from '@/modules/metrics/components/lib/chart/Chart';
 import Dimension from '@/modules/metrics/components/lib/chart/types/Dimension';
 import { useChartDimensions } from '@/modules/metrics/components/lib/chart/utils';
+import { AnnualGdlRecord } from '@/modules/metrics/types/AnnualGdlData';
+import { DatasetExtentList } from '@/modules/metrics/types/DatasetExtent';
+
+import { ColorScale } from '../../lib/chart/types/ColorScale';
 
 type CountriesBarChartProps = {
   label: string;
-  highlightRegion: any;
-  setHighlightRegion: (regionId: any) => void;
+  highlightRegion: string;
+  setHighlightRegion: (regionId: string) => void;
   selectedYear: number;
-  allData: any;
-  countryId: string;
-  domainY: any;
-  colorScale: any;
+  selectedCountryData: AnnualGdlRecord[];
+  domainY: DatasetExtentList;
+  colorScale: ColorScale;
 };
 
 const CountriesBarChart: FC<CountriesBarChartProps> = ({
@@ -24,23 +27,17 @@ const CountriesBarChart: FC<CountriesBarChartProps> = ({
   highlightRegion,
   setHighlightRegion,
   selectedYear,
-  allData,
-  countryId,
+  selectedCountryData,
   domainY,
   colorScale,
 }) => {
   const [ref, dimensions] = useChartDimensions(null);
-
-  const regionalDataOnly = allData
-    .filter((d) => d.ISO_Code === countryId.toUpperCase())
-    .filter((d) => d[selectedYear])
-    .sort((a, b) => a[selectedYear] - b[selectedYear]);
-
-  const chartData = regionalDataOnly;
+  const regionalDataOnly = selectedCountryData.sort((a, b) => a.value - b.value);
+  const chartData = regionalDataOnly.filter((d) => d.year === selectedYear);
 
   const xScale = d3.scale
     .scaleBand()
-    .domain(chartData.map((d) => d.GDLCODE))
+    .domain(chartData.map((d) => d.gdlCode))
     .range([0, dimensions.boundedWidth])
     .padding(0.1);
 
@@ -51,33 +48,33 @@ const CountriesBarChart: FC<CountriesBarChartProps> = ({
     .nice();
 
   const allShapes = chartData.map((d, i) => {
-    const x = xScale(d.GDLCODE);
+    const x = xScale(d.gdlCode);
 
     if (x === undefined) {
       return null;
     }
 
-    const maybeBarHeight = dimensions.boundedHeight - yScale(d[selectedYear]) - 0.5; // don't overlap axis
+    const maybeBarHeight = dimensions.boundedHeight - yScale(d.value) - 0.5; // don't overlap axis
     const barHeight = maybeBarHeight > 0 ? maybeBarHeight : 0; // ensure non-negative
 
     return (
       <g key={i}>
         <rect
           x={x}
-          y={dimensions.boundedHeight - (dimensions.boundedHeight - yScale(d[selectedYear]))}
+          y={dimensions.boundedHeight - (dimensions.boundedHeight - yScale(d.value))}
           width={xScale.bandwidth()}
           height={barHeight}
           stroke={'black'}
-          fill={colorScale(d[selectedYear])}
+          fill={colorScale(d.value)}
           fillOpacity={0.8}
           strokeWidth={2}
-          strokeOpacity={d.GDLCODE === highlightRegion ? 1 : 0}
-          onMouseEnter={() => setHighlightRegion(d.GDLCODE)}
+          strokeOpacity={d.gdlCode === highlightRegion ? 1 : 0}
+          onMouseEnter={() => setHighlightRegion(d.gdlCode)}
           onMouseLeave={() => setHighlightRegion(null)}
           rx={1}
         />
         <text
-          className={d.GDLCODE === highlightRegion ? 'highlight' : null}
+          className={d.gdlCode === highlightRegion ? 'highlight' : null}
           textAnchor="end"
           alignmentBaseline="central"
           transform={`translate(${x + xScale.bandwidth() / 2}, ${
@@ -85,7 +82,7 @@ const CountriesBarChart: FC<CountriesBarChartProps> = ({
           }), rotate(-70)`}
           fontSize={12}
         >
-          {d.Region.split('(')[0].trim()}
+          {d.regionName.split('(')[0].trim()}
         </text>
       </g>
     );

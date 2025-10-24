@@ -1,121 +1,192 @@
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { Boundary, BoundarySummary } from '@nismod/irv-autopkg-client';
 import { useCallback, useEffect, useState } from 'react';
 import { defer, LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
-import { AppLink } from '@/lib/nav';
 
 import Dashboard from '@/modules/metrics/components/dashboard/Dashboard';
 import { RegionSearchNavigation } from '@/modules/metrics/components/region-search/RegionSearchNavigation';
-import { fetchAllRegions, fetchRegionById } from '@/modules/metrics/data/fetch-regions';
-import { GDL_YEAR_RANGE, gdlDatasets } from '@/modules/metrics/data/gdl-datasets';
+import { gdlDatasets } from '@/modules/metrics/data/gdl-datasets';
 import { useIsMobile } from '@/use-is-mobile';
 
-export const loader = async ({
-  request: { signal },
-  params: { regionId, metricId },
-}: LoaderFunctionArgs) => {
+import { AnnualGdlRecord } from '../types/AnnualGdlData';
+import type { CountryOption } from '../types/CountryOption';
+import { DatasetExtent } from '../types/DatasetExtent';
+import type { NationalGeo } from '../types/NationalGeo';
+import { RegionGeo } from '../types/RegionGeo';
+
+const API_BASE = `/metrics/gdl`;
+
+export const loader = async ({ params: { regionId, metricId } }: LoaderFunctionArgs) => {
   return defer({
     regionId: regionId,
-    region: await fetchRegionById({ regionId }, signal),
-    regions: await fetchAllRegions({}, signal),
     metricId: metricId,
   });
 };
 loader.displayName = 'regionMetricsLoader';
 type RegionMetricsLoaderData = {
   regionId: string;
-  region: Boundary;
-  regions: BoundarySummary[];
   metricId: string;
 };
 
-type HasData = {
-  data: any;
-};
-
 export const Component = () => {
-  const { regionId, region, regions, metricId } = useLoaderData() as RegionMetricsLoaderData;
+  const { regionId, metricId } = useLoaderData() as RegionMetricsLoaderData;
 
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const [chartData, setChartData] = useState(null);
-  const [geojson, setGeoJson] = useState<HasData>();
-  const [scaleAcrossYears, setScaleAcrossYears] = useState(false);
-  const [scaleAcrossCountries, setScaleAcrossCountries] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(2010);
+  // country list
+  const [countryOptions, setCountryOptions] = useState<CountryOption[]>();
+
+  // boundaries
+  const [regionsGeo, setRegionsGeo] = useState<RegionGeo[]>();
+  const [nationalGeo, setNationalGeo] = useState<NationalGeo>();
+
+  // annual data
+  const [annualData, setAnnualData] = useState<AnnualGdlRecord[]>(null);
+
+  // data extents across all countries and years (to calculate color and axis scales)
+  const [datasetExtent, setDatasetExtent] = useState<DatasetExtent>(null);
+
+  const [selectedYear, setSelectedYear] = useState<number>(2010);
+
+  const [countryFetchError, setCountryFetchError] = useState(null);
+
+  // fetch list of countries
+  const countryMetaUrl = `${API_BASE}/meta/countries`;
+  useEffect(() => {
+    fetch(countryMetaUrl)
+      .then((response) => response.json())
+      .then((json) =>
+        json.map((country) => ({
+          label: country.country_name,
+          code: country.iso_code,
+        })),
+      )
+      .then((dataList) => {
+        setCountryOptions(dataList);
+      })
+      .catch((error) => {
+        setCountryFetchError(error);
+      });
+  }, [countryMetaUrl]);
+
+  // fetch national boundaries
+  const nationalGeoUrl = `${API_BASE}/geojson/national/iso/${regionId}`;
+  useEffect(() => {
+    fetch(nationalGeoUrl)
+      .then((d) => d.json())
+      .then((d) => {
+        setNationalGeo({
+          boundary: d.boundary,
+          envelope: d.envelope,
+          countryName: d.properties.country_name,
+          isoCode: d.properties.iso_code,
+        });
+
+        setCountryFetchError(false);
+      })
+      .catch((error) => {
+        setNationalGeo(null);
+      });
+  }, [nationalGeoUrl]);
+
+  // fetch subnational boundaries
+  const geojsonUrl = `${API_BASE}/geojson/subnational/iso/${regionId}`;
+  useEffect(() => {
+    fetch(geojsonUrl)
+      .then((response) => response.json())
+      .then((json) =>
+        json.map((record) => ({
+          geometry: record.geometry,
+          type: record.type,
+          properties: {
+            gdlCode: record.properties.gdl_code,
+            isoCode: record.properties.iso_code,
+            level: record.properties.level,
+            regionName: record.properties.region_name,
+          },
+        })),
+      )
+      .then((d) => setRegionsGeo(d))
+      .catch((error) => {
+        setRegionsGeo(null);
+      });
+  }, [geojsonUrl]);
+
+  // fetch annual data for country and dataset
+  const annualDataUrl = `${API_BASE}/data/${metricId}/${regionId}`;
+  useEffect(() => {
+    fetch(annualDataUrl)
+      .then((response) => response.json())
+      .then((json) =>
+        json.map((record) => ({
+          year: record.year,
+          gdlCode: record.gdl_code,
+          regionName: record.region_name,
+          value: record.value,
+        })),
+      )
+      .then((dataList) => setAnnualData(dataList))
+      .catch((error) => {
+        setAnnualData(null);
+      });
+  }, [annualDataUrl]);
+
+  // fetch extents of full dataset for color/axis scaling
+  const extentUrl = `${API_BASE}/data/${metricId}/extent`;
+  useEffect(() => {
+    fetch(extentUrl)
+      .then((d) => d.json())
+      .then((d) => setDatasetExtent(d))
+      .catch((error) => {
+        setDatasetExtent(null);
+      });
+  }, [extentUrl]);
 
   const updateSelectedYear = (year) => {
     setSelectedYear(year);
   };
 
-  const maybeMetricSelection = gdlDatasets.find((option) => option.value === metricId);
-  const metricSelection = maybeMetricSelection ? maybeMetricSelection : gdlDatasets[0];
-  const selectedMetricId = metricSelection.value;
+  const selectedMetricOrDefault = (selection) => {
+    const maybeMetricMatch = gdlDatasets.find((option) => option.value === selection);
+    return maybeMetricMatch ? maybeMetricMatch : gdlDatasets[0];
+  };
 
-  const selectedIsoCode = regionId.toUpperCase();
-  const selectedCountryData = chartData?.filter((d) => d.ISO_Code === selectedIsoCode);
-  const yearOptions = new Set<number>();
+  const handleMetricSelection = useCallback(
+    (selection: string) => {
+      const selectedMetric = selectedMetricOrDefault(selection);
+      setTimeout(() => {
+        navigate(
+          `/metrics/regions/${regionId}/${selectedMetric.value}`,
+          { preventScrollReset: true }, // don't scroll to top on navigate
+        );
+      }, 100);
+    },
+    [navigate, regionId],
+  );
 
-  if (chartData) {
-    for (let i: number = GDL_YEAR_RANGE[0]; i <= GDL_YEAR_RANGE[1]; i++) {
-      const index = i;
-      selectedCountryData.forEach((d) => {
-        const maybeYearData = d[index];
-        // falsy ok if 0
-        if (maybeYearData !== undefined && maybeYearData !== null) {
-          yearOptions.add(index);
-        }
-      });
+  if (!countryOptions) {
+    if (countryFetchError) {
+      return <>There was an error loading the data</>;
     }
+    return <>Loading country options...</>;
   }
 
+  const selectedMetric = selectedMetricOrDefault(metricId);
+  const selectedMetricId = selectedMetric.value;
+  const selectedMetricLabel = selectedMetric.label;
+
+  // only show available years as selectable
+  const yearOptions = new Set<number>();
+  annualData?.forEach((record) => yearOptions.add(record.year));
   if (yearOptions.size > 0 && !yearOptions.has(selectedYear)) {
     updateSelectedYear([...yearOptions].sort((a, b) => a - b)[0]);
   }
 
-  const handleMetricSelection = useCallback(
-    (selection: string) => {
-      const maybeMetricMatch = gdlDatasets.find((option) => option.value === selection);
-      const selectionId = maybeMetricMatch ? maybeMetricMatch.value : gdlDatasets[0].value;
-      if (selection != null) {
-        setTimeout(() => {
-          navigate(
-            `/metrics/regions/${region.name}/${selectionId}`,
-            { preventScrollReset: true }, // don't scroll to top on navigate
-          );
-        }, 100);
-      }
-    },
-    [navigate, region.name],
-  );
-
-  console.log('metricSelection.url', metricSelection.url);
-  useEffect(() => {
-    fetch(metricSelection.url)
-      .then((d) => d.json())
-      .then((d) => setChartData(d));
-  }, [metricSelection.url]);
-
-  const geojsonUrl = `https://gri-country-api.vercel.app/api/${regionId}/geojson/subnational`;
-  useEffect(() => {
-    fetch(geojsonUrl)
-      .then((d) => d.json())
-      .then((d) => setGeoJson(d));
-  }, [geojsonUrl]);
-
-  const boundarySummary = regions.find(
-    (regionBoundarySummary) => regionBoundarySummary.name === region.name,
-  );
-
   return (
-    <Stack direction="column" gap={6} alignItems={'center'} paddingBottom={100} width={'100%'}>
+    <Stack direction="column" gap={6} alignItems={'center'} paddingBottom={20} width={'100%'}>
       <Stack
         direction="column"
         gap={isMobile ? 1 : 1}
@@ -125,7 +196,7 @@ export const Component = () => {
       >
         <Stack
           direction={'column'}
-          gap={isMobile ? 1 : 3}
+          gap={isMobile ? 2 : 3}
           paddingX={0}
           sx={{ backgroundColor: 'white' }}
         >
@@ -135,16 +206,21 @@ export const Component = () => {
             gap={5}
             justifyContent={'center'}
           >
-            <Stack direction="column" alignItems={'center'} paddingX={2}>
+            <Stack
+              direction="column"
+              alignItems={'center'}
+              justifyContent={'center'}
+              width={isMobile ? '350px' : '450px'}
+            >
               <RegionSearchNavigation
-                regions={regions}
+                regions={countryOptions}
                 title="Select a country"
-                selectedRegionSummary={boundarySummary}
+                selectedRegionSummary={{
+                  code: nationalGeo?.isoCode,
+                  label: nationalGeo?.countryName,
+                }}
                 metricId={selectedMetricId}
               />
-              <Typography textAlign="center">
-                Or <AppLink to="/metrics/regions">browse all countries</AppLink>
-              </Typography>
             </Stack>
           </Stack>
 
@@ -154,7 +230,7 @@ export const Component = () => {
             justifyContent={'center'}
             alignItems={'center'}
           >
-            <Stack direction="column" alignItems={'center'} width={'275px'}>
+            <Stack direction="column" alignItems={'center'} width={isMobile ? '350px' : '450px'}>
               <ParamDropdown
                 title={'Metric'}
                 onChange={(selection) => handleMetricSelection(selection)}
@@ -163,64 +239,30 @@ export const Component = () => {
               />
             </Stack>
 
-            <Stack
-              direction={'row'}
-              gap={isMobile ? 5 : 8}
-              justifyContent={'center'}
-              alignItems={'center'}
-            >
-              <Stack
-                direction="column"
-                alignItems={'center'}
-                maxWidth={'150px'}
-                minWidth={isMobile ? 'auto' : '150px'}
-              >
-                <ParamDropdown
-                  title={'Year'}
-                  onChange={(selection) => updateSelectedYear(selection)}
-                  value={selectedYear}
-                  options={[...yearOptions]}
-                />
-              </Stack>
-              <Stack>
-                <FormControlLabel
-                  label="Fix scale across years"
-                  control={
-                    <Checkbox
-                      checked={scaleAcrossYears}
-                      onChange={(e, checked) => setScaleAcrossYears(checked)}
-                    />
-                  }
-                />
-
-                <FormControlLabel
-                  label="Fix scale across countries"
-                  control={
-                    <Checkbox
-                      checked={scaleAcrossCountries}
-                      onChange={(e, checked) => setScaleAcrossCountries(checked)}
-                    />
-                  }
-                />
-              </Stack>
+            <Stack direction="column" alignItems={'center'} width={isMobile ? '350px' : '450px'}>
+              <ParamDropdown
+                title={'Year'}
+                onChange={(selection) => updateSelectedYear(selection)}
+                value={selectedYear}
+                options={[...yearOptions]}
+              />
             </Stack>
           </Stack>
         </Stack>
 
-        <Box paddingX={isMobile ? 2 : 5} width={'100%'} height={'100vh'}>
-          {chartData && geojson && geojson.data ? (
+        <Box paddingX={isMobile ? 2 : 5} width={'100%'}>
+          {annualData && nationalGeo && regionsGeo && datasetExtent ? (
             <Dashboard
-              region={region}
-              chartData={chartData}
-              geojson={geojson.data}
-              metricLabel={metricSelection.label}
-              scaleAcrossCountries={scaleAcrossCountries}
-              scaleAcrossYears={scaleAcrossYears}
+              annualData={annualData}
+              datasetExtent={datasetExtent}
+              regionsGeo={regionsGeo}
+              nationalGeo={nationalGeo}
               selectedYear={selectedYear}
               updateSelectedYear={updateSelectedYear}
+              metricLabel={selectedMetricLabel}
             />
           ) : (
-            <div>Loading data...</div>
+            <div>No data available</div>
           )}
         </Box>
       </Stack>

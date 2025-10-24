@@ -1,78 +1,35 @@
-import { Boundary } from '@nismod/irv-autopkg-client';
 import { FC } from 'react';
 
 import { d3 } from '@/lib/d3';
 
-import { GDL_YEAR_RANGE } from '../../data/gdl-datasets';
+import type { AnnualGdlRecord } from '../../types/AnnualGdlData';
+import { DatasetExtent } from '../../types/DatasetExtent';
+import type { NationalGeo } from '../../types/NationalGeo';
+import { RegionGeo } from '../../types/RegionGeo';
 import DashboardCharts from './DashboardCharts';
 
-const YEAR_RANGE = GDL_YEAR_RANGE;
-
-const compileDataPerYear = (dataPerRegion) => {
-  const dataByYear = [];
-
-  for (let i = YEAR_RANGE[0]; i <= YEAR_RANGE[1]; i++) {
-    const year = i;
-    const index = dataByYear.push({ year: year });
-    dataPerRegion.forEach((d) => {
-      const gdlCode = d.GDLCODE;
-      const yearRecord = dataByYear[index - 1];
-      yearRecord[gdlCode] = d[year];
-    });
-  }
-
-  const dataPerYearTidy = [];
-  dataPerRegion.forEach((d) => {
-    for (let i = YEAR_RANGE[0]; i <= YEAR_RANGE[1]; i++) {
-      dataPerYearTidy.push({
-        year: i,
-        value: d[i],
-        country: d.Country,
-        continent: d.Continent,
-        iso: d.ISO_Code,
-        level: d.Level,
-        gdlCode: d.GDLCODE,
-        region: d.Region,
-      });
-    }
-  });
-
-  return dataPerYearTidy;
-};
-
 type DashboardProps = {
-  region: Boundary;
-  chartData: any;
-  geojson: any;
-  metricLabel: string;
-  scaleAcrossCountries: boolean;
-  scaleAcrossYears: boolean;
+  annualData: AnnualGdlRecord[];
+  datasetExtent: DatasetExtent;
+  regionsGeo: RegionGeo[];
+  nationalGeo: NationalGeo;
   selectedYear: number;
-  updateSelectedYear: (year: any) => void;
+  metricLabel: string;
+  updateSelectedYear: (year: number) => void;
 };
-
 const Dashboard: FC<DashboardProps> = ({
-  region,
-  chartData,
-  geojson,
-  metricLabel,
-  scaleAcrossCountries,
-  scaleAcrossYears,
+  annualData,
+  datasetExtent,
+  regionsGeo,
+  nationalGeo,
   selectedYear,
+  metricLabel,
   updateSelectedYear,
 }) => {
-  const regionId = region.name;
-  const selectedIsoCode = regionId.toUpperCase();
-  const selectedCountryData = chartData.filter((d) => d.ISO_Code === selectedIsoCode);
-
-  const countryDataPerYear = compileDataPerYear(selectedCountryData);
-  const allDataPerYear = compileDataPerYear(chartData);
-
-  // Assumes data is already filtered by country
-  const dataFiltered = countryDataPerYear.filter((d) => d.value !== null);
+  const annualDataFiltered = annualData.filter((d) => d.value !== null);
 
   // group the data - one line per group
-  const dataByYearGrouped = d3.array.group(dataFiltered, (d) => d.gdlCode);
+  const dataByYearGrouped = d3.array.group(annualDataFiltered, (d) => d.gdlCode);
   const dataByYearGroupedList = [];
 
   dataByYearGrouped.forEach((value, key) => {
@@ -81,18 +38,14 @@ const Dashboard: FC<DashboardProps> = ({
 
   return (
     <DashboardCharts
-      country={region}
-      geojson={geojson}
-      selectedCountryData={selectedCountryData}
-      dataFiltered={dataFiltered}
-      dataByYearGroupedList={dataByYearGroupedList}
-      allData={chartData}
-      allDataPerYear={allDataPerYear}
-      scaleAcrossYears={scaleAcrossYears}
-      scaleAcrossCountries={scaleAcrossCountries}
-      metricLabel={metricLabel}
+      annualData={annualDataFiltered}
+      annualDataGrouped={dataByYearGroupedList}
+      datasetExtent={datasetExtent}
+      regionsGeo={regionsGeo}
+      nationalGeo={nationalGeo}
       selectedYear={selectedYear}
       updateSelectedYear={updateSelectedYear}
+      metricLabel={metricLabel}
     />
   );
 };
