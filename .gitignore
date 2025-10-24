@@ -11,3 +11,5 @@ dev-proxy/proxy-table.ts
 .vscode
 .local
 *.log
+.DS_Store
+._*
