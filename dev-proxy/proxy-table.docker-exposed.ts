@@ -11,16 +11,16 @@ export const devProxy = {
   '/vector': {
     target: 'http://localhost:8080',
     changeOrigin: true,
-    rewrite: (path) => path.replace(/^\/vector/, ''),
+    rewrite: (path: string) => path.replace(/^\/vector/, ''),
   },
   '/api': {
     target: 'http://localhost:8888',
     changeOrigin: true,
-    rewrite: (path) => path.replace(/^\/api/, ''),
+    rewrite: (path: string) => path.replace(/^\/api/, ''),
   },
   '/extract': {
     target: 'http:/localhost:8000',
     changeOrigin: true,
-    rewrite: (path) => path.replace(/^\/extract/, ''),
+    rewrite: (path: string) => path.replace(/^\/extract/, ''),
   },
 };

@@ -12,16 +12,16 @@ export const devProxy = {
   '/vector': {
     target: 'http://vector-tileserver:8080',
     changeOrigin: true,
-    rewrite: (path) => path.replace(/^\/vector/, ''),
+    rewrite: (path: string) => path.replace(/^\/vector/, ''),
   },
   '/api': {
     target: 'http://backend:8888',
     changeOrigin: true,
-    rewrite: (path) => path.replace(/^\/api/, ''),
+    rewrite: (path: string) => path.replace(/^\/api/, ''),
   },
   '/extract': {
     target: 'http://irv-autopkg-api:8000',
     changeOrigin: true,
-    rewrite: (path) => path.replace(/^\/extract/, ''),
+    rewrite: (path: string) => path.replace(/^\/extract/, ''),
   },
 };
