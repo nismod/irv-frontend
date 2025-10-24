@@ -12,7 +12,6 @@ import { AppLink } from '@/lib/nav';
 
 import { RegionSearchNavigation } from '@/modules/metrics/components/region-search/RegionSearchNavigation';
 
-import { countriesUrl } from '../data/gdl-urls';
 import { CountryOption } from '../types/CountryOption';
 
 export const Component = () => {
@@ -21,12 +20,20 @@ export const Component = () => {
     { code: 'afg', label: 'Afghanistan' },
   ]);
 
+  const countryMetaUrl = '/api/metrics/gdl/meta/countries';
   useEffect(() => {
-    fetch(countriesUrl)
-      .then((d) => d.json())
-      .then((d) => d.map((row) => ({ code: row.iso_code, label: row.country_name })))
-      .then((d) => setAllCountriesMeta(d));
-  }, []);
+    fetch(countryMetaUrl)
+      .then((response) => response.json())
+      .then((json) =>
+        json.map((country) => ({
+          label: country.country_name,
+          code: country.iso_code,
+        })),
+      )
+      .then((dataList) => {
+        setAllCountriesMeta(dataList);
+      });
+  }, [countryMetaUrl]);
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>

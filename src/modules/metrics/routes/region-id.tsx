@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { useCallback, useEffect, useState } from 'react';
-import { defer, LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
+import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 
@@ -16,15 +16,12 @@ import { DatasetExtent } from '../types/DatasetExtent';
 import type { NationalGeo } from '../types/NationalGeo';
 import { RegionGeo } from '../types/RegionGeo';
 
-const API_BASE = `/metrics/gdl`;
-
 export const loader = async ({ params: { regionId, metricId } }: LoaderFunctionArgs) => {
-  return defer({
+  return {
     regionId: regionId,
     metricId: metricId,
-  });
+  };
 };
-loader.displayName = 'regionMetricsLoader';
 type RegionMetricsLoaderData = {
   regionId: string;
   metricId: string;
@@ -54,7 +51,7 @@ export const Component = () => {
   const [countryFetchError, setCountryFetchError] = useState(null);
 
   // fetch list of countries
-  const countryMetaUrl = `${API_BASE}/meta/countries`;
+  const countryMetaUrl = '/api/metrics/gdl/meta/countries';
   useEffect(() => {
     fetch(countryMetaUrl)
       .then((response) => response.json())
@@ -73,7 +70,7 @@ export const Component = () => {
   }, [countryMetaUrl]);
 
   // fetch national boundaries
-  const nationalGeoUrl = `${API_BASE}/geojson/national/iso/${regionId}`;
+  const nationalGeoUrl = `/api/metrics/gdl/geojson/national/iso/${regionId}`;
   useEffect(() => {
     fetch(nationalGeoUrl)
       .then((d) => d.json())
@@ -93,7 +90,7 @@ export const Component = () => {
   }, [nationalGeoUrl]);
 
   // fetch subnational boundaries
-  const geojsonUrl = `${API_BASE}/geojson/subnational/iso/${regionId}`;
+  const geojsonUrl = `/api/metrics/gdl/geojson/subnational/iso/${regionId}`;
   useEffect(() => {
     fetch(geojsonUrl)
       .then((response) => response.json())
@@ -116,7 +113,7 @@ export const Component = () => {
   }, [geojsonUrl]);
 
   // fetch annual data for country and dataset
-  const annualDataUrl = `${API_BASE}/data/${metricId}/${regionId}`;
+  const annualDataUrl = `/api/metrics/gdl/data/${metricId}/${regionId}`;
   useEffect(() => {
     fetch(annualDataUrl)
       .then((response) => response.json())
@@ -135,7 +132,7 @@ export const Component = () => {
   }, [annualDataUrl]);
 
   // fetch extents of full dataset for color/axis scaling
-  const extentUrl = `${API_BASE}/data/${metricId}/extent`;
+  const extentUrl = `/api/metrics/gdl/data/${metricId}/extent`;
   useEffect(() => {
     fetch(extentUrl)
       .then((d) => d.json())
