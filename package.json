@@ -10,7 +10,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@loaders.gl/core": "^4.3.3",
-    "@loaders.gl/wkt": "^4.3.3",
+    "@loaders.gl/wkt": "^4.3.4",
     "@math.gl/core": "^4.1.0",
     "@mui/icons-material": "^7.3.4",
     "@mui/lab": "^7.0.1-beta.18",
