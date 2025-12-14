@@ -1,6 +1,6 @@
 import { MapViewState } from 'deck.gl';
 import { ComponentProps, FC, ReactNode, useCallback } from 'react';
-import { Map } from 'react-map-gl/maplibre';
+import { Map, MapMouseEvent } from 'react-map-gl/maplibre';
 
 export interface BaseMapProps {
   /** Map style configuration. Same as `mapStyle` of the rect-map-gl component. */
@@ -9,6 +9,8 @@ export interface BaseMapProps {
   viewState: MapViewState;
   /** Handler called when the map view state changes */
   onViewState: (vs: MapViewState) => void;
+  /** Handler called when the map is clicked */
+  onClick?: (event: MapMouseEvent) => void;
   children?: ReactNode;
 }
 
@@ -16,13 +18,21 @@ export interface BaseMapProps {
  * Displays a react-map-gl basemap component.
  * Accepts children such as a DeckGLOverlay, HUD controls etc
  */
-export const BaseMap: FC<BaseMapProps> = ({ mapStyle, viewState, onViewState, children }) => {
+export const BaseMap: FC<BaseMapProps> = ({
+  mapStyle,
+  viewState,
+  onViewState,
+  onClick,
+  children,
+}) => {
   /**
    * until `react-map-gl` supports `touchRotate={false}` prop
    */
   const mapRefFn = useCallback((refObj) => {
     refObj?.getMap()?.touchZoomRotate?.disableRotation();
   }, []);
+
+  const handleClick = useCallback((event: MapMouseEvent) => onClick?.(event), [onClick]);
 
   return (
     <Map
@@ -31,6 +41,7 @@ export const BaseMap: FC<BaseMapProps> = ({ mapStyle, viewState, onViewState, ch
       styleDiffing={true}
       {...viewState}
       onMove={({ viewState }) => onViewState(viewState)}
+      onClick={handleClick}
       mapStyle={mapStyle}
       dragRotate={false}
       keyboard={false}

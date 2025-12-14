@@ -4,6 +4,7 @@ import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
 
 import { MapLayerSelection } from '@/map/layers/MapLayerSelection';
+import { MapInteractionModeSelector } from '@/map/MapInteractionModeSelector';
 import { MapView } from '@/map/MapView';
 
 import {
@@ -32,6 +33,7 @@ const MapHudMobileLayout = () => {
       <MapHudRegion position="top-left" StackProps={{ spacing: 1 }}>
         <AppPlaceSearch />
         <MapLayerSelection />
+        <MapInteractionModeSelector />
       </MapHudRegion>
       <MapHudRegion position="top-right">
         <AppNavigationControl />

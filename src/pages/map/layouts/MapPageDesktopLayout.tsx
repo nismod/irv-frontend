@@ -6,6 +6,7 @@ import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
 import { DetailsContent } from '@/details/DetailsContent';
 import { MapLayerSelection } from '@/map/layers/MapLayerSelection';
 import { MapLegend } from '@/map/legend/MapLegend';
+import { MapInteractionModeSelector } from '@/map/MapInteractionModeSelector';
 import { MapView } from '@/map/MapView';
 import { LayersSidebar } from '@/sidebar/LayersSidebar';
 import { globalStyleVariables } from '@/theme';
@@ -52,6 +53,7 @@ const MapHudDesktopLayout = () => {
       <MapHudRegion position="top-left" StackProps={{ spacing: 1 }}>
         <AppPlaceSearch />
         <MapLayerSelection />
+        <MapInteractionModeSelector />
       </MapHudRegion>
       <MapHudRegion position="top-right">
         <AppNavigationControl />
