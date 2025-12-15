@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { TreeItem } from '@mui/x-tree-view';
@@ -38,6 +39,16 @@ export function CheckboxTreeItem<T>({
   const isLeaf = !root.children || root.children.length === 0;
   const handleLeafClick = useCallback<MouseEventHandler<HTMLLIElement>>(
     (e) => {
+      // Don't handle clicks that originate from the checkbox or label area
+      // (the checkbox will handle those via its onChange handler)
+      const target = e.target as HTMLElement;
+      if (
+        target.closest('input[type="checkbox"]') ||
+        target.closest('.MuiFormControlLabel-root') ||
+        target.closest('.MuiCheckbox-root')
+      ) {
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       handleChange(!effectiveChecked, root);
@@ -47,6 +58,7 @@ export function CheckboxTreeItem<T>({
 
   const handleCheckboxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      event.stopPropagation();
       handleChange(event.currentTarget.checked, root);
     },
     [handleChange, root],
@@ -58,13 +70,24 @@ export function CheckboxTreeItem<T>({
 
   const handleItemKeyDown = useCallback(
     (event: KeyboardEvent<HTMLLIElement>) => {
-      if (event.key === 'Enter' || event.key === ' ') {
+      if (event.key === ' ') {
+        // Space key: Always toggle checkbox (standard pattern for checkboxes)
         event.preventDefault();
         event.stopPropagation();
         handleChange(!effectiveChecked, root);
+      } else if (event.key === 'Enter') {
+        if (isLeaf) {
+          // Enter on leaf nodes: Toggle checkbox (no expand/collapse action available)
+          event.preventDefault();
+          event.stopPropagation();
+          handleChange(!effectiveChecked, root);
+        }
+        // Enter on non-leaf nodes: Let TreeItem handle expand/collapse (don't prevent default)
+        // This follows the standard pattern where Enter activates the default action (expand/collapse)
       }
+      // Arrow keys are handled by TreeItem for navigation, so we don't need to handle them here
     },
-    [effectiveChecked, handleChange, root],
+    [effectiveChecked, handleChange, root, isLeaf],
   );
 
   const ariaChecked = checkboxState.indeterminate[root.id]
@@ -79,6 +102,44 @@ export function CheckboxTreeItem<T>({
       ? labelContent
       : ((root as { label?: string }).label ?? undefined);
 
+  const checkbox = (
+    <Checkbox
+      checked={effectiveChecked}
+      indeterminate={checkboxState.indeterminate[root.id]}
+      onChange={handleCheckboxChange}
+      onClick={handleCheckboxClick}
+      disabled={disableCheck}
+      slotProps={{
+        input: ariaLabel ? { 'aria-label': ariaLabel } : undefined,
+      }}
+      sx={{ mr: 1 }}
+    />
+  );
+
+  // For leaf nodes, use FormControlLabel so clicking label toggles checkbox
+  // For non-leaf nodes, render separately so label clicks don't toggle checkbox
+  // Override FormControlLabel's default margin-left: -11px to prevent checkbox clipping
+  const labelElement = isLeaf ? (
+    <FormControlLabel
+      key={root.id}
+      label={labelContent}
+      control={checkbox}
+      sx={{ ml: 0 }} // Remove the default -11px margin that causes checkbox clipping
+    />
+  ) : (
+    <Box
+      component="span"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+      }}
+    >
+      {checkbox}
+      <Box component="span">{labelContent}</Box>
+    </Box>
+  );
+
   return (
     <TreeItem
       key={root.id}
@@ -86,24 +147,7 @@ export function CheckboxTreeItem<T>({
       aria-checked={ariaChecked}
       onClick={toggleOnLeafClick && isLeaf ? handleLeafClick : undefined}
       onKeyDown={handleItemKeyDown}
-      label={
-        <FormControlLabel
-          key={root.id}
-          label={getLabel(root)}
-          style={{ pointerEvents: 'none' }}
-          control={
-            <Checkbox
-              checked={effectiveChecked}
-              indeterminate={checkboxState.indeterminate[root.id]}
-              onChange={handleCheckboxChange}
-              onClick={handleCheckboxClick}
-              disabled={disableCheck}
-              slotProps={{ input: ariaLabel ? { 'aria-label': ariaLabel } : undefined }}
-              sx={{ mr: 1 }}
-            />
-          }
-        ></FormControlLabel>
-      }
+      label={labelElement}
     >
       {root.children?.map((node) => (
         <CheckboxTreeItem
