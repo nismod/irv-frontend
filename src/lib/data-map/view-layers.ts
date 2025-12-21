@@ -43,7 +43,12 @@ type ViewLayerMapLayers = LayersList[number];
  * A view layer can belong to an interaction group, which determines the interactivity
  * of the layer.
  */
-export interface ViewLayer<ParamsT = any> {
+export type ViewLayer<ParamsT extends object = any, StateT extends object = any> =
+  | ViewLayerOld<ParamsT>
+  | ViewLayerNew<ParamsT, StateT>;
+
+export interface ViewLayerOld<ParamsT extends object = any> {
+  type: 'old';
   /** Globally unique ID of the view layer */
   id: string;
   /** Store for arbitrary user data used to define this layer.
@@ -103,6 +108,66 @@ export interface ViewLayer<ParamsT = any> {
   /** Factory method that creates a `FormatConfig` object for the view layer, given a `FieldSpec` object */
   dataFormatsFn?: ViewLayerDataFormatFunction;
 }
+
+/**
+ * Helper interface to register a slot with no props
+ */
+export interface NoProps {}
+
+/**
+ * Augment this interface in app code to register known slots.
+ *
+ * Keys should be the names of slots. Values should be the props type of each slot.
+ *
+ * Example:
+ *
+ *
+ * ```ts
+ * declare module '@/lib/data-map/view-layers' {
+ *     interface KnownViewLayerSlots {
+ *         Legend?: NoProps;
+ *     }
+ * }
+ * ```
+ */
+export interface KnownViewLayerSlots {
+  // slots need to be registered by app code
+}
+
+export interface ViewLayerNew<ParamsT extends object = any, StateT extends object = any> {
+  type: 'new';
+
+  /** Globally unique ID of the view layer */
+  id: string;
+
+  params?: ParamsT;
+
+  interactions?: any;
+
+  renderMapLayers?: (options: ViewLayerMapLayersOptions<ParamsT, StateT>) => ViewLayerMapLayers;
+
+  slots: {
+    [key in keyof KnownViewLayerSlots]: React.ComponentType<KnownViewLayerSlots[key]>;
+  };
+}
+
+export interface ViewLayerAutoProps {
+  id: string;
+  pickable: boolean;
+  beforeId: string | undefined;
+}
+
+interface ViewLayerMapLayersOptions<ParamsT extends object = any, StateT extends object = any> {
+  autoProps: ViewLayerAutoProps;
+  viewState: {
+    zoom: number;
+  };
+
+  params: ParamsT;
+  state: StateT;
+}
+
+interface ViewLayerInteractions {}
 
 /** The following types are specific to **VECTOR** layers   */
 
