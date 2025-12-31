@@ -36,7 +36,7 @@ export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) =>
       <Typography variant="body2" color="text.secondary">
         Latitude: {lat.toFixed(6)}
       </Typography>
-      <PrototypeCharts />
+      <PrototypeCharts lng={lng} lat={lat} />
     </Box>
   );
 };

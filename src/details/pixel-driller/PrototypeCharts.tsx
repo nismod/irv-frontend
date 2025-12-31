@@ -10,31 +10,31 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import _ from 'lodash';
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { VegaLite } from 'react-vega';
-
-import pixelValues from './mock/pixel_values.json';
 
 type PixelDomain = 'aqueduct' | 'jrc_flood' | string;
 
 interface PixelRecordKeys {
   // NOTE: different domains expose different keys; keep these optional
   hazard?: string;
-  rp: string;
+  rp?: string;
   rcp?: string;
   epoch?: string;
   gcm?: string;
   ssp?: string;
   metric?: string;
   impact_model?: string;
+  subtype?: string;
 }
 
 interface PixelRecord {
-  domain: PixelDomain;
-  data_type: string;
-  keys: PixelRecordKeys;
-  file: string;
   value: number | null;
+  layer: {
+    domain: PixelDomain;
+    keys: PixelRecordKeys;
+    id: string;
+  };
 }
 
 interface PixelResponse {
@@ -42,7 +42,6 @@ interface PixelResponse {
     lat: number;
     lon: number;
   };
-  count: number;
   results: PixelRecord[];
 }
 
@@ -580,8 +579,8 @@ const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) => {
 };
 
 const getFieldValue = (record: PixelRecord, field: KeyField): string | undefined => {
-  if (field === 'domain') return record.domain;
-  const value = record.keys[field];
+  if (field === 'domain') return record.layer.domain;
+  const value = record.layer.keys[field];
   return value == null ? undefined : String(value);
 };
 
@@ -602,21 +601,20 @@ const buildScenarioLabel = (record: PixelRecord, config: ChartConfig): string =>
   }
 
   // Last resort: domain name so that Vega still has a series identifier
-  return record.domain;
+  return record.layer.domain;
 };
 
 const toReturnPeriodRows = (records: PixelRecord[], config: ChartConfig): ReturnPeriodRow[] =>
   records
     .map<ReturnPeriodRow | null>((r) => {
-      const { hazard, rp, rcp, epoch, gcm, ssp } = r.keys;
+      const { hazard, rp, rcp, epoch, gcm, ssp } = r.layer.keys;
 
-      // For numeric domains, treat null values as 0 so we can still show the
-      // point on the chart. For other types, skip nulls entirely.
-      if (r.data_type !== 'numeric' && r.value == null) {
+      // Skip null values entirely (no data_type field in new API)
+      if (r.value == null) {
         return null;
       }
 
-      const numericValue = r.data_type === 'numeric' && r.value == null ? 0 : (r.value as number);
+      const numericValue = r.value as number;
 
       return {
         rp: Number(rp),
@@ -626,14 +624,57 @@ const toReturnPeriodRows = (records: PixelRecord[], config: ChartConfig): Return
         gcm,
         ssp,
         scenario: buildScenarioLabel(r, config),
-        domain: r.domain,
+        domain: r.layer.domain,
         hazard,
       };
     })
     .filter((row): row is ReturnPeriodRow => row !== null);
 
-// Per-domain chart configs — these are the only things you should need to
-// tweak when wiring up new datasets.
+// RAG (Red-Amber-Green) indicator component
+export type RagStatus = 'red' | 'amber' | 'green';
+
+interface RagIndicatorProps {
+  status: RagStatus;
+}
+
+const RagIndicator: FC<RagIndicatorProps> = ({ status }) => {
+  const colorMap = {
+    red: '#d32f2f',
+    amber: '#ed6c02',
+    green: '#2e7d32',
+  };
+
+  return (
+    <Box
+      sx={{
+        width: 16,
+        height: 16,
+        borderRadius: '50%',
+        backgroundColor: colorMap[status],
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        flexShrink: 0,
+      }}
+      title={`Risk status: ${status}`}
+    />
+  );
+};
+
+interface RagStatusDisplayProps {
+  status: RagStatus;
+}
+
+export const RagStatusDisplay: FC<RagStatusDisplayProps> = ({ status }) => {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <RagIndicator status={status} />
+      <Typography variant="body2" color="text.secondary">
+        Risk assessment: {status}
+      </Typography>
+    </Box>
+  );
+};
+
+// Chart configs — these are global constants to avoid linter dependency warnings
 const aqueductRiverConfig: ChartConfig = {
   id: 'river-aqueduct',
   title: 'River flooding – Aqueduct',
@@ -683,53 +724,385 @@ const stormCycloneConfig: ChartConfig = {
   colorField: 'rcp',
 };
 
-export const PrototypeCharts: FC = () => {
-  const { results } = asPixelResponse(pixelValues);
+// Hazard-specific components
 
-  const riverFloodingAqueductData = useMemo(
+interface HazardComponentProps {
+  records: PixelRecord[];
+}
+
+// Thresholds for different hazard types
+// Flood height above which damages are substantial (in meters) - used for river and coastal flooding
+const FLOOD_HEIGHT_THRESHOLD = 4; // TODO: Make this configurable or derive from domain knowledge
+
+// Threshold for cyclone intensity above which damages are substantial - used for tropical cyclones
+const CYCLONE_INTENSITY_THRESHOLD = 50; // TODO: Make this configurable or derive from domain knowledge
+
+// Thresholds for extreme heat probability (0-1 range)
+// Red threshold: probability above which risk is high
+const EXTREME_HEAT_RED_THRESHOLD = 0.5; // 50% probability
+// Amber threshold: probability above which risk is moderate
+const EXTREME_HEAT_AMBER_THRESHOLD = 0.3; // 30% probability
+
+// Helper function to calculate RAG status based on return period data
+// Uses maximum values (worst case) for RP 10 and RP 100 against a threshold
+const calculateRagStatusFromReturnPeriods = (
+  data: ReturnPeriodRow[],
+  threshold: number,
+): RagStatus => {
+  // Group by return period and take maximum value (worst case scenario)
+  const groupedByRp = _.groupBy(data, (d) => d.rp);
+
+  // Get maximum value for RP 10 (1 in 10 years)
+  const rp10Data = groupedByRp[10] || [];
+  const maxRp10 = rp10Data.length > 0 ? Math.max(...rp10Data.map((d) => d.value)) : 0;
+
+  // Get maximum value for RP 100 (1 in 100 years)
+  const rp100Data = groupedByRp[100] || [];
+  const maxRp100 = rp100Data.length > 0 ? Math.max(...rp100Data.map((d) => d.value)) : 0;
+
+  // Apply threshold logic
+  if (maxRp10 > threshold) {
+    return 'red';
+  } else if (maxRp100 > threshold) {
+    return 'amber';
+  } else {
+    return 'green';
+  }
+};
+
+const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => {
+  const data = useMemo(
     () =>
       toReturnPeriodRows(
-        results.filter((r) => r.domain === 'aqueduct' && r.keys.hazard === 'fluvial'),
+        records.filter((r) => r.layer.domain === 'aqueduct' && r.layer.keys.hazard === 'fluvial'),
         aqueductRiverConfig,
       ),
-    [results],
+    [records],
   );
 
-  const riverFloodingJrcData = useMemo(
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo(
+    () => calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD),
+    [data],
+  );
+
+  return (
+    <Stack spacing={2}>
+      <RagStatusDisplay status={ragStatus} />
+      <ReturnPeriodChart config={aqueductRiverConfig} data={data} />
+    </Stack>
+  );
+};
+
+const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
+  const data = useMemo(
     () =>
       toReturnPeriodRows(
-        results.filter((r) => r.domain === 'jrc_flood'),
+        records.filter((r) => r.layer.domain === 'jrc_flood'),
         jrcFloodConfig,
       ),
-    [results],
+    [records],
   );
 
-  const coastalFloodingData = useMemo(
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo(
+    () => calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD),
+    [data],
+  );
+
+  return (
+    <Stack spacing={2}>
+      <RagStatusDisplay status={ragStatus} />
+      <ReturnPeriodChart config={jrcFloodConfig} data={data} />
+    </Stack>
+  );
+};
+
+const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {
+  const data = useMemo(
     () =>
       toReturnPeriodRows(
-        results.filter((r) => r.domain === 'aqueduct' && r.keys.hazard === 'coastal'),
+        records.filter((r) => r.layer.domain === 'aqueduct' && r.layer.keys.hazard === 'coastal'),
         aqueductCoastalConfig,
       ),
-    [results],
+    [records],
   );
 
-  const irisCycloneData = useMemo(
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo(
+    () => calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD),
+    [data],
+  );
+
+  return (
+    <Stack spacing={2}>
+      <RagStatusDisplay status={ragStatus} />
+      <ReturnPeriodChart config={aqueductCoastalConfig} data={data} />
+    </Stack>
+  );
+};
+
+const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
+  const data = useMemo(
     () =>
       toReturnPeriodRows(
-        results.filter((r) => r.domain === 'cyclone_iris'),
+        records.filter((r) => r.layer.domain === 'cyclone_iris'),
         irisCycloneConfig,
       ),
-    [results],
+    [records],
   );
 
-  const stormCycloneData = useMemo(
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo(
+    () => calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD),
+    [data],
+  );
+
+  return (
+    <Stack spacing={2}>
+      <RagStatusDisplay status={ragStatus} />
+      <ReturnPeriodChart config={irisCycloneConfig} data={data} />
+    </Stack>
+  );
+};
+
+const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {
+  const data = useMemo(
     () =>
       toReturnPeriodRows(
-        results.filter((r) => r.domain === 'cyclone_storm'),
+        records.filter((r) => r.layer.domain === 'cyclone_storm'),
         stormCycloneConfig,
       ),
-    [results],
+    [records],
   );
+
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo(
+    () => calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD),
+    [data],
+  );
+
+  return (
+    <Stack spacing={2}>
+      <RagStatusDisplay status={ragStatus} />
+      <ReturnPeriodChart config={stormCycloneConfig} data={data} />
+    </Stack>
+  );
+};
+
+// Map numeric susceptibility values to categories
+// Based on typical landslide susceptibility classifications
+const SUSCEPTIBILITY_CATEGORIES: Record<number, string> = {
+  1: 'Very Low',
+  2: 'Low',
+  3: 'Medium',
+  4: 'High',
+};
+
+const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
+  // Filter for extreme heat records (probability values)
+  const extremeHeatRecords = useMemo(
+    () =>
+      records.filter(
+        (r) =>
+          r.layer.domain === 'isimip' &&
+          r.layer.keys.hazard === 'extreme_heat' &&
+          r.layer.keys.metric === 'occurrence',
+      ),
+    [records],
+  );
+
+  // Aggregate all values using maximum (worst case scenario across all epochs/rcp/gcm combinations)
+  const aggregatedProbability = useMemo(() => {
+    const values = extremeHeatRecords.map((r) => r.value).filter((v): v is number => v != null);
+    if (values.length === 0) return 0;
+    return Math.max(...values);
+  }, [extremeHeatRecords]);
+
+  // Calculate RAG status based on two thresholds
+  const ragStatus = useMemo((): RagStatus => {
+    if (aggregatedProbability >= EXTREME_HEAT_RED_THRESHOLD) {
+      return 'red';
+    } else if (aggregatedProbability >= EXTREME_HEAT_AMBER_THRESHOLD) {
+      return 'amber';
+    } else {
+      return 'green';
+    }
+  }, [aggregatedProbability]);
+
+  const formatProbability = (value: number): string => {
+    // Convert to percentage and format with at most one decimal place, removing trailing zeros
+    const percentage = value * 100;
+    return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
+  };
+
+  return (
+    <Stack spacing={2}>
+      <RagStatusDisplay status={ragStatus} />
+      <Box>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          Maximum probability of extreme heat event (worst case across all scenarios)
+        </Typography>
+        <Typography variant="body1">{formatProbability(aggregatedProbability)}</Typography>
+      </Box>
+    </Stack>
+  );
+};
+
+const Landslides: FC<HazardComponentProps> = ({ records }) => {
+  const landslideRecords = useMemo(
+    () => records.filter((r) => r.layer.domain === 'landslide'),
+    [records],
+  );
+
+  // Extract values for each subtype (treat null as zero for numeric values)
+  const earthquakeProb = useMemo(() => {
+    const record = landslideRecords.find((r) => r.layer.keys.subtype === 'earthquake');
+    return record?.value == null ? 0 : (record.value as number);
+  }, [landslideRecords]);
+
+  const rainfallMeanProb = useMemo(() => {
+    const record = landslideRecords.find((r) => r.layer.keys.subtype === 'rainfall_mean');
+    return record?.value == null ? 0 : (record.value as number);
+  }, [landslideRecords]);
+
+  const rainfallMedianProb = useMemo(() => {
+    const record = landslideRecords.find((r) => r.layer.keys.subtype === 'rainfall_median');
+    return record?.value == null ? 0 : (record.value as number);
+  }, [landslideRecords]);
+
+  const susceptibilityValue = useMemo(() => {
+    const record = landslideRecords.find((r) => r.layer.keys.subtype === 'susceptibility');
+    return record?.value ?? null;
+  }, [landslideRecords]);
+
+  const susceptibilityCategory = useMemo(() => {
+    if (susceptibilityValue == null) return null;
+    const numValue =
+      typeof susceptibilityValue === 'number' ? susceptibilityValue : Number(susceptibilityValue);
+    return SUSCEPTIBILITY_CATEGORIES[numValue] ?? `Unknown (${susceptibilityValue})`;
+  }, [susceptibilityValue]);
+
+  // Calculate RAG status from susceptibility
+  const ragStatus = useMemo((): RagStatus => {
+    if (susceptibilityValue == null) return 'amber';
+    const numValue =
+      typeof susceptibilityValue === 'number' ? susceptibilityValue : Number(susceptibilityValue);
+    const category = SUSCEPTIBILITY_CATEGORIES[numValue];
+
+    if (category === 'Very Low') {
+      return 'green';
+    } else if (category === 'Low') {
+      return 'amber';
+    } else if (category === 'Medium' || category === 'High') {
+      return 'red';
+    }
+    return 'amber'; // Default fallback
+  }, [susceptibilityValue]);
+
+  const formatProbability = (value: number): string => {
+    // Convert to percentage and format with at most one decimal place, removing trailing zeros
+    const percentage = value * 100;
+    return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
+  };
+
+  return (
+    <Stack spacing={2}>
+      <RagStatusDisplay status={ragStatus} />
+      <Stack spacing={1.5}>
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Annual probability (earthquake trigger)
+          </Typography>
+          <Typography variant="body1">{formatProbability(earthquakeProb)}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Annual probability (rainfall - mean)
+          </Typography>
+          <Typography variant="body1">{formatProbability(rainfallMeanProb)}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Annual probability (rainfall - median)
+          </Typography>
+          <Typography variant="body1">{formatProbability(rainfallMedianProb)}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Susceptibility
+          </Typography>
+          <Typography variant="body1">{susceptibilityCategory ?? 'N/A'}</Typography>
+        </Box>
+      </Stack>
+    </Stack>
+  );
+};
+
+interface PrototypeChartsProps {
+  lng: number;
+  lat: number;
+}
+
+export const PrototypeCharts: FC<PrototypeChartsProps> = ({ lng, lat }) => {
+  const [pixelData, setPixelData] = useState<PixelResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPixelData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch from API endpoint
+        const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setPixelData(asPixelResponse(data));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch pixel data');
+        console.error('Error fetching pixel data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPixelData();
+  }, [lng, lat]);
+
+  if (loading) {
+    return (
+      <Box>
+        <Typography variant="body2" color="text.secondary">
+          Loading pixel data...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box>
+        <Typography variant="body2" color="error">
+          Error: {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!pixelData) {
+    return (
+      <Box>
+        <Typography variant="body2" color="text.secondary">
+          No data available
+        </Typography>
+      </Box>
+    );
+  }
+
+  const { results } = pixelData;
 
   return (
     <Box>
@@ -742,7 +1115,7 @@ export const PrototypeCharts: FC = () => {
           <Typography variant="subtitle1">River flooding (Aqueduct)</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ReturnPeriodChart config={aqueductRiverConfig} data={riverFloodingAqueductData} />
+          <RiverFloodingAqueduct records={results} />
         </AccordionDetails>
       </Accordion>
 
@@ -751,7 +1124,7 @@ export const PrototypeCharts: FC = () => {
           <Typography variant="subtitle1">River flooding (JRC)</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ReturnPeriodChart config={jrcFloodConfig} data={riverFloodingJrcData} />
+          <RiverFloodingJrc records={results} />
         </AccordionDetails>
       </Accordion>
 
@@ -760,7 +1133,7 @@ export const PrototypeCharts: FC = () => {
           <Typography variant="subtitle1">Coastal flooding</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ReturnPeriodChart config={aqueductCoastalConfig} data={coastalFloodingData} />
+          <CoastalFlooding records={results} />
         </AccordionDetails>
       </Accordion>
 
@@ -769,7 +1142,7 @@ export const PrototypeCharts: FC = () => {
           <Typography variant="subtitle1">Tropical cyclones (IRIS)</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ReturnPeriodChart config={irisCycloneConfig} data={irisCycloneData} />
+          <TropicalCyclonesIris records={results} />
         </AccordionDetails>
       </Accordion>
 
@@ -778,7 +1151,25 @@ export const PrototypeCharts: FC = () => {
           <Typography variant="subtitle1">Tropical cyclones (STORM)</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <ReturnPeriodChart config={stormCycloneConfig} data={stormCycloneData} />
+          <TropicalCyclonesStorm records={results} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="subtitle1">Landslides</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Landslides records={results} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="subtitle1">Extreme heat</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ExtremeHeat records={results} />
         </AccordionDetails>
       </Accordion>
     </Box>
