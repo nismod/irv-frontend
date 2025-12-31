@@ -105,6 +105,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:fast": "eslint -c eslint.config.precommit.mjs --max-warnings 0",
     "test:type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "prepare": "husky"
