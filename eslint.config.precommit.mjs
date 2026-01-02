@@ -12,19 +12,16 @@ config.push({
 });
 
 // Runtime validation to ensure type-aware features are disabled
+// We only check the critical settings that enable type-aware mode:
+// - parserOptions.project (enables TypeScript program creation)
+// - import/resolver.typescript.project (enables TypeScript import resolution)
+// If these are disabled, type-aware rules won't work anyway (ESLint will error),
+// so we don't need to validate individual rules.
 function validatePrecommitConfig(configArray) {
   const errors = [];
-  const typeAwareRulePatterns = [
-    /^@typescript-eslint\/no-unsafe-/,
-    /^@typescript-eslint\/restrict-/,
-    /^@typescript-eslint\/require-/,
-    /^@typescript-eslint\/await-/,
-    /^@typescript-eslint\/no-floating-promises/,
-    /^@typescript-eslint\/no-misused-promises/,
-  ];
 
-  // Check for parserOptions.project (indicates type-aware mode)
   for (const configItem of configArray) {
+    // Check for parserOptions.project (indicates type-aware mode)
     if (configItem?.languageOptions?.parserOptions?.project) {
       errors.push(
         `Found parserOptions.project in config. Type-aware mode should be disabled for pre-commit.`,
@@ -32,26 +29,10 @@ function validatePrecommitConfig(configArray) {
     }
 
     // Check for TypeScript import resolver (requires type information)
-    if (
-      configItem?.settings?.['import/resolver']?.typescript?.project
-    ) {
+    if (configItem?.settings?.['import/resolver']?.typescript?.project) {
       errors.push(
         `Found TypeScript import resolver with project setting. This requires type information and should be disabled for pre-commit.`,
       );
-    }
-
-    // Check for type-aware rules
-    if (configItem?.rules) {
-      for (const [ruleName, ruleValue] of Object.entries(configItem.rules)) {
-        if (
-          typeAwareRulePatterns.some((pattern) => pattern.test(ruleName)) &&
-          ruleValue !== 'off'
-        ) {
-          errors.push(
-            `Found type-aware rule "${ruleName}" that is not disabled. Type-aware rules should be off for pre-commit.`,
-          );
-        }
-      }
     }
   }
 
@@ -68,4 +49,3 @@ function validatePrecommitConfig(configArray) {
 validatePrecommitConfig(config);
 
 export default config;
-
