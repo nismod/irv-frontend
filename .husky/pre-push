@@ -1,0 +1,6 @@
+# Run full linting with type-aware rules on entire project
+npm run lint
+
+# Run TypeScript type-checking on entire project
+npm run test:type-check
+
