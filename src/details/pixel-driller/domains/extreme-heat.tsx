@@ -4,7 +4,16 @@ import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
 import { RagStatus, RagStatusDisplay } from '../rag-indicator';
-import { HazardComponentProps } from '../types';
+import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
+
+// Extreme Heat-specific key type definition
+export interface ExtremeHeatKeys extends PixelRecordKeys {
+  hazard?: string;
+  metric?: string;
+  rcp?: string;
+  epoch?: string;
+  gcm?: string;
+}
 
 // Thresholds for extreme heat probability (0-1 range)
 // Red threshold: probability above which risk is high
@@ -12,16 +21,20 @@ const EXTREME_HEAT_RED_THRESHOLD = 0.5; // 50% probability
 // Amber threshold: probability above which risk is moderate
 const EXTREME_HEAT_AMBER_THRESHOLD = 0.3; // 30% probability
 
+// Type guard for Extreme Heat records
+const isExtremeHeatRecord = (record: PixelRecord): record is PixelRecord<ExtremeHeatKeys> => {
+  return record.layer.domain === 'isimip';
+};
+
 export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
   // Filter for extreme heat records (probability values)
   const extremeHeatRecords = useMemo(
     () =>
-      records.filter(
-        (r) =>
-          r.layer.domain === 'isimip' &&
-          r.layer.keys.hazard === 'extreme_heat' &&
-          r.layer.keys.metric === 'occurrence',
-      ),
+      records
+        .filter(isExtremeHeatRecord)
+        .filter(
+          (r) => r.layer.keys.hazard === 'extreme_heat' && r.layer.keys.metric === 'occurrence',
+        ),
     [records],
   );
 

@@ -4,7 +4,12 @@ import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
 import { RagStatus, RagStatusDisplay } from '../rag-indicator';
-import { HazardComponentProps } from '../types';
+import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
+
+// Landslide-specific key type definition
+export interface LandslideKeys extends PixelRecordKeys {
+  subtype?: string;
+}
 
 // Map numeric susceptibility values to categories
 // Based on typical landslide susceptibility classifications
@@ -15,11 +20,13 @@ const SUSCEPTIBILITY_CATEGORIES: Record<number, string> = {
   4: 'High',
 };
 
+// Type guard for Landslide records
+const isLandslideRecord = (record: PixelRecord): record is PixelRecord<LandslideKeys> => {
+  return record.layer.domain === 'landslide';
+};
+
 export const Landslides: FC<HazardComponentProps> = ({ records }) => {
-  const landslideRecords = useMemo(
-    () => records.filter((r) => r.layer.domain === 'landslide'),
-    [records],
-  );
+  const landslideRecords = useMemo(() => records.filter(isLandslideRecord), [records]);
 
   // Extract values for each subtype (treat null as zero for numeric values)
   const earthquakeProb = useMemo(() => {

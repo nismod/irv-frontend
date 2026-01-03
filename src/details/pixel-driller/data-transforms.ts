@@ -1,8 +1,18 @@
-import { ChartConfig, KeyField, PixelRecord, PixelResponse, ReturnPeriodRow } from './types';
+import {
+  ChartConfig,
+  KeyField,
+  PixelRecord,
+  PixelRecordKeys,
+  PixelResponse,
+  ReturnPeriodRow,
+} from './types';
 
 export const asPixelResponse = (data: unknown): PixelResponse => data as PixelResponse;
 
-const getFieldValue = (record: PixelRecord, field: KeyField): string | undefined => {
+const getFieldValue = <TKeys extends PixelRecordKeys = PixelRecordKeys>(
+  record: PixelRecord<TKeys>,
+  field: KeyField,
+): string | undefined => {
   if (field === 'domain') return record.layer.domain;
   const value = record.layer.keys[field];
   return value == null ? undefined : String(value);
@@ -15,7 +25,10 @@ const getFieldValue = (record: PixelRecord, field: KeyField): string | undefined
  * The series label is derived entirely from the per-domain ChartConfig
  * (e.g. Aqueduct might use epoch+rcp+gcm, IRIS cyclones might use epoch+ssp+gcm).
  */
-export const buildScenarioLabel = (record: PixelRecord, config: ChartConfig): string => {
+export const buildScenarioLabel = <TKeys extends PixelRecordKeys = PixelRecordKeys>(
+  record: PixelRecord<TKeys>,
+  config: ChartConfig,
+): string => {
   const parts = config.seriesFields
     .map((field) => getFieldValue(record, field))
     .filter((x): x is string => Boolean(x));
@@ -28,8 +41,8 @@ export const buildScenarioLabel = (record: PixelRecord, config: ChartConfig): st
   return record.layer.domain;
 };
 
-export const toReturnPeriodRows = (
-  records: PixelRecord[],
+export const toReturnPeriodRows = <TKeys extends PixelRecordKeys = PixelRecordKeys>(
+  records: PixelRecord<TKeys>[],
   config: ChartConfig,
 ): ReturnPeriodRow[] =>
   records

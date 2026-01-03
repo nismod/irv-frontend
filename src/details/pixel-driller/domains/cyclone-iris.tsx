@@ -5,7 +5,21 @@ import { FC, useMemo } from 'react';
 import { toReturnPeriodRows } from '../data-transforms';
 import { RagStatus, RagStatusDisplay } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
-import { ChartConfig, HazardComponentProps, ReturnPeriodRow } from '../types';
+import {
+  ChartConfig,
+  HazardComponentProps,
+  PixelRecord,
+  PixelRecordKeys,
+  ReturnPeriodRow,
+} from '../types';
+
+// Cyclone IRIS-specific key type definition
+export interface CycloneIrisKeys extends PixelRecordKeys {
+  rp?: string;
+  epoch?: string;
+  ssp?: string;
+  gcm?: string;
+}
 
 // Chart config
 const irisCycloneConfig: ChartConfig = {
@@ -49,14 +63,17 @@ const calculateRagStatusFromReturnPeriods = (
   }
 };
 
+// Type guard for Cyclone IRIS records
+const isCycloneIrisRecord = (record: PixelRecord): record is PixelRecord<CycloneIrisKeys> => {
+  return record.layer.domain === 'cyclone_iris';
+};
+
 export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
+  const filteredRecords = useMemo(() => records.filter(isCycloneIrisRecord), [records]);
+
   const data = useMemo(
-    () =>
-      toReturnPeriodRows(
-        records.filter((r) => r.layer.domain === 'cyclone_iris'),
-        irisCycloneConfig,
-      ),
-    [records],
+    () => toReturnPeriodRows(filteredRecords, irisCycloneConfig),
+    [filteredRecords],
   );
 
   // Calculate RAG status based on hazard data

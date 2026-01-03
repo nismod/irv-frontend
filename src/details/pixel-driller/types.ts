@@ -1,23 +1,14 @@
 export type PixelDomain = 'aqueduct' | 'jrc_flood' | string;
 
-export interface PixelRecordKeys {
-  // NOTE: different domains expose different keys; keep these optional
-  hazard?: string;
-  rp?: string;
-  rcp?: string;
-  epoch?: string;
-  gcm?: string;
-  ssp?: string;
-  metric?: string;
-  impact_model?: string;
-  subtype?: string;
-}
+// Base type for pixel record keys - all keys are optional strings
+export type PixelRecordKeys = Record<string, string | undefined>;
 
-export interface PixelRecord {
+// Generic pixel record that accepts a specific keys type
+export interface PixelRecord<TKeys extends PixelRecordKeys = PixelRecordKeys> {
   value: number | null;
   layer: {
     domain: PixelDomain;
-    keys: PixelRecordKeys;
+    keys: TKeys;
     id: string;
   };
 }
@@ -27,6 +18,7 @@ export interface PixelResponse {
     lat: number;
     lon: number;
   };
+  // Results contain mixed record types, so use base PixelRecord
   results: PixelRecord[];
 }
 
@@ -57,5 +49,6 @@ export interface ChartConfig {
 }
 
 export interface HazardComponentProps {
+  // Accept base PixelRecord since components receive mixed records from API
   records: PixelRecord[];
 }

@@ -5,7 +5,21 @@ import { FC, useMemo } from 'react';
 import { toReturnPeriodRows } from '../data-transforms';
 import { RagStatus, RagStatusDisplay } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
-import { ChartConfig, HazardComponentProps, ReturnPeriodRow } from '../types';
+import {
+  ChartConfig,
+  HazardComponentProps,
+  PixelRecord,
+  PixelRecordKeys,
+  ReturnPeriodRow,
+} from '../types';
+
+// Cyclone STORM-specific key type definition
+export interface CycloneStormKeys extends PixelRecordKeys {
+  rp?: string;
+  epoch?: string;
+  rcp?: string;
+  gcm?: string;
+}
 
 // Chart config
 const stormCycloneConfig: ChartConfig = {
@@ -49,14 +63,17 @@ const calculateRagStatusFromReturnPeriods = (
   }
 };
 
+// Type guard for Cyclone STORM records
+const isCycloneStormRecord = (record: PixelRecord): record is PixelRecord<CycloneStormKeys> => {
+  return record.layer.domain === 'cyclone_storm';
+};
+
 export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {
+  const filteredRecords = useMemo(() => records.filter(isCycloneStormRecord), [records]);
+
   const data = useMemo(
-    () =>
-      toReturnPeriodRows(
-        records.filter((r) => r.layer.domain === 'cyclone_storm'),
-        stormCycloneConfig,
-      ),
-    [records],
+    () => toReturnPeriodRows(filteredRecords, stormCycloneConfig),
+    [filteredRecords],
   );
 
   // Calculate RAG status based on hazard data

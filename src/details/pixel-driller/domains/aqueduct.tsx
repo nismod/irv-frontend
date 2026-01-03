@@ -5,7 +5,22 @@ import { FC, useMemo } from 'react';
 import { toReturnPeriodRows } from '../data-transforms';
 import { RagStatus, RagStatusDisplay } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
-import { ChartConfig, HazardComponentProps, ReturnPeriodRow } from '../types';
+import {
+  ChartConfig,
+  HazardComponentProps,
+  PixelRecord,
+  PixelRecordKeys,
+  ReturnPeriodRow,
+} from '../types';
+
+// Aqueduct-specific key type definition
+export interface AqueductKeys extends PixelRecordKeys {
+  hazard?: string;
+  rp?: string;
+  rcp?: string;
+  epoch?: string;
+  gcm?: string;
+}
 
 // Chart configs
 const aqueductRiverConfig: ChartConfig = {
@@ -59,14 +74,20 @@ const calculateRagStatusFromReturnPeriods = (
   }
 };
 
+// Type guard for Aqueduct records
+const isAqueductRecord = (record: PixelRecord): record is PixelRecord<AqueductKeys> => {
+  return record.layer.domain === 'aqueduct';
+};
+
 export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => {
-  const data = useMemo(
-    () =>
-      toReturnPeriodRows(
-        records.filter((r) => r.layer.domain === 'aqueduct' && r.layer.keys.hazard === 'fluvial'),
-        aqueductRiverConfig,
-      ),
+  const filteredRecords = useMemo(
+    () => records.filter(isAqueductRecord).filter((r) => r.layer.keys.hazard === 'fluvial'),
     [records],
+  );
+
+  const data = useMemo(
+    () => toReturnPeriodRows(filteredRecords, aqueductRiverConfig),
+    [filteredRecords],
   );
 
   // Calculate RAG status based on hazard data
@@ -84,13 +105,14 @@ export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => 
 };
 
 export const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {
-  const data = useMemo(
-    () =>
-      toReturnPeriodRows(
-        records.filter((r) => r.layer.domain === 'aqueduct' && r.layer.keys.hazard === 'coastal'),
-        aqueductCoastalConfig,
-      ),
+  const filteredRecords = useMemo(
+    () => records.filter(isAqueductRecord).filter((r) => r.layer.keys.hazard === 'coastal'),
     [records],
+  );
+
+  const data = useMemo(
+    () => toReturnPeriodRows(filteredRecords, aqueductCoastalConfig),
+    [filteredRecords],
   );
 
   // Calculate RAG status based on hazard data

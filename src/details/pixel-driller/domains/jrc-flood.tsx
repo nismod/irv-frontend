@@ -5,7 +5,18 @@ import { FC, useMemo } from 'react';
 import { toReturnPeriodRows } from '../data-transforms';
 import { RagStatus, RagStatusDisplay } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
-import { ChartConfig, HazardComponentProps, ReturnPeriodRow } from '../types';
+import {
+  ChartConfig,
+  HazardComponentProps,
+  PixelRecord,
+  PixelRecordKeys,
+  ReturnPeriodRow,
+} from '../types';
+
+// JRC Flood-specific key type definition
+export interface JrcFloodKeys extends PixelRecordKeys {
+  rp?: string;
+}
 
 // Chart config
 const jrcFloodConfig: ChartConfig = {
@@ -48,14 +59,17 @@ const calculateRagStatusFromReturnPeriods = (
   }
 };
 
+// Type guard for JRC Flood records
+const isJrcFloodRecord = (record: PixelRecord): record is PixelRecord<JrcFloodKeys> => {
+  return record.layer.domain === 'jrc_flood';
+};
+
 export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
+  const filteredRecords = useMemo(() => records.filter(isJrcFloodRecord), [records]);
+
   const data = useMemo(
-    () =>
-      toReturnPeriodRows(
-        records.filter((r) => r.layer.domain === 'jrc_flood'),
-        jrcFloodConfig,
-      ),
-    [records],
+    () => toReturnPeriodRows(filteredRecords, jrcFloodConfig),
+    [filteredRecords],
   );
 
   // Calculate RAG status based on hazard data
