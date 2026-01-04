@@ -13,6 +13,7 @@ import { TropicalCyclonesStorm } from './domains/cyclone-storm';
 import { ExtremeHeat } from './domains/extreme-heat';
 import { RiverFloodingJrc } from './domains/jrc-flood';
 import { Landslides } from './domains/landslide';
+import mockPixelData from './mock/pixel_values.json';
 import { PixelResponse } from './types';
 
 interface SiteDetailsContentProps {
@@ -30,26 +31,43 @@ export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) =>
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPixelData = async () => {
-      setLoading(true);
-      setError(null);
+    // TODO: Temporarily using mock data for performance during testing
+    // Switch back to API fetch by uncommenting the code below and removing the mock data loading
+    setLoading(true);
+    setError(null);
+
+    // Load mock data (temporary)
+    setTimeout(() => {
       try {
-        // Fetch from API endpoint
-        const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setPixelData(asPixelResponse(data));
+        setPixelData(asPixelResponse(mockPixelData));
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch pixel data');
-        console.error('Error fetching pixel data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load mock pixel data');
+        console.error('Error loading mock pixel data:', err);
       } finally {
         setLoading(false);
       }
-    };
+    }, 100); // Small delay to simulate loading
 
-    fetchPixelData();
+    // API fetch code (commented out temporarily)
+    // const fetchPixelData = async () => {
+    //   setLoading(true);
+    //   setError(null);
+    //   try {
+    //     // Fetch from API endpoint
+    //     const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`);
+    //     if (!response.ok) {
+    //       throw new Error(`HTTP error! status: ${response.status}`);
+    //     }
+    //     const data = await response.json();
+    //     setPixelData(asPixelResponse(data));
+    //   } catch (err) {
+    //     setError(err instanceof Error ? err.message : 'Failed to fetch pixel data');
+    //     console.error('Error fetching pixel data:', err);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+    // fetchPixelData();
   }, [lng, lat]);
 
   return (
