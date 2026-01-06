@@ -3,7 +3,8 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
-import { RagStatus, RagStatusDisplay } from '../rag-indicator';
+import { HazardAccordion } from '../hazard-accordion';
+import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
 import {
   ChartConfig,
@@ -26,7 +27,7 @@ const stormCycloneConfig: ChartConfig = {
   id: 'cyclone-storm',
   title: 'Tropical cyclones – STORM',
   xLabel: 'return period (years)',
-  yLabel: 'value',
+  yLabel: 'Wind speed (m/s)',
   // STORM cyclones: scenario = epoch + rcp + gcm, colour by rcp
   seriesFields: ['epoch', 'rcp', 'gcm'],
   colorField: 'rcp',
@@ -77,15 +78,14 @@ export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => 
   );
 
   // Calculate RAG status based on hazard data
-  const ragStatus = useMemo(
-    () => calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD),
-    [data],
-  );
+  const ragStatus = useMemo((): RagStatus => {
+    if (data.length === 0) return 'no-data';
+    return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
+  }, [data]);
 
   return (
-    <Stack spacing={2}>
-      <RagStatusDisplay status={ragStatus} />
+    <HazardAccordion title="Tropical Cyclones (STORM)" ragStatus={ragStatus}>
       <ReturnPeriodChart config={stormCycloneConfig} data={data} />
-    </Stack>
+    </HazardAccordion>
   );
 };

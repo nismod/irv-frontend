@@ -16,7 +16,26 @@ export interface ReturnPeriodChartProps {
   data: ReturnPeriodRow[];
 }
 
-export const makeReturnPeriodSpec = (rpValues: number[], config: ChartConfig) => ({
+// Tableau10 palette (copy of Vega's categorical palette)
+const TABLEAU10 = [
+  '#4e79a7',
+  '#f28e2c',
+  '#e15759',
+  '#76b7b2',
+  '#59a14f',
+  '#edc949',
+  '#af7aa1',
+  '#ff9d9a',
+  '#9c755f',
+  '#bab0ac',
+];
+
+export const makeReturnPeriodSpec = (
+  rpValues: number[],
+  config: ChartConfig,
+  colorDomain?: string[],
+  colorRange?: string[],
+) => ({
   $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
   width: 'container',
   autosize: {
@@ -51,7 +70,7 @@ export const makeReturnPeriodSpec = (rpValues: number[], config: ChartConfig) =>
     y: {
       field: 'value',
       type: 'quantitative',
-      title: 'Value',
+      title: config.yLabel,
       axis: {
         gridDash: [2, 2],
         domainColor: '#ccc',
@@ -59,16 +78,20 @@ export const makeReturnPeriodSpec = (rpValues: number[], config: ChartConfig) =>
       },
     },
     // Colour and series encodings are driven by per-domain config
-    // Use gray for baseline comparison, otherwise use colorField
+    // Baseline is represented as a dedicated value in the colour field and
+    // mapped to gray via the explicit scale range.
     ...(config.colorField && {
       color: {
-        condition: {
-          test: 'datum.isBaselineComparison === true',
-          value: '#999999',
-        },
         field: config.colorField,
         type: 'nominal',
         title: config.colorField,
+        scale:
+          colorDomain && colorRange
+            ? {
+                domain: colorDomain,
+                range: colorRange,
+              }
+            : undefined,
         legend: {
           orient: 'bottom',
           direction: 'horizontal',
@@ -125,7 +148,16 @@ const getFieldValueFromRow = (row: ReturnPeriodRow, field: KeyField): string | u
 };
 
 export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) => {
-  const [mode, setMode] = useState<'detailed' | 'aggregated' | 'grouped-by-pathway'>('detailed');
+  // Detect simple case: no epochs, no series fields, no color field (e.g., JRC flooding)
+  const isSimpleCase = useMemo(() => {
+    const hasEpochs = data.some((d) => d.epoch != null);
+    return !hasEpochs && config.seriesFields.length === 0 && !config.colorField;
+  }, [data, config]);
+
+  // Default to 'detailed' mode for simple cases, otherwise 'grouped-by-pathway'
+  const [mode, setMode] = useState<'detailed' | 'grouped-by-pathway'>(
+    isSimpleCase ? 'detailed' : 'grouped-by-pathway',
+  );
 
   // Extract and sort epochs (baseline first, then ascending)
   const availableEpochs = useMemo(() => {
@@ -145,7 +177,11 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
   );
 
   // Filter data by selected epoch, and add baseline for comparison when non-baseline is selected
+  // For simple cases (no epochs), just return all data without filtering
   const filteredData = useMemo(() => {
+    // Simple case: no epoch filtering needed
+    if (isSimpleCase) return data;
+
     if (!selectedEpoch) return data;
 
     const isBaseline = selectedEpoch === 'baseline' || selectedEpoch === 'present';
@@ -155,54 +191,26 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
       return selectedData;
     }
 
-    // For non-baseline epochs, also include baseline data in gray
-    const baselineData = data
-      .filter((d) => d.epoch === 'baseline' || d.epoch === 'present')
-      .map((d) => ({ ...d, isBaselineComparison: true }));
+    // For non-baseline epochs, also include baseline data for comparison
+    const baselineData = data.filter((d) => d.epoch === 'baseline' || d.epoch === 'present');
 
     return [...selectedData, ...baselineData];
-  }, [data, selectedEpoch]);
+  }, [data, selectedEpoch, isSimpleCase]);
 
-  const aggregatedData = useMemo(() => {
-    if (!filteredData.length) return [];
-    const grouped = _.groupBy(filteredData, (d) => d.rp);
-    const rows: Array<{ rp: number; value: number; value_min: number; value_max: number }> = [];
-
-    for (const [rpKey, rowsForRp] of Object.entries(grouped)) {
-      const values = rowsForRp.map((r) => r.value).filter((v) => v != null);
-      if (!values.length) continue;
-
-      const sorted = [...values].sort((a, b) => a - b);
-      const mid = Math.floor(sorted.length / 2);
-      const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-
-      rows.push({
-        rp: Number(rpKey),
-        value: median,
-        value_min: sorted[0],
-        value_max: sorted[sorted.length - 1],
-      });
-    }
-
-    return rows;
-  }, [filteredData]);
-
-  // Group by pathway (colorField), rp, and isBaselineComparison, then aggregate within each group
+  // Group by pathway (colorField) and rp, then aggregate within each group
   const groupedByPathwayData = useMemo(() => {
     if (!filteredData.length || !config.colorField) return [];
     const colorField = config.colorField;
     const grouped = _.groupBy(filteredData, (d) => {
       const pathwayValue = getFieldValueFromRow(d, colorField);
-      const isBaseline = d.isBaselineComparison ? 'baseline' : 'main';
-      return `${pathwayValue || 'unknown'}_${d.rp}_${isBaseline}`;
+      return `${pathwayValue || 'unknown'}_${d.rp}`;
     });
     const rows: Array<{
       rp: number;
       value: number;
       value_min: number;
       value_max: number;
-      isBaselineComparison?: boolean;
-      [key: string]: string | number | boolean | undefined;
+      [key: string]: string | number | undefined;
     }> = [];
 
     for (const [key, rowsForGroup] of Object.entries(grouped)) {
@@ -221,7 +229,6 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
         value: median,
         value_min: sorted[0],
         value_max: sorted[sorted.length - 1],
-        isBaselineComparison: firstRow.isBaselineComparison,
         [colorField]: pathwayValue,
       });
     }
@@ -229,12 +236,10 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
     return rows;
   }, [filteredData, config.colorField]);
 
-  const currentTable =
-    mode === 'aggregated'
-      ? aggregatedData
-      : mode === 'grouped-by-pathway'
-        ? groupedByPathwayData
-        : filteredData;
+  // For simple cases (no epochs, no series fields, no color field), always use detailed mode
+  const effectiveMode = isSimpleCase ? 'detailed' : mode;
+
+  const currentTable = effectiveMode === 'grouped-by-pathway' ? groupedByPathwayData : filteredData;
 
   const tableData = useMemo(
     () => ({
@@ -248,88 +253,45 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
     [currentTable],
   );
 
-  const detailedSpec = useMemo(() => makeReturnPeriodSpec(rpValues, config), [rpValues, config]);
+  // Compute colour domain/range for series. Baseline should already be present as a distinct
+  // value in the colour field (e.g. rcp = 'baseline'), so we treat it as the first category
+  // and map it to gray, with other series drawn from the Tableau10 palette.
+  const [colorDomain, colorRange] = useMemo(() => {
+    if (!config.colorField) return [undefined, undefined] as const;
 
-  const aggregatedSpec = useMemo(
-    () => ({
-      $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-      width: 'container',
-      autosize: {
-        type: 'fit',
-        contains: 'padding',
-      },
-      data: {
-        name: 'table',
-      },
-      layer: [
-        {
-          mark: {
-            type: 'area',
-            opacity: 0.2,
-          },
-          encoding: {
-            x: {
-              field: 'rp',
-              type: 'quantitative',
-              title: 'Return period (years)',
-              scale: {
-                type: 'log',
-              },
-              axis: {
-                gridDash: [2, 2],
-                domainColor: '#ccc',
-                tickColor: '#ccc',
-                values: rpValues,
-              },
-            },
-            y: {
-              field: 'value_min',
-              type: 'quantitative',
-              title: config.yLabel,
-            },
-            y2: {
-              field: 'value_max',
-            },
-            tooltip: [
-              { field: 'value_min', type: 'quantitative', format: ',.3r', title: 'min' },
-              { field: 'value_max', type: 'quantitative', format: ',.3r', title: 'max' },
-              { field: 'rp', type: 'quantitative', title: 'rp' },
-            ],
-          },
-        },
-        {
-          mark: {
-            type: 'line',
-            point: {
-              filled: true,
-            },
-            tooltip: true,
-          },
-          encoding: {
-            x: {
-              field: 'rp',
-              type: 'quantitative',
-              title: 'Return period (years)',
-              scale: {
-                type: 'log',
-              },
-              axis: {
-                gridDash: [2, 2],
-                domainColor: '#ccc',
-                tickColor: '#ccc',
-                values: rpValues,
-              },
-            },
-            y: {
-              field: 'value',
-              type: 'quantitative',
-              title: config.yLabel,
-            },
-          },
-        },
-      ],
-    }),
-    [config.yLabel, rpValues],
+    const values = Array.from(
+      new Set(
+        currentTable
+          .map((d) => getFieldValueFromRow(d as ReturnPeriodRow, config.colorField!))
+          .filter((v): v is string => v != null),
+      ),
+    );
+
+    if (values.length === 0) {
+      return [undefined, undefined] as const;
+    }
+
+    // Move baseline to the front if present
+    const baselineIndex = values.indexOf('baseline');
+    if (baselineIndex > -1) {
+      values.splice(baselineIndex, 1);
+      values.unshift('baseline');
+    }
+
+    const domain = values;
+    const nonBaseline = domain.filter((v) => v !== 'baseline');
+
+    const nonBaselineColors = nonBaseline.map((_v, idx) => TABLEAU10[idx % TABLEAU10.length]);
+
+    const range =
+      domain[0] === 'baseline' ? ['#999999', ...nonBaselineColors] : [...nonBaselineColors];
+
+    return [domain, range] as const;
+  }, [currentTable, config.colorField]);
+
+  const detailedSpec = useMemo(
+    () => makeReturnPeriodSpec(rpValues, config, colorDomain, colorRange),
+    [rpValues, config, colorDomain, colorRange],
   );
 
   const groupedByPathwaySpec = useMemo(
@@ -373,13 +335,16 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
               field: 'value_max',
             },
             color: {
-              condition: {
-                test: 'datum.isBaselineComparison === true',
-                value: '#999999',
-              },
               field: config.colorField,
               type: 'nominal',
               title: config.colorField,
+              scale:
+                colorDomain && colorRange
+                  ? {
+                      domain: colorDomain,
+                      range: colorRange,
+                    }
+                  : undefined,
               legend: {
                 orient: 'bottom',
                 direction: 'horizontal',
@@ -422,13 +387,16 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
               title: config.yLabel,
             },
             color: {
-              condition: {
-                test: 'datum.isBaselineComparison === true',
-                value: '#999999',
-              },
               field: config.colorField,
               type: 'nominal',
               title: config.colorField,
+              scale:
+                colorDomain && colorRange
+                  ? {
+                      domain: colorDomain,
+                      range: colorRange,
+                    }
+                  : undefined,
               legend: {
                 orient: 'bottom',
                 direction: 'horizontal',
@@ -443,15 +411,10 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
         },
       ],
     }),
-    [config.yLabel, config.colorField, rpValues],
+    [config.yLabel, config.colorField, rpValues, colorDomain, colorRange],
   );
 
-  const spec =
-    mode === 'aggregated'
-      ? aggregatedSpec
-      : mode === 'grouped-by-pathway'
-        ? groupedByPathwaySpec
-        : detailedSpec;
+  const spec = effectiveMode === 'grouped-by-pathway' ? groupedByPathwaySpec : detailedSpec;
 
   const subtitle = buildSubtitle(config);
 
@@ -464,7 +427,7 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
 
   return (
     <Box>
-      <Stack
+      {/* <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
@@ -483,10 +446,9 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
           }}
         >
           <ToggleButton value="detailed">Detailed</ToggleButton>
-          <ToggleButton value="aggregated">Aggregated</ToggleButton>
           {config.colorField && <ToggleButton value="grouped-by-pathway">By Pathway</ToggleButton>}
         </ToggleButtonGroup>
-      </Stack>
+      </Stack> */}
       {availableEpochs.length > 0 && (
         <Box sx={{ mb: 2 }}>
           <ButtonGroup size="small" variant="outlined">

@@ -2,7 +2,15 @@ import { Marker } from 'react-map-gl/maplibre';
 
 export const LocationMarker = ({ lng, lat }: { lng: number; lat: number }) => {
   return (
-    <Marker longitude={lng} latitude={lat} anchor="center">
+    <Marker
+      longitude={lng}
+      latitude={lat}
+      anchor="center"
+      style={{
+        pointerEvents: 'none',
+        cursor: 'default',
+      }}
+    >
       <LocationMarkerIcon />
     </Marker>
   );

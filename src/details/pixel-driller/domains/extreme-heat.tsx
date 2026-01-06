@@ -3,7 +3,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
-import { RagStatus, RagStatusDisplay } from '../rag-indicator';
+import { HazardAccordion } from '../hazard-accordion';
+import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Extreme Heat-specific key type definition
@@ -21,8 +22,10 @@ const EXTREME_HEAT_RED_THRESHOLD = 0.5; // 50% probability
 // Amber threshold: probability above which risk is moderate
 const EXTREME_HEAT_AMBER_THRESHOLD = 0.3; // 30% probability
 
-// Type guard for Extreme Heat records
-const isExtremeHeatRecord = (record: PixelRecord): record is PixelRecord<ExtremeHeatKeys> => {
+// Type guard for ISIMIP records (used for Extreme Heat filtering)
+const isIsimipRecordForExtremeHeat = (
+  record: PixelRecord,
+): record is PixelRecord<ExtremeHeatKeys> => {
   return record.layer.domain === 'isimip';
 };
 
@@ -31,7 +34,7 @@ export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
   const extremeHeatRecords = useMemo(
     () =>
       records
-        .filter(isExtremeHeatRecord)
+        .filter(isIsimipRecordForExtremeHeat)
         .filter(
           (r) => r.layer.keys.hazard === 'extreme_heat' && r.layer.keys.metric === 'occurrence',
         ),
@@ -47,6 +50,7 @@ export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
 
   // Calculate RAG status based on two thresholds
   const ragStatus = useMemo((): RagStatus => {
+    if (extremeHeatRecords.length === 0) return 'no-data';
     if (aggregatedProbability >= EXTREME_HEAT_RED_THRESHOLD) {
       return 'red';
     } else if (aggregatedProbability >= EXTREME_HEAT_AMBER_THRESHOLD) {
@@ -54,7 +58,7 @@ export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
     } else {
       return 'green';
     }
-  }, [aggregatedProbability]);
+  }, [aggregatedProbability, extremeHeatRecords.length]);
 
   const formatProbability = (value: number): string => {
     // Convert to percentage and format with at most one decimal place, removing trailing zeros
@@ -63,14 +67,13 @@ export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
   };
 
   return (
-    <Stack spacing={2}>
-      <RagStatusDisplay status={ragStatus} />
+    <HazardAccordion title="Extreme Heat" ragStatus={ragStatus}>
       <Box>
         <Typography variant="body2" color="text.secondary" gutterBottom>
           Maximum probability of extreme heat event (worst case across all scenarios)
         </Typography>
         <Typography variant="body1">{formatProbability(aggregatedProbability)}</Typography>
       </Box>
-    </Stack>
+    </HazardAccordion>
   );
 };

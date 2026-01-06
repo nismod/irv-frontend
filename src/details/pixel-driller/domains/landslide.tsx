@@ -3,7 +3,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
-import { RagStatus, RagStatusDisplay } from '../rag-indicator';
+import { HazardAccordion } from '../hazard-accordion';
+import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Landslide-specific key type definition
@@ -12,7 +13,6 @@ export interface LandslideKeys extends PixelRecordKeys {
 }
 
 // Map numeric susceptibility values to categories
-// Based on typical landslide susceptibility classifications
 const SUSCEPTIBILITY_CATEGORIES: Record<number, string> = {
   1: 'Very Low',
   2: 'Low',
@@ -58,20 +58,12 @@ export const Landslides: FC<HazardComponentProps> = ({ records }) => {
 
   // Calculate RAG status from susceptibility
   const ragStatus = useMemo((): RagStatus => {
-    if (susceptibilityValue == null) return 'amber';
+    if (landslideRecords.length === 0 || susceptibilityValue == null) return 'no-data';
+
     const numValue =
       typeof susceptibilityValue === 'number' ? susceptibilityValue : Number(susceptibilityValue);
-    const category = SUSCEPTIBILITY_CATEGORIES[numValue];
-
-    if (category === 'Very Low') {
-      return 'green';
-    } else if (category === 'Low') {
-      return 'amber';
-    } else if (category === 'Medium' || category === 'High') {
-      return 'red';
-    }
-    return 'amber'; // Default fallback
-  }, [susceptibilityValue]);
+    return SUSCEPTIBILITY_CATEGORIES[numValue] === 'Very Low' ? 'green' : 'red';
+  }, [susceptibilityValue, landslideRecords.length]);
 
   const formatProbability = (value: number): string => {
     // Convert to percentage and format with at most one decimal place, removing trailing zeros
@@ -80,8 +72,7 @@ export const Landslides: FC<HazardComponentProps> = ({ records }) => {
   };
 
   return (
-    <Stack spacing={2}>
-      <RagStatusDisplay status={ragStatus} />
+    <HazardAccordion title="Landslide" ragStatus={ragStatus}>
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -108,6 +99,6 @@ export const Landslides: FC<HazardComponentProps> = ({ records }) => {
           <Typography variant="body1">{susceptibilityCategory ?? 'N/A'}</Typography>
         </Box>
       </Stack>
-    </Stack>
+    </HazardAccordion>
   );
 };

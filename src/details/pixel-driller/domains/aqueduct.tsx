@@ -3,7 +3,8 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
-import { RagStatus, RagStatusDisplay } from '../rag-indicator';
+import { HazardAccordion } from '../hazard-accordion';
+import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
 import {
   ChartConfig,
@@ -27,7 +28,7 @@ const aqueductRiverConfig: ChartConfig = {
   id: 'river-aqueduct',
   title: 'River flooding – Aqueduct',
   xLabel: 'return period (years)',
-  yLabel: 'value',
+  yLabel: 'Flood height (m)',
   // Aqueduct river flooding: scenario = epoch + rcp + gcm, colour by rcp
   seriesFields: ['epoch', 'rcp', 'gcm'],
   colorField: 'rcp',
@@ -37,7 +38,7 @@ const aqueductCoastalConfig: ChartConfig = {
   id: 'coastal-aqueduct',
   title: 'Coastal flooding – Aqueduct',
   xLabel: 'return period (years)',
-  yLabel: 'value',
+  yLabel: 'Flood height (m)',
   // Coastal flooding: scenario = epoch + rcp, colour by rcp
   seriesFields: ['epoch', 'rcp'],
   colorField: 'rcp',
@@ -91,16 +92,15 @@ export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => 
   );
 
   // Calculate RAG status based on hazard data
-  const ragStatus = useMemo(
-    () => calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD),
-    [data],
-  );
+  const ragStatus = useMemo((): RagStatus => {
+    if (data.length === 0) return 'no-data';
+    return calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD);
+  }, [data]);
 
   return (
-    <Stack spacing={2}>
-      <RagStatusDisplay status={ragStatus} />
+    <HazardAccordion title="River Flooding (Aqueduct)" ragStatus={ragStatus}>
       <ReturnPeriodChart config={aqueductRiverConfig} data={data} />
-    </Stack>
+    </HazardAccordion>
   );
 };
 
@@ -116,15 +116,14 @@ export const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {
   );
 
   // Calculate RAG status based on hazard data
-  const ragStatus = useMemo(
-    () => calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD),
-    [data],
-  );
+  const ragStatus = useMemo((): RagStatus => {
+    if (data.length === 0) return 'no-data';
+    return calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD);
+  }, [data]);
 
   return (
-    <Stack spacing={2}>
-      <RagStatusDisplay status={ragStatus} />
+    <HazardAccordion title="Coastal Flooding (Aqueduct)" ragStatus={ragStatus}>
       <ReturnPeriodChart config={aqueductCoastalConfig} data={data} />
-    </Stack>
+    </HazardAccordion>
   );
 };

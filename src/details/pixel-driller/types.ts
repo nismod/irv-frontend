@@ -32,7 +32,6 @@ export type ReturnPeriodRow = {
   scenario: string;
   domain: PixelDomain;
   hazard?: string;
-  isBaselineComparison?: boolean; // True when this is baseline data shown for comparison
 };
 
 export type KeyField = keyof PixelRecordKeys | 'domain';
