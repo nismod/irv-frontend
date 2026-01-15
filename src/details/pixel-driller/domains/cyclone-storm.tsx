@@ -1,9 +1,9 @@
-import Stack from '@mui/material/Stack';
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -75,17 +75,23 @@ const filterCycloneStormRecords = (records: PixelRecord[]): PixelRecord<CycloneS
   return records.filter(isCycloneStormRecord);
 };
 
+const cycloneStormExportConfig: DomainExportConfig = {
+  // domain === 'cyclone_storm' (no additional key filters)
+  baseName: 'cyclone_storm',
+  columns: [
+    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
+    { key: 'epoch', label: 'Epoch', description: 'Time period or epoch of the simulation.' },
+    { key: 'rcp', label: 'RCP', description: 'Representative Concentration Pathway scenario.' },
+    { key: 'gcm', label: 'GCM', description: 'Global Climate Model identifier.' },
+    { key: 'value', label: 'Wind speed', description: 'Wind speed (m/s).' },
+  ],
+  metadata: {},
+};
+
 // Export function for Tropical Cyclones (STORM)
 const exportCycloneStorm: ExportFunction = async (allRecords) => {
   const filtered = filterCycloneStormRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'tropical-cyclones-storm.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(cycloneStormExportConfig, filtered);
 };
 
 export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {

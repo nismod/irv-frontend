@@ -18,8 +18,8 @@ import { Earthquakes } from './domains/earthquakes';
 import { ExtremeHeat } from './domains/extreme-heat';
 import { RiverFloodingJrc } from './domains/jrc-flood';
 import { Landslides } from './domains/landslide';
-import { DownloadDataProvider, useDownloadDataContext } from './download-context';
-import { buildZipFile, downloadBlob } from './download-utils';
+import { DownloadDataProvider, ExportFile, useDownloadDataContext } from './download-context';
+import { buildZipFile, downloadBlob, getReadmeFile } from './download-utils';
 import mockPixelData from './mock/pixel_values.json';
 import { PixelResponse } from './types';
 
@@ -121,30 +121,33 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       const allRecords = pixelData.results;
 
       // Call all registered export functions with the full dataset
-      const exportPromises = Array.from(exportFunctions.entries()).map(async ([key, fn]) => {
-        try {
-          return await fn(allRecords);
-        } catch (err) {
-          console.error(`Error exporting data for ${key}:`, err);
-          return null;
-        }
-      });
-
-      const exportFiles = await Promise.all(exportPromises);
-      const validFiles = exportFiles.filter(
-        (file): file is NonNullable<typeof file> => file !== null,
+      const exportPromises: Promise<ExportFile[]>[] = Array.from(exportFunctions.entries()).map(
+        async ([key, fn]) => {
+          try {
+            return await fn(allRecords);
+          } catch (err) {
+            console.error(`Error exporting data for ${key}:`, err);
+            return [] as ExportFile[];
+          }
+        },
       );
 
-      if (validFiles.length === 0) {
-        console.warn('No export files generated');
-        return;
-      }
+      const exportFileGroups = await Promise.all(exportPromises);
+      let exportFiles = exportFileGroups.flat();
+
+      // Always include README and site metadata in the ZIP
+      const metadataFile: ExportFile = {
+        filename: 'metadata.json',
+        content: JSON.stringify({ lat, lon: lng }, null, 2),
+        mimeType: 'application/json',
+      };
+      exportFiles = [getReadmeFile(), metadataFile, ...exportFiles];
 
       // Build ZIP file
-      const zipBlob = await buildZipFile(validFiles);
+      const zipBlob = await buildZipFile(exportFiles);
 
       // Generate filename with coordinates
-      const filename = `pixel-driller-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
+      const filename = `site-details-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
       downloadBlob(zipBlob, filename);
     } catch (err) {
       console.error('Error creating download:', err);

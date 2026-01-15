@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 
 import { ExportFile } from './download-context';
+import readmeTemplate from './README.template.md?raw';
 
 /**
  * Builds a ZIP file from an array of export files.
@@ -22,6 +23,17 @@ export const buildZipFile = async (files: ExportFile[]): Promise<Blob> => {
   }
 
   return await zip.generateAsync({ type: 'blob' });
+};
+
+/**
+ * Returns the static README file to include in every ZIP.
+ */
+export const getReadmeFile = (): ExportFile => {
+  return {
+    filename: 'README.md',
+    content: readmeTemplate,
+    mimeType: 'text/markdown',
+  };
 };
 
 /**

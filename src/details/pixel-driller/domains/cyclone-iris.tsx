@@ -1,9 +1,9 @@
-import Stack from '@mui/material/Stack';
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -75,17 +75,23 @@ const filterCycloneIrisRecords = (records: PixelRecord[]): PixelRecord<CycloneIr
   return records.filter(isCycloneIrisRecord);
 };
 
+const cycloneIrisExportConfig: DomainExportConfig = {
+  // domain === 'cyclone_iris' (no additional key filters)
+  baseName: 'cyclone_iris',
+  columns: [
+    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
+    { key: 'epoch', label: 'Epoch', description: 'Time period or epoch of the simulation.' },
+    { key: 'ssp', label: 'SSP', description: 'Shared Socioeconomic Pathway scenario.' },
+    { key: 'gcm', label: 'GCM', description: 'Global Climate Model identifier.' },
+    { key: 'value', label: 'Wind speed', description: 'Wind speed (m/s).' },
+  ],
+  metadata: {},
+};
+
 // Export function for Tropical Cyclones (IRIS)
 const exportCycloneIris: ExportFunction = async (allRecords) => {
   const filtered = filterCycloneIrisRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'tropical-cyclones-iris.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(cycloneIrisExportConfig, filtered);
 };
 
 export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {

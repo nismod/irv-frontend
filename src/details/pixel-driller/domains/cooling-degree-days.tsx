@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -29,17 +30,28 @@ const filterCddRecords = (records: PixelRecord[]): PixelRecord<CddKeys>[] => {
   return records.filter(isCddRecord);
 };
 
+const cddExportConfig: DomainExportConfig = {
+  // domain === 'cdd_miranda' (no additional key filters)
+  baseName: 'cdd_miranda',
+  columns: [
+    {
+      key: 'metric',
+      label: 'Metric',
+      description: 'Type of cooling degree days change (absolute or relative).',
+    },
+    {
+      key: 'value',
+      label: 'Value',
+      description: 'Change in cooling degree days (absolute) or fraction (relative).',
+    },
+  ],
+  metadata: {},
+};
+
 // Export function for Cooling Degree Days
 const exportCoolingDegreeDays: ExportFunction = async (allRecords) => {
   const filtered = filterCddRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'cooling-degree-days.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(cddExportConfig, filtered);
 };
 
 export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {

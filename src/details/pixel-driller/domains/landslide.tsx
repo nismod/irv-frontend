@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -31,17 +32,28 @@ const filterLandslideRecords = (records: PixelRecord[]): PixelRecord<LandslideKe
   return records.filter(isLandslideRecord);
 };
 
+const landslideExportConfig: DomainExportConfig = {
+  // domain === 'landslide' (subtypes handled as data, not filters)
+  baseName: 'landslide',
+  columns: [
+    {
+      key: 'subtype',
+      label: 'Subtype',
+      description: 'Hazard subtype (earthquake, rainfall_mean, rainfall_median, susceptibility).',
+    },
+    {
+      key: 'value',
+      label: 'Value',
+      description: 'Modelled probability or susceptibility value (0–1).',
+    },
+  ],
+  metadata: {},
+};
+
 // Export function for Landslide
 const exportLandslide: ExportFunction = async (allRecords) => {
   const filtered = filterLandslideRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'landslide.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(landslideExportConfig, filtered);
 };
 
 export const Landslides: FC<HazardComponentProps> = ({ records }) => {

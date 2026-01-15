@@ -1,9 +1,9 @@
-import Stack from '@mui/material/Stack';
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -71,17 +71,20 @@ const filterJrcFloodRecords = (records: PixelRecord[]): PixelRecord<JrcFloodKeys
   return records.filter(isJrcFloodRecord);
 };
 
+const jrcFloodExportConfig: DomainExportConfig = {
+  // domain === 'jrc_flood' (no additional key filters)
+  baseName: 'jrc_flood',
+  columns: [
+    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
+    { key: 'value', label: 'Flood height', description: 'Flood height (m).' },
+  ],
+  metadata: {},
+};
+
 // Export function for JRC Flood
 const exportJrcFlood: ExportFunction = async (allRecords) => {
   const filtered = filterJrcFloodRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'river-flooding-jrc.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(jrcFloodExportConfig, filtered);
 };
 
 export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {

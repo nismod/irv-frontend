@@ -21,10 +21,11 @@ export interface ExportFile {
 }
 
 /**
- * Export function that receives all records and returns file data or null.
- * Each function handles its own filtering internally.
+ * Export function that receives all records and returns an array of files.
+ * Each function handles its own filtering internally and typically returns
+ * a CSV + JSON pair for its domain.
  */
-export type ExportFunction = (records: PixelRecord[]) => Promise<ExportFile | null>;
+export type ExportFunction = (records: PixelRecord[]) => Promise<ExportFile[]>;
 
 interface DownloadDataContextValue {
   /**
@@ -91,14 +92,14 @@ export const useDownloadDataContext = (): DownloadDataContextValue => {
   }
   return context;
 };
+
 /**
  * Hook to register an export function for a domain component.
  * Automatically unregisters the function when the component unmounts.
  *
  * @param key - Unique identifier for this export function (e.g., domain name)
- * @param exportFn - Function that receives all records and returns export file or null
+ * @param exportFn - Function that receives all records and returns ExportFile[]
  */
-
 export const useRegisterExportFunction = (key: string, exportFn: ExportFunction): void => {
   const { registerExportFunction } = useDownloadDataContext();
 

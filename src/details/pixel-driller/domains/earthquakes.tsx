@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -27,17 +28,25 @@ const filterEarthquakeRecords = (records: PixelRecord[]): PixelRecord<Earthquake
   return records.filter(isEarthquakeRecord);
 };
 
+const earthquakeExportConfig: DomainExportConfig = {
+  // domain === 'earthquake' (no additional key filters)
+  baseName: 'earthquake',
+  columns: [
+    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
+    { key: 'medium', label: 'Medium', description: 'Ground medium (e.g., rock).' },
+    {
+      key: 'value',
+      label: 'Ground shaking',
+      description: 'Ground shaking intensity (model units).',
+    },
+  ],
+  metadata: {},
+};
+
 // Export function for Earthquakes
 const exportEarthquakes: ExportFunction = async (allRecords) => {
   const filtered = filterEarthquakeRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'earthquakes.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(earthquakeExportConfig, filtered);
 };
 
 export const Earthquakes: FC<HazardComponentProps> = ({ records }) => {

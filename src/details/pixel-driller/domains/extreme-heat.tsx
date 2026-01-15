@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -37,17 +37,37 @@ const filterExtremeHeatRecords = (records: PixelRecord[]): PixelRecord<ExtremeHe
     .filter((r) => r.layer.keys.hazard === 'extreme_heat' && r.layer.keys.metric === 'occurrence');
 };
 
+const extremeHeatExportConfig: DomainExportConfig = {
+  baseName: 'isimip__extreme_heat__occurrence',
+  columns: [
+    {
+      key: 'rcp',
+      label: 'RCP',
+      description: 'Representative Concentration Pathway (emissions scenario).',
+    },
+    {
+      key: 'epoch',
+      label: 'Epoch',
+      description: 'Time period or epoch of the simulation.',
+    },
+    {
+      key: 'gcm',
+      label: 'GCM',
+      description: 'Global Climate Model identifier.',
+    },
+    {
+      key: 'value',
+      label: 'Probability',
+      description: 'Event probability (0–1) for extreme heat occurrence.',
+    },
+  ],
+  metadata: {},
+};
+
 // Export function for Extreme Heat
 const exportExtremeHeat: ExportFunction = async (allRecords) => {
   const filtered = filterExtremeHeatRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'extreme-heat.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(extremeHeatExportConfig, filtered);
 };
 
 export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {

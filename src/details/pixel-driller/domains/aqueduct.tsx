@@ -1,9 +1,9 @@
-import Stack from '@mui/material/Stack';
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -91,30 +91,44 @@ const filterAqueductCoastalRecords = (records: PixelRecord[]): PixelRecord<Aqued
   return records.filter(isAqueductRecord).filter((r) => r.layer.keys.hazard === 'coastal');
 };
 
+const aqueductRiverExportConfig: DomainExportConfig = {
+  // domain === 'aqueduct' and hazard === 'fluvial'
+  baseName: 'aqueduct__fluvial',
+  columns: [
+    { key: 'hazard', label: 'Hazard', description: 'Hazard type (fluvial).' },
+    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
+    { key: 'rcp', label: 'RCP', description: 'Representative Concentration Pathway scenario.' },
+    { key: 'epoch', label: 'Epoch', description: 'Time period or epoch of the simulation.' },
+    { key: 'gcm', label: 'GCM', description: 'Global Climate Model identifier.' },
+    { key: 'value', label: 'Flood height', description: 'Flood height (m).' },
+  ],
+  metadata: {},
+};
+
+const aqueductCoastalExportConfig: DomainExportConfig = {
+  // domain === 'aqueduct' and hazard === 'coastal'
+  baseName: 'aqueduct__coastal',
+  columns: [
+    { key: 'hazard', label: 'Hazard', description: 'Hazard type (coastal).' },
+    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
+    { key: 'rcp', label: 'RCP', description: 'Representative Concentration Pathway scenario.' },
+    { key: 'epoch', label: 'Epoch', description: 'Time period or epoch of the simulation.' },
+    { key: 'gcm', label: 'GCM', description: 'Global Climate Model identifier.' },
+    { key: 'value', label: 'Flood height', description: 'Flood height (m).' },
+  ],
+  metadata: {},
+};
+
 // Export function for River Flooding (Aqueduct)
 const exportAqueductRiver: ExportFunction = async (allRecords) => {
   const filtered = filterAqueductRiverRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'river-flooding-aqueduct.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(aqueductRiverExportConfig, filtered);
 };
 
 // Export function for Coastal Flooding (Aqueduct)
 const exportAqueductCoastal: ExportFunction = async (allRecords) => {
   const filtered = filterAqueductCoastalRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'coastal-flooding-aqueduct.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  return buildDomainExportFiles(aqueductCoastalExportConfig, filtered);
 };
 
 export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => {

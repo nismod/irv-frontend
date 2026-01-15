@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
+import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -33,17 +33,40 @@ const filterDroughtRecords = (records: PixelRecord[]): PixelRecord<DroughtKeys>[
     .filter((r) => r.layer.keys.hazard === 'drought' && r.layer.keys.metric === 'occurrence');
 };
 
+// Export configuration for drought occurrence (ISIMIP)
+const droughtExportConfig: DomainExportConfig = {
+  baseName: 'isimip__drought__occurrence',
+  columns: [
+    {
+      key: 'rcp',
+      label: 'RCP',
+      description: 'Representative Concentration Pathway (emissions scenario).',
+    },
+    {
+      key: 'epoch',
+      label: 'Epoch',
+      description: 'Time period or epoch of the simulation.',
+    },
+    {
+      key: 'gcm',
+      label: 'GCM',
+      description: 'Global Climate Model identifier.',
+    },
+    {
+      key: 'value',
+      label: 'Probability',
+      description: 'Event probability (0–1) for drought occurrence.',
+    },
+  ],
+  // Stub metadata for now; to be replaced with a richer catalog format later.
+  metadata: {},
+};
+
 // Export function for Droughts
 const exportDroughts: ExportFunction = async (allRecords) => {
   const filtered = filterDroughtRecords(allRecords);
-  if (filtered.length === 0) return null;
-
-  // TODO: Build actual export content
-  return {
-    filename: 'droughts.csv',
-    content: 'stub content',
-    mimeType: 'text/csv',
-  };
+  // Always return CSV + JSON, even if there are no records
+  return buildDomainExportFiles(droughtExportConfig, filtered);
 };
 
 export const Droughts: FC<HazardComponentProps> = ({ records }) => {
