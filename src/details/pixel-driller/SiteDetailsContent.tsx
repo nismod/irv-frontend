@@ -1,7 +1,9 @@
+import DownloadIcon from '@mui/icons-material/Download';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -16,6 +18,8 @@ import { Earthquakes } from './domains/earthquakes';
 import { ExtremeHeat } from './domains/extreme-heat';
 import { RiverFloodingJrc } from './domains/jrc-flood';
 import { Landslides } from './domains/landslide';
+import { DownloadDataProvider, useDownloadDataContext } from './download-context';
+import { buildZipFile, downloadBlob } from './download-utils';
 import mockPixelData from './mock/pixel_values.json';
 import { PixelResponse } from './types';
 
@@ -25,15 +29,17 @@ interface SiteDetailsContentProps {
 }
 
 /**
- * Component that displays detailed information for a selected site location.
- * Shows coordinates and hazard charts for the selected point.
+ * Inner component that uses the download context.
+ * Separated to allow context access within the provider.
  */
-export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
+const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const [pixelData, setPixelData] = useState<PixelResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useRecoilValue(openAccordionState);
+  const { getAllExportFunctions } = useDownloadDataContext();
 
   const coordinatesUrl = useMemo(
     () =>
@@ -106,6 +112,48 @@ export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) =>
     }
   }, [loading, error, pixelData, openAccordion]);
 
+  const handleDownload = useCallback(async () => {
+    if (!pixelData || loading || error) return;
+
+    setDownloading(true);
+    try {
+      const exportFunctions = getAllExportFunctions();
+      const allRecords = pixelData.results;
+
+      // Call all registered export functions with the full dataset
+      const exportPromises = Array.from(exportFunctions.entries()).map(async ([key, fn]) => {
+        try {
+          return await fn(allRecords);
+        } catch (err) {
+          console.error(`Error exporting data for ${key}:`, err);
+          return null;
+        }
+      });
+
+      const exportFiles = await Promise.all(exportPromises);
+      const validFiles = exportFiles.filter(
+        (file): file is NonNullable<typeof file> => file !== null,
+      );
+
+      if (validFiles.length === 0) {
+        console.warn('No export files generated');
+        return;
+      }
+
+      // Build ZIP file
+      const zipBlob = await buildZipFile(validFiles);
+
+      // Generate filename with coordinates
+      const filename = `pixel-driller-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
+      downloadBlob(zipBlob, filename);
+    } catch (err) {
+      console.error('Error creating download:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create download');
+    } finally {
+      setDownloading(false);
+    }
+  }, [pixelData, loading, error, getAllExportFunctions, lat, lng]);
+
   return (
     <Box
       ref={containerRef}
@@ -120,9 +168,18 @@ export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) =>
         flexDirection: 'column',
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        Site Details
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+        <Typography variant="h6">Site Details</Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<DownloadIcon />}
+          onClick={handleDownload}
+          disabled={!pixelData || loading || !!error || downloading}
+        >
+          {downloading ? 'Preparing...' : 'Download'}
+        </Button>
+      </Box>
       <Typography variant="body2" color="text.secondary" gutterBottom>
         Coordinates:{' '}
         <Link component={RouterLink} to={coordinatesUrl}>
@@ -169,5 +226,18 @@ export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) =>
         </Box>
       )}
     </Box>
+  );
+};
+
+/**
+ * Component that displays detailed information for a selected site location.
+ * Shows coordinates and hazard charts for the selected point.
+ * Wraps content with DownloadDataProvider to enable export functionality.
+ */
+export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
+  return (
+    <DownloadDataProvider>
+      <SiteDetailsContentInner lng={lng} lat={lat} />
+    </DownloadDataProvider>
   );
 };

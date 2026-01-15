@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -65,8 +66,26 @@ const isJrcFloodRecord = (record: PixelRecord): record is PixelRecord<JrcFloodKe
   return record.layer.domain === 'jrc_flood';
 };
 
+// Filter function for JRC Flood records
+const filterJrcFloodRecords = (records: PixelRecord[]): PixelRecord<JrcFloodKeys>[] => {
+  return records.filter(isJrcFloodRecord);
+};
+
+// Export function for JRC Flood
+const exportJrcFlood: ExportFunction = async (allRecords) => {
+  const filtered = filterJrcFloodRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'river-flooding-jrc.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(() => records.filter(isJrcFloodRecord), [records]);
+  const filteredRecords = useMemo(() => filterJrcFloodRecords(records), [records]);
 
   const data = useMemo(
     () => toReturnPeriodRows(filteredRecords, jrcFloodConfig),
@@ -78,6 +97,8 @@ export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
     if (data.length === 0) return 'no-data';
     return calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD);
   }, [data]);
+
+  useRegisterExportFunction('river-flooding-jrc', exportJrcFlood);
 
   return (
     <HazardAccordion title="River Flooding (JRC)" ragStatus={ragStatus}>

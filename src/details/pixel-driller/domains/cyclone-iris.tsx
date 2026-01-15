@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -69,8 +70,26 @@ const isCycloneIrisRecord = (record: PixelRecord): record is PixelRecord<Cyclone
   return record.layer.domain === 'cyclone_iris';
 };
 
+// Filter function for Cyclone IRIS records
+const filterCycloneIrisRecords = (records: PixelRecord[]): PixelRecord<CycloneIrisKeys>[] => {
+  return records.filter(isCycloneIrisRecord);
+};
+
+// Export function for Tropical Cyclones (IRIS)
+const exportCycloneIris: ExportFunction = async (allRecords) => {
+  const filtered = filterCycloneIrisRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'tropical-cyclones-iris.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(() => records.filter(isCycloneIrisRecord), [records]);
+  const filteredRecords = useMemo(() => filterCycloneIrisRecords(records), [records]);
 
   const data = useMemo(
     () => toReturnPeriodRows(filteredRecords, irisCycloneConfig),
@@ -82,6 +101,8 @@ export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
     if (data.length === 0) return 'no-data';
     return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
   }, [data]);
+
+  useRegisterExportFunction('tropical-cyclones-iris', exportCycloneIris);
 
   return (
     <HazardAccordion title="Tropical Cyclones (IRIS)" ragStatus={ragStatus}>

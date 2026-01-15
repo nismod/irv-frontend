@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -69,8 +70,26 @@ const isCycloneStormRecord = (record: PixelRecord): record is PixelRecord<Cyclon
   return record.layer.domain === 'cyclone_storm';
 };
 
+// Filter function for Cyclone STORM records
+const filterCycloneStormRecords = (records: PixelRecord[]): PixelRecord<CycloneStormKeys>[] => {
+  return records.filter(isCycloneStormRecord);
+};
+
+// Export function for Tropical Cyclones (STORM)
+const exportCycloneStorm: ExportFunction = async (allRecords) => {
+  const filtered = filterCycloneStormRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'tropical-cyclones-storm.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(() => records.filter(isCycloneStormRecord), [records]);
+  const filteredRecords = useMemo(() => filterCycloneStormRecords(records), [records]);
 
   const data = useMemo(
     () => toReturnPeriodRows(filteredRecords, stormCycloneConfig),
@@ -82,6 +101,8 @@ export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => 
     if (data.length === 0) return 'no-data';
     return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
   }, [data]);
+
+  useRegisterExportFunction('tropical-cyclones-storm', exportCycloneStorm);
 
   return (
     <HazardAccordion title="Tropical Cyclones (STORM)" ragStatus={ragStatus}>

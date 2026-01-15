@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -25,8 +26,26 @@ const isLandslideRecord = (record: PixelRecord): record is PixelRecord<Landslide
   return record.layer.domain === 'landslide';
 };
 
+// Filter function for Landslide records
+const filterLandslideRecords = (records: PixelRecord[]): PixelRecord<LandslideKeys>[] => {
+  return records.filter(isLandslideRecord);
+};
+
+// Export function for Landslide
+const exportLandslide: ExportFunction = async (allRecords) => {
+  const filtered = filterLandslideRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'landslide.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const Landslides: FC<HazardComponentProps> = ({ records }) => {
-  const landslideRecords = useMemo(() => records.filter(isLandslideRecord), [records]);
+  const landslideRecords = useMemo(() => filterLandslideRecords(records), [records]);
 
   // Extract values for each subtype (treat null as zero for numeric values)
   const earthquakeProb = useMemo(() => {
@@ -70,6 +89,8 @@ export const Landslides: FC<HazardComponentProps> = ({ records }) => {
     const percentage = value * 100;
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
   };
+
+  useRegisterExportFunction('landslide', exportLandslide);
 
   return (
     <HazardAccordion title="Landslide" ragStatus={ragStatus}>

@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -25,15 +26,29 @@ const DROUGHT_AMBER_THRESHOLD = 0.3; // 30% probability
 const isIsimipRecordForDrought = (record: PixelRecord): record is PixelRecord<DroughtKeys> =>
   record.layer.domain === 'isimip';
 
+// Filter function for drought records
+const filterDroughtRecords = (records: PixelRecord[]): PixelRecord<DroughtKeys>[] => {
+  return records
+    .filter(isIsimipRecordForDrought)
+    .filter((r) => r.layer.keys.hazard === 'drought' && r.layer.keys.metric === 'occurrence');
+};
+
+// Export function for Droughts
+const exportDroughts: ExportFunction = async (allRecords) => {
+  const filtered = filterDroughtRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'droughts.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const Droughts: FC<HazardComponentProps> = ({ records }) => {
   // Filter for drought records (probability values)
-  const droughtRecords = useMemo(
-    () =>
-      records
-        .filter(isIsimipRecordForDrought)
-        .filter((r) => r.layer.keys.hazard === 'drought' && r.layer.keys.metric === 'occurrence'),
-    [records],
-  );
+  const droughtRecords = useMemo(() => filterDroughtRecords(records), [records]);
 
   // Aggregate all values using maximum (worst case scenario across all epochs/rcp/gcm combinations)
   const aggregatedProbability = useMemo(() => {
@@ -59,6 +74,8 @@ export const Droughts: FC<HazardComponentProps> = ({ records }) => {
     const percentage = value * 100;
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
   };
+
+  useRegisterExportFunction('droughts', exportDroughts);
 
   return (
     <HazardAccordion title="Droughts" ragStatus={ragStatus}>

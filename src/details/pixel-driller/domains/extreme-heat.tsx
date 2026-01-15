@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -29,17 +30,29 @@ const isIsimipRecordForExtremeHeat = (
   return record.layer.domain === 'isimip';
 };
 
+// Filter function for extreme heat records
+const filterExtremeHeatRecords = (records: PixelRecord[]): PixelRecord<ExtremeHeatKeys>[] => {
+  return records
+    .filter(isIsimipRecordForExtremeHeat)
+    .filter((r) => r.layer.keys.hazard === 'extreme_heat' && r.layer.keys.metric === 'occurrence');
+};
+
+// Export function for Extreme Heat
+const exportExtremeHeat: ExportFunction = async (allRecords) => {
+  const filtered = filterExtremeHeatRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'extreme-heat.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
   // Filter for extreme heat records (probability values)
-  const extremeHeatRecords = useMemo(
-    () =>
-      records
-        .filter(isIsimipRecordForExtremeHeat)
-        .filter(
-          (r) => r.layer.keys.hazard === 'extreme_heat' && r.layer.keys.metric === 'occurrence',
-        ),
-    [records],
-  );
+  const extremeHeatRecords = useMemo(() => filterExtremeHeatRecords(records), [records]);
 
   // Aggregate all values using maximum (worst case scenario across all epochs/rcp/gcm combinations)
   const aggregatedProbability = useMemo(() => {
@@ -65,6 +78,8 @@ export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
     const percentage = value * 100;
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
   };
+
+  useRegisterExportFunction('extreme-heat', exportExtremeHeat);
 
   return (
     <HazardAccordion title="Extreme Heat" ragStatus={ragStatus}>

@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
@@ -80,11 +81,44 @@ const isAqueductRecord = (record: PixelRecord): record is PixelRecord<AqueductKe
   return record.layer.domain === 'aqueduct';
 };
 
+// Filter function for Aqueduct river flooding records
+const filterAqueductRiverRecords = (records: PixelRecord[]): PixelRecord<AqueductKeys>[] => {
+  return records.filter(isAqueductRecord).filter((r) => r.layer.keys.hazard === 'fluvial');
+};
+
+// Filter function for Aqueduct coastal flooding records
+const filterAqueductCoastalRecords = (records: PixelRecord[]): PixelRecord<AqueductKeys>[] => {
+  return records.filter(isAqueductRecord).filter((r) => r.layer.keys.hazard === 'coastal');
+};
+
+// Export function for River Flooding (Aqueduct)
+const exportAqueductRiver: ExportFunction = async (allRecords) => {
+  const filtered = filterAqueductRiverRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'river-flooding-aqueduct.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
+// Export function for Coastal Flooding (Aqueduct)
+const exportAqueductCoastal: ExportFunction = async (allRecords) => {
+  const filtered = filterAqueductCoastalRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'coastal-flooding-aqueduct.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(
-    () => records.filter(isAqueductRecord).filter((r) => r.layer.keys.hazard === 'fluvial'),
-    [records],
-  );
+  const filteredRecords = useMemo(() => filterAqueductRiverRecords(records), [records]);
 
   const data = useMemo(
     () => toReturnPeriodRows(filteredRecords, aqueductRiverConfig),
@@ -97,6 +131,8 @@ export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => 
     return calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD);
   }, [data]);
 
+  useRegisterExportFunction('river-flooding-aqueduct', exportAqueductRiver);
+
   return (
     <HazardAccordion title="River Flooding (Aqueduct)" ragStatus={ragStatus}>
       <ReturnPeriodChart config={aqueductRiverConfig} data={data} />
@@ -105,10 +141,7 @@ export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => 
 };
 
 export const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(
-    () => records.filter(isAqueductRecord).filter((r) => r.layer.keys.hazard === 'coastal'),
-    [records],
-  );
+  const filteredRecords = useMemo(() => filterAqueductCoastalRecords(records), [records]);
 
   const data = useMemo(
     () => toReturnPeriodRows(filteredRecords, aqueductCoastalConfig),
@@ -120,6 +153,8 @@ export const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {
     if (data.length === 0) return 'no-data';
     return calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD);
   }, [data]);
+
+  useRegisterExportFunction('coastal-flooding-aqueduct', exportAqueductCoastal);
 
   return (
     <HazardAccordion title="Coastal Flooding (Aqueduct)" ragStatus={ragStatus}>

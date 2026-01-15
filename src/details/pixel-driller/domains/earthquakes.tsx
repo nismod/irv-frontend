@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -21,8 +22,26 @@ const EARTHQUAKE_AMBER_THRESHOLD = 0.15;
 const isEarthquakeRecord = (record: PixelRecord): record is PixelRecord<EarthquakeKeys> =>
   record.layer.domain === 'earthquake';
 
+// Filter function for Earthquake records
+const filterEarthquakeRecords = (records: PixelRecord[]): PixelRecord<EarthquakeKeys>[] => {
+  return records.filter(isEarthquakeRecord);
+};
+
+// Export function for Earthquakes
+const exportEarthquakes: ExportFunction = async (allRecords) => {
+  const filtered = filterEarthquakeRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'earthquakes.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const Earthquakes: FC<HazardComponentProps> = ({ records }) => {
-  const earthquakeRecords = useMemo(() => records.filter(isEarthquakeRecord), [records]);
+  const earthquakeRecords = useMemo(() => filterEarthquakeRecords(records), [records]);
 
   // There should effectively be a single value per location.
   // Pick the first non-null value if multiple records exist.
@@ -46,6 +65,8 @@ export const Earthquakes: FC<HazardComponentProps> = ({ records }) => {
 
   const rpLabel = primaryRecord?.layer.keys.rp ?? '475';
   const mediumLabel = primaryRecord?.layer.keys.medium ?? 'rock';
+
+  useRegisterExportFunction('earthquakes', exportEarthquakes);
 
   return (
     <HazardAccordion title="Earthquakes" ragStatus={ragStatus}>

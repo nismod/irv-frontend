@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
+import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { HazardAccordion } from '../hazard-accordion';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
@@ -23,8 +24,26 @@ const RELATIVE_RED_THRESHOLD = 0.5; // e.g. +50%
 const isCddRecord = (record: PixelRecord): record is PixelRecord<CddKeys> =>
   record.layer.domain === 'cdd_miranda';
 
+// Filter function for Cooling Degree Days records
+const filterCddRecords = (records: PixelRecord[]): PixelRecord<CddKeys>[] => {
+  return records.filter(isCddRecord);
+};
+
+// Export function for Cooling Degree Days
+const exportCoolingDegreeDays: ExportFunction = async (allRecords) => {
+  const filtered = filterCddRecords(allRecords);
+  if (filtered.length === 0) return null;
+
+  // TODO: Build actual export content
+  return {
+    filename: 'cooling-degree-days.csv',
+    content: 'stub content',
+    mimeType: 'text/csv',
+  };
+};
+
 export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
-  const cddRecords = useMemo(() => records.filter(isCddRecord), [records]);
+  const cddRecords = useMemo(() => filterCddRecords(records), [records]);
 
   const absoluteRecord = useMemo(
     () => cddRecords.find((r) => r.layer.keys.metric === 'absolute') ?? null,
@@ -62,6 +81,8 @@ export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
     const percentage = value * 100;
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
   };
+
+  useRegisterExportFunction('cooling-degree-days', exportCoolingDegreeDays);
 
   return (
     <HazardAccordion title="Cooling Degree Days" ragStatus={ragStatus}>
