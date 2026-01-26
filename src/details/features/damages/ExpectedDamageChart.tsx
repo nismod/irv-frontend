@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
-import { VegaLite } from 'react-vega';
+import { VegaEmbed } from 'react-vega';
 
 import { unique } from '@/lib/helpers';
 
@@ -12,10 +12,11 @@ const makeSpec = (
   field: string,
   field_max: string,
   field_title: string,
+  data: any[],
 ) => ({
-  $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+  $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
   data: {
-    name: 'table',
+    values: data,
   },
   mark: {
     type: 'line',
@@ -89,7 +90,6 @@ export const ExpectedDamageChart: FC<ExpectedDamageChartProps> = ({
   field_min,
   field_max,
   field_title,
-  ...props
 }) => {
   // For some reason, Vega was complaining about not being able to extend objects, hence the cloning here.
   // Perhaps it's to do with Recoil freezing state objects
@@ -108,9 +108,19 @@ export const ExpectedDamageChart: FC<ExpectedDamageChartProps> = ({
         field,
         field_max,
         field_title,
+        clonedData.table,
       ),
     [clonedData, field_min, field, field_max, field_title],
   );
 
-  return <VegaLite data={clonedData} spec={spec as any} {...props} />;
+  return (
+    <VegaEmbed
+      spec={spec}
+      options={{
+        actions: false,
+        padding: 0,
+        renderer: 'svg',
+      }}
+    />
+  );
 };

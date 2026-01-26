@@ -165,11 +165,8 @@ export const RPDamagesSection = () => {
               }}
               field_key="damage_mean"
               field_title="Damage (USD)"
-              actions={false}
-              padding={0}
-              width={355} // this is currently picked to fit the chart to the sidebar width
-              height={150}
-              renderer="svg"
+              field_min="damage_amin"
+              field_max="damage_amax"
             />
             <RPDamageTable damages={filteredTableData} />
           </>

@@ -1,13 +1,19 @@
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { VegaLite } from 'react-vega';
+import { VegaEmbed } from 'react-vega';
 
 import { unique } from '@/lib/helpers';
 
-const makeSpec = (rpValues: number[], field_key: string, field_title: string) => ({
-  $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+const makeSpec = (
+  field_key: string,
+  field_min: string,
+  field_max: string,
+  field_title: string,
+  data: any[],
+) => ({
+  $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
   data: {
-    name: 'table',
+    values: data,
   },
   mark: {
     type: 'line',
@@ -61,22 +67,25 @@ const makeSpec = (rpValues: number[], field_key: string, field_title: string) =>
   },
 });
 
-export const ReturnPeriodDamageChart = ({ data, field_key, field_title, ...props }) => {
+export const ReturnPeriodDamageChart = ({ data, field_key, field_title, field_min, field_max }) => {
   // For some reason, Vega was complaining about not being able to extend objects, hence the cloning here.
   // Perhaps it's to do with Recoil freezing state objects
   const clonedData = useMemo(() => _.cloneDeep(data), [data]);
 
   const spec = useMemo(
-    () =>
-      makeSpec(
-        unique<number>(clonedData.table.map((d) => d.rp))
-          .sort()
-          .reverse(),
-        field_key,
-        field_title,
-      ),
-    [clonedData.table, field_key, field_title],
+    () => makeSpec(field_key, field_min, field_max, field_title, clonedData.table),
+    [clonedData.table, field_key, field_title, field_min, field_max],
   );
-
-  return <VegaLite data={clonedData} spec={spec as any} {...props} />;
+  return (
+    <VegaEmbed
+      spec={spec}
+      options={{
+        height: 150,
+        width: 355,
+        actions: false,
+        padding: 0,
+        renderer: 'svg',
+      }}
+    />
+  );
 };
