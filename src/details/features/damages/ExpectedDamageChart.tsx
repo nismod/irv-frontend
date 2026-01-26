@@ -18,55 +18,94 @@ const makeSpec = (
   data: {
     values: data,
   },
-  mark: {
-    type: 'line',
-    point: {
-      filled: true,
-    },
-    tooltip: true,
-  },
-  encoding: {
-    x: {
-      field: 'epoch',
-      type: 'ordinal',
-      title: 'Year',
-      axis: {
-        gridDash: [2, 2],
-        domainColor: '#ccc',
-        tickColor: '#ccc',
-        values: yearValues,
+  layer: [
+    {
+      mark: 'errorbar',
+      encoding: {
+        y: {
+          field: field_min,
+          type: 'quantitative',
+          scale: { zero: false },
+        },
+        y2: { field: field_max },
+        x: {
+          field: 'epoch',
+          type: 'ordinal',
+        },
+        color: {
+          field: 'rcp',
+          type: 'ordinal',
+          scale: {
+            domain: ['baseline', '2.6', '4.5', '8.5'],
+            // Drawn from IPCC AR6 colormap https://pyam-iamc.readthedocs.io/en/stable/tutorials/ipcc_colors.html
+            range: ['#8b8b8b', '#003466', '#709fcc', '#980002'],
+          },
+        },
+        tooltip: { value: false },
       },
     },
-    y: {
-      field: field,
-      type: 'quantitative',
-      title: field_title,
-      axis: {
-        gridDash: [2, 2],
-        domainColor: '#ccc',
-        tickColor: '#ccc',
+    {
+      mark: {
+        type: 'line',
+        point: {
+          filled: true,
+        },
+        tooltip: true,
       },
-    },
+      encoding: {
+        x: {
+          field: 'epoch',
+          type: 'ordinal',
+          title: 'Year',
+          axis: {
+            gridDash: [2, 2],
+            domainColor: '#ccc',
+            tickColor: '#ccc',
+            values: yearValues,
+          },
+        },
+        y: {
+          field: field,
+          type: 'quantitative',
+          title: field_title,
+          axis: {
+            gridDash: [2, 2],
+            domainColor: '#ccc',
+            tickColor: '#ccc',
+          },
+        },
 
-    color: {
-      field: 'rcp',
-      type: 'ordinal',
-      scale: {
-        domain: ['baseline', '2.6', '4.5', '8.5'],
-      },
-      title: 'RCP',
-      legend: {
-        orient: 'bottom',
-        direction: 'horizontal',
+        color: {
+          field: 'rcp',
+          type: 'ordinal',
+          scale: {
+            domain: ['baseline', '2.6', '4.5', '8.5'],
+            // Drawn from IPCC AR6 colormap https://pyam-iamc.readthedocs.io/en/stable/tutorials/ipcc_colors.html
+            range: ['#8b8b8b', '#003466', '#709fcc', '#980002'],
+          },
+          title: 'RCP',
+          legend: {
+            orient: 'bottom',
+            direction: 'horizontal',
+          },
+        },
+        // the tooltip encoding needs to replicate the field definitions in order to customise their ordering
+        tooltip: [
+          { field: field, type: 'quantitative', format: ',.3r', title: field_title },
+          { field: 'rcp', title: 'RCP' },
+          { field: 'epoch', type: 'ordinal', title: 'Year' },
+          { field: field_min, type: 'ordinal', format: ',.3r', title: 'EAD (USD, min)' },
+          { field: field_max, type: 'ordinal', format: ',.3r', title: 'EAD (USD, max)' },
+        ],
       },
     },
-    // the tooltip encoding needs to replicate the field definitions in order to customise their ordering
-    tooltip: [
-      { field: field, type: 'quantitative', format: ',.3r', title: field_title },
-      { field: 'rcp', title: 'RCP' },
-      { field: 'epoch', type: 'ordinal', title: 'Year' },
-    ],
+  ],
+  config: {
+    view: {
+      step: 85,
+    },
   },
+  height: 100,
 });
 
 // need to map special value to year to maintain chronological ordering on the X axis
