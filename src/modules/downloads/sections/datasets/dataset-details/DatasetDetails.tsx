@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 import Markdown from 'markdown-to-jsx';
-import prettyBytes from 'pretty-bytes';
 import { Link } from 'react-router-dom';
 
 import { AppLink } from '@/lib/nav';
@@ -12,6 +11,20 @@ import { mdToJsxOverrides } from '@/modules/downloads/markdown';
 
 import { PackageDataStatus } from '../dataset-indicator/status-logic/package-data';
 import { usePackageData } from '../use-package-data';
+
+function roundWithSuffix(x: number): string {
+  const precision = 3;
+  if (x < 1e3) {
+    return x + '';
+  }
+  const order = (Math.log10(x) / 3) | 0;
+  let str = (x / 10 ** (order * 3)).toPrecision(precision);
+  if (str >= 1e3) str = (x / 10 ** ((order + 1) * 3)).toPrecision(precision);
+
+  const suffixes = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+  const suffix = suffixes[order];
+  return str + suffix;
+}
 
 export function DatasetDetails({
   meta,
@@ -32,7 +45,7 @@ export function DatasetDetails({
         {status === PackageDataStatus.Available ? (
           <>
             <Typography variant="subtitle1" color="GrayText">
-              Total size: {prettyBytes(data.bytes)}
+              Total size: {roundWithSuffix(data.bytes)}
             </Typography>
             <DownloadsList paths={data.path} />
           </>
