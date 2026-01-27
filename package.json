@@ -45,13 +45,14 @@
     "react-resize-detector": "^12.3.0",
     "react-router-dom": "^6.30.0",
     "react-string-replace": "^1.1.1",
-    "react-vega": "^7.6.0",
+    "react-vega": "^8.0.0",
     "recoil": "^0.7.7",
     "recoil-sync": "^0.2.0",
     "usehooks-ts": "^3.1.1",
     "vaul": "^1.1.2",
-    "vega": "^5.32.0",
-    "vega-lite": "^5.23.0"
+    "vega": "^6.2.0",
+    "vega-embed": "^7",
+    "vega-lite": "^6.4.2"
   },
   "overrides": {
     "react-is": "^18.3.1"
@@ -75,6 +76,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^5.0.4",
+    "baseline-browser-mapping": "^2.9.18",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",

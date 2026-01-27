@@ -110,14 +110,6 @@ export const ExpectedDamagesSection = () => {
     [selectedData],
   );
 
-  const eadChartProps = {
-    actions: false,
-    padding: 0,
-    width: 360, // this is currently picked to fit the chart to the sidebar width
-    height: 150,
-    renderer: 'svg',
-  };
-
   return (
     <Box py={2}>
       <Stack spacing={3}>
@@ -145,7 +137,6 @@ export const ExpectedDamagesSection = () => {
                 field_min="ead_amin"
                 field_max="ead_amax"
                 field_title="EAD (USD)"
-                {...eadChartProps}
               />
             </Box>
             {has_eael ? (
@@ -159,7 +150,6 @@ export const ExpectedDamagesSection = () => {
                   field_min="eael_amin"
                   field_max="eael_amax"
                   field_title="EAEL (USD/day)"
-                  {...eadChartProps}
                 />
               </Box>
             ) : (
