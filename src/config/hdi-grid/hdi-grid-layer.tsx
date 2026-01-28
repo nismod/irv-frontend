@@ -1,8 +1,7 @@
-import React from 'react';
-
 import { InteractionTarget, RasterTarget } from '@/lib/data-map/interactions/types';
 import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
 import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
+import { useViewLayerState } from '@/lib/data-map/react/view-layer-state';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
@@ -25,14 +24,26 @@ function getDataUrl() {
   });
 }
 
-export function hdiGridViewLayer(): ViewLayer {
+type RasterHoverState = { hover: InteractionTarget<RasterTarget> };
+
+type HdiGridState = RasterHoverState;
+
+function rasterHoverState(): RasterHoverState {
+  return { hover: null };
+}
+
+export function hdiGridViewLayer(): ViewLayer<{}, HdiGridState> {
   const label = 'Human Development Index';
   const formatValue = makeValueFormat((x) => x, { maximumFractionDigits: 2 });
 
   return {
+    type: 'new',
     id: 'hdi-grid',
-    interactionGroup: 'raster_assets',
-    fn({ deckProps, zoom }) {
+    interactions: new RasterInteractions({
+      group: null,
+    }),
+    state: { ...rasterHoverState() },
+    renderMapLayers({ autoProps, viewState: { zoom } }) {
       return rasterTileLayer(
         {
           textureParameters: {
@@ -40,29 +51,35 @@ export function hdiGridViewLayer(): ViewLayer {
           },
           transparentColor: [255, 255, 255, 0],
         },
-        deckProps,
+        autoProps,
         {
           data: getDataUrl(),
           refinementStrategy: 'no-overlap',
         },
       );
     },
-    renderLegend() {
-      return React.createElement(RasterLegend, {
-        key: 'hdi-grid',
-        label,
-        colorMap: COLOR_MAP,
-        getValueLabel: formatValue,
-      });
-    },
-    renderTooltip(hoveredObject: InteractionTarget<RasterTarget>) {
-      const { color } = hoveredObject.target;
-      return React.createElement(RasterHoverDescription, {
-        color,
-        colorMap: COLOR_MAP,
-        label,
-        formatValue,
-      });
+    slots: {
+      Legend: () => {
+        return <RasterLegend label={label} colorMap={COLOR_MAP} getValueLabel={formatValue} />;
+      },
+      Tooltip: () => {
+        const [
+          {
+            hover: {
+              target: { color },
+            },
+          },
+        ] = useViewLayerState<HdiGridState>();
+
+        return (
+          <RasterHoverDescription
+            color={color}
+            label={label}
+            colorMap={COLOR_MAP}
+            formatValue={formatValue}
+          />
+        );
+      },
     },
   };
 }

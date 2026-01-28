@@ -4,10 +4,14 @@ import { useRecoilValue } from 'recoil';
 import { hoverState } from '@/lib/data-map/interactions/interaction-state';
 import { InteractionTarget } from '@/lib/data-map/interactions/types';
 
-const ViewLayerTooltip = ({ hover }: { hover: InteractionTarget }) => {
+const ViewLayerTooltipOld = ({ hover }: { hover: InteractionTarget }) => {
   const { viewLayer } = hover;
 
-  return <>{viewLayer.renderTooltip?.(hover)}</>;
+  if (viewLayer.type === 'old') {
+    return <>{viewLayer.renderTooltip?.(hover)}</>;
+  } else {
+    throw new Error('ViewLayerTooltipOld only supports old style view layers');
+  }
 };
 
 /**
@@ -36,7 +40,7 @@ export const InteractionGroupTooltip = ({
   if (MergeComponent != null) {
     contents = <MergeComponent hoveredObjects={hoveredObjects} />;
   } else {
-    contents = hoveredObjects.map((h) => <ViewLayerTooltip key={h.viewLayer.id} hover={h} />);
+    contents = hoveredObjects.map((h) => <ViewLayerTooltipOld key={h.viewLayer.id} hover={h} />);
   }
 
   return <WrapperComponent>{contents}</WrapperComponent>;
