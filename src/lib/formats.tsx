@@ -28,3 +28,21 @@ export function nullFormat<T>(
 ): FormatFunction<T> {
   return (x: any) => (x != null ? formatFn(x) : nullReplacement);
 }
+
+/**
+ * Formats a number to three significant figures and adds SI suffix
+ * - only if larger than 1000.
+ */
+export function roundWithSuffix(x: number): string {
+  const precision = 3;
+  if (x < 1e3) {
+    return x + '';
+  }
+  const order = (Math.log10(x) / 3) | 0;
+  let str = (x / 10 ** (order * 3)).toPrecision(precision);
+  if (str >= 1e3) str = (x / 10 ** ((order + 1) * 3)).toPrecision(precision);
+
+  const suffixes = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+  const suffix = suffixes[order];
+  return str + suffix;
+}
