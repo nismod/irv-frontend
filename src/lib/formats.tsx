@@ -39,9 +39,11 @@ export function roundWithSuffix(x: number): string {
     return x + '';
   }
   const order = (Math.log10(x) / 3) | 0;
-  let str = (x / 10 ** (order * 3)).toPrecision(precision);
-  if (str >= 1e3) str = (x / 10 ** ((order + 1) * 3)).toPrecision(precision);
-
+  let val = x / 10 ** (order * 3);
+  if (val >= 1e3) {
+    val = x / 10 ** ((order + 1) * 3);
+  }
+  const str = val.toPrecision(precision);
   const suffixes = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
   const suffix = suffixes[order];
   return str + suffix;
