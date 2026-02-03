@@ -54,37 +54,37 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
     setError(null);
 
     // Load mock data (temporary)
-    setTimeout(() => {
-      try {
-        setPixelData(asPixelResponse(mockPixelData));
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load mock pixel data');
-        console.error('Error loading mock pixel data:', err);
-      } finally {
-        setLoading(false);
-      }
-    }, 100); // Small delay to simulate loading
-
-    // API fetch code (commented out temporarily)
-    // const fetchPixelData = async () => {
-    //   setLoading(true);
-    //   setError(null);
+    // setTimeout(() => {
     //   try {
-    //     // Fetch from API endpoint
-    //     const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`);
-    //     if (!response.ok) {
-    //       throw new Error(`HTTP error! status: ${response.status}`);
-    //     }
-    //     const data = await response.json();
-    //     setPixelData(asPixelResponse(data));
+    //     setPixelData(asPixelResponse(mockPixelData));
     //   } catch (err) {
-    //     setError(err instanceof Error ? err.message : 'Failed to fetch pixel data');
-    //     console.error('Error fetching pixel data:', err);
+    //     setError(err instanceof Error ? err.message : 'Failed to load mock pixel data');
+    //     console.error('Error loading mock pixel data:', err);
     //   } finally {
     //     setLoading(false);
     //   }
-    // };
-    // fetchPixelData();
+    // }, 100); // Small delay to simulate loading
+
+    // API fetch code (commented out temporarily)
+    const fetchPixelData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch from API endpoint
+        const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setPixelData(asPixelResponse(data));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch pixel data');
+        console.error('Error fetching pixel data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPixelData();
   }, [lng, lat]);
 
   // Scroll behavior when data loads or open accordion changes

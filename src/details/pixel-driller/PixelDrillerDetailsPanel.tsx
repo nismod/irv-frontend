@@ -5,7 +5,6 @@ import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
-import { ErrorTest } from '@/lib/react/ErrorTest';
 
 import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
 
