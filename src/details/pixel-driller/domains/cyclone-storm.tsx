@@ -5,6 +5,13 @@ import { toReturnPeriodRows } from '../data-transforms';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
+import {
+  COMMON_CONTACT_POINT,
+  COMMON_CREATOR,
+  COMMON_DIALECT,
+  COMMON_PUBLISHER,
+} from '../metadata-common';
+import { RdlsDataset, RdlsLocation } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
 import {
@@ -27,7 +34,7 @@ export interface CycloneStormKeys extends PixelRecordKeys {
 const stormCycloneConfig: ChartConfig = {
   id: 'cyclone-storm',
   title: 'Tropical cyclones – STORM',
-  xLabel: 'return period (years)',
+  xLabel: 'Return period (years)',
   yLabel: 'Wind speed (m/s)',
   // STORM cyclones: scenario = epoch + rcp + gcm, colour by rcp
   seriesFields: ['epoch', 'rcp', 'gcm'],
@@ -116,3 +123,63 @@ export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => 
     </HazardAccordion>
   );
 };
+
+// Metadata builder for RDLS metadata.json
+
+export const getCycloneStormMetadata = (spatial: RdlsLocation): RdlsDataset => ({
+  id: 'cyclone_storm',
+  title: 'Tropical Cyclones (STORM)',
+  description:
+    'STORM tropical cyclone wind speed hazard at this site across multiple return periods, scenarios and climate models.',
+  risk_data_type: ['hazard'],
+  spatial,
+  resources: [
+    {
+      id: 'cyclone_storm.csv',
+      title: 'Tropical Cyclones (STORM) Data',
+      description:
+        'Tropical cyclone wind speed data from the STORM project for this site across return periods and scenarios.',
+      format: 'csv',
+      schema: {
+        fields: [
+          {
+            name: 'rp',
+            type: 'number',
+            title: 'Return period',
+            description: 'Return period (years).',
+          },
+          {
+            name: 'epoch',
+            type: 'string',
+            title: 'Epoch',
+            description: 'Time period or epoch of the simulation.',
+          },
+          {
+            name: 'rcp',
+            type: 'string',
+            title: 'RCP',
+            description: 'Representative Concentration Pathway scenario.',
+          },
+          {
+            name: 'gcm',
+            type: 'string',
+            title: 'GCM',
+            description: 'Global Climate Model identifier.',
+          },
+          {
+            name: 'value',
+            type: 'number',
+            title: 'Wind speed',
+            description: 'Wind speed (m/s).',
+          },
+        ],
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ],
+  publisher: COMMON_PUBLISHER,
+  license: '',
+  contact_point: COMMON_CONTACT_POINT,
+  creator: COMMON_CREATOR,
+  attributions: [],
+});

@@ -309,7 +309,7 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
         {
           mark: {
             type: 'area',
-            opacity: 0.3,
+            opacity: 0.15,
           },
           encoding: {
             x: {

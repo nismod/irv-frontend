@@ -6,6 +6,13 @@ import { FC, useMemo } from 'react';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
+import {
+  COMMON_CONTACT_POINT,
+  COMMON_CREATOR,
+  COMMON_DIALECT,
+  COMMON_PUBLISHER,
+} from '../metadata-common';
+import { RdlsDataset, RdlsLocation } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
@@ -90,3 +97,51 @@ export const Earthquakes: FC<HazardComponentProps> = ({ records }) => {
     </HazardAccordion>
   );
 };
+
+// Metadata builder for RDLS metadata.json
+
+export const getEarthquakesMetadata = (spatial: RdlsLocation): RdlsDataset => ({
+  id: 'earthquake',
+  title: 'Earthquake Ground Shaking',
+  description:
+    'Modelled ground shaking intensity for earthquake scenarios at this site for a given return period and medium.',
+  risk_data_type: ['hazard'],
+  spatial,
+  resources: [
+    {
+      id: 'earthquake.csv',
+      title: 'Earthquake Ground Shaking Data',
+      description:
+        'Ground shaking intensity values for earthquake scenarios at this site, including return period and ground medium.',
+      format: 'csv',
+      schema: {
+        fields: [
+          {
+            name: 'rp',
+            type: 'number',
+            title: 'Return period',
+            description: 'Return period (years).',
+          },
+          {
+            name: 'medium',
+            type: 'string',
+            title: 'Medium',
+            description: 'Ground medium (e.g., rock).',
+          },
+          {
+            name: 'value',
+            type: 'number',
+            title: 'Ground shaking',
+            description: 'Ground shaking intensity (model units).',
+          },
+        ],
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ],
+  publisher: COMMON_PUBLISHER,
+  license: '',
+  contact_point: COMMON_CONTACT_POINT,
+  creator: COMMON_CREATOR,
+  attributions: [],
+});

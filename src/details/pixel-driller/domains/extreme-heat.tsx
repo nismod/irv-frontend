@@ -5,6 +5,13 @@ import { FC, useMemo } from 'react';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
+import {
+  COMMON_CONTACT_POINT,
+  COMMON_CREATOR,
+  COMMON_DIALECT,
+  COMMON_PUBLISHER,
+} from '../metadata-common';
+import { RdlsDataset, RdlsLocation } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
@@ -112,3 +119,57 @@ export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
     </HazardAccordion>
   );
 };
+
+// Metadata builder for RDLS metadata.json
+
+export const getExtremeHeatMetadata = (spatial: RdlsLocation): RdlsDataset => ({
+  id: 'isimip__extreme_heat__occurrence',
+  title: 'Extreme Heat Occurrence (ISIMIP)',
+  description:
+    'Probability of extreme heat events at this site across multiple emissions scenarios, epochs and climate models.',
+  risk_data_type: ['hazard'],
+  spatial,
+  resources: [
+    {
+      id: 'isimip__extreme_heat__occurrence.csv',
+      title: 'Extreme Heat Occurrence Data (ISIMIP)',
+      description:
+        'Extreme heat occurrence probabilities from the ISIMIP project for this site across scenarios.',
+      format: 'csv',
+      schema: {
+        fields: [
+          {
+            name: 'rcp',
+            type: 'string',
+            title: 'RCP',
+            description: 'Representative Concentration Pathway (emissions scenario).',
+          },
+          {
+            name: 'epoch',
+            type: 'string',
+            title: 'Epoch',
+            description: 'Time period or epoch of the simulation.',
+          },
+          {
+            name: 'gcm',
+            type: 'string',
+            title: 'GCM',
+            description: 'Global Climate Model identifier.',
+          },
+          {
+            name: 'value',
+            type: 'number',
+            title: 'Probability',
+            description: 'Event probability (0–1) for extreme heat occurrence.',
+          },
+        ],
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ],
+  publisher: COMMON_PUBLISHER,
+  license: '',
+  contact_point: COMMON_CONTACT_POINT,
+  creator: COMMON_CREATOR,
+  attributions: [],
+});

@@ -5,6 +5,13 @@ import { toReturnPeriodRows } from '../data-transforms';
 import { ExportFunction, useRegisterExportFunction } from '../download-context';
 import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
+import {
+  COMMON_CONTACT_POINT,
+  COMMON_CREATOR,
+  COMMON_DIALECT,
+  COMMON_PUBLISHER,
+} from '../metadata-common';
+import { RdlsDataset, RdlsLocation } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
 import {
@@ -109,3 +116,45 @@ export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
     </HazardAccordion>
   );
 };
+
+// Metadata builder for RDLS metadata.json
+
+export const getJrcFloodMetadata = (spatial: RdlsLocation): RdlsDataset => ({
+  id: 'jrc_flood',
+  title: 'River Flooding (JRC)',
+  description:
+    'River flood height hazard at this site from the JRC dataset across multiple return periods.',
+  risk_data_type: ['hazard'],
+  spatial,
+  resources: [
+    {
+      id: 'jrc_flood.csv',
+      title: 'River Flooding (JRC) Data',
+      description:
+        'River flood height data from the JRC dataset for this site across return periods.',
+      format: 'csv',
+      schema: {
+        fields: [
+          {
+            name: 'rp',
+            type: 'number',
+            title: 'Return period',
+            description: 'Return period (years).',
+          },
+          {
+            name: 'value',
+            type: 'number',
+            title: 'Flood height',
+            description: 'Flood height (m).',
+          },
+        ],
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ],
+  publisher: COMMON_PUBLISHER,
+  license: '',
+  contact_point: COMMON_CONTACT_POINT,
+  creator: COMMON_CREATOR,
+  attributions: [],
+});

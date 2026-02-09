@@ -1,25 +1,38 @@
+import { Close, Download } from '@mui/icons-material';
 import DownloadIcon from '@mui/icons-material/Download';
+import { Alert, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+
+import { ExtLink } from '@/lib/nav';
+
+import { mapInteractionModeState } from '@/state/map-view/map-interaction-state';
 
 import { openAccordionState } from './accordion-state';
 import { asPixelResponse } from './data-transforms';
-import { CoastalFlooding, RiverFloodingAqueduct } from './domains/aqueduct';
-import { CoolingDegreeDays } from './domains/cooling-degree-days';
-import { TropicalCyclonesIris } from './domains/cyclone-iris';
-import { TropicalCyclonesStorm } from './domains/cyclone-storm';
-import { Droughts } from './domains/droughts';
-import { Earthquakes } from './domains/earthquakes';
-import { ExtremeHeat } from './domains/extreme-heat';
-import { RiverFloodingJrc } from './domains/jrc-flood';
-import { Landslides } from './domains/landslide';
+import {
+  CoastalFlooding,
+  getAqueductCoastalMetadata,
+  getAqueductRiverMetadata,
+  RiverFloodingAqueduct,
+} from './domains/aqueduct';
+import { CoolingDegreeDays, getCoolingDegreeDaysMetadata } from './domains/cooling-degree-days';
+import { getCycloneIrisMetadata, TropicalCyclonesIris } from './domains/cyclone-iris';
+import { getCycloneStormMetadata, TropicalCyclonesStorm } from './domains/cyclone-storm';
+import { Droughts, getDroughtsMetadata } from './domains/droughts';
+import { Earthquakes, getEarthquakesMetadata } from './domains/earthquakes';
+import { ExtremeHeat, getExtremeHeatMetadata } from './domains/extreme-heat';
+import { getJrcFloodMetadata, RiverFloodingJrc } from './domains/jrc-flood';
+import { getLandslidesMetadata, Landslides } from './domains/landslide';
 import { DownloadDataProvider, ExportFile, useDownloadDataContext } from './download-context';
 import { buildZipFile, downloadBlob, getReadmeFile } from './download-utils';
+import { createSpatialPoint } from './metadata-common';
+import { RdlsMetadataPackage } from './metadata-types';
 import mockPixelData from './mock/pixel_values.json';
 import { PixelResponse } from './types';
 
@@ -40,6 +53,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useRecoilValue(openAccordionState);
   const { getAllExportFunctions } = useDownloadDataContext();
+  const setInteractionMode = useSetRecoilState(mapInteractionModeState);
 
   const coordinatesUrl = useMemo(
     () =>
@@ -78,7 +92,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
         const data = await response.json();
         setPixelData(asPixelResponse(data));
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch pixel data');
+        setError(err instanceof Error ? err.message : 'Failed to fetch site data');
         console.error('Error fetching pixel data:', err);
       } finally {
         setLoading(false);
@@ -135,12 +149,33 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       const exportFileGroups = await Promise.all(exportPromises);
       let exportFiles = exportFileGroups.flat();
 
-      // Always include README and site metadata in the ZIP
+      // Build RDLS-style metadata.json from domain metadata definitions.
+      const spatial = createSpatialPoint(lat, lng);
+      const datasets = [
+        getAqueductRiverMetadata(spatial),
+        getAqueductCoastalMetadata(spatial),
+        getJrcFloodMetadata(spatial),
+        getCycloneIrisMetadata(spatial),
+        getCycloneStormMetadata(spatial),
+        // getCoolingDegreeDaysMetadata(spatial),
+        getExtremeHeatMetadata(spatial),
+        getDroughtsMetadata(spatial),
+        // getLandslidesMetadata(spatial),
+        getEarthquakesMetadata(spatial),
+      ].filter(Boolean) as RdlsMetadataPackage['datasets'];
+
+      const metadata: RdlsMetadataPackage = {
+        $schema: './metadata.schema.json',
+        datasets,
+      };
+
       const metadataFile: ExportFile = {
         filename: 'metadata.json',
-        content: JSON.stringify({ lat, lon: lng }, null, 2),
+        content: JSON.stringify(metadata, null, 2),
         mimeType: 'application/json',
       };
+
+      // Always include README and site metadata in the ZIP
       exportFiles = [getReadmeFile(), metadataFile, ...exportFiles];
 
       // Build ZIP file
@@ -173,15 +208,27 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Typography variant="h6">Site Details</Typography>
-        <Button
-          variant="outlined"
-          size="small"
-          startIcon={<DownloadIcon />}
-          onClick={handleDownload}
-          disabled={!pixelData || loading || !!error || downloading}
-        >
-          {downloading ? 'Preparing...' : 'Download'}
-        </Button>
+        <Box>
+          <IconButton
+            title="Download site data package"
+            // variant="outlined"
+            // size="small"
+            // startIcon={<DownloadIcon />}
+            onClick={handleDownload}
+            disabled={!pixelData || loading || !!error || downloading}
+          >
+            <Download />
+            {/* {downloading ? 'Preparing...' : 'Download'} */}
+          </IconButton>
+          <IconButton
+            title="Exit site inspection mode"
+            onClick={() => {
+              setInteractionMode('standard');
+            }}
+          >
+            <Close />
+          </IconButton>
+        </Box>
       </Box>
       <Typography variant="body2" color="text.secondary" gutterBottom>
         Coordinates:{' '}
@@ -189,6 +236,15 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
           {lat.toFixed(6)}, {lng.toFixed(6)}
         </Link>
       </Typography>
+
+      <Alert severity="info">
+        <Typography variant="body2">
+          This site inspection tool is a work-in-progress. Please{' '}
+          <ExtLink href="mailto:tom.russell@ouce.ox.ac.uk">contact us</ExtLink> or{' '}
+          <ExtLink href="https://github.com/nismod/infra-risk-vis/issues/">report an issue</ExtLink>
+          .
+        </Typography>
+      </Alert>
 
       {loading && (
         <Box sx={{ mt: 2 }}>
@@ -221,10 +277,10 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
           <CoastalFlooding records={pixelData.results} />
           <TropicalCyclonesIris records={pixelData.results} />
           <TropicalCyclonesStorm records={pixelData.results} />
-          <CoolingDegreeDays records={pixelData.results} />
+          {/* <CoolingDegreeDays records={pixelData.results} /> */}
           <ExtremeHeat records={pixelData.results} />
           <Droughts records={pixelData.results} />
-          <Landslides records={pixelData.results} />
+          {/* <Landslides records={pixelData.results} /> */}
           <Earthquakes records={pixelData.results} />
         </Box>
       )}

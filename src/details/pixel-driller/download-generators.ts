@@ -13,7 +13,7 @@ export interface CsvColumnConfig {
 export interface DomainExportConfig {
   /**
    * Base name for the domain export.
-   * The final filenames will be `${baseName}.csv` and `${baseName}.json`.
+   * The final filename will be `${baseName}.csv`.
    * Example: "isimip__drought__occurrence".
    */
   baseName: string;
@@ -21,7 +21,8 @@ export interface DomainExportConfig {
   columns: CsvColumnConfig[];
   /**
    * Domain-specific metadata stub.
-   * For now this will generally be an empty object, but can be extended later.
+   * This field is no longer used for generating per-domain JSON files,
+   * but kept for backwards compatibility.
    */
   metadata: Record<string, unknown>;
 }
@@ -56,28 +57,16 @@ export const buildCsvWithComments = <TKeys extends PixelRecordKeys>(
 };
 
 /**
- * For now, JSON metadata is just the configured stub.
- * This can be extended later to include richer catalog metadata.
- */
-export const buildJsonMetadata = (config: DomainExportConfig): unknown => {
-  return config.metadata ?? {};
-};
-
-/**
- * Build the standard pair of export files (CSV + JSON) for a domain.
- * Always returns two files, even if the records array is empty.
+ * Build the CSV export file for a domain.
+ * Returns a single CSV file, even if the records array is empty.
+ * Metadata is now centralized in a single metadata.json file.
  */
 export const buildDomainExportFiles = <TKeys extends PixelRecordKeys>(
   config: DomainExportConfig,
   records: PixelRecord<TKeys>[],
 ): ExportFile[] => {
   const csvContent = buildCsvWithComments(config, records);
-  const jsonContent = JSON.stringify(buildJsonMetadata(config), null, 2);
-
   const base = config.baseName;
 
-  return [
-    { filename: `${base}.csv`, content: csvContent, mimeType: 'text/csv' },
-    { filename: `${base}.json`, content: jsonContent, mimeType: 'application/json' },
-  ];
+  return [{ filename: `${base}.csv`, content: csvContent, mimeType: 'text/csv' }];
 };
