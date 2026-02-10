@@ -69,7 +69,22 @@ const MapViewContent = ({ children }) => {
     prevInteractionModeRef.current = interactionMode;
   }, [interactionMode, setClickLocation, setSiteParam]);
 
+  // Keep the "site" URL param in sync with the current pixel-driller click location
+  useEffect(() => {
+    if (interactionMode !== 'pixel-driller') {
+      return;
+    }
+    if (!clickLocation) {
+      return;
+    }
+
+    const { lat, lng } = clickLocation;
+    setSiteParam(`${lat.toFixed(6)},${lng.toFixed(6)}`);
+  }, [interactionMode, clickLocation, setSiteParam]);
+
   // When a "site" URL param is present, enable pixel-driller mode and restore the click location.
+  // This effect only reacts to changes in the URL param itself, so it won't
+  // fight with the user explicitly toggling the interaction mode.
   useEffect(() => {
     if (!siteParam) {
       return;
@@ -83,19 +98,9 @@ const MapViewContent = ({ children }) => {
       return;
     }
 
-    const sameLocation =
-      clickLocation &&
-      Math.abs(clickLocation.lat - lat) < 1e-6 &&
-      Math.abs(clickLocation.lng - lng) < 1e-6;
-
-    // If we're already in pixel-driller mode and at the same location, do nothing.
-    if (interactionMode === 'pixel-driller' && sameLocation) {
-      return;
-    }
-
     setInteractionMode('pixel-driller');
     setClickLocation({ lng, lat });
-  }, [siteParam, interactionMode, clickLocation, setInteractionMode, setClickLocation]);
+  }, [siteParam, setInteractionMode, setClickLocation]);
 
   const handleMapClick = (event: MapMouseEvent) => {
     if (interactionMode === 'pixel-driller') {
@@ -106,9 +111,6 @@ const MapViewContent = ({ children }) => {
         lng,
         lat,
       });
-
-      // Update the URL "site" param so the current pixel-driller location is shareable.
-      setSiteParam(`${lat.toFixed(6)},${lng.toFixed(6)}`);
     }
   };
 

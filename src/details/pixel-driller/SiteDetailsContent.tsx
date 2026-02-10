@@ -57,11 +57,16 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
   const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
 
-  const coordinatesUrl = useMemo(
-    () =>
-      `/view/hazard?site=${lat.toFixed(6)},${lng.toFixed(6)}&x=${lng.toFixed(6)}&y=${lat.toFixed(6)}&z=9`,
-    [lat, lng],
-  );
+  const coordinatesUrl = useMemo(() => {
+    const siteValue = `"${lat.toFixed(6)},${lng.toFixed(6)}"`;
+    const params = new URLSearchParams({
+      site: siteValue,
+      x: lng.toFixed(6),
+      y: lat.toFixed(6),
+      z: '9',
+    });
+    return `/view/hazard?${params.toString()}`;
+  }, [lat, lng]);
 
   useEffect(() => {
     // TODO: Temporarily using mock data for performance during testing
