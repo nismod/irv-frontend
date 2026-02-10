@@ -11,7 +11,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { ExtLink } from '@/lib/nav';
 
-import { mapInteractionModeState } from '@/state/map-view/map-interaction-state';
+import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
 
 import { openAccordionState } from './accordion-state';
 import { asPixelResponse } from './data-transforms';
@@ -53,7 +53,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useRecoilValue(openAccordionState);
   const { getAllExportFunctions } = useDownloadDataContext();
-  const setInteractionMode = useSetRecoilState(mapInteractionModeState);
+  const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
 
   const coordinatesUrl = useMemo(
     () =>
@@ -211,19 +211,15 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
         <Box>
           <IconButton
             title="Download site data package"
-            // variant="outlined"
-            // size="small"
-            // startIcon={<DownloadIcon />}
             onClick={handleDownload}
             disabled={!pixelData || loading || !!error || downloading}
           >
             <Download />
-            {/* {downloading ? 'Preparing...' : 'Download'} */}
           </IconButton>
           <IconButton
             title="Exit site inspection mode"
             onClick={() => {
-              setInteractionMode('standard');
+              setPixelDrillerClickLocation(null);
             }}
           >
             <Close />
