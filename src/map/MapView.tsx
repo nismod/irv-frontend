@@ -1,4 +1,4 @@
-import { ReactNode, Suspense, useEffect } from 'react';
+import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import { MapMouseEvent } from 'react-map-gl/maplibre';
 import { atom, useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 
@@ -14,10 +14,12 @@ import { interactionGroupsState } from '@/state/layers/interaction-groups';
 import { viewLayersState } from '@/state/layers/view-layers';
 import { viewLayersParamsState } from '@/state/layers/view-layers-params';
 import {
+  MapInteractionMode,
   mapInteractionModeState,
   pixelDrillerClickLocationState,
 } from '@/state/map-view/map-interaction-state';
 import { mapViewStateState, useSyncMapUrl } from '@/state/map-view/map-view-state';
+import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
 
 import { backgroundState, showLabelsState } from './layers/layers-state';
 import { TooltipContent } from './tooltip/TooltipContent';
@@ -40,10 +42,13 @@ const MapViewContent = ({ children }) => {
   const viewLayersParams = useRecoilValue(viewLayersParamsState);
 
   const interactionGroups = useRecoilValue(interactionGroupsState);
-  const interactionMode = useRecoilValue(mapInteractionModeState);
+  const [interactionMode, setInteractionMode] = useRecoilState(mapInteractionModeState);
   const [clickLocation, setClickLocation] = useRecoilState(pixelDrillerClickLocationState);
+  const [siteParam, setSiteParam] = useRecoilState(pixelDrillerSiteUrlState);
 
   const fitBounds = useRecoilValue(mapFitBoundsState);
+
+  const prevInteractionModeRef = useRef<MapInteractionMode | null>(null);
 
   const resetFitBounds = useResetRecoilState(mapFitBoundsState);
   useEffect(() => {
@@ -51,19 +56,59 @@ const MapViewContent = ({ children }) => {
     resetFitBounds();
   }, [resetFitBounds]);
 
-  // Clear click location when pixel-driller mode is turned off
+  // Clear click location and URL param when pixel-driller mode is turned off,
+  // but only when transitioning *from* pixel-driller to another mode.
   useEffect(() => {
-    if (interactionMode !== 'pixel-driller') {
+    const prev = prevInteractionModeRef.current;
+
+    if (prev === 'pixel-driller' && interactionMode !== 'pixel-driller') {
       setClickLocation(null);
+      setSiteParam(null);
     }
-  }, [interactionMode, setClickLocation]);
+
+    prevInteractionModeRef.current = interactionMode;
+  }, [interactionMode, setClickLocation, setSiteParam]);
+
+  // When a "site" URL param is present, enable pixel-driller mode and restore the click location.
+  useEffect(() => {
+    if (!siteParam) {
+      return;
+    }
+
+    const [latStr, lngStr] = siteParam.split(',');
+    const lat = Number(latStr);
+    const lng = Number(lngStr);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      return;
+    }
+
+    const sameLocation =
+      clickLocation &&
+      Math.abs(clickLocation.lat - lat) < 1e-6 &&
+      Math.abs(clickLocation.lng - lng) < 1e-6;
+
+    // If we're already in pixel-driller mode and at the same location, do nothing.
+    if (interactionMode === 'pixel-driller' && sameLocation) {
+      return;
+    }
+
+    setInteractionMode('pixel-driller');
+    setClickLocation({ lng, lat });
+  }, [siteParam, interactionMode, clickLocation, setInteractionMode, setClickLocation]);
 
   const handleMapClick = (event: MapMouseEvent) => {
     if (interactionMode === 'pixel-driller') {
+      const lng = event.lngLat.lng;
+      const lat = event.lngLat.lat;
+
       setClickLocation({
-        lng: event.lngLat.lng,
-        lat: event.lngLat.lat,
+        lng,
+        lat,
       });
+
+      // Update the URL "site" param so the current pixel-driller location is shareable.
+      setSiteParam(`${lat.toFixed(6)},${lng.toFixed(6)}`);
     }
   };
 

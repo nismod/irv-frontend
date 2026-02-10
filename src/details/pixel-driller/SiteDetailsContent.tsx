@@ -12,6 +12,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { ExtLink } from '@/lib/nav';
 
 import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
+import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
 
 import { openAccordionState } from './accordion-state';
 import { asPixelResponse } from './data-transforms';
@@ -54,6 +55,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const openAccordion = useRecoilValue(openAccordionState);
   const { getAllExportFunctions } = useDownloadDataContext();
   const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
+  const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
 
   const coordinatesUrl = useMemo(
     () =>
@@ -220,6 +222,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
             title="Exit site inspection mode"
             onClick={() => {
               setPixelDrillerClickLocation(null);
+              setPixelDrillerSiteParam(null);
             }}
           >
             <Close />
