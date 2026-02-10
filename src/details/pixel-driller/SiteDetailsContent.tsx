@@ -3,13 +3,13 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { Alert, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { ExtLink } from '@/lib/nav';
+import { CopyableLink } from '@/lib/nav/CopyableLink';
 
 import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
 import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
@@ -236,9 +236,12 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       </Box>
       <Typography variant="body2" color="text.secondary" gutterBottom>
         Coordinates:{' '}
-        <Link component={RouterLink} to={coordinatesUrl}>
-          {lat.toFixed(6)}, {lng.toFixed(6)}
-        </Link>
+        <CopyableLink
+          href={coordinatesUrl}
+          component={RouterLink}
+          label={`${lat.toFixed(6)}, ${lng.toFixed(6)}`}
+          copyTooltip="Copy site URL"
+        />
       </Typography>
 
       <Alert severity="info">
