@@ -1,13 +1,9 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import Stack from '@mui/material/Stack';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Typography from '@mui/material/Typography';
 import _ from 'lodash';
-import { FC, useMemo, useState } from 'react';
-import { VegaLite } from 'react-vega';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { useVegaEmbed } from 'react-vega';
 
 import { ChartConfig, KeyField, ReturnPeriodRow } from './types';
 
@@ -33,17 +29,17 @@ const TABLEAU10 = [
 export const makeReturnPeriodSpec = (
   rpValues: number[],
   config: ChartConfig,
+  data: any[],
   colorDomain?: string[],
   colorRange?: string[],
 ) => ({
-  $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-  width: 'container',
+  $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
   autosize: {
     type: 'fit',
     contains: 'padding',
   },
   data: {
-    name: 'table',
+    name: 'values',
   },
   mark: {
     type: 'line',
@@ -241,12 +237,7 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
 
   const currentTable = effectiveMode === 'grouped-by-pathway' ? groupedByPathwayData : filteredData;
 
-  const tableData = useMemo(
-    () => ({
-      table: _.cloneDeep(currentTable),
-    }),
-    [currentTable],
-  );
+  const tableData = useMemo(() => _.cloneDeep(currentTable), [currentTable]);
 
   const rpValues = useMemo(
     () => Array.from(new Set(currentTable.map((d) => d.rp))).sort((a, b) => a - b),
@@ -290,20 +281,19 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
   }, [currentTable, config.colorField]);
 
   const detailedSpec = useMemo(
-    () => makeReturnPeriodSpec(rpValues, config, colorDomain, colorRange),
-    [rpValues, config, colorDomain, colorRange],
+    () => makeReturnPeriodSpec(rpValues, config, tableData, colorDomain, colorRange),
+    [rpValues, config, colorDomain, colorRange, tableData],
   );
 
   const groupedByPathwaySpec = useMemo(
     () => ({
-      $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-      width: 'container',
+      $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
       autosize: {
         type: 'fit',
         contains: 'padding',
       },
       data: {
-        name: 'table',
+        name: 'values',
       },
       layer: [
         {
@@ -425,6 +415,23 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
   // some vertical space from the plot area).
   const chartHeight = hasLegend ? 450 : 400;
 
+  const vegaRef = useRef<HTMLDivElement>(null);
+  const embed = useVegaEmbed({
+    spec: spec as any,
+    options: {
+      mode: 'vega-lite',
+      width: 400,
+      height: chartHeight,
+      actions: false,
+      renderer: 'svg',
+    },
+    ref: vegaRef,
+  });
+
+  useEffect(() => {
+    embed?.view.data('values', tableData).runAsync();
+  }, [embed, tableData]);
+
   return (
     <Box>
       {/* <Stack
@@ -465,13 +472,7 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
         </Box>
       )}
       <Box sx={{ width: '100%', height: chartHeight }}>
-        <VegaLite
-          data={tableData}
-          spec={spec as any}
-          actions={false}
-          width={400}
-          height={chartHeight}
-        />
+        <div ref={vegaRef} />
       </Box>
     </Box>
   );
