@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 
 import { ExportFile } from './download-context';
-import readmeTemplate from './README.template.md?raw';
+import readmeTemplate from './README.md.txt?raw';
 
 /**
  * Builds a ZIP file from an array of export files.
