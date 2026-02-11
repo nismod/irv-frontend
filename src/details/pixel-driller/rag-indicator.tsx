@@ -10,11 +10,11 @@ interface RagIndicatorProps {
 
 export const RagIndicator: FC<RagIndicatorProps> = ({ status }) => {
   const colorMap: Record<RagStatus, string> = {
-    red: '#d32f2f',
-    amber: '#ed6c02',
-    green: '#2e7d32',
-    'no-data': '#9e9e9e',
-    'not-implemented': '#9e9e9e',
+    red: '#d84c4c',
+    amber: '#e09c6c',
+    green: '#d1e587',
+    'no-data': '#c8c8c8',
+    'not-implemented': '#c8c8c8',
   };
 
   const titleMap: Record<RagStatus, string> = {
