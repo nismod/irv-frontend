@@ -6,17 +6,17 @@ import { RdlsDialect, RdlsEntity, RdlsLocation } from './metadata-types';
  */
 
 export const COMMON_PUBLISHER: RdlsEntity = {
-  name: 'OPSIS',
+  name: 'OPSIS, University of Oxford',
 };
 
 export const COMMON_CONTACT_POINT: RdlsEntity = {
-  name: 'OPSIS Team',
-  email: 'contact@example.com',
+  name: 'Tom Russell',
+  email: 'tom.russell@ouce.ox.ac.uk',
 };
 
 export const COMMON_CREATOR: RdlsEntity = {
-  name: 'OPSIS',
-  url: 'https://example.com/creator',
+  name: 'OPSIS, University of Oxford',
+  url: 'https://www.eci.ox.ac.uk/research/infrastructure-systems',
 };
 
 export const COMMON_DIALECT: RdlsDialect = {
