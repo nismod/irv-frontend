@@ -247,7 +247,10 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       <Alert severity="info">
         <Typography variant="body2">
           This site inspection tool is a work-in-progress. Please{' '}
-          <ExtLink href="mailto:tom.russell@ouce.ox.ac.uk">contact us</ExtLink> or{' '}
+          <ExtLink href="mailto:tom.russell@ouce.ox.ac.uk?subject=GRI Risk Viewer Site Inspection tool">
+            contact us
+          </ExtLink>{' '}
+          or{' '}
           <ExtLink href="https://github.com/nismod/infra-risk-vis/issues/">report an issue</ExtLink>
           .
         </Typography>
