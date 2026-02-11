@@ -18,6 +18,9 @@ export const theme = createTheme({
     primary: {
       main: '#172617',
     },
+    secondary: {
+      main: '#8ec155',
+    },
     map: {
       main: '#ffffff',
       dark: '#aaaaaa',

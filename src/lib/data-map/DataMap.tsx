@@ -18,6 +18,8 @@ export interface DataMapProps {
   viewLayersParams: Record<string, any>;
   /** Array of interaction group configs */
   interactionGroups: InteractionGroupConfig[];
+  /** Whether onClick interactions should be disabled (onHover will still work) */
+  disableOnClick?: boolean;
 }
 
 /** Sets a convention where the view layer ID is either the first part of the deck ID before the `@` sign,
@@ -38,6 +40,7 @@ export const DataMap: FC<DataMapProps> = ({
   viewLayers,
   viewLayersParams,
   interactionGroups,
+  disableOnClick = false,
 }) => {
   const { onHover, onClick, layerFilter, pickingRadius } = useInteractions(
     viewLayers,
@@ -90,7 +93,9 @@ export const DataMap: FC<DataMapProps> = ({
       layers={layers}
       layerFilter={layerFilter}
       onHover={(info) => deckRef.current && onHover?.(info, deckRef.current)}
-      onClick={(info) => deckRef.current && onClick?.(info, deckRef.current)}
+      onClick={
+        disableOnClick ? undefined : (info) => deckRef.current && onClick?.(info, deckRef.current)
+      }
       pickingRadius={pickingRadius}
     />
   );

@@ -1,0 +1,312 @@
+import { Close, Download } from '@mui/icons-material';
+import DownloadIcon from '@mui/icons-material/Download';
+import { Alert, IconButton } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+
+import { ExtLink } from '@/lib/nav';
+import { CopyableLink } from '@/lib/nav/CopyableLink';
+
+import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
+import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
+
+import { openAccordionState } from './accordion-state';
+import { asPixelResponse } from './data-transforms';
+import {
+  CoastalFlooding,
+  getAqueductCoastalMetadata,
+  getAqueductRiverMetadata,
+  RiverFloodingAqueduct,
+} from './domains/aqueduct';
+import { CoolingDegreeDays, getCoolingDegreeDaysMetadata } from './domains/cooling-degree-days';
+import { getCycloneIrisMetadata, TropicalCyclonesIris } from './domains/cyclone-iris';
+import { getCycloneStormMetadata, TropicalCyclonesStorm } from './domains/cyclone-storm';
+import { Droughts, getDroughtsMetadata } from './domains/droughts';
+import { Earthquakes, getEarthquakesMetadata } from './domains/earthquakes';
+import { ExtremeHeat, getExtremeHeatMetadata } from './domains/extreme-heat';
+import { getJrcFloodMetadata, RiverFloodingJrc } from './domains/jrc-flood';
+import { getLandslidesMetadata, Landslides } from './domains/landslide';
+import { DownloadDataProvider, ExportFile, useDownloadDataContext } from './download-context';
+import { buildZipFile, downloadBlob, getReadmeFile } from './download-utils';
+import { createSpatialPoint } from './metadata-common';
+import { RdlsMetadataPackage } from './metadata-types';
+import mockPixelData from './mock/pixel_values.json';
+import { PixelResponse } from './types';
+
+interface SiteDetailsContentProps {
+  lng: number;
+  lat: number;
+}
+
+/**
+ * Inner component that uses the download context.
+ * Separated to allow context access within the provider.
+ */
+const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
+  const [pixelData, setPixelData] = useState<PixelResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const openAccordion = useRecoilValue(openAccordionState);
+  const { getAllExportFunctions } = useDownloadDataContext();
+  const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
+  const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
+
+  const coordinatesUrl = useMemo(() => {
+    const siteValue = `"${lat.toFixed(6)},${lng.toFixed(6)}"`;
+    const params = new URLSearchParams({
+      site: siteValue,
+      x: lng.toFixed(6),
+      y: lat.toFixed(6),
+      z: '9',
+    });
+    return `/view/hazard?${params.toString()}`;
+  }, [lat, lng]);
+
+  useEffect(() => {
+    // TODO: Temporarily using mock data for performance during testing
+    // Switch back to API fetch by uncommenting the code below and removing the mock data loading
+    setLoading(true);
+    setError(null);
+
+    // Load mock data (temporary)
+    // setTimeout(() => {
+    //   try {
+    //     setPixelData(asPixelResponse(mockPixelData));
+    //   } catch (err) {
+    //     setError(err instanceof Error ? err.message : 'Failed to load mock pixel data');
+    //     console.error('Error loading mock pixel data:', err);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // }, 100); // Small delay to simulate loading
+
+    // API fetch code (commented out temporarily)
+    const fetchPixelData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch from API endpoint
+        const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setPixelData(asPixelResponse(data));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch site data');
+        console.error('Error fetching pixel data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPixelData();
+  }, [lng, lat]);
+
+  // Scroll behavior when data loads or open accordion changes
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // While loading or on error / no data, keep scroll at top
+    if (loading || error || !pixelData) {
+      container.scrollTop = 0;
+      return;
+    }
+
+    // If no accordion is expanded, keep scroll at top
+    if (!openAccordion) {
+      container.scrollTop = 0;
+      return;
+    }
+
+    // Scroll the expanded accordion into view (no animation)
+    const target = container.querySelector<HTMLElement>(`[data-hazard-title="${openAccordion}"]`);
+    if (target) {
+      // Let the browser choose the appropriate scroll container and adjust immediately
+      target.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
+    }
+  }, [loading, error, pixelData, openAccordion]);
+
+  const handleDownload = useCallback(async () => {
+    if (!pixelData || loading || error) return;
+
+    setDownloading(true);
+    try {
+      const exportFunctions = getAllExportFunctions();
+      const allRecords = pixelData.results;
+
+      // Call all registered export functions with the full dataset
+      const exportPromises: Promise<ExportFile[]>[] = Array.from(exportFunctions.entries()).map(
+        async ([key, fn]) => {
+          try {
+            return await fn(allRecords);
+          } catch (err) {
+            console.error(`Error exporting data for ${key}:`, err);
+            return [] as ExportFile[];
+          }
+        },
+      );
+
+      const exportFileGroups = await Promise.all(exportPromises);
+      let exportFiles = exportFileGroups.flat();
+
+      // Build RDLS-style metadata.json from domain metadata definitions.
+      const spatial = createSpatialPoint(lat, lng);
+      const datasets = [
+        getAqueductRiverMetadata(spatial),
+        getAqueductCoastalMetadata(spatial),
+        getJrcFloodMetadata(spatial),
+        getCycloneIrisMetadata(spatial),
+        getCycloneStormMetadata(spatial),
+        // getCoolingDegreeDaysMetadata(spatial),
+        getExtremeHeatMetadata(spatial),
+        getDroughtsMetadata(spatial),
+        // getLandslidesMetadata(spatial),
+        getEarthquakesMetadata(spatial),
+      ].filter(Boolean) as RdlsMetadataPackage['datasets'];
+
+      const metadata: RdlsMetadataPackage = {
+        $schema: './metadata.schema.json',
+        datasets,
+      };
+
+      const metadataFile: ExportFile = {
+        filename: 'metadata.json',
+        content: JSON.stringify(metadata, null, 2),
+        mimeType: 'application/json',
+      };
+
+      // Always include README and site metadata in the ZIP
+      exportFiles = [getReadmeFile(), metadataFile, ...exportFiles];
+
+      // Build ZIP file
+      const zipBlob = await buildZipFile(exportFiles);
+
+      // Generate filename with coordinates
+      const filename = `site-details-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
+      downloadBlob(zipBlob, filename);
+    } catch (err) {
+      console.error('Error creating download:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create download');
+    } finally {
+      setDownloading(false);
+    }
+  }, [pixelData, loading, error, getAllExportFunctions, lat, lng]);
+
+  return (
+    <Box
+      ref={containerRef}
+      sx={{
+        px: 3,
+        py: 2,
+        height: '100%',
+        flex: 1,
+        minHeight: 0,
+        overflow: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+        <Typography variant="h6">Site Details</Typography>
+        <Box>
+          <IconButton
+            title="Download site data package"
+            onClick={handleDownload}
+            disabled={!pixelData || loading || !!error || downloading}
+          >
+            <Download />
+          </IconButton>
+          <IconButton
+            title="Exit site inspection mode"
+            onClick={() => {
+              setPixelDrillerClickLocation(null);
+              setPixelDrillerSiteParam(null);
+            }}
+          >
+            <Close />
+          </IconButton>
+        </Box>
+      </Box>
+      <Typography variant="body2" color="text.secondary" gutterBottom>
+        Coordinates:{' '}
+        <CopyableLink
+          href={coordinatesUrl}
+          component={RouterLink}
+          label={`${lat.toFixed(6)}, ${lng.toFixed(6)}`}
+          copyTooltip="Copy site URL"
+        />
+      </Typography>
+
+      <Alert severity="info">
+        <Typography variant="body2">
+          This site inspection tool is a work-in-progress. Please{' '}
+          <ExtLink href="mailto:tom.russell@ouce.ox.ac.uk?subject=GRI Risk Viewer Site Inspection tool">
+            contact us
+          </ExtLink>{' '}
+          or{' '}
+          <ExtLink href="https://github.com/nismod/infra-risk-vis/issues/">report an issue</ExtLink>
+          .
+        </Typography>
+      </Alert>
+
+      {loading && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Loading pixel data...
+          </Typography>
+        </Box>
+      )}
+
+      {error && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="error">
+            Error: {error}
+          </Typography>
+        </Box>
+      )}
+
+      {!loading && !error && !pixelData && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            No data available
+          </Typography>
+        </Box>
+      )}
+
+      {!loading && !error && pixelData && (
+        <Box sx={{ mt: 2 }}>
+          <RiverFloodingAqueduct records={pixelData.results} />
+          <RiverFloodingJrc records={pixelData.results} />
+          <CoastalFlooding records={pixelData.results} />
+          <TropicalCyclonesIris records={pixelData.results} />
+          <TropicalCyclonesStorm records={pixelData.results} />
+          {/* <CoolingDegreeDays records={pixelData.results} /> */}
+          <ExtremeHeat records={pixelData.results} />
+          <Droughts records={pixelData.results} />
+          {/* <Landslides records={pixelData.results} /> */}
+          <Earthquakes records={pixelData.results} />
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+/**
+ * Component that displays detailed information for a selected site location.
+ * Shows coordinates and hazard charts for the selected point.
+ * Wraps content with DownloadDataProvider to enable export functionality.
+ */
+export const SiteDetailsContent: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
+  return (
+    <DownloadDataProvider>
+      <SiteDetailsContentInner lng={lng} lat={lat} />
+    </DownloadDataProvider>
+  );
+};
