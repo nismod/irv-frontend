@@ -170,5 +170,18 @@ export const getDroughtsMetadata = (spatial: RdlsLocation): RdlsDataset => ({
   license: '',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  attributions: [],
+  sources: [
+    {
+      name: 'Annual probability of extreme heat and drought events',
+      description:
+        'Derived dataset of extreme heat and drought event probabilities based on climate projections.',
+      lineage:
+        "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
+      url: 'https://doi.org/10.5281/zenodo.8147088',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-4.0',
+      id: 'source_extreme_heat_drought',
+    },
+  ],
 });

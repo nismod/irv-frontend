@@ -213,7 +213,7 @@ export const getAqueductRiverMetadata = (spatial: RdlsLocation): RdlsDataset => 
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: '',
+  license: 'CC-BY 4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
   attributions: [],
@@ -271,10 +271,23 @@ export const getAqueductCoastalMetadata = (spatial: RdlsLocation): RdlsDataset =
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: '',
+  license: 'CC-BY 4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  attributions: [],
+  sources: [
+    {
+      name: 'Aqueduct Floods',
+      description:
+        'Global riverine and coastal flood hazard maps including historical and future climate scenarios with multiple return periods.',
+      lineage:
+        'Ward, P.J., et al. (2020). Developed by World Resources Institute. Provides flood inundation depths for coastal and river flooding at global scale.',
+      url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-4.0',
+      id: 'source_aqueduct_floods',
+    },
+  ],
 });
 
 export const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {

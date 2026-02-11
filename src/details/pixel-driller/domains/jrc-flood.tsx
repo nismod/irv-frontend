@@ -153,8 +153,21 @@ export const getJrcFloodMetadata = (spatial: RdlsLocation): RdlsDataset => ({
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: '',
+  license: 'CC-BY 4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  attributions: [],
+  sources: [
+    {
+      name: 'JRC Global River Flood Hazard Maps',
+      description:
+        'The global river flood hazard maps are a gridded data set representing inundation along the river network, for seven different flood return periods (from 1-in-10-years to 1-in-500-years). The input river flow data for the new maps are produced by means of the open-source hydrological model LISFLOOD, while inundation simulations are performed with the hydrodynamic model LISFLOOD-FP. The extent comprises the entire world with the exception of Greenland and Antarctica and small islands with river basins smaller than 500km². Cell values indicate water depth (in m). The maps can be used to assess the exposure of population and economic assets to river floods, and to perform flood risk assessments. The dataset is created as part of the Copernicus Emergency Management Service. NOTE: this dataset is not an official flood hazard map (for details and limitations please refer to related publications).',
+      lineage:
+        "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset] Available online at:data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif.",
+      url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-4.0',
+      id: 'source_jrc_floods',
+    },
+  ],
 });

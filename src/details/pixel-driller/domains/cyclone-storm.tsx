@@ -178,8 +178,33 @@ export const getCycloneStormMetadata = (spatial: RdlsLocation): RdlsDataset => (
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: '',
+  license: 'CC0 1.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  attributions: [],
+  sources: [
+    {
+      name: 'STORM tropical cyclone wind speed return periods',
+      description:
+        'Tropical cyclone wind speed return periods under historical and climate change scenarios.',
+      lineage:
+        'Russell (2022), derived from Bloemendaal et al. (2020) STORM tropical cyclone dataset (doi:10.4121/12705164.v3) and Bloemendaal et al. (2022) climate change dataset (doi:10.4121/14510817.v3).',
+      url: 'https://doi.org/10.4121/12705164.v3',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-4.0',
+      id: 'source_storm_cyclone',
+    },
+    {
+      name: 'STORM climate change tropical cyclone wind speed return periods',
+      description:
+        'Tropical cyclone wind speed return periods under climate change scenarios, providing future projections of cyclone hazards.',
+      lineage:
+        'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J.; Haigh, I.D.; Martinez, Andrew B.; et al. (2022). doi:10.4121/14510817.v3',
+      url: 'https://doi.org/10.4121/14510817.v3',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-4.0',
+      id: 'source_storm_cyclone_cc',
+    },
+  ],
 });

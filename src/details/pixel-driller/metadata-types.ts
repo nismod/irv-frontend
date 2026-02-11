@@ -50,6 +50,20 @@ export interface RdlsResource {
   dialect?: RdlsDialect;
 }
 
+// Pulling in optional fields from RDLS 0.3-dev
+// https://github.com/GFDRR/rdl-standard/blob/0.3-dev/schema/rdls_schema.json
+// at risk of some change, will feedback and likely adopt explicitly
+export interface RdlsSource {
+  id: string;
+  name?: string;
+  url?: string;
+  description?: string;
+  lineage?: string;
+  type?: string;
+  license?: string;
+  component?: string;
+}
+
 export interface RdlsDataset {
   id: string;
   title: string;
@@ -62,6 +76,7 @@ export interface RdlsDataset {
   contact_point: RdlsEntity;
   creator: RdlsEntity;
   attributions?: RdlsEntity[];
+  sources?: RdlsSource[];
 }
 
 export interface RdlsMetadataPackage {

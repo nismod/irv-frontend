@@ -140,8 +140,21 @@ export const getEarthquakesMetadata = (spatial: RdlsLocation): RdlsDataset => ({
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: '',
+  license: 'CC-BY-NC-SA',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  attributions: [],
+  sources: [
+    {
+      name: 'GEM Global Earthquake Hazard Map',
+      description:
+        'The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1) depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years, computed for reference rock conditions (shear wave velocity, VS30, of 760-800 m/s).',
+      lineage:
+        'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1), DOI: 10.1177/8755293020931866. and Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S., Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A., Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data set]. Zenodo. DOI 10.5281/zenodo.8409647',
+      url: 'https://doi.org/10.5281/zenodo.8409647',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-NC-SA 4.0',
+      id: 'source_gem_earthquake',
+    },
+  ],
 });
