@@ -8,6 +8,12 @@ import { withProps } from '@/lib/react/with-props';
 
 import { WdpaHoverDescription } from '@/config/protected-areas/WdpaHoverDescription';
 
+declare module '@/lib/data-map/view-layers' {
+  interface KnownViewLayerSlots {
+    Tooltip?: NoProps;
+  }
+}
+
 const TooltipSection = ({ children }) =>
   children && (
     <Box px={1} py={0.5} borderBottom="1px solid #ccc">

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useSetRecoilState } from 'recoil';
 
-import { ViewLayer } from '@/lib/data-map/view-layers';
+import { ViewLayerOld } from '@/lib/data-map/view-layers';
 import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
 import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
 
@@ -26,7 +26,7 @@ const DEFAULT_PICKING_RADIUS = 8;
  */
 export function useInteractions(
   /** Array of all view layers in the application */
-  viewLayers: ViewLayer[],
+  viewLayers: ViewLayerOld[],
   /** Function to get view layer ID for a deck layer ID */
   lookupViewForDeck: (deckLayerId: string) => string,
   /** Array of interaction group configs */
