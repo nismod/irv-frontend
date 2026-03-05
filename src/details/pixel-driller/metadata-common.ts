@@ -1,4 +1,4 @@
-import { RdlsDialect, RdlsEntity, RdlsLocation } from './metadata-types';
+import { DatapackageTableDialect, RdlsEntity, RdlsLocation } from './metadata-types';
 
 /**
  * Common entities and helpers shared across all pixel-driller datasets.
@@ -19,7 +19,7 @@ export const COMMON_CREATOR: RdlsEntity = {
   url: 'https://www.eci.ox.ac.uk/research/infrastructure-systems',
 };
 
-export const COMMON_DIALECT: RdlsDialect = {
+export const COMMON_DIALECT: DatapackageTableDialect = {
   delimiter: ',',
   header: true,
   commentChar: '#',

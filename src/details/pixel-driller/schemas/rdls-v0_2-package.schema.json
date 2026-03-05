@@ -12,7 +12,7 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "./rdls-v0_2-schema.json"
+        "$ref": "./rdls-v0_2-dataset.schema.json"
       }
     }
   },
