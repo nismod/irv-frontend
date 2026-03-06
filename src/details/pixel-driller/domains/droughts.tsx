@@ -2,8 +2,13 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
-import { ExportFunction, useRegisterExportFunction } from '../download-context';
-import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
+import {
+  ExportConfig,
+  ExportFunction,
+  MetadataArgs,
+  useRegisterExportConfig,
+} from '../download-context';
+import { buildDomainExportFiles } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -11,7 +16,7 @@ import {
   COMMON_DIALECT,
   COMMON_PUBLISHER,
 } from '../metadata-common';
-import { RdlsDataset, RdlsLocation } from '../metadata-types';
+import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
@@ -40,40 +45,83 @@ const filterDroughtRecords = (records: PixelRecord[]): PixelRecord<DroughtKeys>[
     .filter((r) => r.layer.keys.hazard === 'drought' && r.layer.keys.metric === 'occurrence');
 };
 
-// Export configuration for drought occurrence (ISIMIP)
-const droughtExportConfig: DomainExportConfig = {
-  baseName: 'isimip__drought__occurrence',
-  columns: [
-    {
-      key: 'rcp',
-      label: 'RCP',
-      description: 'Representative Concentration Pathway (emissions scenario).',
-    },
-    {
-      key: 'epoch',
-      label: 'Epoch',
-      description: 'Time period or epoch of the simulation.',
-    },
-    {
-      key: 'gcm',
-      label: 'GCM',
-      description: 'Global Climate Model identifier.',
-    },
-    {
-      key: 'value',
-      label: 'Probability',
-      description: 'Event probability (0–1) for drought occurrence.',
-    },
-  ],
-  // Stub metadata for now; to be replaced with a richer catalog format later.
-  metadata: {},
-};
+const droughtBaseName = 'isimip__drought__occurrence';
+const droughtColumns: DatapackageTableSchemaField[] = [
+  {
+    name: 'rcp',
+    type: 'string',
+    title: 'RCP',
+    description: 'Representative Concentration Pathway (emissions scenario).',
+  },
+  {
+    name: 'epoch',
+    type: 'string',
+    title: 'Epoch',
+    description: 'Time period or epoch of the simulation.',
+  },
+  {
+    name: 'gcm',
+    type: 'string',
+    title: 'GCM',
+    description: 'Global Climate Model identifier.',
+  },
+  {
+    name: 'value',
+    type: 'number',
+    title: 'Probability',
+    description: 'Event probability (0–1) for drought occurrence.',
+  },
+];
 
 // Export function for Droughts
 const exportDroughts: ExportFunction = async (allRecords) => {
   const filtered = filterDroughtRecords(allRecords);
-  // Always return CSV + JSON, even if there are no records
-  return buildDomainExportFiles(droughtExportConfig, filtered);
+  return buildDomainExportFiles(droughtBaseName, droughtColumns, filtered);
+};
+
+const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
+  id: droughtBaseName,
+  title: 'Drought Occurrence (ISIMIP)',
+  description:
+    'Probability of drought occurrence at this site across multiple emissions scenarios, epochs and climate models.',
+  risk_data_type: ['hazard'],
+  spatial,
+  resources: [
+    {
+      id: `${droughtBaseName}.csv`,
+      title: 'Drought Occurrence Data (ISIMIP)',
+      description:
+        'Drought occurrence probabilities from the ISIMIP project for this site across scenarios.',
+      format: 'csv',
+      schema: {
+        fields: structuredClone(droughtColumns),
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ],
+  publisher: COMMON_PUBLISHER,
+  license: '',
+  contact_point: COMMON_CONTACT_POINT,
+  creator: COMMON_CREATOR,
+  sources: [
+    {
+      name: 'Annual probability of extreme heat and drought events',
+      description:
+        'Derived dataset of extreme heat and drought event probabilities based on climate projections.',
+      lineage:
+        "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
+      url: 'https://doi.org/10.5281/zenodo.8147088',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-4.0',
+      id: 'source_extreme_heat_drought',
+    },
+  ],
+});
+
+const droughtsExportConfig: ExportConfig = {
+  exportFunction: exportDroughts,
+  metadataFunction: getDroughtsMetadata,
 };
 
 export const Droughts: FC<HazardComponentProps> = ({ records }) => {
@@ -105,7 +153,7 @@ export const Droughts: FC<HazardComponentProps> = ({ records }) => {
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
   };
 
-  useRegisterExportFunction('droughts', exportDroughts);
+  useRegisterExportConfig('droughts', droughtsExportConfig);
 
   return (
     <HazardAccordion title="Droughts" ragStatus={ragStatus}>
@@ -118,70 +166,3 @@ export const Droughts: FC<HazardComponentProps> = ({ records }) => {
     </HazardAccordion>
   );
 };
-
-// Metadata builder for RDLS metadata.json
-
-export const getDroughtsMetadata = (spatial: RdlsLocation): RdlsDataset => ({
-  id: 'isimip__drought__occurrence',
-  title: 'Drought Occurrence (ISIMIP)',
-  description:
-    'Probability of drought occurrence at this site across multiple emissions scenarios, epochs and climate models.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: 'isimip__drought__occurrence.csv',
-      title: 'Drought Occurrence Data (ISIMIP)',
-      description:
-        'Drought occurrence probabilities from the ISIMIP project for this site across scenarios.',
-      format: 'csv',
-      schema: {
-        fields: [
-          {
-            name: 'rcp',
-            type: 'string',
-            title: 'RCP',
-            description: 'Representative Concentration Pathway (emissions scenario).',
-          },
-          {
-            name: 'epoch',
-            type: 'string',
-            title: 'Epoch',
-            description: 'Time period or epoch of the simulation.',
-          },
-          {
-            name: 'gcm',
-            type: 'string',
-            title: 'GCM',
-            description: 'Global Climate Model identifier.',
-          },
-          {
-            name: 'value',
-            type: 'number',
-            title: 'Probability',
-            description: 'Event probability (0–1) for drought occurrence.',
-          },
-        ],
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: '',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'Annual probability of extreme heat and drought events',
-      description:
-        'Derived dataset of extreme heat and drought event probabilities based on climate projections.',
-      lineage:
-        "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
-      url: 'https://doi.org/10.5281/zenodo.8147088',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_extreme_heat_drought',
-    },
-  ],
-});

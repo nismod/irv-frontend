@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 
+import { RdlsDataset, RdlsLocation } from './metadata-types';
 import { PixelRecord } from './types';
 
 /**
@@ -27,16 +28,37 @@ export interface ExportFile {
  */
 export type ExportFunction = (records: PixelRecord[]) => Promise<ExportFile[]>;
 
+/**
+ * Arguments for a metadata function.
+ */
+export interface MetadataArgs {
+  spatial: RdlsLocation;
+}
+
+/**
+ * Function that generates a RDLS dataset from a set of arguments.
+ */
+export type MetadataFunction = (args: MetadataArgs) => RdlsDataset;
+
+/**
+ * Configuration for a domain export.
+ * Includes the export function and the metadata function.
+ */
+export interface ExportConfig {
+  exportFunction: ExportFunction;
+  metadataFunction: MetadataFunction;
+}
+
 interface DownloadDataContextValue {
   /**
-   * Register an export function with a unique key.
+   * Register an export configuration with a unique key.
    * Returns a cleanup function to unregister.
    */
-  registerExportFunction: (key: string, fn: ExportFunction) => () => void;
+  registerExportConfig: (key: string, config: ExportConfig) => () => void;
   /**
-   * Get all currently registered export functions.
+   * Get all currently registered export configurations.
    */
-  getAllExportFunctions: () => Map<string, ExportFunction>;
+  getAllExportConfigs: () => Map<string, ExportConfig>;
 }
 
 const DownloadDataContext = createContext<DownloadDataContextValue | null>(null);
@@ -51,31 +73,31 @@ interface DownloadDataProviderProps {
  */
 export const DownloadDataProvider: FC<DownloadDataProviderProps> = ({ children }) => {
   // Use ref to store the Map so it persists across renders without causing re-renders
-  const functionsRef = useRef<Map<string, ExportFunction>>(new Map());
+  const configsRef = useRef<Map<string, ExportConfig>>(new Map());
   // Use state to trigger re-renders when functions are registered/unregistered
   const [, setVersion] = useState(0);
 
-  const registerExportFunction = useCallback(
-    (key: string, fn: ExportFunction): (() => void) => {
-      functionsRef.current.set(key, fn);
+  const registerExportConfig = useCallback(
+    (key: string, config: ExportConfig): (() => void) => {
+      configsRef.current.set(key, config);
       setVersion((v) => v + 1);
       // Return cleanup function
       return () => {
-        functionsRef.current.delete(key);
+        configsRef.current.delete(key);
         setVersion((v) => v + 1);
       };
     },
     [setVersion],
   );
 
-  const getAllExportFunctions = useCallback((): Map<string, ExportFunction> => {
+  const getAllExportConfigs = useCallback((): Map<string, ExportConfig> => {
     // Return a new Map to prevent external mutations
-    return new Map(functionsRef.current);
+    return new Map(configsRef.current);
   }, []);
 
   const value: DownloadDataContextValue = {
-    registerExportFunction,
-    getAllExportFunctions,
+    registerExportConfig,
+    getAllExportConfigs,
   };
 
   return <DownloadDataContext.Provider value={value}>{children}</DownloadDataContext.Provider>;
@@ -94,18 +116,18 @@ export const useDownloadDataContext = (): DownloadDataContextValue => {
 };
 
 /**
- * Hook to register an export function for a domain component.
- * Automatically unregisters the function when the component unmounts.
+ * Hook to register an export configuration for a domain component.
+ * Automatically unregisters the configuration when the component unmounts.
  *
- * @param key - Unique identifier for this export function (e.g., domain name)
- * @param exportFn - Function that receives all records and returns ExportFile[]
+ * @param key - Unique identifier for this export configuration (e.g., domain name)
+ * @param config - Configuration for this export
  */
-export const useRegisterExportFunction = (key: string, exportFn: ExportFunction): void => {
-  const { registerExportFunction } = useDownloadDataContext();
+export const useRegisterExportConfig = (key: string, config: ExportConfig): void => {
+  const { registerExportConfig } = useDownloadDataContext();
 
   useEffect(() => {
-    const unregister = registerExportFunction(key, exportFn);
+    const unregister = registerExportConfig(key, config);
     // Return cleanup function to unregister on unmount
     return unregister;
-  }, [key, exportFn, registerExportFunction]);
+  }, [key, config, registerExportConfig]);
 };

@@ -3,8 +3,13 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
-import { ExportFunction, useRegisterExportFunction } from '../download-context';
-import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
+import {
+  ExportConfig,
+  ExportFunction,
+  MetadataArgs,
+  useRegisterExportConfig,
+} from '../download-context';
+import { buildDomainExportFiles } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -12,7 +17,7 @@ import {
   COMMON_DIALECT,
   COMMON_PUBLISHER,
 } from '../metadata-common';
-import { RdlsDataset, RdlsLocation } from '../metadata-types';
+import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
@@ -37,28 +42,58 @@ const filterCddRecords = (records: PixelRecord[]): PixelRecord<CddKeys>[] => {
   return records.filter(isCddRecord);
 };
 
-const cddExportConfig: DomainExportConfig = {
-  // domain === 'cdd_miranda' (no additional key filters)
-  baseName: 'cdd_miranda',
-  columns: [
-    {
-      key: 'metric',
-      label: 'Metric',
-      description: 'Type of cooling degree days change (absolute or relative).',
-    },
-    {
-      key: 'value',
-      label: 'Value',
-      description: 'Change in cooling degree days (absolute) or fraction (relative).',
-    },
-  ],
-  metadata: {},
-};
+const cddBaseName = 'cdd_miranda';
+const cddColumns: DatapackageTableSchemaField[] = [
+  {
+    name: 'metric',
+    type: 'string',
+    title: 'Metric',
+    description: 'Type of cooling degree days change (absolute or relative).',
+  },
+  {
+    name: 'value',
+    type: 'number',
+    title: 'Value',
+    description: 'Change in cooling degree days (absolute) or fraction (relative).',
+  },
+];
 
 // Export function for Cooling Degree Days
 const exportCoolingDegreeDays: ExportFunction = async (allRecords) => {
   const filtered = filterCddRecords(allRecords);
-  return buildDomainExportFiles(cddExportConfig, filtered);
+  return buildDomainExportFiles(cddBaseName, cddColumns, filtered);
+};
+
+export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
+  id: cddBaseName,
+  title: 'Cooling Degree Days',
+  description:
+    'Change in cooling degree days at this site, expressed as absolute and relative metrics.',
+  risk_data_type: ['hazard'],
+  spatial,
+  resources: [
+    {
+      id: `${cddBaseName}.csv`,
+      title: 'Cooling Degree Days Data',
+      description:
+        'Cooling degree days change data for this site, including absolute and relative metrics.',
+      format: 'csv',
+      schema: {
+        fields: structuredClone(cddColumns),
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ],
+  publisher: COMMON_PUBLISHER,
+  license: '',
+  contact_point: COMMON_CONTACT_POINT,
+  creator: COMMON_CREATOR,
+  attributions: [],
+});
+
+const coolingDegreeDaysExportConfig: ExportConfig = {
+  exportFunction: exportCoolingDegreeDays,
+  metadataFunction: getCoolingDegreeDaysMetadata,
 };
 
 export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
@@ -101,7 +136,7 @@ export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
   };
 
-  useRegisterExportFunction('cooling-degree-days', exportCoolingDegreeDays);
+  useRegisterExportConfig('cooling-degree-days', coolingDegreeDaysExportConfig);
 
   return (
     <HazardAccordion title="Cooling Degree Days" ragStatus={ragStatus}>
@@ -126,46 +161,3 @@ export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
     </HazardAccordion>
   );
 };
-
-// Metadata builder for RDLS metadata.json
-
-export const getCoolingDegreeDaysMetadata = (spatial: RdlsLocation): RdlsDataset => ({
-  id: 'cdd_miranda',
-  title: 'Cooling Degree Days',
-  description:
-    'Change in cooling degree days at this site, expressed as absolute and relative metrics.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: 'cdd_miranda.csv',
-      title: 'Cooling Degree Days Data',
-      description:
-        'Cooling degree days change data for this site, including absolute and relative metrics.',
-      format: 'csv',
-      schema: {
-        fields: [
-          {
-            name: 'metric',
-            type: 'string',
-            title: 'Metric',
-            description: 'Type of change (absolute or relative).',
-          },
-          {
-            name: 'value',
-            type: 'number',
-            title: 'Value',
-            description:
-              'Change in cooling degree days (absolute value or fraction for relative change).',
-          },
-        ],
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: '',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  attributions: [],
-});

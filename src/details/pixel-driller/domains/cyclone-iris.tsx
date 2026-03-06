@@ -2,8 +2,13 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
-import { ExportFunction, useRegisterExportFunction } from '../download-context';
-import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
+import {
+  ExportConfig,
+  ExportFunction,
+  MetadataArgs,
+  useRegisterExportConfig,
+} from '../download-context';
+import { buildDomainExportFiles } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -11,7 +16,7 @@ import {
   COMMON_DIALECT,
   COMMON_PUBLISHER,
 } from '../metadata-common';
-import { RdlsDataset, RdlsLocation } from '../metadata-types';
+import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
 import {
@@ -31,7 +36,7 @@ export interface CycloneIrisKeys extends PixelRecordKeys {
 }
 
 // Chart config
-const irisCycloneConfig: ChartConfig = {
+const irisCycloneChartConfig: ChartConfig = {
   id: 'cyclone-iris',
   title: 'Tropical cyclones – IRIS',
   xLabel: 'Return period (years)',
@@ -82,52 +87,33 @@ const filterCycloneIrisRecords = (records: PixelRecord[]): PixelRecord<CycloneIr
   return records.filter(isCycloneIrisRecord);
 };
 
-const cycloneIrisExportConfig: DomainExportConfig = {
-  // domain === 'cyclone_iris' (no additional key filters)
-  baseName: 'cyclone_iris',
-  columns: [
-    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
-    { key: 'epoch', label: 'Epoch', description: 'Time period or epoch of the simulation.' },
-    { key: 'ssp', label: 'SSP', description: 'Shared Socioeconomic Pathway scenario.' },
-    { key: 'gcm', label: 'GCM', description: 'Global Climate Model identifier.' },
-    { key: 'value', label: 'Wind speed', description: 'Wind speed (m/s).' },
-  ],
-  metadata: {},
-};
+const cycloneIrisBaseName = 'cyclone_iris';
+const cycloneIrisColumns: DatapackageTableSchemaField[] = [
+  { name: 'rp', type: 'number', title: 'Return period', description: 'Return period (years).' },
+  {
+    name: 'epoch',
+    type: 'string',
+    title: 'Epoch',
+    description: 'Time period or epoch of the simulation.',
+  },
+  {
+    name: 'ssp',
+    type: 'string',
+    title: 'SSP',
+    description: 'Shared Socioeconomic Pathway scenario.',
+  },
+  { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model identifier.' },
+  { name: 'value', type: 'number', title: 'Wind speed', description: 'Wind speed (m/s).' },
+];
 
 // Export function for Tropical Cyclones (IRIS)
 const exportCycloneIris: ExportFunction = async (allRecords) => {
   const filtered = filterCycloneIrisRecords(allRecords);
-  return buildDomainExportFiles(cycloneIrisExportConfig, filtered);
+  return buildDomainExportFiles(cycloneIrisBaseName, cycloneIrisColumns, filtered);
 };
 
-export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(() => filterCycloneIrisRecords(records), [records]);
-
-  const data = useMemo(
-    () => toReturnPeriodRows(filteredRecords, irisCycloneConfig),
-    [filteredRecords],
-  );
-
-  // Calculate RAG status based on hazard data
-  const ragStatus = useMemo((): RagStatus => {
-    if (data.length === 0) return 'no-data';
-    return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
-  }, [data]);
-
-  useRegisterExportFunction('tropical-cyclones-iris', exportCycloneIris);
-
-  return (
-    <HazardAccordion title="Tropical Cyclones (IRIS)" ragStatus={ragStatus}>
-      <ReturnPeriodChart config={irisCycloneConfig} data={data} />
-    </HazardAccordion>
-  );
-};
-
-// Metadata builder for RDLS metadata.json
-
-export const getCycloneIrisMetadata = (spatial: RdlsLocation): RdlsDataset => ({
-  id: 'cyclone_iris',
+export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
+  id: cycloneIrisBaseName,
   title: 'Tropical Cyclones (IRIS)',
   description:
     'IRIS tropical cyclone wind speed hazard at this site across multiple return periods, scenarios and climate models.',
@@ -135,44 +121,13 @@ export const getCycloneIrisMetadata = (spatial: RdlsLocation): RdlsDataset => ({
   spatial,
   resources: [
     {
-      id: 'cyclone_iris.csv',
+      id: `${cycloneIrisBaseName}.csv`,
       title: 'Tropical Cyclones (IRIS) Data',
       description:
         'Tropical cyclone wind speed data from the IRIS project for this site across return periods and scenarios.',
       format: 'csv',
       schema: {
-        fields: [
-          {
-            name: 'rp',
-            type: 'number',
-            title: 'Return period',
-            description: 'Return period (years).',
-          },
-          {
-            name: 'epoch',
-            type: 'string',
-            title: 'Epoch',
-            description: 'Time period or epoch of the simulation.',
-          },
-          {
-            name: 'ssp',
-            type: 'string',
-            title: 'SSP',
-            description: 'Shared Socioeconomic Pathway scenario.',
-          },
-          {
-            name: 'gcm',
-            type: 'string',
-            title: 'GCM',
-            description: 'Global Climate Model identifier.',
-          },
-          {
-            name: 'value',
-            type: 'number',
-            title: 'Wind speed',
-            description: 'Wind speed (m/s).',
-          },
-        ],
+        fields: structuredClone(cycloneIrisColumns),
       },
       dialect: COMMON_DIALECT,
     },
@@ -196,3 +151,29 @@ export const getCycloneIrisMetadata = (spatial: RdlsLocation): RdlsDataset => ({
     },
   ],
 });
+
+const cycloneIrisExportConfig: ExportConfig = {
+  exportFunction: exportCycloneIris,
+  metadataFunction: getCycloneIrisMetadata,
+};
+
+export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
+  const data = useMemo(
+    () => toReturnPeriodRows(filterCycloneIrisRecords(records), irisCycloneChartConfig),
+    [records],
+  );
+
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo((): RagStatus => {
+    if (data.length === 0) return 'no-data';
+    return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
+  }, [data]);
+
+  useRegisterExportConfig('tropical-cyclones-iris', cycloneIrisExportConfig);
+
+  return (
+    <HazardAccordion title="Tropical Cyclones (IRIS)" ragStatus={ragStatus}>
+      <ReturnPeriodChart config={irisCycloneChartConfig} data={data} />
+    </HazardAccordion>
+  );
+};

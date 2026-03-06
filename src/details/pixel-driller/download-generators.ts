@@ -1,31 +1,8 @@
 import { ExportFile } from './download-context';
+import { DatapackageTableSchemaField } from './metadata-types';
 import { PixelRecord, PixelRecordKeys } from './types';
 
-export interface CsvColumnConfig {
-  /** Machine-readable column key, e.g. "rp", "value" */
-  key: string;
-  /** Human-readable column label */
-  label: string;
-  /** Description used in the CSV header comment line */
-  description: string;
-}
-
-export interface DomainExportConfig {
-  /**
-   * Base name for the domain export.
-   * The final filename will be `${baseName}.csv`.
-   * Example: "isimip__drought__occurrence".
-   */
-  baseName: string;
-  /** Column configuration, in the order they appear in the CSV */
-  columns: CsvColumnConfig[];
-  /**
-   * Domain-specific metadata stub.
-   * This field is no longer used for generating per-domain JSON files,
-   * but kept for backwards compatibility.
-   */
-  metadata: Record<string, unknown>;
-}
+type CsvColumnConfig = Pick<DatapackageTableSchemaField, 'name' | 'title' | 'description'>;
 
 /**
  * Build a CSV string with a commented first line describing each column,
@@ -36,18 +13,19 @@ export interface DomainExportConfig {
  * - anything else -> record.layer.keys[key]
  */
 export const buildCsvWithComments = <TKeys extends PixelRecordKeys>(
-  config: DomainExportConfig,
+  columns: CsvColumnConfig[],
   records: PixelRecord<TKeys>[],
 ): string => {
-  const comment = '# ' + config.columns.map((c) => `${c.key}: ${c.description}`).join(' | ');
-  const header = config.columns.map((c) => c.key).join(',');
+  const comment =
+    '# ' + columns.map((c) => `${c.name}${c.description ? `: ${c.description}` : ''}`).join(' | ');
+  const header = columns.map((c) => c.name).join(',');
 
   const dataRows = records.map((rec) => {
-    const cells = config.columns.map((c) => {
-      if (c.key === 'value') {
+    const cells = columns.map((c) => {
+      if (c.name === 'value') {
         return rec.value;
       }
-      return rec.layer.keys[c.key] ?? null;
+      return rec.layer.keys[c.name] ?? null;
     });
 
     return cells.map((cell) => (cell == null ? '' : String(cell))).join(',');
@@ -62,11 +40,12 @@ export const buildCsvWithComments = <TKeys extends PixelRecordKeys>(
  * Metadata is now centralized in a single metadata.json file.
  */
 export const buildDomainExportFiles = <TKeys extends PixelRecordKeys>(
-  config: DomainExportConfig,
+  baseName: string,
+  columns: CsvColumnConfig[],
   records: PixelRecord<TKeys>[],
 ): ExportFile[] => {
-  const csvContent = buildCsvWithComments(config, records);
-  const base = config.baseName;
+  const csvContent = buildCsvWithComments(columns, records);
+  const filename = `${baseName}.csv`;
 
-  return [{ filename: `${base}.csv`, content: csvContent, mimeType: 'text/csv' }];
+  return [{ filename, content: csvContent, mimeType: 'text/csv' }];
 };

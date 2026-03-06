@@ -2,8 +2,13 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
-import { ExportFunction, useRegisterExportFunction } from '../download-context';
-import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
+import {
+  ExportConfig,
+  ExportFunction,
+  MetadataArgs,
+  useRegisterExportConfig,
+} from '../download-context';
+import { buildDomainExportFiles } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -11,7 +16,7 @@ import {
   COMMON_DIALECT,
   COMMON_PUBLISHER,
 } from '../metadata-common';
-import { RdlsDataset, RdlsLocation } from '../metadata-types';
+import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
 import {
@@ -31,7 +36,7 @@ export interface CycloneStormKeys extends PixelRecordKeys {
 }
 
 // Chart config
-const stormCycloneConfig: ChartConfig = {
+const stormCycloneChartConfig: ChartConfig = {
   id: 'cyclone-storm',
   title: 'Tropical cyclones – STORM',
   xLabel: 'Return period (years)',
@@ -82,52 +87,33 @@ const filterCycloneStormRecords = (records: PixelRecord[]): PixelRecord<CycloneS
   return records.filter(isCycloneStormRecord);
 };
 
-const cycloneStormExportConfig: DomainExportConfig = {
-  // domain === 'cyclone_storm' (no additional key filters)
-  baseName: 'cyclone_storm',
-  columns: [
-    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
-    { key: 'epoch', label: 'Epoch', description: 'Time period or epoch of the simulation.' },
-    { key: 'rcp', label: 'RCP', description: 'Representative Concentration Pathway scenario.' },
-    { key: 'gcm', label: 'GCM', description: 'Global Climate Model identifier.' },
-    { key: 'value', label: 'Wind speed', description: 'Wind speed (m/s).' },
-  ],
-  metadata: {},
-};
+const cycloneStormBaseName = 'cyclone_storm';
+const cycloneStormColumns: DatapackageTableSchemaField[] = [
+  { name: 'rp', type: 'number', title: 'Return period', description: 'Return period (years).' },
+  {
+    name: 'epoch',
+    type: 'string',
+    title: 'Epoch',
+    description: 'Time period or epoch of the simulation.',
+  },
+  {
+    name: 'rcp',
+    type: 'string',
+    title: 'RCP',
+    description: 'Representative Concentration Pathway scenario.',
+  },
+  { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model identifier.' },
+  { name: 'value', type: 'number', title: 'Wind speed', description: 'Wind speed (m/s).' },
+];
 
 // Export function for Tropical Cyclones (STORM)
 const exportCycloneStorm: ExportFunction = async (allRecords) => {
   const filtered = filterCycloneStormRecords(allRecords);
-  return buildDomainExportFiles(cycloneStormExportConfig, filtered);
+  return buildDomainExportFiles(cycloneStormBaseName, cycloneStormColumns, filtered);
 };
 
-export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(() => filterCycloneStormRecords(records), [records]);
-
-  const data = useMemo(
-    () => toReturnPeriodRows(filteredRecords, stormCycloneConfig),
-    [filteredRecords],
-  );
-
-  // Calculate RAG status based on hazard data
-  const ragStatus = useMemo((): RagStatus => {
-    if (data.length === 0) return 'no-data';
-    return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
-  }, [data]);
-
-  useRegisterExportFunction('tropical-cyclones-storm', exportCycloneStorm);
-
-  return (
-    <HazardAccordion title="Tropical Cyclones (STORM)" ragStatus={ragStatus}>
-      <ReturnPeriodChart config={stormCycloneConfig} data={data} />
-    </HazardAccordion>
-  );
-};
-
-// Metadata builder for RDLS metadata.json
-
-export const getCycloneStormMetadata = (spatial: RdlsLocation): RdlsDataset => ({
-  id: 'cyclone_storm',
+const getCycloneStormMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
+  id: cycloneStormBaseName,
   title: 'Tropical Cyclones (STORM)',
   description:
     'STORM tropical cyclone wind speed hazard at this site across multiple return periods, scenarios and climate models.',
@@ -135,44 +121,13 @@ export const getCycloneStormMetadata = (spatial: RdlsLocation): RdlsDataset => (
   spatial,
   resources: [
     {
-      id: 'cyclone_storm.csv',
+      id: `${cycloneStormBaseName}.csv`,
       title: 'Tropical Cyclones (STORM) Data',
       description:
         'Tropical cyclone wind speed data from the STORM project for this site across return periods and scenarios.',
       format: 'csv',
       schema: {
-        fields: [
-          {
-            name: 'rp',
-            type: 'number',
-            title: 'Return period',
-            description: 'Return period (years).',
-          },
-          {
-            name: 'epoch',
-            type: 'string',
-            title: 'Epoch',
-            description: 'Time period or epoch of the simulation.',
-          },
-          {
-            name: 'rcp',
-            type: 'string',
-            title: 'RCP',
-            description: 'Representative Concentration Pathway scenario.',
-          },
-          {
-            name: 'gcm',
-            type: 'string',
-            title: 'GCM',
-            description: 'Global Climate Model identifier.',
-          },
-          {
-            name: 'value',
-            type: 'number',
-            title: 'Wind speed',
-            description: 'Wind speed (m/s).',
-          },
-        ],
+        fields: structuredClone(cycloneStormColumns),
       },
       dialect: COMMON_DIALECT,
     },
@@ -208,3 +163,33 @@ export const getCycloneStormMetadata = (spatial: RdlsLocation): RdlsDataset => (
     },
   ],
 });
+
+const cycloneStormExportConfig: ExportConfig = {
+  exportFunction: exportCycloneStorm,
+  metadataFunction: getCycloneStormMetadata,
+};
+
+export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {
+  const filteredRecords = useMemo(() => filterCycloneStormRecords(records), [records]);
+
+  const data = useMemo(
+    () => toReturnPeriodRows(filteredRecords, stormCycloneChartConfig),
+    [filteredRecords],
+  );
+
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo((): RagStatus => {
+    if (data.length === 0) return 'no-data';
+    return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
+  }, [data]);
+
+  useRegisterExportConfig('tropical-cyclones-storm', cycloneStormExportConfig);
+
+  return (
+    <HazardAccordion title="Tropical Cyclones (STORM)" ragStatus={ragStatus}>
+      <ReturnPeriodChart config={stormCycloneChartConfig} data={data} />
+    </HazardAccordion>
+  );
+};
+
+// Metadata builder for RDLS metadata.json

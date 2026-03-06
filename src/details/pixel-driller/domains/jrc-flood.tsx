@@ -2,8 +2,13 @@ import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { toReturnPeriodRows } from '../data-transforms';
-import { ExportFunction, useRegisterExportFunction } from '../download-context';
-import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
+import {
+  ExportConfig,
+  ExportFunction,
+  MetadataArgs,
+  useRegisterExportConfig,
+} from '../download-context';
+import { buildDomainExportFiles } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -11,7 +16,7 @@ import {
   COMMON_DIALECT,
   COMMON_PUBLISHER,
 } from '../metadata-common';
-import { RdlsDataset, RdlsLocation } from '../metadata-types';
+import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
 import { RagStatus } from '../rag-indicator';
 import { ReturnPeriodChart } from '../return-period-chart';
 import {
@@ -78,49 +83,20 @@ const filterJrcFloodRecords = (records: PixelRecord[]): PixelRecord<JrcFloodKeys
   return records.filter(isJrcFloodRecord);
 };
 
-const jrcFloodExportConfig: DomainExportConfig = {
-  // domain === 'jrc_flood' (no additional key filters)
-  baseName: 'jrc_flood',
-  columns: [
-    { key: 'rp', label: 'Return period', description: 'Return period (years).' },
-    { key: 'value', label: 'Flood height', description: 'Flood height (m).' },
-  ],
-  metadata: {},
-};
+const jrcFloodBaseName = 'jrc_flood';
+const jrcFloodColumns: DatapackageTableSchemaField[] = [
+  { name: 'rp', type: 'number', title: 'Return period', description: 'Return period (years).' },
+  { name: 'value', type: 'number', title: 'Flood height', description: 'Flood height (m).' },
+];
 
 // Export function for JRC Flood
 const exportJrcFlood: ExportFunction = async (allRecords) => {
   const filtered = filterJrcFloodRecords(allRecords);
-  return buildDomainExportFiles(jrcFloodExportConfig, filtered);
+  return buildDomainExportFiles(jrcFloodBaseName, jrcFloodColumns, filtered);
 };
 
-export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
-  const filteredRecords = useMemo(() => filterJrcFloodRecords(records), [records]);
-
-  const data = useMemo(
-    () => toReturnPeriodRows(filteredRecords, jrcFloodConfig),
-    [filteredRecords],
-  );
-
-  // Calculate RAG status based on hazard data
-  const ragStatus = useMemo((): RagStatus => {
-    if (data.length === 0) return 'no-data';
-    return calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD);
-  }, [data]);
-
-  useRegisterExportFunction('river-flooding-jrc', exportJrcFlood);
-
-  return (
-    <HazardAccordion title="River Flooding (JRC)" ragStatus={ragStatus}>
-      <ReturnPeriodChart config={jrcFloodConfig} data={data} />
-    </HazardAccordion>
-  );
-};
-
-// Metadata builder for RDLS metadata.json
-
-export const getJrcFloodMetadata = (spatial: RdlsLocation): RdlsDataset => ({
-  id: 'jrc_flood',
+export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
+  id: jrcFloodBaseName,
   title: 'River Flooding (JRC)',
   description:
     'River flood height hazard at this site from the JRC dataset across multiple return periods.',
@@ -128,26 +104,13 @@ export const getJrcFloodMetadata = (spatial: RdlsLocation): RdlsDataset => ({
   spatial,
   resources: [
     {
-      id: 'jrc_flood.csv',
+      id: `${jrcFloodBaseName}.csv`,
       title: 'River Flooding (JRC) Data',
       description:
         'River flood height data from the JRC dataset for this site across return periods.',
       format: 'csv',
       schema: {
-        fields: [
-          {
-            name: 'rp',
-            type: 'number',
-            title: 'Return period',
-            description: 'Return period (years).',
-          },
-          {
-            name: 'value',
-            type: 'number',
-            title: 'Flood height',
-            description: 'Flood height (m).',
-          },
-        ],
+        fields: structuredClone(jrcFloodColumns),
       },
       dialect: COMMON_DIALECT,
     },
@@ -171,3 +134,31 @@ export const getJrcFloodMetadata = (spatial: RdlsLocation): RdlsDataset => ({
     },
   ],
 });
+
+const jrcFloodExportConfig: ExportConfig = {
+  exportFunction: exportJrcFlood,
+  metadataFunction: getJrcFloodMetadata,
+};
+
+export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
+  const filteredRecords = useMemo(() => filterJrcFloodRecords(records), [records]);
+
+  const data = useMemo(
+    () => toReturnPeriodRows(filteredRecords, jrcFloodConfig),
+    [filteredRecords],
+  );
+
+  // Calculate RAG status based on hazard data
+  const ragStatus = useMemo((): RagStatus => {
+    if (data.length === 0) return 'no-data';
+    return calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD);
+  }, [data]);
+
+  useRegisterExportConfig('river-flooding-jrc', jrcFloodExportConfig);
+
+  return (
+    <HazardAccordion title="River Flooding (JRC)" ragStatus={ragStatus}>
+      <ReturnPeriodChart config={jrcFloodConfig} data={data} />
+    </HazardAccordion>
+  );
+};

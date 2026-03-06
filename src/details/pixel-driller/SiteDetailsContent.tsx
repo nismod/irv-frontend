@@ -16,25 +16,20 @@ import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-sta
 
 import { openAccordionState } from './accordion-state';
 import { asPixelResponse } from './data-transforms';
-import {
-  CoastalFlooding,
-  getAqueductCoastalMetadata,
-  getAqueductRiverMetadata,
-  RiverFloodingAqueduct,
-} from './domains/aqueduct';
-import { CoolingDegreeDays, getCoolingDegreeDaysMetadata } from './domains/cooling-degree-days';
-import { getCycloneIrisMetadata, TropicalCyclonesIris } from './domains/cyclone-iris';
-import { getCycloneStormMetadata, TropicalCyclonesStorm } from './domains/cyclone-storm';
-import { Droughts, getDroughtsMetadata } from './domains/droughts';
-import { Earthquakes, getEarthquakesMetadata } from './domains/earthquakes';
-import { ExtremeHeat, getExtremeHeatMetadata } from './domains/extreme-heat';
-import { getJrcFloodMetadata, RiverFloodingJrc } from './domains/jrc-flood';
-import { getLandslidesMetadata, Landslides } from './domains/landslide';
+import { CoastalFlooding } from './domains/aqueduct-coastal';
+import { RiverFloodingAqueduct } from './domains/aqueduct-river';
+import { CoolingDegreeDays } from './domains/cooling-degree-days';
+import { TropicalCyclonesIris } from './domains/cyclone-iris';
+import { TropicalCyclonesStorm } from './domains/cyclone-storm';
+import { Droughts } from './domains/droughts';
+import { Earthquakes } from './domains/earthquakes';
+import { ExtremeHeat } from './domains/extreme-heat';
+import { RiverFloodingJrc } from './domains/jrc-flood';
+import { Landslides } from './domains/landslide';
 import { DownloadDataProvider, ExportFile, useDownloadDataContext } from './download-context';
 import { buildZipFile, downloadBlob, getReadmeFile } from './download-utils';
 import { createSpatialPoint } from './metadata-common';
 import { RdlsMetadataPackage } from './metadata-types';
-import mockPixelData from './mock/pixel_values.json';
 import { PixelResponse } from './types';
 
 interface SiteDetailsContentProps {
@@ -53,7 +48,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useRecoilValue(openAccordionState);
-  const { getAllExportFunctions } = useDownloadDataContext();
+  const { getAllExportConfigs } = useDownloadDataContext();
   const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
   const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
 
@@ -69,24 +64,9 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   }, [lat, lng]);
 
   useEffect(() => {
-    // TODO: Temporarily using mock data for performance during testing
-    // Switch back to API fetch by uncommenting the code below and removing the mock data loading
     setLoading(true);
     setError(null);
 
-    // Load mock data (temporary)
-    // setTimeout(() => {
-    //   try {
-    //     setPixelData(asPixelResponse(mockPixelData));
-    //   } catch (err) {
-    //     setError(err instanceof Error ? err.message : 'Failed to load mock pixel data');
-    //     console.error('Error loading mock pixel data:', err);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }, 100); // Small delay to simulate loading
-
-    // API fetch code (commented out temporarily)
     const fetchPixelData = async () => {
       setLoading(true);
       setError(null);
@@ -138,14 +118,14 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
 
     setDownloading(true);
     try {
-      const exportFunctions = getAllExportFunctions();
+      const exportConfigs = getAllExportConfigs();
       const allRecords = pixelData.results;
 
       // Call all registered export functions with the full dataset
-      const exportPromises: Promise<ExportFile[]>[] = Array.from(exportFunctions.entries()).map(
-        async ([key, fn]) => {
+      const exportPromises: Promise<ExportFile[]>[] = Array.from(exportConfigs.entries()).map(
+        async ([key, { exportFunction }]) => {
           try {
-            return await fn(allRecords);
+            return await exportFunction(allRecords);
           } catch (err) {
             console.error(`Error exporting data for ${key}:`, err);
             return [] as ExportFile[];
@@ -156,20 +136,11 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       const exportFileGroups = await Promise.all(exportPromises);
       let exportFiles = exportFileGroups.flat();
 
-      // Build RDLS-style metadata.json from domain metadata definitions.
+      // Build RDLS-style metadata.json from registered export configurations.
       const spatial = createSpatialPoint(lat, lng);
-      const datasets = [
-        getAqueductRiverMetadata(spatial),
-        getAqueductCoastalMetadata(spatial),
-        getJrcFloodMetadata(spatial),
-        getCycloneIrisMetadata(spatial),
-        getCycloneStormMetadata(spatial),
-        // getCoolingDegreeDaysMetadata(spatial),
-        getExtremeHeatMetadata(spatial),
-        getDroughtsMetadata(spatial),
-        // getLandslidesMetadata(spatial),
-        getEarthquakesMetadata(spatial),
-      ].filter(Boolean) as RdlsMetadataPackage['datasets'];
+      const datasets = Array.from(exportConfigs.values())
+        .map(({ metadataFunction }) => metadataFunction({ spatial }))
+        .filter(Boolean) as RdlsMetadataPackage['datasets'];
 
       const metadata: RdlsMetadataPackage = {
         $schema: './metadata.schema.json',
@@ -197,7 +168,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
     } finally {
       setDownloading(false);
     }
-  }, [pixelData, loading, error, getAllExportFunctions, lat, lng]);
+  }, [pixelData, loading, error, getAllExportConfigs, lat, lng]);
 
   return (
     <Box
