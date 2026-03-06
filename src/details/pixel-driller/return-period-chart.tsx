@@ -4,6 +4,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import _ from 'lodash';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useVegaEmbed } from 'react-vega';
+import { VisualizationSpec } from 'vega-embed';
 
 import { ChartConfig, KeyField, ReturnPeriodRow } from './types';
 
@@ -32,7 +33,7 @@ export const makeReturnPeriodSpec = (
   data: any[],
   colorDomain?: string[],
   colorRange?: string[],
-) => ({
+): VisualizationSpec => ({
   $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
   autosize: {
     type: 'fit',
@@ -286,7 +287,7 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
   );
 
   const groupedByPathwaySpec = useMemo(
-    () => ({
+    (): VisualizationSpec => ({
       $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
       autosize: {
         type: 'fit',
@@ -417,13 +418,17 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
 
   const vegaRef = useRef<HTMLDivElement>(null);
   const embed = useVegaEmbed({
-    spec: spec as any,
+    spec: spec,
     options: {
-      mode: 'vega-lite',
       width: 400,
       height: chartHeight,
       actions: false,
       renderer: 'svg',
+      config: {
+        autosize: {
+          resize: true,
+        },
+      },
     },
     ref: vegaRef,
   });
@@ -434,28 +439,6 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
 
   return (
     <Box>
-      {/* <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        spacing={2}
-        sx={{ mb: 1 }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          {subtitle}
-        </Typography>
-        <ToggleButtonGroup
-          size="small"
-          value={mode}
-          exclusive
-          onChange={(_, value) => {
-            if (value) setMode(value);
-          }}
-        >
-          <ToggleButton value="detailed">Detailed</ToggleButton>
-          {config.colorField && <ToggleButton value="grouped-by-pathway">By Pathway</ToggleButton>}
-        </ToggleButtonGroup>
-      </Stack> */}
       {availableEpochs.length > 0 && (
         <Box sx={{ mb: 2 }}>
           <ButtonGroup size="small" variant="outlined">
@@ -471,7 +454,7 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
           </ButtonGroup>
         </Box>
       )}
-      <Box sx={{ width: '100%', height: chartHeight }}>
+      <Box sx={{ width: '100%' }}>
         <div ref={vegaRef} />
       </Box>
     </Box>
