@@ -28,6 +28,8 @@ export const HazardAccordion: FC<HazardAccordionProps> = ({ title, ragStatus, ch
   );
   const [openAccordion, setOpenAccordion] = useRecoilState(openAccordionState);
 
+  const disabled = ragStatus === 'no-data';
+
   // In single-accordion mode, use openAccordionState; otherwise use individual state
   const expanded = SINGLE_ACCORDION_MODE ? openAccordion === title : individualExpanded;
 
@@ -45,7 +47,12 @@ export const HazardAccordion: FC<HazardAccordionProps> = ({ title, ragStatus, ch
   );
 
   return (
-    <Accordion expanded={expanded} onChange={handleChange} data-hazard-title={title}>
+    <Accordion
+      expanded={expanded}
+      onChange={handleChange}
+      data-hazard-title={title}
+      disabled={disabled}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         sx={{
