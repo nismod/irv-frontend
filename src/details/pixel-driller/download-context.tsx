@@ -9,24 +9,17 @@ import {
   useState,
 } from 'react';
 
+import { DownloadFile } from '@/lib/downloads/types';
+
 import { RdlsDataset, RdlsLocation } from './metadata-types';
 import { PixelRecord } from './types';
 
 /**
- * Represents a file to be included in the download ZIP.
- */
-export interface ExportFile {
-  filename: string;
-  content: string | Blob;
-  mimeType: string;
-}
-
-/**
- * Export function that receives all records and returns an array of files.
+ * Export function that receives all records and returns a single file.
  * Each function handles its own filtering internally and typically returns
- * a CSV + JSON pair for its domain.
+ * a single CSV file for its domain.
  */
-export type ExportFunction = (records: PixelRecord[]) => Promise<ExportFile[]>;
+export type ExportFunction = (records: PixelRecord[]) => Promise<DownloadFile>;
 
 /**
  * Arguments for a metadata function.

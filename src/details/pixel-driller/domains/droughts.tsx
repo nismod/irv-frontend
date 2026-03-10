@@ -8,7 +8,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -76,7 +76,7 @@ const droughtColumns: DatapackageTableSchemaField[] = [
 // Export function for Droughts
 const exportDroughts: ExportFunction = async (allRecords) => {
   const filtered = filterDroughtRecords(allRecords);
-  return buildDomainExportFiles(droughtBaseName, droughtColumns, filtered);
+  return buildDomainExportFile(droughtBaseName, droughtColumns, filtered);
 };
 
 const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({

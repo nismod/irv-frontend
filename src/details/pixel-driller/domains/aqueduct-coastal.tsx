@@ -8,7 +8,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -130,7 +130,7 @@ const aqueductCoastalColumns: DatapackageTableSchemaField[] = [
 // Export function for Coastal Flooding (Aqueduct)
 const exportAqueductCoastal: ExportFunction = async (allRecords) => {
   const filtered = filterAqueductCoastalRecords(allRecords);
-  return buildDomainExportFiles(aqueductCoastalBaseName, aqueductCoastalColumns, filtered);
+  return buildDomainExportFile(aqueductCoastalBaseName, aqueductCoastalColumns, filtered);
 };
 
 export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({

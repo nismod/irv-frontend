@@ -1,8 +1,11 @@
-import { ExportFile } from './download-context';
+import { d3 } from '@/lib/d3';
+import { DownloadFile } from '@/lib/downloads/types';
+
 import { DatapackageTableSchemaField } from './metadata-types';
+import readmeTemplate from './README.md.txt?raw';
 import { PixelRecord, PixelRecordKeys } from './types';
 
-type CsvColumnConfig = Pick<DatapackageTableSchemaField, 'name' | 'title' | 'description'>;
+type CsvColumnConfig = Pick<DatapackageTableSchemaField, 'name' | 'description'>;
 
 /**
  * Build a CSV string with a commented first line describing each column,
@@ -12,26 +15,18 @@ type CsvColumnConfig = Pick<DatapackageTableSchemaField, 'name' | 'title' | 'des
  * - "value" -> record.value
  * - anything else -> record.layer.keys[key]
  */
-export const buildCsvWithComments = <TKeys extends PixelRecordKeys>(
+export const buildCsvWithComments = (
   columns: CsvColumnConfig[],
-  records: PixelRecord<TKeys>[],
+  records: Record<string, any>[],
 ): string => {
   const comment =
     '# ' + columns.map((c) => `${c.name}${c.description ? `: ${c.description}` : ''}`).join(' | ');
-  const header = columns.map((c) => c.name).join(',');
+  const csvText = d3.dsv.csvFormat(
+    records,
+    columns.map((c) => c.name),
+  );
 
-  const dataRows = records.map((rec) => {
-    const cells = columns.map((c) => {
-      if (c.name === 'value') {
-        return rec.value;
-      }
-      return rec.layer.keys[c.name] ?? null;
-    });
-
-    return cells.map((cell) => (cell == null ? '' : String(cell))).join(',');
-  });
-
-  return [comment, header, ...dataRows].join('\n');
+  return [comment, csvText].join('\n');
 };
 
 /**
@@ -39,13 +34,30 @@ export const buildCsvWithComments = <TKeys extends PixelRecordKeys>(
  * Returns a single CSV file, even if the records array is empty.
  * Metadata is now centralized in a single metadata.json file.
  */
-export const buildDomainExportFiles = <TKeys extends PixelRecordKeys>(
+export const buildDomainExportFile = <TKeys extends PixelRecordKeys>(
   baseName: string,
   columns: CsvColumnConfig[],
   records: PixelRecord<TKeys>[],
-): ExportFile[] => {
-  const csvContent = buildCsvWithComments(columns, records);
-  const filename = `${baseName}.csv`;
+): DownloadFile => {
+  const simplifiedRecords = records.map((rec) => ({
+    value: rec.value,
+    ...rec.layer.keys,
+  }));
 
-  return [{ filename, content: csvContent, mimeType: 'text/csv' }];
+  return {
+    filename: `${baseName}.csv`,
+    content: buildCsvWithComments(columns, simplifiedRecords),
+    mimeType: 'text/csv',
+  };
+};
+
+/**
+ * Returns the static README file to include in every ZIP.
+ */
+export const getReadmeFile = (): DownloadFile => {
+  return {
+    filename: 'README.md',
+    content: readmeTemplate,
+    mimeType: 'text/markdown',
+  };
 };

@@ -9,7 +9,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -61,7 +61,7 @@ const cddColumns: DatapackageTableSchemaField[] = [
 // Export function for Cooling Degree Days
 const exportCoolingDegreeDays: ExportFunction = async (allRecords) => {
   const filtered = filterCddRecords(allRecords);
-  return buildDomainExportFiles(cddBaseName, cddColumns, filtered);
+  return buildDomainExportFile(cddBaseName, cddColumns, filtered);
 };
 
 export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({

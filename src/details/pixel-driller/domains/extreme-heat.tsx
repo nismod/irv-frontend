@@ -8,7 +8,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -80,7 +80,7 @@ const extremeHeatColumns: DatapackageTableSchemaField[] = [
 // Export function for Extreme Heat
 const exportExtremeHeat: ExportFunction = async (allRecords) => {
   const filtered = filterExtremeHeatRecords(allRecords);
-  return buildDomainExportFiles(extremeHeatBaseName, extremeHeatColumns, filtered);
+  return buildDomainExportFile(extremeHeatBaseName, extremeHeatColumns, filtered);
 };
 
 const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({

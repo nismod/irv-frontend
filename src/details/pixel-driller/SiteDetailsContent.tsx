@@ -1,13 +1,14 @@
-import { Close, Download } from '@mui/icons-material';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Close } from '@mui/icons-material';
 import { Alert, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
+import { buildZipFile } from '@/lib/downloads/download-utils';
+import { DownloadButton } from '@/lib/downloads/DownloadButton';
+import { DownloadFile } from '@/lib/downloads/types';
 import { ExtLink } from '@/lib/nav';
 import { CopyableLink } from '@/lib/nav/CopyableLink';
 
@@ -26,8 +27,8 @@ import { Earthquakes } from './domains/earthquakes';
 import { ExtremeHeat } from './domains/extreme-heat';
 import { RiverFloodingJrc } from './domains/jrc-flood';
 import { Landslides } from './domains/landslide';
-import { DownloadDataProvider, ExportFile, useDownloadDataContext } from './download-context';
-import { buildZipFile, downloadBlob, getReadmeFile } from './download-utils';
+import { DownloadDataProvider, useDownloadDataContext } from './download-context';
+import { getReadmeFile } from './download-generators';
 import { createSpatialPoint } from './metadata-common';
 import { RdlsMetadataPackage } from './metadata-types';
 import { PixelResponse } from './types';
@@ -113,62 +114,50 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
     }
   }, [loading, error, pixelData, openAccordion]);
 
-  const handleDownload = useCallback(async () => {
-    if (!pixelData || loading || error) return;
+  const makeDownloadZipFile = useCallback(async (): Promise<DownloadFile> => {
+    const exportConfigs = getAllExportConfigs();
+    const allRecords = pixelData.results;
 
-    setDownloading(true);
-    try {
-      const exportConfigs = getAllExportConfigs();
-      const allRecords = pixelData.results;
+    // Call all registered export functions with the full dataset
+    const exportPromises: Promise<DownloadFile>[] = Array.from(exportConfigs.entries()).map(
+      async ([key, { exportFunction }]) => {
+        try {
+          return await exportFunction(allRecords);
+        } catch (err) {
+          console.error(`Error exporting data for ${key}:`, err);
+          return null as DownloadFile;
+        }
+      },
+    );
+    const exportFileGroups = await Promise.all(exportPromises);
+    let exportFiles = exportFileGroups.filter(Boolean) as DownloadFile[];
 
-      // Call all registered export functions with the full dataset
-      const exportPromises: Promise<ExportFile[]>[] = Array.from(exportConfigs.entries()).map(
-        async ([key, { exportFunction }]) => {
-          try {
-            return await exportFunction(allRecords);
-          } catch (err) {
-            console.error(`Error exporting data for ${key}:`, err);
-            return [] as ExportFile[];
-          }
-        },
-      );
+    // Build RDLS-style metadata.json from registered export configurations.
+    const spatial = createSpatialPoint(lat, lng);
+    const datasets = Array.from(exportConfigs.values())
+      .map(({ metadataFunction }) => metadataFunction({ spatial }))
+      .filter(Boolean) as RdlsMetadataPackage['datasets'];
 
-      const exportFileGroups = await Promise.all(exportPromises);
-      let exportFiles = exportFileGroups.flat();
+    const metadata: RdlsMetadataPackage = {
+      $schema: './metadata.schema.json',
+      datasets,
+    };
 
-      // Build RDLS-style metadata.json from registered export configurations.
-      const spatial = createSpatialPoint(lat, lng);
-      const datasets = Array.from(exportConfigs.values())
-        .map(({ metadataFunction }) => metadataFunction({ spatial }))
-        .filter(Boolean) as RdlsMetadataPackage['datasets'];
+    const metadataFile: DownloadFile = {
+      filename: 'metadata.json',
+      content: JSON.stringify(metadata, null, 2),
+      mimeType: 'application/json',
+    };
 
-      const metadata: RdlsMetadataPackage = {
-        $schema: './metadata.schema.json',
-        datasets,
-      };
+    exportFiles = [getReadmeFile(), metadataFile, ...exportFiles];
+    const zipBlob = await buildZipFile(exportFiles);
+    const filename = `site-details-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
 
-      const metadataFile: ExportFile = {
-        filename: 'metadata.json',
-        content: JSON.stringify(metadata, null, 2),
-        mimeType: 'application/json',
-      };
-
-      // Always include README and site metadata in the ZIP
-      exportFiles = [getReadmeFile(), metadataFile, ...exportFiles];
-
-      // Build ZIP file
-      const zipBlob = await buildZipFile(exportFiles);
-
-      // Generate filename with coordinates
-      const filename = `site-details-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
-      downloadBlob(zipBlob, filename);
-    } catch (err) {
-      console.error('Error creating download:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create download');
-    } finally {
-      setDownloading(false);
-    }
-  }, [pixelData, loading, error, getAllExportConfigs, lat, lng]);
+    return {
+      content: zipBlob,
+      filename,
+    };
+  }, [pixelData, getAllExportConfigs, lat, lng]);
 
   return (
     <Box
@@ -187,13 +176,11 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Typography variant="h6">Site Details</Typography>
         <Box>
-          <IconButton
+          <DownloadButton
             title="Download site data package"
-            onClick={handleDownload}
-            disabled={!pixelData || loading || !!error || downloading}
-          >
-            <Download />
-          </IconButton>
+            makeFile={makeDownloadZipFile}
+            disabled={!pixelData || loading || !!error}
+          />
           <IconButton
             title="Exit site inspection mode"
             onClick={() => {

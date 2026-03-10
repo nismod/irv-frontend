@@ -8,7 +8,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -109,7 +109,7 @@ const cycloneIrisColumns: DatapackageTableSchemaField[] = [
 // Export function for Tropical Cyclones (IRIS)
 const exportCycloneIris: ExportFunction = async (allRecords) => {
   const filtered = filterCycloneIrisRecords(allRecords);
-  return buildDomainExportFiles(cycloneIrisBaseName, cycloneIrisColumns, filtered);
+  return buildDomainExportFile(cycloneIrisBaseName, cycloneIrisColumns, filtered);
 };
 
 export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({

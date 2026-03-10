@@ -9,7 +9,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -63,7 +63,7 @@ const landslideColumns: DatapackageTableSchemaField[] = [
 // Export function for Landslide
 const exportLandslide: ExportFunction = async (allRecords) => {
   const filtered = filterLandslideRecords(allRecords);
-  return buildDomainExportFiles(landslideBaseName, landslideColumns, filtered);
+  return buildDomainExportFile(landslideBaseName, landslideColumns, filtered);
 };
 
 export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({

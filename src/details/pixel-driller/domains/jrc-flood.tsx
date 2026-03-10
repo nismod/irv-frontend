@@ -8,7 +8,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -92,7 +92,7 @@ const jrcFloodColumns: DatapackageTableSchemaField[] = [
 // Export function for JRC Flood
 const exportJrcFlood: ExportFunction = async (allRecords) => {
   const filtered = filterJrcFloodRecords(allRecords);
-  return buildDomainExportFiles(jrcFloodBaseName, jrcFloodColumns, filtered);
+  return buildDomainExportFile(jrcFloodBaseName, jrcFloodColumns, filtered);
 };
 
 export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({

@@ -9,7 +9,7 @@ import {
   MetadataArgs,
   useRegisterExportConfig,
 } from '../download-context';
-import { buildDomainExportFiles } from '../download-generators';
+import { buildDomainExportFile } from '../download-generators';
 import { HazardAccordion } from '../hazard-accordion';
 import {
   COMMON_CONTACT_POINT,
@@ -55,7 +55,7 @@ const earthquakeColumns: DatapackageTableSchemaField[] = [
 // Export function for Earthquakes
 const exportEarthquakes: ExportFunction = async (allRecords) => {
   const filtered = filterEarthquakeRecords(allRecords);
-  return buildDomainExportFiles(earthquakeBaseName, earthquakeColumns, filtered);
+  return buildDomainExportFile(earthquakeBaseName, earthquakeColumns, filtered);
 };
 
 const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
