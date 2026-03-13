@@ -8,17 +8,21 @@ import {
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download-context';
-import { buildDomainExportFile } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
+} from '../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import {
+  calculateRagFromSingleValueTwoThresholds,
+  combineRagStatusesMax,
+} from '../rag/rag-calculation';
+import { RagStatus } from '../rag/rag-types';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Cooling degree days-specific key type definition
@@ -99,33 +103,30 @@ const coolingDegreeDaysExportConfig: ExportConfig = {
 export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
   const cddRecords = useMemo(() => filterCddRecords(records), [records]);
 
-  const absoluteRecord = useMemo(
-    () => cddRecords.find((r) => r.layer.keys.metric === 'absolute') ?? null,
-    [cddRecords],
-  );
-
-  const relativeRecord = useMemo(
-    () => cddRecords.find((r) => r.layer.keys.metric === 'relative') ?? null,
-    [cddRecords],
-  );
-
-  const absoluteValue = absoluteRecord?.value ?? null;
-  const relativeValue = relativeRecord?.value ?? null;
+  const absoluteValue = useMemo(() => {
+    const record = cddRecords.find((r) => r.layer.keys.metric === 'absolute');
+    return record?.value ?? null;
+  }, [cddRecords]);
+  const relativeValue = useMemo(() => {
+    const record = cddRecords.find((r) => r.layer.keys.metric === 'relative');
+    return record?.value ?? null;
+  }, [cddRecords]);
 
   const ragStatus = useMemo<RagStatus>(() => {
-    if (cddRecords.length === 0) return 'no-data';
+    const absStatus = calculateRagFromSingleValueTwoThresholds(
+      absoluteValue,
+      ABSOLUTE_RED_THRESHOLD,
+      ABSOLUTE_AMBER_THRESHOLD,
+    );
 
-    const abs = typeof absoluteValue === 'number' ? absoluteValue : 0;
-    const rel = typeof relativeValue === 'number' ? relativeValue : 0;
+    const relStatus = calculateRagFromSingleValueTwoThresholds(
+      relativeValue,
+      RELATIVE_RED_THRESHOLD,
+      RELATIVE_AMBER_THRESHOLD,
+    );
 
-    const crossesRed = abs >= ABSOLUTE_RED_THRESHOLD || rel >= RELATIVE_RED_THRESHOLD;
-    if (crossesRed) return 'red';
-
-    const crossesAmber = abs >= ABSOLUTE_AMBER_THRESHOLD || rel >= RELATIVE_AMBER_THRESHOLD;
-    if (crossesAmber) return 'amber';
-
-    return 'green';
-  }, [cddRecords.length, absoluteValue, relativeValue]);
+    return combineRagStatusesMax(absStatus, relStatus);
+  }, [absoluteValue, relativeValue]);
 
   const formatAbsolute = (value: number | null): string =>
     value == null ? 'N/A' : value.toFixed(1).replace(/\.?0+$/, '');

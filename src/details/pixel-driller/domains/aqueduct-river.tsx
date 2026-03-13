@@ -1,28 +1,29 @@
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
+import { ReturnPeriodChart } from '../charts/return-period-chart';
 import { toReturnPeriodRows } from '../data-transforms';
 import {
   ExportConfig,
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download-context';
-import { buildDomainExportFile } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
+} from '../download/metadata-common';
 import {
   DatapackageTableSchema,
   DatapackageTableSchemaField,
   RdlsDataset,
-} from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
-import { ReturnPeriodChart } from '../return-period-chart';
+} from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import { calculateRagFromReturnPeriodValuesOneThreshold } from '../rag/rag-calculation';
+import { RagStatus } from '../rag/rag-types';
 import {
   ChartConfig,
   HazardComponentProps,
@@ -54,37 +55,6 @@ const aqueductRiverChartConfig: ChartConfig = {
 // Thresholds
 // Flood height above which damages are substantial (in meters) - used for river and coastal flooding
 const FLOOD_HEIGHT_THRESHOLD = 4; // TODO: Make this configurable or derive from domain knowledge
-
-// Helper function to calculate RAG status based on return period data
-// Uses maximum values (worst case) for RP 10 and RP 100 against a threshold
-const calculateRagStatusFromReturnPeriods = (
-  data: ReturnPeriodRow[],
-  threshold: number,
-): RagStatus => {
-  if (data.length === 0) {
-    return 'no-data';
-  }
-
-  // Group by return period and take maximum value (worst case scenario)
-  const groupedByRp = _.groupBy(data, (d) => d.rp);
-
-  // Get maximum value for RP 10 (1 in 10 years)
-  const rp10Data = groupedByRp[10] || [];
-  const maxRp10 = rp10Data.length > 0 ? Math.max(...rp10Data.map((d) => d.value)) : 0;
-
-  // Get maximum value for RP 100 (1 in 100 years)
-  const rp100Data = groupedByRp[100] || [];
-  const maxRp100 = rp100Data.length > 0 ? Math.max(...rp100Data.map((d) => d.value)) : 0;
-
-  // Apply threshold logic
-  if (maxRp10 > threshold) {
-    return 'red';
-  } else if (maxRp100 > threshold) {
-    return 'amber';
-  } else {
-    return 'green';
-  }
-};
 
 // Type guard for Aqueduct records
 const isAqueductRecord = (record: PixelRecord): record is PixelRecord<AqueductKeys> => {
@@ -131,10 +101,6 @@ const aqueductRiverColumns: DatapackageTableSchemaField[] = [
   },
 ];
 
-const aqueductRiverDatapackageTableSchema: DatapackageTableSchema = {
-  fields: aqueductRiverColumns,
-};
-
 // Export function for River Flooding (Aqueduct)
 const exportAqueductRiver: ExportFunction = async (allRecords) => {
   const filtered = filterAqueductRiverRecords(allRecords);
@@ -142,7 +108,7 @@ const exportAqueductRiver: ExportFunction = async (allRecords) => {
 };
 
 export const getAqueductRiverMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: 'aqueduct__fluvial',
+  id: aqueductRiverBaseName,
   title: 'Aqueduct River Flood Risk',
   description:
     'River flood risk at this site as modelled by the Aqueduct project, including flood heights for multiple return periods and scenarios.',
@@ -150,7 +116,7 @@ export const getAqueductRiverMetadata = ({ spatial }: MetadataArgs): RdlsDataset
   spatial,
   resources: [
     {
-      id: 'aqueduct__fluvial.csv',
+      id: `${aqueductRiverBaseName}.csv`,
       title: 'Aqueduct River Flood Risk Data',
       description:
         'River flood height data from the Aqueduct project, representing fluvial flood depths for this site across scenarios.',
@@ -224,7 +190,7 @@ export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => 
   );
 
   const ragStatus = useMemo(
-    () => calculateRagStatusFromReturnPeriods(data, FLOOD_HEIGHT_THRESHOLD),
+    () => calculateRagFromReturnPeriodValuesOneThreshold(data, FLOOD_HEIGHT_THRESHOLD),
     [data],
   );
 

@@ -2,29 +2,29 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
-export type RagStatus = 'red' | 'amber' | 'green' | 'no-data' | 'not-implemented';
+import { RagStatus } from './rag-types';
 
 interface RagIndicatorProps {
   status: RagStatus;
 }
 
+const colorMap: Record<RagStatus, string> = {
+  red: '#d84c4c',
+  amber: '#e09c6c',
+  green: '#d1e587',
+  'no-data': '#c8c8c8',
+  'not-implemented': '#c8c8c8',
+};
+
+const titleMap: Record<RagStatus, string> = {
+  red: 'High risk',
+  amber: 'Moderate risk',
+  green: 'Low risk',
+  'no-data': 'No data',
+  'not-implemented': 'Not implemented',
+};
+
 export const RagIndicator: FC<RagIndicatorProps> = ({ status }) => {
-  const colorMap: Record<RagStatus, string> = {
-    red: '#d84c4c',
-    amber: '#e09c6c',
-    green: '#d1e587',
-    'no-data': '#c8c8c8',
-    'not-implemented': '#c8c8c8',
-  };
-
-  const titleMap: Record<RagStatus, string> = {
-    red: 'High risk',
-    amber: 'Moderate risk',
-    green: 'Low risk',
-    'no-data': 'No data',
-    'not-implemented': 'Not implemented',
-  };
-
   return (
     <Box
       sx={{

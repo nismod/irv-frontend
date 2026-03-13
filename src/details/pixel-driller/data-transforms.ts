@@ -25,7 +25,7 @@ const getFieldValue = <TKeys extends PixelRecordKeys = PixelRecordKeys>(
  * The series label is derived entirely from the per-domain ChartConfig
  * (e.g. Aqueduct might use epoch+rcp+gcm, IRIS cyclones might use epoch+ssp+gcm).
  */
-export const buildScenarioLabel = <TKeys extends PixelRecordKeys = PixelRecordKeys>(
+const buildScenarioLabel = <TKeys extends PixelRecordKeys = PixelRecordKeys>(
   record: PixelRecord<TKeys>,
   config: ChartConfig,
 ): string => {
@@ -47,25 +47,19 @@ export const toReturnPeriodRows = <TKeys extends PixelRecordKeys = PixelRecordKe
 ): ReturnPeriodRow[] =>
   records
     .map<ReturnPeriodRow | null>((r) => {
-      const { hazard, rp, rcp, epoch, gcm, ssp } = r.layer.keys;
-
       // Skip null values entirely (no data_type field in new API)
       if (r.value == null) {
         return null;
       }
 
-      const numericValue = r.value as number;
+      const { rp, ...otherKeys } = r.layer.keys;
 
       return {
         rp: Number(rp),
-        value: numericValue,
-        rcp,
-        epoch,
-        gcm,
-        ssp,
-        scenario: buildScenarioLabel(r, config),
+        value: r.value,
         domain: r.layer.domain,
-        hazard,
+        scenario: buildScenarioLabel(r, config),
+        ...otherKeys,
       };
     })
     .filter((row): row is ReturnPeriodRow => row !== null);

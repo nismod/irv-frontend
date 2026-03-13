@@ -15,7 +15,6 @@ import { CopyableLink } from '@/lib/nav/CopyableLink';
 import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
 import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
 
-import { openAccordionState } from './accordion-state';
 import { asPixelResponse } from './data-transforms';
 import { CoastalFlooding } from './domains/aqueduct-coastal';
 import { RiverFloodingAqueduct } from './domains/aqueduct-river';
@@ -27,10 +26,11 @@ import { Earthquakes } from './domains/earthquakes';
 import { ExtremeHeat } from './domains/extreme-heat';
 import { RiverFloodingJrc } from './domains/jrc-flood';
 import { Landslides } from './domains/landslide';
-import { DownloadDataProvider, useDownloadDataContext } from './download-context';
-import { getReadmeFile } from './download-generators';
-import { createSpatialPoint } from './metadata-common';
-import { RdlsMetadataPackage } from './metadata-types';
+import { DownloadDataProvider, useDownloadDataContext } from './download/download-context';
+import { getReadmeFile } from './download/download-generators';
+import { createSpatialPoint } from './download/metadata-common';
+import { RdlsMetadataPackage } from './download/metadata-types';
+import { openAccordionState } from './hazard-accordion';
 import { PixelResponse } from './types';
 
 interface SiteDetailsContentProps {
@@ -45,7 +45,6 @@ interface SiteDetailsContentProps {
 const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const [pixelData, setPixelData] = useState<PixelResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useRecoilValue(openAccordionState);

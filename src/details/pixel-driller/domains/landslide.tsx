@@ -8,17 +8,17 @@ import {
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download-context';
-import { buildDomainExportFile } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
+} from '../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import { RagStatus } from '../rag/rag-types';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Landslide-specific key type definition

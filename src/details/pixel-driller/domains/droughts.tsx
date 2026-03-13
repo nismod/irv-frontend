@@ -7,17 +7,18 @@ import {
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download-context';
-import { buildDomainExportFile } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
+} from '../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import { calculateRagFromSingleValueTwoThresholds } from '../rag/rag-calculation';
+import { RagStatus } from '../rag/rag-types';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Drought-specific key type definition
@@ -129,25 +130,26 @@ export const Droughts: FC<HazardComponentProps> = ({ records }) => {
   const droughtRecords = useMemo(() => filterDroughtRecords(records), [records]);
 
   // Aggregate all values using maximum (worst case scenario across all epochs/rcp/gcm combinations)
+  // Returns null if there are no numeric values at all.
   const aggregatedProbability = useMemo(() => {
     const values = droughtRecords.map((r) => r.value).filter((v): v is number => v != null);
-    if (values.length === 0) return 0;
+    if (values.length === 0) return null;
     return Math.max(...values);
   }, [droughtRecords]);
 
-  // Calculate RAG status based on two thresholds (same logic pattern as Extreme Heat)
-  const ragStatus = useMemo((): RagStatus => {
-    if (droughtRecords.length === 0) return 'no-data';
-    if (aggregatedProbability >= DROUGHT_RED_THRESHOLD) {
-      return 'red';
-    } else if (aggregatedProbability >= DROUGHT_AMBER_THRESHOLD) {
-      return 'amber';
-    } else {
-      return 'green';
-    }
-  }, [aggregatedProbability, droughtRecords.length]);
+  // Calculate RAG status based on two thresholds using the shared helper.
+  const ragStatus = useMemo<RagStatus>(
+    () =>
+      calculateRagFromSingleValueTwoThresholds(
+        aggregatedProbability,
+        DROUGHT_RED_THRESHOLD,
+        DROUGHT_AMBER_THRESHOLD,
+      ),
+    [aggregatedProbability],
+  );
 
-  const formatProbability = (value: number): string => {
+  const formatProbability = (value: number | null): string => {
+    if (value == null) return 'N/A';
     // Convert to percentage and format with at most one decimal place, removing trailing zeros
     const percentage = value * 100;
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;

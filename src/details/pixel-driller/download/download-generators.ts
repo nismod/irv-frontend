@@ -1,9 +1,9 @@
 import { d3 } from '@/lib/d3';
 import { DownloadFile } from '@/lib/downloads/types';
 
+import { PixelRecord, PixelRecordKeys } from '../types';
 import { DatapackageTableSchemaField } from './metadata-types';
 import readmeTemplate from './README.md.txt?raw';
-import { PixelRecord, PixelRecordKeys } from './types';
 
 type CsvColumnConfig = Pick<DatapackageTableSchemaField, 'name' | 'description'>;
 

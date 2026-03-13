@@ -1,24 +1,25 @@
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
+import { ReturnPeriodChart } from '../charts/return-period-chart';
 import { toReturnPeriodRows } from '../data-transforms';
 import {
   ExportConfig,
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download-context';
-import { buildDomainExportFile } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
-import { ReturnPeriodChart } from '../return-period-chart';
+} from '../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import { calculateRagFromReturnPeriodValuesOneThreshold } from '../rag/rag-calculation';
+import { RagStatus } from '../rag/rag-types';
 import {
   ChartConfig,
   HazardComponentProps,
@@ -49,33 +50,6 @@ const irisCycloneChartConfig: ChartConfig = {
 // Thresholds
 // Threshold for cyclone intensity above which damages are substantial
 const CYCLONE_INTENSITY_THRESHOLD = 50; // TODO: Make this configurable or derive from domain knowledge
-
-// Helper function to calculate RAG status based on return period data
-// Uses maximum values (worst case) for RP 10 and RP 100 against a threshold
-const calculateRagStatusFromReturnPeriods = (
-  data: ReturnPeriodRow[],
-  threshold: number,
-): RagStatus => {
-  // Group by return period and take maximum value (worst case scenario)
-  const groupedByRp = _.groupBy(data, (d) => d.rp);
-
-  // Get maximum value for RP 10 (1 in 10 years)
-  const rp10Data = groupedByRp[10] || [];
-  const maxRp10 = rp10Data.length > 0 ? Math.max(...rp10Data.map((d) => d.value)) : 0;
-
-  // Get maximum value for RP 100 (1 in 100 years)
-  const rp100Data = groupedByRp[100] || [];
-  const maxRp100 = rp100Data.length > 0 ? Math.max(...rp100Data.map((d) => d.value)) : 0;
-
-  // Apply threshold logic
-  if (maxRp10 > threshold) {
-    return 'red';
-  } else if (maxRp100 > threshold) {
-    return 'amber';
-  } else {
-    return 'green';
-  }
-};
 
 // Type guard for Cyclone IRIS records
 const isCycloneIrisRecord = (record: PixelRecord): record is PixelRecord<CycloneIrisKeys> => {
@@ -162,13 +136,11 @@ export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
     () => toReturnPeriodRows(filterCycloneIrisRecords(records), irisCycloneChartConfig),
     [records],
   );
-
+  const ragStatus = useMemo(
+    () => calculateRagFromReturnPeriodValuesOneThreshold(data, CYCLONE_INTENSITY_THRESHOLD),
+    [data],
+  );
   // Calculate RAG status based on hazard data
-  const ragStatus = useMemo((): RagStatus => {
-    if (data.length === 0) return 'no-data';
-    return calculateRagStatusFromReturnPeriods(data, CYCLONE_INTENSITY_THRESHOLD);
-  }, [data]);
-
   useRegisterExportConfig('tropical-cyclones-iris', cycloneIrisExportConfig);
 
   return (

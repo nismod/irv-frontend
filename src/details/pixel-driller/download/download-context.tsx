@@ -11,8 +11,8 @@ import {
 
 import { DownloadFile } from '@/lib/downloads/types';
 
+import { PixelRecord } from '../types';
 import { RdlsDataset, RdlsLocation } from './metadata-types';
-import { PixelRecord } from './types';
 
 /**
  * Export function that receives all records and returns a single file.

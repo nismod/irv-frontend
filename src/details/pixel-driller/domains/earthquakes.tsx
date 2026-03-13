@@ -8,17 +8,18 @@ import {
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download-context';
-import { buildDomainExportFile } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
+} from '../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import { calculateRagFromSingleValueTwoThresholds } from '../rag/rag-calculation';
+import { RagStatus } from '../rag/rag-types';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Earthquake-specific key type definition
@@ -115,13 +116,15 @@ export const Earthquakes: FC<HazardComponentProps> = ({ records }) => {
 
   const value = (primaryRecord?.value as number | null) ?? null;
 
-  const ragStatus = useMemo<RagStatus>(() => {
-    if (earthquakeRecords.length === 0 || value == null) return 'no-data';
-
-    if (value >= EARTHQUAKE_RED_THRESHOLD) return 'red';
-    if (value >= EARTHQUAKE_AMBER_THRESHOLD) return 'amber';
-    return 'green';
-  }, [earthquakeRecords.length, value]);
+  const ragStatus = useMemo(
+    () =>
+      calculateRagFromSingleValueTwoThresholds(
+        value,
+        EARTHQUAKE_RED_THRESHOLD,
+        EARTHQUAKE_AMBER_THRESHOLD,
+      ),
+    [value],
+  );
 
   const formatValue = (v: number | null): string =>
     v == null ? 'N/A' : v.toFixed(3).replace(/\.?0+$/, '');

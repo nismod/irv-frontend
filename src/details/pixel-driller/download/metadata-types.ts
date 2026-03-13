@@ -1,6 +1,7 @@
 // Simplified TypeScript types for Datapackage Table Schema.
 // These are intentionally narrower than the full JSON Schema, and only cover
 // the parts we currently populate in the generated metadata.json.
+// The types were generated from the JSON schema files in the `schemas` directory.
 
 export interface DatapackageTableSchemaField {
   name: string;
