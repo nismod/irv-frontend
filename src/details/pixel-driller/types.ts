@@ -1,5 +1,3 @@
-export type PixelDomain = 'aqueduct' | 'jrc_flood' | string;
-
 // Base type for pixel record keys - all keys are optional strings
 export type PixelRecordKeys = Record<string, string | undefined>;
 
@@ -7,7 +5,7 @@ export type PixelRecordKeys = Record<string, string | undefined>;
 export interface PixelRecord<TKeys extends PixelRecordKeys = PixelRecordKeys> {
   value: number | null;
   layer: {
-    domain: PixelDomain;
+    domain: string;
     keys: TKeys;
     id: string;
   };
@@ -25,16 +23,16 @@ export interface PixelResponse {
 export type ReturnPeriodRow = {
   rp: number;
   value: number;
+  domain: string;
   rcp?: string;
   epoch?: string;
   gcm?: string;
   ssp?: string;
   scenario: string;
-  domain: PixelDomain;
   hazard?: string;
 };
 
-export type KeyField = keyof PixelRecordKeys | 'domain';
+export type KeyField = string;
 
 export interface ChartConfig {
   id: string;

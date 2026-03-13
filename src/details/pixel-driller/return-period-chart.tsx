@@ -27,134 +27,12 @@ const TABLEAU10 = [
   '#bab0ac',
 ];
 
-export const makeReturnPeriodSpec = (
-  rpValues: number[],
-  config: ChartConfig,
-  data: any[],
-  colorDomain?: string[],
-  colorRange?: string[],
-): VisualizationSpec => ({
-  $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
-  autosize: {
-    type: 'fit',
-    contains: 'padding',
-  },
-  data: {
-    name: 'values',
-  },
-  mark: {
-    type: 'line',
-    point: {
-      filled: true,
-    },
-    tooltip: true,
-  },
-  encoding: {
-    x: {
-      field: 'rp',
-      type: 'quantitative',
-      title: 'Return period (years)',
-      scale: {
-        type: 'log',
-      },
-      axis: {
-        gridDash: [2, 2],
-        domainColor: '#ccc',
-        tickColor: '#ccc',
-        values: rpValues,
-      },
-    },
-    y: {
-      field: 'value',
-      type: 'quantitative',
-      title: config.yLabel,
-      axis: {
-        gridDash: [2, 2],
-        domainColor: '#ccc',
-        tickColor: '#ccc',
-      },
-    },
-    // Colour and series encodings are driven by per-domain config
-    // Baseline is represented as a dedicated value in the colour field and
-    // mapped to gray via the explicit scale range.
-    ...(config.colorField && {
-      color: {
-        field: config.colorField,
-        type: 'nominal',
-        title: config.colorField,
-        scale:
-          colorDomain && colorRange
-            ? {
-                domain: colorDomain,
-                range: colorRange,
-              }
-            : undefined,
-        legend: {
-          orient: 'bottom',
-          direction: 'horizontal',
-        },
-      },
-    }),
-    ...(config.seriesFields.length > 0 && {
-      detail: {
-        field: 'scenario',
-        type: 'nominal',
-      },
-    }),
-    tooltip: [
-      { field: 'value', type: 'quantitative', format: ',.3r', title: 'value' },
-      { field: 'rp', type: 'quantitative', title: 'rp' },
-      // Include each distinct field that participates in series or colour, so
-      // the tooltip automatically stays in sync with config.
-      ...Array.from(
-        new Set([...config.seriesFields, config.colorField].filter(Boolean) as KeyField[]),
-      ).map((field) => ({
-        field,
-        type: 'nominal' as const,
-        title: field,
-      })),
-      { field: 'domain', type: 'nominal' as const, title: 'domain' },
-    ],
-  },
-});
-
-const buildSubtitle = (config: ChartConfig): string => {
-  const parts: string[] = [];
-  parts.push(`X: ${config.xLabel}`);
-  parts.push(`Y: ${config.yLabel}`);
-
-  if (config.seriesFields.length > 0) {
-    parts.push(`Series: ${config.seriesFields.join(' + ')}`);
-  }
-
-  if (config.colorField) {
-    parts.push(`Colour: ${config.colorField}`);
-  }
-
-  return parts.join(', ');
-};
-
-// Helper to get field value from a row
-const getFieldValueFromRow = (row: ReturnPeriodRow, field: KeyField): string | undefined => {
-  if (field === 'domain') return row.domain;
-  if (field === 'rcp') return row.rcp;
-  if (field === 'ssp') return row.ssp;
-  if (field === 'epoch') return row.epoch;
-  if (field === 'gcm') return row.gcm;
-  return undefined;
-};
-
 export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) => {
   // Detect simple case: no epochs, no series fields, no color field (e.g., JRC flooding)
   const isSimpleCase = useMemo(() => {
     const hasEpochs = data.some((d) => d.epoch != null);
     return !hasEpochs && config.seriesFields.length === 0 && !config.colorField;
   }, [data, config]);
-
-  // Default to 'detailed' mode for simple cases, otherwise 'grouped-by-pathway'
-  const [mode, setMode] = useState<'detailed' | 'grouped-by-pathway'>(
-    isSimpleCase ? 'detailed' : 'grouped-by-pathway',
-  );
 
   // Extract and sort epochs (baseline first, then ascending)
   const availableEpochs = useMemo(() => {
@@ -194,220 +72,10 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
     return [...selectedData, ...baselineData];
   }, [data, selectedEpoch, isSimpleCase]);
 
-  // Group by pathway (colorField) and rp, then aggregate within each group
-  const groupedByPathwayData = useMemo(() => {
-    if (!filteredData.length || !config.colorField) return [];
-    const colorField = config.colorField;
-    const grouped = _.groupBy(filteredData, (d) => {
-      const pathwayValue = getFieldValueFromRow(d, colorField);
-      return `${pathwayValue || 'unknown'}_${d.rp}`;
-    });
-    const rows: Array<{
-      rp: number;
-      value: number;
-      value_min: number;
-      value_max: number;
-      [key: string]: string | number | undefined;
-    }> = [];
-
-    for (const [key, rowsForGroup] of Object.entries(grouped)) {
-      const values = rowsForGroup.map((r) => r.value).filter((v) => v != null);
-      if (!values.length) continue;
-
-      const sorted = [...values].sort((a, b) => a - b);
-      const mid = Math.floor(sorted.length / 2);
-      const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-
-      const firstRow = rowsForGroup[0];
-      const pathwayValue = getFieldValueFromRow(firstRow, colorField);
-
-      rows.push({
-        rp: firstRow.rp,
-        value: median,
-        value_min: sorted[0],
-        value_max: sorted[sorted.length - 1],
-        [colorField]: pathwayValue,
-      });
-    }
-
-    return rows;
-  }, [filteredData, config.colorField]);
-
   // For simple cases (no epochs, no series fields, no color field), always use detailed mode
-  const effectiveMode = isSimpleCase ? 'detailed' : mode;
+  const effectiveMode = isSimpleCase ? 'detailed' : 'grouped-by-pathway';
 
-  const currentTable = effectiveMode === 'grouped-by-pathway' ? groupedByPathwayData : filteredData;
-
-  const tableData = useMemo(() => _.cloneDeep(currentTable), [currentTable]);
-
-  const rpValues = useMemo(
-    () => Array.from(new Set(currentTable.map((d) => d.rp))).sort((a, b) => a - b),
-    [currentTable],
-  );
-
-  // Compute colour domain/range for series. Baseline should already be present as a distinct
-  // value in the colour field (e.g. rcp = 'baseline'), so we treat it as the first category
-  // and map it to gray, with other series drawn from the Tableau10 palette.
-  const [colorDomain, colorRange] = useMemo(() => {
-    if (!config.colorField) return [undefined, undefined] as const;
-
-    const values = Array.from(
-      new Set(
-        currentTable
-          .map((d) => getFieldValueFromRow(d as ReturnPeriodRow, config.colorField!))
-          .filter((v): v is string => v != null),
-      ),
-    );
-
-    if (values.length === 0) {
-      return [undefined, undefined] as const;
-    }
-
-    // Move baseline to the front if present
-    const baselineIndex = values.indexOf('baseline');
-    if (baselineIndex > -1) {
-      values.splice(baselineIndex, 1);
-      values.unshift('baseline');
-    }
-
-    const domain = values;
-    const nonBaseline = domain.filter((v) => v !== 'baseline');
-
-    const nonBaselineColors = nonBaseline.map((_v, idx) => TABLEAU10[idx % TABLEAU10.length]);
-
-    const range =
-      domain[0] === 'baseline' ? ['#999999', ...nonBaselineColors] : [...nonBaselineColors];
-
-    return [domain, range] as const;
-  }, [currentTable, config.colorField]);
-
-  const detailedSpec = useMemo(
-    () => makeReturnPeriodSpec(rpValues, config, tableData, colorDomain, colorRange),
-    [rpValues, config, colorDomain, colorRange, tableData],
-  );
-
-  const groupedByPathwaySpec = useMemo(
-    (): VisualizationSpec => ({
-      $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
-      autosize: {
-        type: 'fit',
-        contains: 'padding',
-      },
-      data: {
-        name: 'values',
-      },
-      layer: [
-        {
-          mark: {
-            type: 'area',
-            opacity: 0.15,
-          },
-          encoding: {
-            x: {
-              field: 'rp',
-              type: 'quantitative',
-              title: 'Return period (years)',
-              scale: {
-                type: 'log',
-              },
-              axis: {
-                gridDash: [2, 2],
-                domainColor: '#ccc',
-                tickColor: '#ccc',
-                values: rpValues,
-              },
-            },
-            y: {
-              field: 'value_min',
-              type: 'quantitative',
-              title: config.yLabel,
-            },
-            y2: {
-              field: 'value_max',
-            },
-            color: {
-              field: config.colorField,
-              type: 'nominal',
-              title: config.colorField,
-              scale:
-                colorDomain && colorRange
-                  ? {
-                      domain: colorDomain,
-                      range: colorRange,
-                    }
-                  : undefined,
-              legend: {
-                orient: 'bottom',
-                direction: 'horizontal',
-              },
-            },
-            tooltip: [
-              { field: 'value_min', type: 'quantitative', format: ',.3r', title: 'min' },
-              { field: 'value_max', type: 'quantitative', format: ',.3r', title: 'max' },
-              { field: 'rp', type: 'quantitative', title: 'rp' },
-              { field: config.colorField, type: 'nominal', title: config.colorField },
-            ],
-          },
-        },
-        {
-          mark: {
-            type: 'line',
-            point: {
-              filled: true,
-            },
-            tooltip: true,
-          },
-          encoding: {
-            x: {
-              field: 'rp',
-              type: 'quantitative',
-              title: 'Return period (years)',
-              scale: {
-                type: 'log',
-              },
-              axis: {
-                gridDash: [2, 2],
-                domainColor: '#ccc',
-                tickColor: '#ccc',
-                values: rpValues,
-              },
-            },
-            y: {
-              field: 'value',
-              type: 'quantitative',
-              title: config.yLabel,
-            },
-            color: {
-              field: config.colorField,
-              type: 'nominal',
-              title: config.colorField,
-              scale:
-                colorDomain && colorRange
-                  ? {
-                      domain: colorDomain,
-                      range: colorRange,
-                    }
-                  : undefined,
-              legend: {
-                orient: 'bottom',
-                direction: 'horizontal',
-              },
-            },
-            tooltip: [
-              { field: 'value', type: 'quantitative', format: ',.3r', title: 'median' },
-              { field: 'rp', type: 'quantitative', title: 'rp' },
-              { field: config.colorField, type: 'nominal', title: config.colorField },
-            ],
-          },
-        },
-      ],
-    }),
-    [config.yLabel, config.colorField, rpValues, colorDomain, colorRange],
-  );
-
-  const spec = effectiveMode === 'grouped-by-pathway' ? groupedByPathwaySpec : detailedSpec;
-
-  const subtitle = buildSubtitle(config);
+  const tableData = useMemo(() => _.cloneDeep(filteredData), [filteredData]);
 
   const hasLegend = Boolean(config.colorField);
   // Aim for the plot area to be roughly square. We can't easily read the
@@ -415,27 +83,6 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
   // and make it a bit taller when a legend is present (since the legend eats
   // some vertical space from the plot area).
   const chartHeight = hasLegend ? 450 : 400;
-
-  const vegaRef = useRef<HTMLDivElement>(null);
-  const embed = useVegaEmbed({
-    spec: spec,
-    options: {
-      width: 400,
-      height: chartHeight,
-      actions: false,
-      renderer: 'svg',
-      config: {
-        autosize: {
-          resize: true,
-        },
-      },
-    },
-    ref: vegaRef,
-  });
-
-  useEffect(() => {
-    embed?.view.data('values', tableData).runAsync();
-  }, [embed, tableData]);
 
   return (
     <Box>
@@ -455,8 +102,402 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
         </Box>
       )}
       <Box sx={{ width: '100%' }}>
-        <div ref={vegaRef} />
+        {effectiveMode === 'detailed' ? (
+          <ReturnPeriodDetailedChart
+            data={tableData}
+            config={config}
+            width={400}
+            height={chartHeight}
+          />
+        ) : (
+          <ReturnPeriodGroupedByPathwayChart
+            data={tableData}
+            config={config}
+            width={400}
+            height={chartHeight}
+          />
+        )}
       </Box>
     </Box>
   );
 };
+
+export const makeReturnPeriodDetailedSpec = (
+  rpValues: number[],
+  config: ChartConfig,
+  colorDomain?: string[],
+  colorRange?: string[],
+): VisualizationSpec => ({
+  $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
+  autosize: {
+    type: 'fit',
+    contains: 'padding',
+  },
+  data: {
+    name: 'values',
+  },
+  layer: [
+    {
+      mark: {
+        type: 'line',
+        point: {
+          filled: true,
+        },
+        tooltip: true,
+      },
+      encoding: {
+        x: {
+          field: 'rp',
+          type: 'quantitative',
+          title: 'Return period (years)',
+          scale: {
+            type: 'log',
+          },
+          axis: {
+            gridDash: [2, 2],
+            domainColor: '#ccc',
+            tickColor: '#ccc',
+            values: rpValues,
+          },
+        },
+        y: {
+          field: 'value',
+          type: 'quantitative',
+          title: config.yLabel,
+          axis: {
+            gridDash: [2, 2],
+            domainColor: '#ccc',
+            tickColor: '#ccc',
+          },
+        },
+        // Colour and series encodings are driven by per-domain config
+        // Baseline is represented as a dedicated value in the colour field and
+        // mapped to gray via the explicit scale range.
+        ...(config.colorField && {
+          color: {
+            field: config.colorField,
+            type: 'nominal',
+            title: config.colorField,
+            scale:
+              colorDomain && colorRange
+                ? {
+                    domain: colorDomain,
+                    range: colorRange,
+                  }
+                : undefined,
+            legend: {
+              orient: 'bottom',
+              direction: 'horizontal',
+            },
+          },
+        }),
+        ...(config.seriesFields.length > 0 && {
+          detail: {
+            field: 'scenario',
+            type: 'nominal',
+          },
+        }),
+        tooltip: [
+          { field: 'value', type: 'quantitative', format: ',.3r', title: 'value' },
+          { field: 'rp', type: 'quantitative', title: 'rp' },
+          // Include each distinct field that participates in series or colour, so
+          // the tooltip automatically stays in sync with config.
+          ...Array.from(
+            new Set([...config.seriesFields, config.colorField].filter(Boolean) as KeyField[]),
+          ).map((field) => ({
+            field,
+            type: 'nominal' as const,
+            title: field,
+          })),
+          { field: 'domain', type: 'nominal' as const, title: 'domain' },
+        ],
+      },
+    },
+  ],
+});
+
+function ReturnPeriodDetailedChart({
+  data,
+  config,
+  width,
+  height,
+}: {
+  data: ReturnPeriodRow[];
+  config: ChartConfig;
+  width: number;
+  height: number;
+}) {
+  const [colorDomain, colorRange] = useColorDomainAndRange(data, config.colorField);
+  const rpValues = useMemo(
+    () => Array.from(new Set(data.map((d) => d.rp))).sort((a, b) => a - b),
+    [data],
+  );
+  const spec = useMemo(
+    () => makeReturnPeriodDetailedSpec(rpValues, config, colorDomain, colorRange),
+    [rpValues, config, colorDomain, colorRange],
+  );
+
+  return <VegaChart spec={spec} data={data} width={width} height={height} />;
+}
+
+function makeReturnPeriodGroupedByPathwaySpec(
+  rpValues: number[],
+  config: ChartConfig,
+  colorDomain?: string[],
+  colorRange?: string[],
+): VisualizationSpec {
+  return {
+    $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
+    autosize: {
+      type: 'fit',
+      contains: 'padding',
+    },
+    data: {
+      name: 'values',
+    },
+    layer: [
+      {
+        mark: {
+          type: 'area',
+          opacity: 0.15,
+        },
+        encoding: {
+          x: {
+            field: 'rp',
+            type: 'quantitative',
+            title: 'Return period (years)',
+            scale: {
+              type: 'log',
+            },
+            axis: {
+              gridDash: [2, 2],
+              domainColor: '#ccc',
+              tickColor: '#ccc',
+              values: rpValues,
+            },
+          },
+          y: {
+            field: 'value_min',
+            type: 'quantitative',
+            title: config.yLabel,
+          },
+          y2: {
+            field: 'value_max',
+          },
+          color: {
+            field: config.colorField,
+            type: 'nominal',
+            title: config.colorField,
+            scale:
+              colorDomain && colorRange
+                ? {
+                    domain: colorDomain,
+                    range: colorRange,
+                  }
+                : undefined,
+            legend: {
+              orient: 'bottom',
+              direction: 'horizontal',
+            },
+          },
+          tooltip: [
+            { field: 'value_min', type: 'quantitative', format: ',.3r', title: 'min' },
+            { field: 'value_max', type: 'quantitative', format: ',.3r', title: 'max' },
+            { field: 'rp', type: 'quantitative', title: 'rp' },
+            { field: config.colorField, type: 'nominal', title: config.colorField },
+          ],
+        },
+      },
+      {
+        mark: {
+          type: 'line',
+          point: {
+            filled: true,
+          },
+          tooltip: true,
+        },
+        encoding: {
+          x: {
+            field: 'rp',
+            type: 'quantitative',
+            title: 'Return period (years)',
+            scale: {
+              type: 'log',
+            },
+            axis: {
+              gridDash: [2, 2],
+              domainColor: '#ccc',
+              tickColor: '#ccc',
+              values: rpValues,
+            },
+          },
+          y: {
+            field: 'value',
+            type: 'quantitative',
+            title: config.yLabel,
+          },
+          color: {
+            field: config.colorField,
+            type: 'nominal',
+            title: config.colorField,
+            scale:
+              colorDomain && colorRange
+                ? {
+                    domain: colorDomain,
+                    range: colorRange,
+                  }
+                : undefined,
+            legend: {
+              orient: 'bottom',
+              direction: 'horizontal',
+            },
+          },
+          tooltip: [
+            { field: 'value', type: 'quantitative', format: ',.3r', title: 'median' },
+            { field: 'rp', type: 'quantitative', title: 'rp' },
+            { field: config.colorField, type: 'nominal', title: config.colorField },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+interface ReturnPeriodGroupedRow {
+  rp: number;
+  value: number;
+  value_min: number;
+  value_max: number;
+  [key: string]: string | number | undefined;
+}
+
+function ReturnPeriodGroupedByPathwayChart({
+  data,
+  config,
+  width,
+  height,
+}: {
+  data: ReturnPeriodRow[];
+  config: ChartConfig;
+  width: number;
+  height: number;
+}) {
+  const groupedData = useMemo(() => {
+    const colorField = config.colorField;
+    if (!data.length || !colorField) return [];
+    const grouped = _.groupBy(data, (d) => {
+      const pathwayValue = d[colorField];
+      return `${pathwayValue || 'unknown'}_${d.rp}`;
+    });
+    const rows: ReturnPeriodGroupedRow[] = [];
+
+    for (const [key, rowsForGroup] of Object.entries(grouped)) {
+      const values = rowsForGroup.map((r) => r.value).filter((v) => v != null);
+      if (!values.length) continue;
+
+      const sorted = [...values].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+      const firstRow = rowsForGroup[0];
+      const pathwayValue = firstRow[colorField];
+
+      rows.push({
+        rp: firstRow.rp,
+        value: median,
+        value_min: sorted[0],
+        value_max: sorted[sorted.length - 1],
+        [colorField]: pathwayValue,
+      });
+    }
+
+    return rows;
+  }, [data, config.colorField]);
+
+  const [colorDomain, colorRange] = useColorDomainAndRange(groupedData, config.colorField);
+
+  const rpValues = useMemo(
+    () => Array.from(new Set(groupedData.map((d) => d.rp))).sort((a, b) => a - b),
+    [groupedData],
+  );
+
+  const spec = useMemo(
+    () => makeReturnPeriodGroupedByPathwaySpec(rpValues, config, colorDomain, colorRange),
+    [rpValues, config, colorDomain, colorRange],
+  );
+
+  return <VegaChart spec={spec} data={groupedData} width={width} height={height} />;
+}
+
+function useColorDomainAndRange(data: Record<string, any>[], colorField: string) {
+  // Compute colour domain/range for series. Baseline should already be present as a distinct
+  // value in the colour field (e.g. rcp = 'baseline'), so we treat it as the first category
+  // and map it to gray, with other series drawn from the Tableau10 palette.
+  return useMemo<[string[] | undefined, string[] | undefined]>(() => {
+    if (!colorField) return [undefined, undefined];
+
+    const values = Array.from(
+      new Set(data.map((d) => d[colorField]).filter((v): v is string => v != null)),
+    );
+
+    if (values.length === 0) {
+      return [undefined, undefined];
+    }
+
+    // Move baseline to the front if present
+    const baselineIndex = values.indexOf('baseline');
+    if (baselineIndex > -1) {
+      values.splice(baselineIndex, 1);
+      values.unshift('baseline');
+    }
+
+    const domain = values;
+    const nonBaseline = domain.filter((v) => v !== 'baseline');
+
+    const nonBaselineColors = nonBaseline.map((_v, idx) => TABLEAU10[idx % TABLEAU10.length]);
+
+    const range =
+      domain[0] === 'baseline' ? ['#999999', ...nonBaselineColors] : [...nonBaselineColors];
+
+    return [domain, range];
+  }, [data, colorField]);
+}
+
+function VegaChart({
+  spec,
+  data,
+  width,
+  height,
+}: {
+  spec: VisualizationSpec;
+  data: Record<string, any>[];
+  width: number;
+  height: number;
+}) {
+  const vegaRef = useRef<HTMLDivElement>(null);
+  const embed = useVegaEmbed({
+    spec,
+    options: {
+      width,
+      height,
+      actions: false,
+      renderer: 'svg',
+      config: {
+        autosize: {
+          resize: true,
+        },
+      },
+    },
+    ref: vegaRef,
+  });
+
+  useEffect(() => {
+    embed?.view.data('values', data).runAsync();
+  }, [embed, data]);
+
+  return (
+    <Box>
+      <div ref={vegaRef} />
+    </Box>
+  );
+}
