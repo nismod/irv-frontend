@@ -20,6 +20,45 @@ export function makeReturnPeriodGroupedByPathwaySpec(
     data: {
       name: 'values',
     },
+    encoding: {
+      x: {
+        field: 'rp',
+        type: 'quantitative',
+        title: 'Return period (years)',
+        scale: {
+          type: 'log',
+        },
+        axis: {
+          gridDash: [2, 2],
+          domainColor: '#ccc',
+          tickColor: '#ccc',
+          values: rpValues,
+        },
+      },
+      color: {
+        field: config.colorField,
+        type: 'nominal',
+        title: config.colorField,
+        scale:
+          colorDomain && colorRange
+            ? {
+                domain: colorDomain,
+                range: colorRange,
+              }
+            : undefined,
+        legend: {
+          orient: 'bottom',
+          direction: 'horizontal',
+        },
+      },
+      tooltip: [
+        { field: config.colorField, type: 'nominal', title: config.colorField },
+        { field: 'rp', type: 'quantitative', title: 'Return period' },
+        { field: 'value', type: 'quantitative', format: ',.3r', title: 'Median' },
+        { field: 'value_min', type: 'quantitative', format: ',.3r', title: 'Min' },
+        { field: 'value_max', type: 'quantitative', format: ',.3r', title: 'Max' },
+      ],
+    },
     layer: [
       {
         mark: {
@@ -27,20 +66,6 @@ export function makeReturnPeriodGroupedByPathwaySpec(
           opacity: 0.15,
         },
         encoding: {
-          x: {
-            field: 'rp',
-            type: 'quantitative',
-            title: 'Return period (years)',
-            scale: {
-              type: 'log',
-            },
-            axis: {
-              gridDash: [2, 2],
-              domainColor: '#ccc',
-              tickColor: '#ccc',
-              values: rpValues,
-            },
-          },
           y: {
             field: 'value_min',
             type: 'quantitative',
@@ -49,28 +74,6 @@ export function makeReturnPeriodGroupedByPathwaySpec(
           y2: {
             field: 'value_max',
           },
-          color: {
-            field: config.colorField,
-            type: 'nominal',
-            title: config.colorField,
-            scale:
-              colorDomain && colorRange
-                ? {
-                    domain: colorDomain,
-                    range: colorRange,
-                  }
-                : undefined,
-            legend: {
-              orient: 'bottom',
-              direction: 'horizontal',
-            },
-          },
-          tooltip: [
-            { field: 'value_min', type: 'quantitative', format: ',.3r', title: 'min' },
-            { field: 'value_max', type: 'quantitative', format: ',.3r', title: 'max' },
-            { field: 'rp', type: 'quantitative', title: 'rp' },
-            { field: config.colorField, type: 'nominal', title: config.colorField },
-          ],
         },
       },
       {
@@ -82,46 +85,11 @@ export function makeReturnPeriodGroupedByPathwaySpec(
           tooltip: true,
         },
         encoding: {
-          x: {
-            field: 'rp',
-            type: 'quantitative',
-            title: 'Return period (years)',
-            scale: {
-              type: 'log',
-            },
-            axis: {
-              gridDash: [2, 2],
-              domainColor: '#ccc',
-              tickColor: '#ccc',
-              values: rpValues,
-            },
-          },
           y: {
             field: 'value',
             type: 'quantitative',
             title: config.yLabel,
           },
-          color: {
-            field: config.colorField,
-            type: 'nominal',
-            title: config.colorField,
-            scale:
-              colorDomain && colorRange
-                ? {
-                    domain: colorDomain,
-                    range: colorRange,
-                  }
-                : undefined,
-            legend: {
-              orient: 'bottom',
-              direction: 'horizontal',
-            },
-          },
-          tooltip: [
-            { field: 'value', type: 'quantitative', format: ',.3r', title: 'median' },
-            { field: 'rp', type: 'quantitative', title: 'rp' },
-            { field: config.colorField, type: 'nominal', title: config.colorField },
-          ],
         },
       },
     ],
