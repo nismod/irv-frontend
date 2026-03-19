@@ -136,6 +136,9 @@ export const buildReadmeFile = (exportConfigs: Map<string, ExportConfig>): Downl
       .filter((s) => s.length > 0),
   );
 
+  // Sort the list of dataset sources alphabetically.
+  datasetSourcesList.sort((a, b) => a.localeCompare(b));
+
   const datasetDescriptionListText = datasetDescriptionList.map((s) => `- ${s}`).join('\n');
   const datasetSourcesListText = datasetSourcesList.map((s) => `- ${s}`).join('\n');
 
