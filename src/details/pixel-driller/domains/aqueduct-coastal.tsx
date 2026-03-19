@@ -138,6 +138,12 @@ export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDatas
 const aqueductCoastalExportConfig: ExportConfig = {
   exportFunction: exportAqueductCoastal,
   metadataFunction: getAqueductCoastalMetadata,
+  readmeFunction: () => ({
+    datasetDescription: 'coastal and river flooding (Ward et al 2020; Baugh et al 2024)',
+    datasetSources: [
+      'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020) Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-floods-methodology',
+    ],
+  }),
 };
 
 export const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {

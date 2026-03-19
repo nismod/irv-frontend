@@ -27,7 +27,7 @@ import { ExtremeHeat } from './domains/extreme-heat';
 import { RiverFloodingJrc } from './domains/jrc-flood';
 import { Landslides } from './domains/landslide';
 import { DownloadDataProvider, useDownloadDataContext } from './download/download-context';
-import { getReadmeFile } from './download/download-generators';
+import { buildReadmeFile } from './download/download-generators';
 import { createSpatialPoint } from './download/metadata-common';
 import { RdlsMetadataPackage } from './download/metadata-types';
 import { openAccordionState } from './hazard-accordion';
@@ -148,7 +148,9 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       mimeType: 'application/json',
     };
 
-    exportFiles = [getReadmeFile(), metadataFile, ...exportFiles];
+    const readmeFile = buildReadmeFile(exportConfigs);
+
+    exportFiles = [readmeFile, metadataFile, ...exportFiles];
     const zipBlob = await buildZipFile(exportFiles);
     const filename = `site-details-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
 

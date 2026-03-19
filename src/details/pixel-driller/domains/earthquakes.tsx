@@ -19,7 +19,6 @@ import {
 import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
 import { HazardAccordion } from '../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../rag/rag-calculation';
-import { RagStatus } from '../rag/rag-types';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Earthquake-specific key type definition
@@ -102,6 +101,12 @@ const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
 const earthquakesExportConfig: ExportConfig = {
   exportFunction: exportEarthquakes,
   metadataFunction: getEarthquakesMetadata,
+  readmeFunction: () => ({
+    datasetDescription: 'earthquake (Pagani et al 2019)',
+    datasetSources: [
+      'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1). DOI: https://doi.org/10.1177/8755293020931866',
+    ],
+  }),
 };
 
 export const Earthquakes: FC<HazardComponentProps> = ({ records }) => {

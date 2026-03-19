@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { ReturnPeriodChart } from '../charts/return-period-chart';
@@ -16,21 +15,10 @@ import {
   COMMON_DIALECT,
   COMMON_PUBLISHER,
 } from '../download/metadata-common';
-import {
-  DatapackageTableSchema,
-  DatapackageTableSchemaField,
-  RdlsDataset,
-} from '../download/metadata-types';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
 import { HazardAccordion } from '../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../rag/rag-calculation';
-import { RagStatus } from '../rag/rag-types';
-import {
-  ChartConfig,
-  HazardComponentProps,
-  PixelRecord,
-  PixelRecordKeys,
-  ReturnPeriodRow,
-} from '../types';
+import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Aqueduct-specific key type definition
 export interface AqueductKeys extends PixelRecordKeys {
@@ -181,6 +169,12 @@ export const getAqueductRiverMetadata = ({ spatial }: MetadataArgs): RdlsDataset
 const aqueductRiverExportConfig: ExportConfig = {
   exportFunction: exportAqueductRiver,
   metadataFunction: getAqueductRiverMetadata,
+  readmeFunction: () => ({
+    datasetDescription: 'coastal and river flooding (Ward et al 2020; Baugh et al 2024)',
+    datasetSources: [
+      'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020) Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-floods-methodology',
+    ],
+  }),
 };
 
 export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => {

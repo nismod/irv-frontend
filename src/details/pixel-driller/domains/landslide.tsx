@@ -96,6 +96,10 @@ export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
 const landslideExportConfig: ExportConfig = {
   exportFunction: exportLandslide,
   metadataFunction: getLandslidesMetadata,
+  readmeFunction: () => ({
+    datasetDescription: '',
+    datasetSources: [],
+  }),
 };
 
 export const Landslides: FC<HazardComponentProps> = ({ records }) => {

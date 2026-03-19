@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { FC, useMemo } from 'react';
 
 import { ReturnPeriodChart } from '../charts/return-period-chart';
@@ -19,14 +18,7 @@ import {
 import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
 import { HazardAccordion } from '../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../rag/rag-calculation';
-import { RagStatus } from '../rag/rag-types';
-import {
-  ChartConfig,
-  HazardComponentProps,
-  PixelRecord,
-  PixelRecordKeys,
-  ReturnPeriodRow,
-} from '../types';
+import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Cyclone IRIS-specific key type definition
 export interface CycloneIrisKeys extends PixelRecordKeys {
@@ -129,6 +121,14 @@ export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset =
 const cycloneIrisExportConfig: ExportConfig = {
   exportFunction: exportCycloneIris,
   metadataFunction: getCycloneIrisMetadata,
+  readmeFunction: () => ({
+    datasetDescription:
+      'tropical cyclone wind speeds (Sparks and Toumi 2024; Russell 2022, derived from Bloemendaal et al 2020 and Bloemendaal et al 2022)',
+    datasetSources: [
+      'Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset. Scientific Data 11, 424 DOI https://doi.org/10.1038/s41597-024-03250-y',
+      'Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model. Figshare. Collection. DOI https://doi.org/10.6084/m9.figshare.c.6724251.v1',
+    ],
+  }),
 };
 
 export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {

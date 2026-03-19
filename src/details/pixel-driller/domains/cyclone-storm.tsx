@@ -141,6 +141,14 @@ const getCycloneStormMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
 const cycloneStormExportConfig: ExportConfig = {
   exportFunction: exportCycloneStorm,
   metadataFunction: getCycloneStormMetadata,
+  readmeFunction: () => ({
+    datasetDescription:
+      'tropical cyclone wind speeds (Sparks and Toumi 2024; Russell 2022, derived from Bloemendaal et al 2020 and Bloemendaal et al 2022)',
+    datasetSources: [
+      'Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts, J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods. 4TU.ResearchData. [Dataset]. DOI: https://doi.org/10.4121/12705164.v3',
+      'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J. (Reindert); Haigh, I.D. (Ivan); Martinez, Andrew B.; et al. (2022): STORM climate change tropical cyclone wind speed return periods. 4TU.ResearchData. [Dataset]. DOI: https://doi.org/10.4121/14510817.v3',
+    ],
+  }),
 };
 
 export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {

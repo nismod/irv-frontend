@@ -123,6 +123,11 @@ const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
 const droughtsExportConfig: ExportConfig = {
   exportFunction: exportDroughts,
   metadataFunction: getDroughtsMetadata,
+  readmeFunction: () => ({
+    datasetDescription:
+      'extreme heat and drought (Russell et al 2023, derived from Lange et al 2020)',
+    datasetSources: [],
+  }),
 };
 
 export const Droughts: FC<HazardComponentProps> = ({ records }) => {

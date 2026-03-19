@@ -127,6 +127,14 @@ const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
 const extremeHeatExportConfig: ExportConfig = {
   exportFunction: exportExtremeHeat,
   metadataFunction: getExtremeHeatMetadata,
+  readmeFunction: () => ({
+    datasetDescription:
+      'extreme heat and drought (Russell et al 2023, derived from Lange et al 2020)',
+    datasetSources: [
+      'Russell, T., Nicholas, C., & Bernhofen, M. (2023). Annual probability of extreme heat and drought events, derived from Lange et al 2020 (Version 2) [Dataset]. Zenodo. DOI: https://doi.org/10.5281/zenodo.8147088',
+      "Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al. (2020). Projecting exposure to extreme climate impact events across six event categories and three spatial scales. Earth's Future, 8, e2020EF001616. DOI: https://doi.org/10.1029/2020EF001616",
+    ],
+  }),
 };
 
 export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {

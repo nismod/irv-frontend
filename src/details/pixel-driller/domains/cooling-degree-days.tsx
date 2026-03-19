@@ -98,6 +98,10 @@ export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDat
 const coolingDegreeDaysExportConfig: ExportConfig = {
   exportFunction: exportCoolingDegreeDays,
   metadataFunction: getCoolingDegreeDaysMetadata,
+  readmeFunction: () => ({
+    datasetDescription: '',
+    datasetSources: [],
+  }),
 };
 
 export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {

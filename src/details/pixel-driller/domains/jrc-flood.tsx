@@ -138,6 +138,12 @@ export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => (
 const jrcFloodExportConfig: ExportConfig = {
   exportFunction: exportJrcFlood,
   metadataFunction: getJrcFloodMetadata,
+  readmeFunction: () => ({
+    datasetDescription: 'coastal and river flooding (Ward et al 2020; Baugh et al 2024)',
+    datasetSources: [
+      "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset] PID: http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif",
+    ],
+  }),
 };
 
 export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {

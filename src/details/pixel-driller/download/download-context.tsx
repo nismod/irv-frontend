@@ -34,12 +34,27 @@ export interface MetadataArgs {
 export type MetadataFunction = (args: MetadataArgs) => RdlsDataset;
 
 /**
+ * Contents of the README file.
+ */
+export interface ReadmeContents {
+  datasetDescription: string;
+  datasetSources: string[];
+}
+
+export type ReadmeFunction = () => ReadmeContents;
+
+/**
  * Configuration for a domain export.
  * Includes the export function and the metadata function.
  */
 export interface ExportConfig {
   exportFunction: ExportFunction;
   metadataFunction: MetadataFunction;
+  /**
+   * Function that returns the dataset-specific contents of the README file.
+   * Values from all domains are deduplicated and combined into a single README file.
+   */
+  readmeFunction: ReadmeFunction;
 }
 
 interface DownloadDataContextValue {
