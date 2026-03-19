@@ -1,0 +1,27 @@
+export const meta = {
+  title: 'Vega-Lite example article',
+  description: 'Example article with co-located JSON data rendered via a local Vega-Lite component.',
+  date: '2026-03-16',
+};
+
+import { VegaBarChart } from './VegaBarChart';
+
+# Vega-Lite example article
+
+This article demonstrates how to:
+
+- Co-locate small datasets next to an article
+- Render them using a local React component based on **Vega-Lite**
+- Keep the article itself mostly markdown, embedding only declarative components
+
+## Embedded chart
+
+Below is a bar chart rendered from `data.json` in the same folder via a local `VegaBarChart` component:
+
+<VegaBarChart />
+
+You can inspect this folder to see how the MDX, data, and component live together:
+
+- `article.mdx` – this file
+- `data.json` – small inline dataset
+- `VegaBarChart.tsx` – local React component using `react-vega` and Vega-Lite
