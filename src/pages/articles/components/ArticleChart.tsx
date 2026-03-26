@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-import { Callout } from './article-components';
+import { Callout } from './Callout';
 
 interface ArticleChartProps {
   title?: string;

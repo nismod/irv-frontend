@@ -100,6 +100,10 @@ const secondaryNavItems = [
     title: 'Guide',
   },
   {
+    to: '/articles',
+    title: 'Articles',
+  },
+  {
     to: '/data',
     title: 'Sources',
   },

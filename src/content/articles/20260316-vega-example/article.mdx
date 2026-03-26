@@ -1,12 +1,16 @@
-export const meta = {
-  title: 'Vega-Lite example article',
-  description: 'Example article with co-located JSON data rendered via a local Vega-Lite component.',
-  date: '2026-03-16',
-};
+import { defineArticleMeta } from '@/content/articles/article-meta';
 
 import { VegaBarChart } from './VegaBarChart';
 
-# Vega-Lite example article
+import thumbnail from './thumbnail.png';
+
+export const meta = defineArticleMeta({
+  title: 'Vega-Lite example article',
+  description:
+    'Example article with co-located JSON data rendered via a local Vega-Lite component.',
+  date: '2026-03-16',
+  thumbnail,
+});
 
 This article demonstrates how to:
 

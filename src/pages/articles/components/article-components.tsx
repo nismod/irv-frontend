@@ -1,6 +1,8 @@
 import { AppLink } from '@/lib/nav';
 import { H1, H2, H3, H4, H5, H6 } from '@/lib/ui/mui/typography';
 
+import { ArticleParagraph } from '@/pages/ui/ArticleContainer';
+
 import { ArticleChart } from './ArticleChart';
 import { ArticleMap } from './ArticleMap';
 import { Callout } from './Callout';
@@ -48,6 +50,14 @@ export const articleMdxComponents = {
   h4: ({ children }: { children?: React.ReactNode }) => <H4>{children}</H4>,
   h5: ({ children }: { children?: React.ReactNode }) => <H5>{children}</H5>,
   h6: ({ children }: { children?: React.ReactNode }) => <H6>{children}</H6>,
+  p: ({ children }: { children?: React.ReactNode }) => (
+    <ArticleParagraph>{children}</ArticleParagraph>
+  ),
+  ul: ({ children }: { children?: React.ReactNode }) => (
+    <ArticleParagraph>
+      <ul>{children}</ul>
+    </ArticleParagraph>
+  ),
   Callout,
   ArticleChart,
   ArticleMap,

@@ -1,7 +1,14 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
-import { ArticleContainer, ArticleContentContainer } from '@/pages/ui/ArticleContainer';
+import { BackLink } from '@/lib/nav';
+
+import {
+  ArticleContainer,
+  ArticleContentContainer,
+  ArticleSection,
+  NarrowContainer,
+} from '@/pages/ui/ArticleContainer';
 import { HeadingBox, HeadingBoxText } from '@/pages/ui/HeadingBox';
 
 import { articleSlugs, getArticle } from './article-manifest';
@@ -32,7 +39,12 @@ export const ArticleSlugPage = () => {
         </HeadingBox>
       )}
       <ArticleContentContainer>
-        <Content components={articleMdxComponents} />
+        <BackLink to="/articles">&larr; Back to articles</BackLink>
+        <ArticleSection>
+          <NarrowContainer>
+            <Content components={articleMdxComponents} />
+          </NarrowContainer>
+        </ArticleSection>
       </ArticleContentContainer>
     </ArticleContainer>
   );
