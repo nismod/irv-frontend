@@ -1,7 +1,6 @@
 import { defineArticleMeta } from '@/content/articles/article-meta';
 
-import { VegaBarChart } from './VegaBarChart';
-
+import data from './data.json';
 import thumbnail from './thumbnail.png';
 
 export const meta = defineArticleMeta({
@@ -20,12 +19,24 @@ This article demonstrates how to:
 
 ## Embedded chart
 
-Below is a bar chart rendered from `data.json` in the same folder via a local `VegaBarChart` component:
+Below is a bar chart rendered from `data.json` in the same folder via a local `ArticleChart` component:
 
-<VegaBarChart />
+<ArticleChart
+  description="This is a bar chart rendered from `data.json` in the same folder via a local `ArticleChart` component"
+  spec={{
+    data: { name: 'values' },
+    mark: 'bar',
+    encoding: {
+      x: { field: 'category', type: 'ordinal', axis: { title: 'Category' } },
+      y: { field: 'value', type: 'quantitative', axis: { title: 'Value' } },
+    },
+    width: 400,
+    height: 300,
+  }}
+  data={data}
+/>
 
 You can inspect this folder to see how the MDX, data, and component live together:
 
 - `article.mdx` – this file
 - `data.json` – small inline dataset
-- `VegaBarChart.tsx` – local React component using `react-vega` and Vega-Lite
