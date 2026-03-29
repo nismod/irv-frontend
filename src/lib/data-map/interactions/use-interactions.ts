@@ -34,7 +34,7 @@ export function useInteractions(
   /** Default picking radius to use when no interaction group is present */
   defaultPickingRadius: number = DEFAULT_PICKING_RADIUS,
 ) {
-  const setHoverXY = useSetRecoilState(hoverPositionState);
+  const setHoverAnchor = useSetRecoilState(hoverPositionState);
 
   const setInteractionGroupHover = useSetRecoilStateFamily(hoverState);
   const setInteractionGroupSelection = useSetRecoilStateFamily(selectionState);
@@ -75,7 +75,7 @@ export function useInteractions(
 
   const onHover = useCallback(
     (info: any, deck: MapboxOverlay) => {
-      const { x, y } = info;
+      const { x, y, coordinate } = info;
 
       for (const [groupName, layerIds] of Object.entries(activeGroupLayerIds)) {
         const { type, pickingRadius: radius, pickMultiple } = interactionGroupLookup[groupName];
@@ -96,13 +96,13 @@ export function useInteractions(
         setInteractionGroupHover(groupName, interactionTargets);
       }
 
-      setHoverXY([x, y]);
+      setHoverAnchor(coordinate ? { lng: coordinate[0], lat: coordinate[1] } : null);
     },
     [
       activeGroupLayerIds,
       lookupViewForDeck,
       interactionGroupLookup,
-      setHoverXY,
+      setHoverAnchor,
       setInteractionGroupHover,
       viewLayerLookup,
     ],

@@ -1,26 +1,38 @@
-import React, { FC, ReactNode } from 'react';
+import React, { Children, FC, ReactNode } from 'react';
+import { useMap } from 'react-map-gl/maplibre';
 import { useRecoilValue } from 'recoil';
 
 import { hoverPositionState } from './interactions/interaction-state';
 
-/** Component which absolutely positions its children based on the current hover position state.
- *
- * Only outputs content if hover state exists and the children are non-empty.
- */
+/** Positions children from the hover anchor (lng/lat), projected into the map container. Hidden if the anchor is off-canvas or there are no children. */
 export const DataMapTooltip: FC<{ children?: ReactNode }> = ({ children }) => {
-  const tooltipXY = useRecoilValue(hoverPositionState);
+  const anchor = useRecoilValue(hoverPositionState);
+  const mapRef = useMap()?.current;
+  const map = mapRef?.getMap();
 
-  return tooltipXY && React.Children.count(children) ? (
+  if (!map || !anchor || Children.count(children) === 0) {
+    return null;
+  }
+
+  const { x, y } = map.project([anchor.lng, anchor.lat]);
+  const { clientWidth: w, clientHeight: h } = map.getContainer();
+
+  const inBounds = x > 0 && x < w && y > 0 && y < h;
+  if (!inBounds) {
+    return null;
+  }
+
+  return (
     <div
       style={{
         position: 'absolute',
         zIndex: 1000,
         pointerEvents: 'none',
-        left: tooltipXY[0] + 10,
-        top: tooltipXY[1],
+        left: x + 10,
+        top: y,
       }}
     >
       {children}
     </div>
-  ) : null;
+  );
 };
