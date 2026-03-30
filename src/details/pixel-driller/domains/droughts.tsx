@@ -2,17 +2,23 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
-import { ExportFunction, useRegisterExportFunction } from '../download-context';
-import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+import {
+  ExportConfig,
+  ExportFunction,
+  MetadataArgs,
+  useRegisterExportConfig,
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
-import { RdlsDataset, RdlsLocation } from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
+} from '../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import { calculateRagFromSingleValueTwoThresholds } from '../rag/rag-calculation';
+import { RagStatus } from '../rag/rag-types';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Drought-specific key type definition
@@ -40,89 +46,42 @@ const filterDroughtRecords = (records: PixelRecord[]): PixelRecord<DroughtKeys>[
     .filter((r) => r.layer.keys.hazard === 'drought' && r.layer.keys.metric === 'occurrence');
 };
 
-// Export configuration for drought occurrence (ISIMIP)
-const droughtExportConfig: DomainExportConfig = {
-  baseName: 'isimip__drought__occurrence',
-  columns: [
-    {
-      key: 'rcp',
-      label: 'RCP',
-      description: 'Representative Concentration Pathway (emissions scenario).',
-    },
-    {
-      key: 'epoch',
-      label: 'Epoch',
-      description: 'Time period or epoch of the simulation.',
-    },
-    {
-      key: 'gcm',
-      label: 'GCM',
-      description: 'Global Climate Model identifier.',
-    },
-    {
-      key: 'value',
-      label: 'Probability',
-      description: 'Event probability (0–1) for drought occurrence.',
-    },
-  ],
-  // Stub metadata for now; to be replaced with a richer catalog format later.
-  metadata: {},
-};
+const droughtBaseName = 'isimip__drought__occurrence';
+const droughtColumns: DatapackageTableSchemaField[] = [
+  {
+    name: 'rcp',
+    type: 'string',
+    title: 'RCP',
+    description: 'Representative Concentration Pathway (emissions scenario).',
+  },
+  {
+    name: 'epoch',
+    type: 'string',
+    title: 'Epoch',
+    description: 'Time period or epoch of the simulation.',
+  },
+  {
+    name: 'gcm',
+    type: 'string',
+    title: 'GCM',
+    description: 'Global Climate Model identifier.',
+  },
+  {
+    name: 'value',
+    type: 'number',
+    title: 'Probability',
+    description: 'Event probability (0–1) for drought occurrence.',
+  },
+];
 
 // Export function for Droughts
 const exportDroughts: ExportFunction = async (allRecords) => {
   const filtered = filterDroughtRecords(allRecords);
-  // Always return CSV + JSON, even if there are no records
-  return buildDomainExportFiles(droughtExportConfig, filtered);
+  return buildDomainExportFile(droughtBaseName, droughtColumns, filtered);
 };
 
-export const Droughts: FC<HazardComponentProps> = ({ records }) => {
-  // Filter for drought records (probability values)
-  const droughtRecords = useMemo(() => filterDroughtRecords(records), [records]);
-
-  // Aggregate all values using maximum (worst case scenario across all epochs/rcp/gcm combinations)
-  const aggregatedProbability = useMemo(() => {
-    const values = droughtRecords.map((r) => r.value).filter((v): v is number => v != null);
-    if (values.length === 0) return 0;
-    return Math.max(...values);
-  }, [droughtRecords]);
-
-  // Calculate RAG status based on two thresholds (same logic pattern as Extreme Heat)
-  const ragStatus = useMemo((): RagStatus => {
-    if (droughtRecords.length === 0) return 'no-data';
-    if (aggregatedProbability >= DROUGHT_RED_THRESHOLD) {
-      return 'red';
-    } else if (aggregatedProbability >= DROUGHT_AMBER_THRESHOLD) {
-      return 'amber';
-    } else {
-      return 'green';
-    }
-  }, [aggregatedProbability, droughtRecords.length]);
-
-  const formatProbability = (value: number): string => {
-    // Convert to percentage and format with at most one decimal place, removing trailing zeros
-    const percentage = value * 100;
-    return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
-  };
-
-  useRegisterExportFunction('droughts', exportDroughts);
-
-  return (
-    <HazardAccordion title="Droughts" ragStatus={ragStatus}>
-      <Box>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          Maximum probability of drought event (worst case across all scenarios)
-        </Typography>
-        <Typography variant="body1">{formatProbability(aggregatedProbability)}</Typography>
-      </Box>
-    </HazardAccordion>
-  );
-};
-
-// Metadata builder for RDLS metadata.json
-
-export const getDroughtsMetadata = (spatial: RdlsLocation): RdlsDataset => ({
-  id: 'isimip__drought__occurrence',
+const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
+  id: droughtBaseName,
   title: 'Drought Occurrence (ISIMIP)',
   description:
     'Probability of drought occurrence at this site across multiple emissions scenarios, epochs and climate models.',
@@ -130,38 +89,13 @@ export const getDroughtsMetadata = (spatial: RdlsLocation): RdlsDataset => ({
   spatial,
   resources: [
     {
-      id: 'isimip__drought__occurrence.csv',
+      id: `${droughtBaseName}.csv`,
       title: 'Drought Occurrence Data (ISIMIP)',
       description:
         'Drought occurrence probabilities from the ISIMIP project for this site across scenarios.',
       format: 'csv',
       schema: {
-        fields: [
-          {
-            name: 'rcp',
-            type: 'string',
-            title: 'RCP',
-            description: 'Representative Concentration Pathway (emissions scenario).',
-          },
-          {
-            name: 'epoch',
-            type: 'string',
-            title: 'Epoch',
-            description: 'Time period or epoch of the simulation.',
-          },
-          {
-            name: 'gcm',
-            type: 'string',
-            title: 'GCM',
-            description: 'Global Climate Model identifier.',
-          },
-          {
-            name: 'value',
-            type: 'number',
-            title: 'Probability',
-            description: 'Event probability (0–1) for drought occurrence.',
-          },
-        ],
+        fields: structuredClone(droughtColumns),
       },
       dialect: COMMON_DIALECT,
     },
@@ -185,3 +119,57 @@ export const getDroughtsMetadata = (spatial: RdlsLocation): RdlsDataset => ({
     },
   ],
 });
+
+const droughtsExportConfig: ExportConfig = {
+  exportFunction: exportDroughts,
+  metadataFunction: getDroughtsMetadata,
+  readmeFunction: () => ({
+    datasetDescription:
+      'extreme heat and drought (Russell et al 2023, derived from Lange et al 2020)',
+    datasetSources: [],
+  }),
+};
+
+export const Droughts: FC<HazardComponentProps> = ({ records }) => {
+  // Filter for drought records (probability values)
+  const droughtRecords = useMemo(() => filterDroughtRecords(records), [records]);
+
+  // Aggregate all values using maximum (worst case scenario across all epochs/rcp/gcm combinations)
+  // Returns null if there are no numeric values at all.
+  const aggregatedProbability = useMemo(() => {
+    const values = droughtRecords.map((r) => r.value).filter((v): v is number => v != null);
+    if (values.length === 0) return null;
+    return Math.max(...values);
+  }, [droughtRecords]);
+
+  // Calculate RAG status based on two thresholds using the shared helper.
+  const ragStatus = useMemo<RagStatus>(
+    () =>
+      calculateRagFromSingleValueTwoThresholds(
+        aggregatedProbability,
+        DROUGHT_RED_THRESHOLD,
+        DROUGHT_AMBER_THRESHOLD,
+      ),
+    [aggregatedProbability],
+  );
+
+  const formatProbability = (value: number | null): string => {
+    if (value == null) return 'N/A';
+    // Convert to percentage and format with at most one decimal place, removing trailing zeros
+    const percentage = value * 100;
+    return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
+  };
+
+  useRegisterExportConfig('droughts', droughtsExportConfig);
+
+  return (
+    <HazardAccordion title="Droughts" ragStatus={ragStatus}>
+      <Box>
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          Maximum probability of drought event (worst case across all scenarios)
+        </Typography>
+        <Typography variant="body1">{formatProbability(aggregatedProbability)}</Typography>
+      </Box>
+    </HazardAccordion>
+  );
+};

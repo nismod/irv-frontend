@@ -3,17 +3,22 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FC, useMemo } from 'react';
 
-import { ExportFunction, useRegisterExportFunction } from '../download-context';
-import { buildDomainExportFiles, DomainExportConfig } from '../download-generators';
-import { HazardAccordion } from '../hazard-accordion';
+import {
+  ExportConfig,
+  ExportFunction,
+  MetadataArgs,
+  useRegisterExportConfig,
+} from '../download/download-context';
+import { buildDomainExportFile } from '../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../metadata-common';
-import { RdlsDataset, RdlsLocation } from '../metadata-types';
-import { RagStatus } from '../rag-indicator';
+} from '../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
+import { HazardAccordion } from '../hazard-accordion';
+import { RagStatus } from '../rag/rag-types';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
 
 // Landslide-specific key type definition
@@ -39,28 +44,62 @@ const filterLandslideRecords = (records: PixelRecord[]): PixelRecord<LandslideKe
   return records.filter(isLandslideRecord);
 };
 
-const landslideExportConfig: DomainExportConfig = {
-  // domain === 'landslide' (subtypes handled as data, not filters)
-  baseName: 'landslide',
-  columns: [
-    {
-      key: 'subtype',
-      label: 'Subtype',
-      description: 'Hazard subtype (earthquake, rainfall_mean, rainfall_median, susceptibility).',
-    },
-    {
-      key: 'value',
-      label: 'Value',
-      description: 'Modelled probability or susceptibility value (0–1).',
-    },
-  ],
-  metadata: {},
-};
+const landslideBaseName = 'landslide';
+const landslideColumns: DatapackageTableSchemaField[] = [
+  {
+    name: 'subtype',
+    type: 'string',
+    title: 'Subtype',
+    description: 'Hazard subtype (earthquake, rainfall_mean, rainfall_median, susceptibility).',
+  },
+  {
+    name: 'value',
+    type: 'number',
+    title: 'Value',
+    description: 'Modelled probability or susceptibility value (0–1).',
+  },
+];
 
 // Export function for Landslide
 const exportLandslide: ExportFunction = async (allRecords) => {
   const filtered = filterLandslideRecords(allRecords);
-  return buildDomainExportFiles(landslideExportConfig, filtered);
+  return buildDomainExportFile(landslideBaseName, landslideColumns, filtered);
+};
+
+export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
+  id: landslideBaseName,
+  title: 'Landslide Susceptibility and Probabilities',
+  description:
+    'Landslide susceptibility and annual probabilities for different triggers at this site.',
+  risk_data_type: ['hazard'],
+  spatial,
+  resources: [
+    {
+      id: `${landslideBaseName}.csv`,
+      title: 'Landslide Data',
+      description:
+        'Landslide susceptibility and annual probabilities for earthquake and rainfall triggers at this site.',
+      format: 'csv',
+      schema: {
+        fields: structuredClone(landslideColumns),
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ],
+  publisher: COMMON_PUBLISHER,
+  license: '',
+  contact_point: COMMON_CONTACT_POINT,
+  creator: COMMON_CREATOR,
+  attributions: [],
+});
+
+const landslideExportConfig: ExportConfig = {
+  exportFunction: exportLandslide,
+  metadataFunction: getLandslidesMetadata,
+  readmeFunction: () => ({
+    datasetDescription: '',
+    datasetSources: [],
+  }),
 };
 
 export const Landslides: FC<HazardComponentProps> = ({ records }) => {
@@ -109,7 +148,7 @@ export const Landslides: FC<HazardComponentProps> = ({ records }) => {
     return `${percentage.toFixed(1).replace(/\.?0+$/, '')}%`;
   };
 
-  useRegisterExportFunction('landslide', exportLandslide);
+  useRegisterExportConfig('landslide', landslideExportConfig);
 
   return (
     <HazardAccordion title="Landslide" ragStatus={ragStatus}>
@@ -142,46 +181,3 @@ export const Landslides: FC<HazardComponentProps> = ({ records }) => {
     </HazardAccordion>
   );
 };
-
-// Metadata builder for RDLS metadata.json
-
-export const getLandslidesMetadata = (spatial: RdlsLocation): RdlsDataset => ({
-  id: 'landslide',
-  title: 'Landslide Susceptibility and Probabilities',
-  description:
-    'Landslide susceptibility and annual probabilities for different triggers at this site.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: 'landslide.csv',
-      title: 'Landslide Data',
-      description:
-        'Landslide susceptibility and annual probabilities for earthquake and rainfall triggers at this site.',
-      format: 'csv',
-      schema: {
-        fields: [
-          {
-            name: 'subtype',
-            type: 'string',
-            title: 'Subtype',
-            description:
-              'Hazard subtype (earthquake, rainfall_mean, rainfall_median, susceptibility).',
-          },
-          {
-            name: 'value',
-            type: 'number',
-            title: 'Value',
-            description: 'Modelled probability or susceptibility value (0–1).',
-          },
-        ],
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: '',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  attributions: [],
-});

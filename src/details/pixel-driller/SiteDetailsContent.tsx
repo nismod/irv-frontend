@@ -1,40 +1,36 @@
-import { Close, Download } from '@mui/icons-material';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Close } from '@mui/icons-material';
 import { Alert, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
+import { buildZipFile } from '@/lib/downloads/download-utils';
+import { DownloadButton } from '@/lib/downloads/DownloadButton';
+import { DownloadFile } from '@/lib/downloads/types';
 import { ExtLink } from '@/lib/nav';
 import { CopyableLink } from '@/lib/nav/CopyableLink';
 
 import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
 import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
 
-import { openAccordionState } from './accordion-state';
 import { asPixelResponse } from './data-transforms';
-import {
-  CoastalFlooding,
-  getAqueductCoastalMetadata,
-  getAqueductRiverMetadata,
-  RiverFloodingAqueduct,
-} from './domains/aqueduct';
-import { CoolingDegreeDays, getCoolingDegreeDaysMetadata } from './domains/cooling-degree-days';
-import { getCycloneIrisMetadata, TropicalCyclonesIris } from './domains/cyclone-iris';
-import { getCycloneStormMetadata, TropicalCyclonesStorm } from './domains/cyclone-storm';
-import { Droughts, getDroughtsMetadata } from './domains/droughts';
-import { Earthquakes, getEarthquakesMetadata } from './domains/earthquakes';
-import { ExtremeHeat, getExtremeHeatMetadata } from './domains/extreme-heat';
-import { getJrcFloodMetadata, RiverFloodingJrc } from './domains/jrc-flood';
-import { getLandslidesMetadata, Landslides } from './domains/landslide';
-import { DownloadDataProvider, ExportFile, useDownloadDataContext } from './download-context';
-import { buildZipFile, downloadBlob, getReadmeFile } from './download-utils';
-import { createSpatialPoint } from './metadata-common';
-import { RdlsMetadataPackage } from './metadata-types';
-import mockPixelData from './mock/pixel_values.json';
+import { CoastalFlooding } from './domains/aqueduct-coastal';
+import { RiverFloodingAqueduct } from './domains/aqueduct-river';
+import { CoolingDegreeDays } from './domains/cooling-degree-days';
+import { TropicalCyclonesIris } from './domains/cyclone-iris';
+import { TropicalCyclonesStorm } from './domains/cyclone-storm';
+import { Droughts } from './domains/droughts';
+import { Earthquakes } from './domains/earthquakes';
+import { ExtremeHeat } from './domains/extreme-heat';
+import { RiverFloodingJrc } from './domains/jrc-flood';
+import { Landslides } from './domains/landslide';
+import { DownloadDataProvider, useDownloadDataContext } from './download/download-context';
+import { buildReadmeFile } from './download/download-generators';
+import { createSpatialPoint } from './download/metadata-common';
+import { RdlsMetadataPackage } from './download/metadata-types';
+import { openAccordionState } from './hazard-accordion';
 import { PixelResponse } from './types';
 
 interface SiteDetailsContentProps {
@@ -49,11 +45,10 @@ interface SiteDetailsContentProps {
 const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const [pixelData, setPixelData] = useState<PixelResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useRecoilValue(openAccordionState);
-  const { getAllExportFunctions } = useDownloadDataContext();
+  const { getAllExportConfigs } = useDownloadDataContext();
   const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
   const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
 
@@ -69,24 +64,9 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   }, [lat, lng]);
 
   useEffect(() => {
-    // TODO: Temporarily using mock data for performance during testing
-    // Switch back to API fetch by uncommenting the code below and removing the mock data loading
     setLoading(true);
     setError(null);
 
-    // Load mock data (temporary)
-    // setTimeout(() => {
-    //   try {
-    //     setPixelData(asPixelResponse(mockPixelData));
-    //   } catch (err) {
-    //     setError(err instanceof Error ? err.message : 'Failed to load mock pixel data');
-    //     console.error('Error loading mock pixel data:', err);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // }, 100); // Small delay to simulate loading
-
-    // API fetch code (commented out temporarily)
     const fetchPixelData = async () => {
       setLoading(true);
       setError(null);
@@ -133,71 +113,52 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
     }
   }, [loading, error, pixelData, openAccordion]);
 
-  const handleDownload = useCallback(async () => {
-    if (!pixelData || loading || error) return;
+  const makeDownloadZipFile = useCallback(async (): Promise<DownloadFile> => {
+    const exportConfigs = getAllExportConfigs();
+    const allRecords = pixelData.results;
 
-    setDownloading(true);
-    try {
-      const exportFunctions = getAllExportFunctions();
-      const allRecords = pixelData.results;
+    // Call all registered export functions with the full dataset
+    const exportPromises: Promise<DownloadFile>[] = Array.from(exportConfigs.entries()).map(
+      async ([key, { exportFunction }]) => {
+        try {
+          return await exportFunction(allRecords);
+        } catch (err) {
+          console.error(`Error exporting data for ${key}:`, err);
+          return null as DownloadFile;
+        }
+      },
+    );
+    const exportFileGroups = await Promise.all(exportPromises);
+    let exportFiles = exportFileGroups.filter(Boolean) as DownloadFile[];
 
-      // Call all registered export functions with the full dataset
-      const exportPromises: Promise<ExportFile[]>[] = Array.from(exportFunctions.entries()).map(
-        async ([key, fn]) => {
-          try {
-            return await fn(allRecords);
-          } catch (err) {
-            console.error(`Error exporting data for ${key}:`, err);
-            return [] as ExportFile[];
-          }
-        },
-      );
+    // Build RDLS-style metadata.json from registered export configurations.
+    const spatial = createSpatialPoint(lat, lng);
+    const datasets = Array.from(exportConfigs.values())
+      .map(({ metadataFunction }) => metadataFunction({ spatial }))
+      .filter(Boolean) as RdlsMetadataPackage['datasets'];
 
-      const exportFileGroups = await Promise.all(exportPromises);
-      let exportFiles = exportFileGroups.flat();
+    const metadata: RdlsMetadataPackage = {
+      $schema: './metadata.schema.json',
+      datasets,
+    };
 
-      // Build RDLS-style metadata.json from domain metadata definitions.
-      const spatial = createSpatialPoint(lat, lng);
-      const datasets = [
-        getAqueductRiverMetadata(spatial),
-        getAqueductCoastalMetadata(spatial),
-        getJrcFloodMetadata(spatial),
-        getCycloneIrisMetadata(spatial),
-        getCycloneStormMetadata(spatial),
-        // getCoolingDegreeDaysMetadata(spatial),
-        getExtremeHeatMetadata(spatial),
-        getDroughtsMetadata(spatial),
-        // getLandslidesMetadata(spatial),
-        getEarthquakesMetadata(spatial),
-      ].filter(Boolean) as RdlsMetadataPackage['datasets'];
+    const metadataFile: DownloadFile = {
+      filename: 'metadata.json',
+      content: JSON.stringify(metadata, null, 2),
+      mimeType: 'application/json',
+    };
 
-      const metadata: RdlsMetadataPackage = {
-        $schema: './metadata.schema.json',
-        datasets,
-      };
+    const readmeFile = buildReadmeFile(exportConfigs);
 
-      const metadataFile: ExportFile = {
-        filename: 'metadata.json',
-        content: JSON.stringify(metadata, null, 2),
-        mimeType: 'application/json',
-      };
+    exportFiles = [readmeFile, metadataFile, ...exportFiles];
+    const zipBlob = await buildZipFile(exportFiles);
+    const filename = `site-details-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
 
-      // Always include README and site metadata in the ZIP
-      exportFiles = [getReadmeFile(), metadataFile, ...exportFiles];
-
-      // Build ZIP file
-      const zipBlob = await buildZipFile(exportFiles);
-
-      // Generate filename with coordinates
-      const filename = `site-details-${lat.toFixed(6)}-${lng.toFixed(6)}.zip`;
-      downloadBlob(zipBlob, filename);
-    } catch (err) {
-      console.error('Error creating download:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create download');
-    } finally {
-      setDownloading(false);
-    }
-  }, [pixelData, loading, error, getAllExportFunctions, lat, lng]);
+    return {
+      content: zipBlob,
+      filename,
+    };
+  }, [pixelData, getAllExportConfigs, lat, lng]);
 
   return (
     <Box
@@ -216,13 +177,11 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Typography variant="h6">Site Details</Typography>
         <Box>
-          <IconButton
+          <DownloadButton
             title="Download site data package"
-            onClick={handleDownload}
-            disabled={!pixelData || loading || !!error || downloading}
-          >
-            <Download />
-          </IconButton>
+            makeFile={makeDownloadZipFile}
+            disabled={!pixelData || loading || !!error}
+          />
           <IconButton
             title="Exit site inspection mode"
             onClick={() => {

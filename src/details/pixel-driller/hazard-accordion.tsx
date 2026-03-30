@@ -5,16 +5,36 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import React, { FC, ReactNode, useCallback } from 'react';
-import { useRecoilState } from 'recoil';
+import { atom, atomFamily, useRecoilState } from 'recoil';
 
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
-import {
-  hazardAccordionExpandedState,
-  openAccordionState,
-  SINGLE_ACCORDION_MODE,
-} from './accordion-state';
-import { RagIndicator, RagStatus } from './rag-indicator';
+import { RagIndicator } from './rag/rag-indicator';
+import { RagStatus } from './rag/rag-types';
+
+/**
+ * State family tracking expanded state of hazard accordions.
+ * Keyed by hazard title/identifier.
+ */
+export const hazardAccordionExpandedState = atomFamily<boolean, string>({
+  key: 'hazardAccordionExpandedState',
+  default: false,
+});
+
+/**
+ * Tracks which accordion is currently open (for single-accordion mode).
+ * Set to null if no accordion is open or if multiple can be open.
+ */
+export const openAccordionState = atom<string | null>({
+  key: 'openAccordionState',
+  default: null,
+});
+
+/**
+ * Configuration: Set to false to allow multiple accordions open at once.
+ * Set to true to enforce only one accordion open at a time.
+ */
+export const SINGLE_ACCORDION_MODE = true;
 
 interface HazardAccordionProps {
   title: string;
@@ -27,6 +47,8 @@ export const HazardAccordion: FC<HazardAccordionProps> = ({ title, ragStatus, ch
     hazardAccordionExpandedState(title),
   );
   const [openAccordion, setOpenAccordion] = useRecoilState(openAccordionState);
+
+  const disabled = ragStatus === 'no-data';
 
   // In single-accordion mode, use openAccordionState; otherwise use individual state
   const expanded = SINGLE_ACCORDION_MODE ? openAccordion === title : individualExpanded;
@@ -45,7 +67,12 @@ export const HazardAccordion: FC<HazardAccordionProps> = ({ title, ragStatus, ch
   );
 
   return (
-    <Accordion expanded={expanded} onChange={handleChange} data-hazard-title={title}>
+    <Accordion
+      expanded={expanded}
+      onChange={handleChange}
+      data-hazard-title={title}
+      disabled={disabled}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         sx={{

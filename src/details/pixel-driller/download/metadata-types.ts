@@ -1,4 +1,27 @@
-// Simplified TypeScript types for RDLS metadata.
+// Simplified TypeScript types for Datapackage Table Schema.
+// These are intentionally narrower than the full JSON Schema, and only cover
+// the parts we currently populate in the generated metadata.json.
+// The types were generated from the JSON schema files in the `schemas` directory.
+
+export interface DatapackageTableSchemaField {
+  name: string;
+  type: 'string' | 'number';
+  title?: string;
+  description?: string;
+}
+
+export interface DatapackageTableSchema {
+  fields: DatapackageTableSchemaField[];
+}
+
+export interface DatapackageTableDialect {
+  delimiter?: string;
+  header?: boolean;
+  commentChar?: string;
+  nullSequence?: string;
+}
+
+// Simplified TypeScript types for Risk Data Library Standard metadata.
 // These are intentionally narrower than the full JSON Schema, and only cover
 // the parts we currently populate in the generated metadata.json.
 
@@ -20,24 +43,6 @@ export interface RdlsLocation {
   geometry: RdlsGeometry;
 }
 
-export interface RdlsResourceSchemaField {
-  name: string;
-  type: 'string' | 'number';
-  title?: string;
-  description?: string;
-}
-
-export interface RdlsResourceSchema {
-  fields: RdlsResourceSchemaField[];
-}
-
-export interface RdlsDialect {
-  delimiter?: string;
-  header?: boolean;
-  commentChar?: string;
-  nullSequence?: string;
-}
-
 export interface RdlsResource {
   id: string;
   title: string;
@@ -46,8 +51,14 @@ export interface RdlsResource {
    * Human-readable file format (e.g. "csv").
    */
   format: string;
-  schema?: RdlsResourceSchema;
-  dialect?: RdlsDialect;
+  /**
+   * Table Schema for the resource - included from the Datapackage Table Schema specification.
+   */
+  schema?: DatapackageTableSchema;
+  /**
+   * Table Dialect for the resource - included from the Datapackage Table Dialect specification.
+   */
+  dialect?: DatapackageTableDialect;
 }
 
 // Pulling in optional fields from RDLS 0.3-dev
