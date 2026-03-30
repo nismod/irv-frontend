@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
@@ -14,7 +15,7 @@ import {
 import { HeadingBox, HeadingBoxText } from '@/pages/ui/HeadingBox';
 
 import { BackToTop } from '../ui/BackToTop';
-import { articleSlugs, getArticle } from './article-manifest';
+import { articleSlugs, loadArticle } from './article-manifest';
 import { articleMdxComponents } from './components/article-components';
 
 export function loader({ params }: LoaderFunctionArgs) {
@@ -27,8 +28,32 @@ export function loader({ params }: LoaderFunctionArgs) {
 
 export const ArticleSlugPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  const article = slug ? getArticle(slug) : undefined;
+  if (!slug) return null;
 
+  // Remount on `slug` change so we don't need to synchronously clear state in an effect.
+  return <ArticleSlugPageContent key={slug} slug={slug} />;
+};
+
+function ArticleSlugPageContent({ slug }: { slug: string }) {
+  const [article, setArticle] = useState<Awaited<ReturnType<typeof loadArticle>> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    loadArticle(slug)
+      .then((mod) => {
+        if (!cancelled) setArticle(mod);
+      })
+      .catch(() => {
+        if (!cancelled) setArticle(undefined);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (article === null) return null; // loading
   if (!article) return null; // loader guarantees slug exists
 
   const Content = article.default;
@@ -83,4 +108,4 @@ export const ArticleSlugPage = () => {
       </ArticleContentContainer>
     </ArticleContainer>
   );
-};
+}
