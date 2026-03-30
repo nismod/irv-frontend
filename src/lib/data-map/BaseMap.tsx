@@ -11,6 +11,11 @@ export interface BaseMapProps {
   onViewState: (vs: MapViewState) => void;
   /** Handler called when the map is clicked */
   onClick?: (event: MapMouseEvent) => void;
+
+  /** Whether to reuse maps (default true). */
+  reuseMaps?: boolean;
+
+  /** Children to render inside the map container (e.g. `MapMarker`). */
   children?: ReactNode;
 }
 
@@ -23,6 +28,7 @@ export const BaseMap: FC<BaseMapProps> = ({
   viewState,
   onViewState,
   onClick,
+  reuseMaps = true,
   children,
 }) => {
   /**
@@ -37,7 +43,7 @@ export const BaseMap: FC<BaseMapProps> = ({
   return (
     <Map
       ref={mapRefFn}
-      reuseMaps={true}
+      reuseMaps={reuseMaps}
       styleDiffing={true}
       {...viewState}
       onMove={({ viewState }) => onViewState(viewState)}
