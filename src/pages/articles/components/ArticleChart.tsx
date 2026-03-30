@@ -1,10 +1,9 @@
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { useEffect, useMemo, useRef } from 'react';
 import { useVegaEmbed } from 'react-vega';
 import { EmbedOptions, VisualizationSpec } from 'vega-embed';
 
-import { Callout } from './Callout';
+import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 const DEFAULT_OPTIONS: EmbedOptions = {
   mode: 'vega-lite',
@@ -31,39 +30,25 @@ function mergeEmbedOptions(base: EmbedOptions, override?: EmbedOptions): EmbedOp
   return merged;
 }
 
-interface ArticleChartProps {
-  title?: string;
-  description?: string;
+export interface ArticleChartProps {
   spec: VisualizationSpec;
   options?: EmbedOptions;
   data: any[];
 }
 
 /**
- * Generic wrapper for charts embedded in articles.
- * Authors can wrap a chart component with this for consistent styling.
- * The data is passed to the Vega chart under the name 'values'.
+ * Vega-Lite chart for articles. Pass data under the name `values`.
+ * Wrap with `ArticleFigure` for title and caption.
  */
-export const ArticleChart = ({
-  title = 'Chart',
-  description,
-  spec,
-  options,
-  data,
-}: ArticleChartProps) => {
+export const ArticleChart = ({ spec, options, data }: ArticleChartProps) => {
   const mergedOptions = useMemo(() => mergeEmbedOptions(DEFAULT_OPTIONS, options), [options]);
 
   return (
-    <Callout title={title}>
+    <ErrorBoundary message="There was a problem displaying this chart.">
       <Box>
         <VegaChart spec={spec} options={mergedOptions} data={data} />
       </Box>
-      {description && (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          {description}
-        </Typography>
-      )}
-    </Callout>
+    </ErrorBoundary>
   );
 };
 

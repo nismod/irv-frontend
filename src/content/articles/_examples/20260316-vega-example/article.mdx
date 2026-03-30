@@ -8,6 +8,7 @@ export const meta = defineArticleMeta({
   description:
     'Example article with co-located JSON data rendered via a local Vega-Lite component.',
   date: '2026-03-16',
+  author: 'Maciej Ziarkowski',
   thumbnail,
 });
 
@@ -19,22 +20,26 @@ This article demonstrates how to:
 
 ## Embedded chart
 
-Below is a bar chart rendered from `data.json` in the same folder via a local `ArticleChart` component:
+Below is a bar chart rendered from `data.json` in the same folder via **`ArticleChart`** inside **`ArticleFigure`**:
 
-<ArticleChart
-  description="This is a bar chart rendered from `data.json` in the same folder via a local `ArticleChart` component"
-  spec={{
-    data: { name: 'values' },
-    mark: 'bar',
-    encoding: {
-      x: { field: 'category', type: 'ordinal', axis: { title: 'Category' } },
-      y: { field: 'value', type: 'quantitative', axis: { title: 'Value' } },
-    },
-    width: 400,
-    height: 300,
-  }}
-  data={data}
-/>
+<ArticleFigure
+  title="Embedded chart"
+  caption="Bar chart from `data.json` in the same folder as this MDX."
+>
+  <ArticleChart
+    spec={{
+      data: { name: 'values' },
+      mark: 'bar',
+      encoding: {
+        x: { field: 'category', type: 'ordinal', axis: { title: 'Category' } },
+        y: { field: 'value', type: 'quantitative', axis: { title: 'Value' } },
+      },
+      width: 400,
+      height: 300,
+    }}
+    data={data}
+  />
+</ArticleFigure>
 
 You can inspect this folder to see how the MDX, data, and component live together:
 
