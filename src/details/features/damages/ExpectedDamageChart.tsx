@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { FC, useMemo } from 'react';
 import { VegaEmbed } from 'react-vega';
+import { VisualizationSpec } from 'vega-embed';
 
 import { unique } from '@/lib/helpers';
 
@@ -13,7 +14,7 @@ const makeSpec = (
   field_max: string,
   field_title: string,
   data: any[],
-) => ({
+): VisualizationSpec => ({
   $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
   data: {
     values: data,
@@ -41,7 +42,7 @@ const makeSpec = (
             range: ['#8b8b8b', '#003466', '#709fcc', '#980002'],
           },
         },
-        tooltip: { value: false },
+        tooltip: null,
       },
     },
     {

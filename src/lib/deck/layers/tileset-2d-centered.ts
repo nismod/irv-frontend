@@ -1,7 +1,10 @@
-import { TileIndex, ZRange } from '@deck.gl/geo-layers/src/tileset-2d/types';
 import { Matrix4 } from '@math.gl/core';
 import { _Tileset2D, Viewport } from 'deck.gl';
 import _ from 'lodash';
+
+// extract types, as they are not exported directly by deck.gl
+type ZRange = Parameters<_Tileset2D['getTileIndices']>[0]['zRange'];
+type TileIndex = ReturnType<_Tileset2D['getTileIndices']>[0];
 
 /**
  * Simple extension of Tileset2D that returns tiles in a changed order:
