@@ -1,0 +1,127 @@
+import { defineArticleMeta } from '@/content/articles/article-meta';
+
+import {
+  introArticleInteractionGroups,
+  introArticleInteractionGroupsPop,
+  introArticleMapViewLayersFluvial,
+  introArticleMapViewLayersOverlay,
+  introArticleMapViewLayersPopulation,
+} from './map-layers';
+import thumbnail from './thumbnail.png';
+
+export const meta = defineArticleMeta({
+  title: 'Introducing Articles',
+  description: 'Welcome and introduction to article pages, with interactive maps and charts.',
+  date: '2026-03-31',
+  author: 'Maciej Ziarkowski & Tom Russell',
+  thumbnail,
+});
+
+Welcome to [articles](/articles) on the Global Resilience Index (GRI) Risk Viewer &ndash; the
+intention here is to provide a place for some narrative exploration and explanation
+of the various datasets that are visualised and made accessible on the rest of the
+platform.
+
+<ArticleFigure
+  title="Compare flood hazard datasets"
+  caption="Aqueduct river and coastal flooding, JRC river flooding (RP 100)."
+>
+  <ArticleMap
+    viewLayers={introArticleMapViewLayersFluvial}
+    interactionGroups={introArticleInteractionGroups}
+    height={360}
+    initialViewState={{
+      latitude: 51.5074,
+      longitude: -0.1278,
+      zoom: 4,
+    }}
+  ></ArticleMap>
+</ArticleFigure>
+
+## What can you do with the GRI Risk Viewer?
+
+The aim of this website is to collect and present open, climate-related risk
+data. This can help to build understanding of the state of climate risks,
+particularly to infrastructure systems (including transport, energy and water).
+
+We do this transparently, citing [sources](/data), and making [data
+extracts](/downloads) available to download, alongside the interactive maps
+that make up the main content of the site.
+
+For example, as in the map above, several river and coastal flooding datasets
+are available to explore, so across different return periods and climate
+scenarios, we can understand the intensity and location of flooding, at least as
+far as is represented by the best-available open data with global coverage.
+
+We also map the population, infrastructure and other assets that are exposed to a
+variety of hazards.
+
+<ArticleFigure
+  title="Explore exposure datasets"
+  caption="Population density from JRC Global Human Settlement Layer."
+>
+  <ArticleMap
+    viewLayers={introArticleMapViewLayersPopulation}
+    interactionGroups={introArticleInteractionGroupsPop}
+    height={360}
+    initialViewState={{
+      latitude: 51.404829,
+      longitude: -0.322376,
+      zoom: 7,
+    }}
+  ></ArticleMap>
+</ArticleFigure>
+
+And then, as a first step of analysis, it is possible to overlay hazards
+and assets (also called exposure datasets, because these are the things exposed
+to hazards), to see where risks may be concentrated.
+
+In the map below, a red trunk road and purple primary road are both crossing a
+dark blue area which is showing more than five metres of flooding in a
+one-in-one-hundred year return period flood (that is, this flood model output
+finds that there is a one percent chance of flood depths exceeding five metres
+in any given year, in the current climate).
+
+Hover over the map to see flood depths at different locations. Use the +/-
+buttons to zoom, and click and drag to pan around.
+
+<ArticleFigure
+  title="Overlay hazards and exposure datasets"
+  caption="JRC river flooding (RP 100) and OpenStreetMap roads."
+>
+  <ArticleMap
+    viewLayers={introArticleMapViewLayersOverlay}
+    interactionGroups={introArticleInteractionGroups}
+    height={360}
+    initialViewState={{
+      latitude: 51.404829,
+      longitude: -0.322376,
+      zoom: 12,
+    }}
+  ></ArticleMap>
+</ArticleFigure>
+
+## Where could we go next?
+
+The collection of hazard data is one place to start exploring further. The "site
+inspection tool" is enabled by clicking on the mouse-arrow-in-circles icon in
+the top-left corner of the map, just under the search icon and layers control.
+If you then click anywhere on the map, a sidebar will appear on the right with
+data on all of the hazard layers that are available for [that location](/view/hazard?y=51.40304&x=-0.34733&z=12&sections=%7B"hazards"%3A%7B"fluvial"%3A%7B"jrc"%3Atrue%7D%7D%7D&site="51.405172%2C-0.348455").
+
+<ArticleFigure
+  title="Inspect hazards at a site"
+  caption="All hazard layers for a point location at (51.405, -0.348)"
+>
+  <a href='/view/hazard?y=51.40304&x=-0.34733&z=12&sections=%7B"hazards"%3A%7B"fluvial"%3A%7B"jrc"%3Atrue%7D%7D%7D&site="51.405172%2C-0.348455"'>
+    <img alt="Site Inspection tool" src="/images/site-inspection.png" width="100%" height="auto" />
+  </a>
+</ArticleFigure>
+
+Beyond that, future articles might step through the process of risk screening,
+walk through the methods behind some of the risk analysis that is presented in
+this site, or discuss and analyse adaptation options and ways to assess and
+prioritise actions that can reduce risk and improve resilience.
+
+If you comments or suggestions, please <MdLink href="mailto:tom.russell@ouce.ox.ac.uk?subject=GRI Risk Viewer Articles">contact us</MdLink> or [raise
+an issue](https://github.com/nismod/infra-risk-vis/issues/).

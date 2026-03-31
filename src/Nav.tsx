@@ -9,10 +9,9 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { FC, forwardRef, useCallback, useState } from 'react';
 import { NavLink as RouterNavLink, NavLinkProps as RouterNavLinkProps } from 'react-router-dom';
-
-import { useIsMobile } from './use-is-mobile';
 
 const BaseLink = styled(Link)({
   color: 'inherit',
@@ -100,6 +99,10 @@ const secondaryNavItems = [
     title: 'Guide',
   },
   {
+    to: '/articles',
+    title: 'Articles',
+  },
+  {
     to: '/data',
     title: 'Sources',
   },
@@ -164,6 +167,43 @@ const MobileNavContent: FC<{ height: number }> = ({ height }) => {
   );
 };
 
+const TabletNavContent: FC<{ height: number }> = ({ height }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const closeDrawer = useCallback(() => {
+    setDrawerOpen(false);
+  }, []);
+
+  return (
+    <>
+      <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
+
+      {navItems.map(({ to, title }) => (
+        <ToolbarNavLink key={to} to={to}>
+          {title}
+        </ToolbarNavLink>
+      ))}
+
+      <GrowingDivider />
+
+      <IconButton color="inherit" onClick={() => setDrawerOpen((open) => !open)} title="Menu">
+        {drawerOpen ? <Close /> : <Menu />}
+      </IconButton>
+
+      <MobileDrawer open={drawerOpen} onClose={closeDrawer}>
+        {/* Margin prevents app bar from concealing content*/}
+        <List sx={{ marginTop: height + 'px', padding: 0 }}>
+          {secondaryNavItems.map(({ to, title }) => (
+            <ListItem key={to} component={DrawerNavLink} to={to} onClick={closeDrawer}>
+              {title}
+            </ListItem>
+          ))}
+        </List>
+      </MobileDrawer>
+    </>
+  );
+};
+
 const DesktopNavContent = () => (
   <>
     <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
@@ -187,7 +227,9 @@ const DesktopNavContent = () => (
 const topStripeHeight = 6;
 
 export const Nav: FC<{ height: number }> = ({ height }) => {
-  const isMobile = useIsMobile();
+  // Adjust breakpoints to match the length of the navigation items
+  const isBelowDesktopWidth = useMediaQuery('(max-width:1220px)');
+  const isBelowTabletWidth = useMediaQuery('(max-width:849px)');
 
   return (
     <AppBar position="fixed" elevation={0} sx={{ color: 'white' }}>
@@ -201,7 +243,13 @@ export const Nav: FC<{ height: number }> = ({ height }) => {
           height: height,
         }}
       >
-        {isMobile ? <MobileNavContent height={height} /> : <DesktopNavContent />}
+        {isBelowTabletWidth ? (
+          <MobileNavContent height={height} />
+        ) : isBelowDesktopWidth ? (
+          <TabletNavContent height={height} />
+        ) : (
+          <DesktopNavContent />
+        )}
       </Toolbar>
     </AppBar>
   );

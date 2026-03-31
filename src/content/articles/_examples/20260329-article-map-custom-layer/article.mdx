@@ -1,0 +1,31 @@
+import { defineArticleMeta } from '@/content/articles/article-meta';
+
+import { customDemoPolygonInteractionGroups, customDemoPolygonViewLayers } from './map-layers';
+
+import thumbnail from './thumbnail.png';
+
+export const meta = defineArticleMeta({
+  title: 'Article map: custom layer only',
+  description:
+    'A narrative map with a single co-located GeoJSON view layer (no app hazard/network layers).',
+  date: '2026-03-29',
+  author: 'Maciej Ziarkowski',
+  thumbnail,
+});
+
+This article shows **`ArticleMap`** with **only a custom** `ViewLayer`: a GeoJSON polygon defined in `src/content/articles/shared/custom-demo-polygon-layer.tsx` (shared with other examples). Use this pattern when you author geometry and tooltips yourself instead of reusing built-in hazard or infrastructure layers.
+
+For **hazard + infrastructure** layers from the app, see [Article map: built-in layers](/articles/20260328-article-map-demo).
+
+## Map
+
+<ArticleFigure
+  title="Custom GeoJSON"
+  caption="Imports view layers from `content/articles/shared/`."
+>
+  <ArticleMap
+    viewLayers={customDemoPolygonViewLayers}
+    interactionGroups={customDemoPolygonInteractionGroups}
+    height={360}
+  />
+</ArticleFigure>

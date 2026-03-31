@@ -8,9 +8,10 @@ const ParagraphTypography = styled(Typography)(({ theme }) => ({
   fontFamily: 'Georgia, Times New Roman, Times, serif',
   fontSize: '1rem',
   letterSpacing: '-0.5px',
+  marginBottom: '1rem',
   lineHeight: 1.45,
   [theme.breakpoints.up('sm')]: {
-    fontSize: '1.2em',
+    fontSize: '1.2rem',
   },
 }));
 

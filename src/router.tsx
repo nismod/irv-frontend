@@ -4,6 +4,8 @@ import { createBrowserRouter } from 'react-router-dom';
 import { downloadsRoute } from './modules/downloads/downloads-routes';
 import { metricsRoute } from './modules/metrics/metrics-routes';
 import { AboutPage } from './pages/AboutPage';
+import { ArticlesIndexPage } from './pages/articles/ArticlesIndexPage';
+import { loader as articleSlugLoader, ArticleSlugPage } from './pages/articles/ArticleSlugPage';
 import { DataSourcesPage } from './pages/DataSourcesPage';
 import { GuidePage } from './pages/GuidePage';
 import { IntroPage } from './pages/IntroPage';
@@ -46,6 +48,13 @@ export const router = createBrowserRouter(
         {
           path: '/terms-of-use',
           element: <TermsPage />,
+        },
+        {
+          path: '/articles',
+          children: [
+            { index: true, element: <ArticlesIndexPage /> },
+            { path: ':slug', element: <ArticleSlugPage />, loader: articleSlugLoader },
+          ],
         },
         downloadsRoute,
         metricsRoute,

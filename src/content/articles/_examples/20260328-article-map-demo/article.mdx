@@ -1,0 +1,63 @@
+import { defineArticleMeta } from '@/content/articles/article-meta';
+
+import {
+  demoArticleInteractionGroups,
+  demoArticleMapViewLayersCoastal,
+  demoArticleMapViewLayersFluvial,
+} from './map-layers';
+import thumbnail from './thumbnail.png';
+
+export const meta = defineArticleMeta({
+  title: 'Article map: built-in layers',
+  description:
+    'DataMap in an article using hazard rasters and infrastructure damage layers from the main app.',
+  date: '2026-03-28',
+  author: 'Maciej Ziarkowski',
+  thumbnail,
+});
+
+This page demonstrates **`ArticleMap`** with **built-in** view layers only: two embeds for **Aqueduct** fluvial and coastal flood rasters, each with **primary roads** coloured by **expected annual damage (EAD)** for that hazard (`infrastructureViewLayer` + damage style matching Risk → Infrastructure). Each embed uses a **nested `RecoilRoot`** so interaction state stays separate from the main map.
+
+For a **custom GeoJSON-only** example, see [Article map: custom layer only](/articles/20260329-article-map-custom-layer).
+
+## Fluvial flood
+
+<ArticleFigure
+  title="Fluvial flood"
+  caption="Aqueduct river flooding (RP 100, baseline, WATCH) and roads by fluvial EAD. Layer config in `map-layers.tsx` next to this file."
+>
+  <ArticleMap
+    viewLayers={demoArticleMapViewLayersFluvial}
+    interactionGroups={demoArticleInteractionGroups}
+    height={360}
+  >
+    <MapMarker
+      latitude={19.2}
+      longitude={-38.5}
+      popupContent="Example point of interest on the fluvial hazard layer."
+    />
+  </ArticleMap>
+</ArticleFigure>
+
+## Coastal flood
+
+<ArticleFigure
+title="Coastal flood"
+caption="Aqueduct coastal flooding (RP 100, baseline) and roads by coastal EAD."
+
+>
+
+  <ArticleMap
+    viewLayers={demoArticleMapViewLayersCoastal}
+    interactionGroups={demoArticleInteractionGroups}
+    height={360}
+  >
+    <MapMarker
+      latitude={25.75}
+      longitude={-80.2}
+      popupContent="Example point of interest on the coastal hazard layer."
+    />
+  </ArticleMap>
+</ArticleFigure>
+
+Authors typically co-locate a small module (here `map-layers.tsx`) that exports `ViewLayer[]`, `interactionGroups`, and import it into MDX alongside `ArticleMap`.
