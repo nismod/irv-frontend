@@ -73,7 +73,7 @@ function defaultViewState(overrides?: Partial<MapViewState>): MapViewState {
     pitch: 0,
     bearing: 0,
     minZoom: 0,
-    maxZoom: 10,
+    maxZoom: 14,
     minPitch: 0,
     maxPitch: 0,
     ...overrides,
