@@ -12,10 +12,12 @@ export const hoverState = atomFamily<InteractionTarget[], string>({
   default: [],
 });
 
+export type HoverAnchorLngLat = { lng: number; lat: number };
+
 /**
- * State containing last hover position (cursor position)
+ * Geographic anchor for the data map tooltip (re-projected to screen on map move).
  */
-export const hoverPositionState = atom<[x: number, y: number]>({
+export const hoverPositionState = atom<HoverAnchorLngLat | null>({
   key: 'hoverPosition',
   default: null,
 });
