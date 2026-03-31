@@ -27,7 +27,8 @@ export const ArticleFigure: FC<ArticleFigureProps> = ({
     variant="outlined"
     sx={{
       p: 2,
-      my: 2,
+      mt: 2,
+      mb: 4,
       maxWidth,
       mx: 'auto',
       width: '100%',
