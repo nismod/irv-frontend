@@ -65,4 +65,5 @@ export const articleMdxComponents = {
   ArticleFigure,
   ArticleMap,
   MapMarker,
+  MdLink,
 };
