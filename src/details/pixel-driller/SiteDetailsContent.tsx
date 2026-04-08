@@ -15,17 +15,8 @@ import { CopyableLink } from '@/lib/nav/CopyableLink';
 import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
 import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
 
+import { PixelDrillerLayerList } from './contents/PixelDrillerLayerList';
 import { asPixelResponse } from './data-transforms';
-import { CoastalFlooding } from './domains/aqueduct-coastal';
-import { RiverFloodingAqueduct } from './domains/aqueduct-river';
-import { CoolingDegreeDays } from './domains/cooling-degree-days';
-import { TropicalCyclonesIris } from './domains/cyclone-iris';
-import { TropicalCyclonesStorm } from './domains/cyclone-storm';
-import { Droughts } from './domains/droughts';
-import { Earthquakes } from './domains/earthquakes';
-import { ExtremeHeat } from './domains/extreme-heat';
-import { RiverFloodingJrc } from './domains/jrc-flood';
-import { Landslides } from './domains/landslide';
 import { DownloadDataProvider, useDownloadDataContext } from './download/download-context';
 import { buildReadmeFile } from './download/download-generators';
 import { createSpatialPoint } from './download/metadata-common';
@@ -239,20 +230,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
         </Box>
       )}
 
-      {!loading && !error && pixelData && (
-        <Box sx={{ mt: 2 }}>
-          <RiverFloodingAqueduct records={pixelData.results} />
-          <RiverFloodingJrc records={pixelData.results} />
-          <CoastalFlooding records={pixelData.results} />
-          <TropicalCyclonesIris records={pixelData.results} />
-          <TropicalCyclonesStorm records={pixelData.results} />
-          {/* <CoolingDegreeDays records={pixelData.results} /> */}
-          <ExtremeHeat records={pixelData.results} />
-          <Droughts records={pixelData.results} />
-          {/* <Landslides records={pixelData.results} /> */}
-          <Earthquakes records={pixelData.results} />
-        </Box>
-      )}
+      {!loading && !error && pixelData && <PixelDrillerLayerList records={pixelData.results} />}
     </Box>
   );
 };

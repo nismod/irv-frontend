@@ -8,22 +8,22 @@ import {
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download/download-context';
-import { buildDomainExportFile } from '../download/download-generators';
+} from '../../download/download-context';
+import { buildDomainExportFile } from '../../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../download/metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
-import { HazardAccordion } from '../hazard-accordion';
+} from '../../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
+import { HazardAccordion } from '../../hazard-accordion';
 import {
   calculateRagFromSingleValueTwoThresholds,
   combineRagStatusesMax,
-} from '../rag/rag-calculation';
-import { RagStatus } from '../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
+} from '../../rag/rag-calculation';
+import { RagStatus } from '../../rag/rag-types';
+import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Cooling degree days-specific key type definition
 interface CddKeys extends PixelRecordKeys {

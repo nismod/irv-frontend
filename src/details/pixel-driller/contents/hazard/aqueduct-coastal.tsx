@@ -1,24 +1,24 @@
 import { FC, useMemo } from 'react';
 
-import { ReturnPeriodChart } from '../charts/return-period-chart';
-import { toReturnPeriodRows } from '../data-transforms';
+import { ReturnPeriodChart } from '../../charts/return-period-chart';
+import { toReturnPeriodRows } from '../../data-transforms';
 import {
   ExportConfig,
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download/download-context';
-import { buildDomainExportFile } from '../download/download-generators';
+} from '../../download/download-context';
+import { buildDomainExportFile } from '../../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../download/metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
-import { HazardAccordion } from '../hazard-accordion';
-import { calculateRagFromReturnPeriodValuesOneThreshold } from '../rag/rag-calculation';
-import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
+} from '../../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
+import { HazardAccordion } from '../../hazard-accordion';
+import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
+import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Aqueduct-specific key type definition
 export interface AqueductKeys extends PixelRecordKeys {

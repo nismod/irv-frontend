@@ -8,18 +8,18 @@ import {
   ExportFunction,
   MetadataArgs,
   useRegisterExportConfig,
-} from '../download/download-context';
-import { buildDomainExportFile } from '../download/download-generators';
+} from '../../download/download-context';
+import { buildDomainExportFile } from '../../download/download-generators';
 import {
   COMMON_CONTACT_POINT,
   COMMON_CREATOR,
   COMMON_DIALECT,
   COMMON_PUBLISHER,
-} from '../download/metadata-common';
-import { DatapackageTableSchemaField, RdlsDataset } from '../download/metadata-types';
-import { HazardAccordion } from '../hazard-accordion';
-import { RagStatus } from '../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../types';
+} from '../../download/metadata-common';
+import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
+import { HazardAccordion } from '../../hazard-accordion';
+import { RagStatus } from '../../rag/rag-types';
+import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Landslide-specific key type definition
 export interface LandslideKeys extends PixelRecordKeys {
