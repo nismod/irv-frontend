@@ -32,6 +32,8 @@ const SidebarLayout = ({ top, bottom, left, right, width, children }) => (
     <Box
       overflow="auto"
       maxHeight="100%"
+      // This is used to scroll accordion sections into view when they are opened (e.g. in Pixel Driller details)
+      data-accordion-scroll-container
       sx={{ pointerEvents: 'auto' }}
       position="absolute"
       left={0}

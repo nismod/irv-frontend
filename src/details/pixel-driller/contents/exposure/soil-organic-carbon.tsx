@@ -17,8 +17,7 @@ import {
   COMMON_PUBLISHER,
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
-import { HazardAccordion } from '../../hazard-accordion';
-import { RagStatus } from '../../rag/rag-types';
+import { ExposureAccordion } from '../../hazard-accordion';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface NatureOrganicCarbonKeys extends PixelRecordKeys {
@@ -104,13 +103,12 @@ export const SoilOrganicCarbon: FC<HazardComponentProps> = ({ records }) => {
   );
 
   const value = primaryRecord?.value ?? null;
-
-  const ragStatus: RagStatus = value != null ? 'green' : 'no-data';
+  const disabled = value == null;
 
   useRegisterExportConfig('soil-organic-carbon', soilOrganicCarbonExportConfig);
 
   return (
-    <HazardAccordion title="Soil Organic Carbon" ragStatus={ragStatus}>
+    <ExposureAccordion title="Soil Organic Carbon" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -119,6 +117,6 @@ export const SoilOrganicCarbon: FC<HazardComponentProps> = ({ records }) => {
           <Typography variant="body1">{formatSoilOrganicCarbon(value)}</Typography>
         </Box>
       </Stack>
-    </HazardAccordion>
+    </ExposureAccordion>
   );
 };

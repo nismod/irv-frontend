@@ -17,8 +17,7 @@ import {
   COMMON_PUBLISHER,
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
-import { HazardAccordion } from '../../hazard-accordion';
-import { RagStatus } from '../../rag/rag-types';
+import { ExposureAccordion } from '../../hazard-accordion';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface BuildingKeys extends PixelRecordKeys {
@@ -112,14 +111,12 @@ export const Buildings: FC<HazardComponentProps> = ({ records }) => {
 
   const allValue = allRecord?.value ?? null;
   const nonResidentialValue = nonResidentialRecord?.value ?? null;
-
-  const ragStatus: RagStatus =
-    allValue != null || nonResidentialValue != null ? 'green' : 'no-data';
+  const disabled = allValue == null && nonResidentialValue == null;
 
   useRegisterExportConfig('buildings', buildingsExportConfig);
 
   return (
-    <HazardAccordion title="Buildings" ragStatus={ragStatus}>
+    <ExposureAccordion title="Buildings" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -134,6 +131,6 @@ export const Buildings: FC<HazardComponentProps> = ({ records }) => {
           <Typography variant="body1">{formatBuiltUpSurfaceM2(nonResidentialValue)}</Typography>
         </Box>
       </Stack>
-    </HazardAccordion>
+    </ExposureAccordion>
   );
 };

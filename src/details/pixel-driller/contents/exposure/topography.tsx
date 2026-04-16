@@ -17,8 +17,7 @@ import {
   COMMON_PUBLISHER,
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
-import { HazardAccordion } from '../../hazard-accordion';
-import { RagStatus } from '../../rag/rag-types';
+import { ExposureAccordion } from '../../hazard-accordion';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface DemKeys extends PixelRecordKeys {
@@ -118,13 +117,12 @@ export const Topography: FC<HazardComponentProps> = ({ records }) => {
 
   const elevationValue = elevationRecord?.value ?? null;
   const slopeValue = slopeRecord?.value ?? null;
-
-  const ragStatus: RagStatus = elevationValue != null || slopeValue != null ? 'green' : 'no-data';
+  const disabled = elevationValue == null && slopeValue == null;
 
   useRegisterExportConfig('topography', demExportConfig);
 
   return (
-    <HazardAccordion title="Topography" ragStatus={ragStatus}>
+    <ExposureAccordion title="Topography" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -139,6 +137,6 @@ export const Topography: FC<HazardComponentProps> = ({ records }) => {
           <Typography variant="body1">{formatSlopeDegrees(slopeValue)}</Typography>
         </Box>
       </Stack>
-    </HazardAccordion>
+    </ExposureAccordion>
   );
 };

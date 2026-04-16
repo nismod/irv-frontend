@@ -2,7 +2,7 @@ import { Close } from '@mui/icons-material';
 import { Alert, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -21,7 +21,7 @@ import { DownloadDataProvider, useDownloadDataContext } from './download/downloa
 import { buildReadmeFile } from './download/download-generators';
 import { createSpatialPoint } from './download/metadata-common';
 import { RdlsMetadataPackage } from './download/metadata-types';
-import { openAccordionState } from './hazard-accordion';
+import { accordionTransitionCountState, openAccordionState } from './hazard-accordion';
 import { PixelResponse } from './types';
 
 interface SiteDetailsContentProps {
@@ -39,6 +39,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useRecoilValue(openAccordionState);
+  const transitionCount = useRecoilValue(accordionTransitionCountState);
   const { getAllExportConfigs } = useDownloadDataContext();
   const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
   const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
@@ -79,30 +80,52 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
     fetchPixelData();
   }, [lng, lat]);
 
-  // Scroll behavior when data loads or open accordion changes
-  useLayoutEffect(() => {
-    const container = containerRef.current;
+  // Scroll the currently open section into view once layout is stable
+  // (no accordion transitions in flight) and data is loaded.
+  // Uses a smooth animation in all cases (location or section changes).
+  useEffect(() => {
+    if (loading || error || !pixelData) return;
+    if (!openAccordion) return;
+    if (transitionCount > 0) return;
+
+    const section = document.querySelector<HTMLElement>(
+      `[data-pixel-driller-section="${openAccordion}"]`,
+    );
+    if (!section) return;
+
+    const container = section.closest<HTMLElement>('[data-accordion-scroll-container]');
     if (!container) return;
 
-    // While loading or on error / no data, keep scroll at top
-    if (loading || error || !pixelData) {
-      container.scrollTop = 0;
-      return;
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = section.getBoundingClientRect();
+
+    const containerHeight = containerRect.height;
+    const targetHeight = targetRect.height;
+    const padding = 10; // px of desired space above/below when possible
+
+    let delta = 0;
+
+    if (targetHeight >= containerHeight) {
+      // Target taller than container: align the top edge with padding if possible.
+      delta = targetRect.top - (containerRect.top + padding);
+    } else {
+      const isAbove = targetRect.top < containerRect.top + padding;
+      const isBelow = targetRect.bottom > containerRect.bottom - padding;
+
+      if (isAbove) {
+        delta = targetRect.top - (containerRect.top + padding);
+      } else if (isBelow) {
+        delta = targetRect.bottom - (containerRect.bottom - padding);
+      }
     }
 
-    // If no accordion is expanded, keep scroll at top
-    if (!openAccordion) {
-      container.scrollTop = 0;
-      return;
+    if (delta !== 0) {
+      container.scrollTo({
+        top: container.scrollTop + delta,
+        behavior: 'smooth',
+      });
     }
-
-    // Scroll the expanded accordion into view (no animation)
-    const target = container.querySelector<HTMLElement>(`[data-hazard-title="${openAccordion}"]`);
-    if (target) {
-      // Let the browser choose the appropriate scroll container and adjust immediately
-      target.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
-    }
-  }, [loading, error, pixelData, openAccordion]);
+  }, [loading, error, pixelData, openAccordion, transitionCount, lng, lat]);
 
   const makeDownloadZipFile = useCallback(async (): Promise<DownloadFile> => {
     const exportConfigs = getAllExportConfigs();

@@ -17,8 +17,7 @@ import {
   COMMON_PUBLISHER,
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
-import { HazardAccordion } from '../../hazard-accordion';
-import { RagStatus } from '../../rag/rag-types';
+import { ExposureAccordion } from '../../hazard-accordion';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface PopulationKeys extends PixelRecordKeys {
@@ -101,14 +100,12 @@ export const Population: FC<HazardComponentProps> = ({ records }) => {
   );
 
   const value = primaryRecord?.value ?? null;
-
-  /** Exposure: RAG dot is used only to signal presence of data (green) vs none (no-data). */
-  const ragStatus: RagStatus = value != null ? 'green' : 'no-data';
+  const disabled = value == null;
 
   useRegisterExportConfig('population', populationExportConfig);
 
   return (
-    <HazardAccordion title="Population" ragStatus={ragStatus}>
+    <ExposureAccordion title="Population" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -117,6 +114,6 @@ export const Population: FC<HazardComponentProps> = ({ records }) => {
           <Typography variant="body1">{formatPopulationDensity(value)}</Typography>
         </Box>
       </Stack>
-    </HazardAccordion>
+    </ExposureAccordion>
   );
 };

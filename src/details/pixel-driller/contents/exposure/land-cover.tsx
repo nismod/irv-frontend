@@ -19,8 +19,7 @@ import {
   COMMON_PUBLISHER,
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
-import { HazardAccordion } from '../../hazard-accordion';
-import { RagStatus } from '../../rag/rag-types';
+import { ExposureAccordion } from '../../hazard-accordion';
 import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface LandCoverKeys extends PixelRecordKeys {}
@@ -99,13 +98,12 @@ export const LandCover: FC<HazardComponentProps> = ({ records }) => {
     if (classCode == null) return 'N/A';
     return getLandCoverCategoryName(classCode) ?? `Unknown class (${classCode})`;
   }, [classCode]);
-
-  const ragStatus: RagStatus = classCode != null ? 'green' : 'no-data';
+  const disabled = classCode == null;
 
   useRegisterExportConfig('land-cover', landCoverExportConfig);
 
   return (
-    <HazardAccordion title="Land Cover" ragStatus={ragStatus}>
+    <ExposureAccordion title="Land Cover" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -114,6 +112,6 @@ export const LandCover: FC<HazardComponentProps> = ({ records }) => {
           <Typography variant="body1">{displayLabel}</Typography>
         </Box>
       </Stack>
-    </HazardAccordion>
+    </ExposureAccordion>
   );
 };
