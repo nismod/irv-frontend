@@ -10,7 +10,7 @@ relating to climate hazards and infrastructure systems.
 - The file `metadata.json` contains a JSON description of the datasets
 
 This export contains data (where present for the point location), on the following
-hazards:
+topics:
 
 <!--PIXEL_DRILLER_DATASET_DESCRIPTION_LIST-->
 
