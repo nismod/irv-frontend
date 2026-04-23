@@ -176,10 +176,12 @@ const TabletNavContent: FC<{ height: number }> = ({ height }) => {
 
   return (
     <>
-      <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
+      <ToolbarNavLink to="/" onClick={closeDrawer}>
+        GRI Risk Viewer
+      </ToolbarNavLink>
 
       {navItems.map(({ to, title }) => (
-        <ToolbarNavLink key={to} to={to}>
+        <ToolbarNavLink key={to} to={to} onClick={closeDrawer}>
           {title}
         </ToolbarNavLink>
       ))}
