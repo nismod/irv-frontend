@@ -39,7 +39,7 @@ export const MapLayerSelection = () => {
       <div
         onMouseEnter={() => setShowPopover(true)}
         onMouseLeave={() => setShowPopover(false)}
-        style={{ display: 'flex' }}
+        style={{ display: 'inline-flex', position: 'relative' }}
       >
         <Button
           aria-label="Toggle map background"
@@ -60,7 +60,17 @@ export const MapLayerSelection = () => {
           <LayersIcon />
         </Button>
         {showPopover && (
-          <Paper id="map-layers-popover" style={{ overflow: 'hidden', borderTopLeftRadius: 0 }}>
+          <Paper
+            id="map-layers-popover"
+            style={{
+              position: 'absolute',
+              left: 40,
+              top: 0,
+              overflow: 'hidden',
+              borderTopLeftRadius: 0,
+              zIndex: 1,
+            }}
+          >
             <Box width={220}>
               <Box px={2} py="6px" height={37} display="flex" borderBottom="1px solid #ddd">
                 <ToggleButtonGroup
