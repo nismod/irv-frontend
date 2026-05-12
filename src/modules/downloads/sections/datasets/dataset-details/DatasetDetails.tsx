@@ -2,9 +2,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
 import Markdown from 'markdown-to-jsx';
-import prettyBytes from 'pretty-bytes';
 import { Link } from 'react-router-dom';
 
+import { roundWithSuffix } from '@/lib/formats';
 import { AppLink } from '@/lib/nav';
 import { H3 } from '@/lib/ui/mui/typography';
 
@@ -32,7 +32,7 @@ export function DatasetDetails({
         {status === PackageDataStatus.Available ? (
           <>
             <Typography variant="subtitle1" color="GrayText">
-              Total size: {prettyBytes(data.bytes)}
+              Total size: {roundWithSuffix(data.bytes)}
             </Typography>
             <DownloadsList paths={data.path} />
           </>
