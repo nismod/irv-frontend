@@ -1,4 +1,4 @@
-import { load } from '@loaders.gl/core';
+import { load, Loader, LoaderOptions } from '@loaders.gl/core';
 import { ImageLoader } from '@loaders.gl/images';
 
 import { MAP_SHAPE_TYPES, MapShapeType, shapeUrls } from './shapes';
@@ -16,7 +16,9 @@ const iconWidthAtlas = 21;
 const iconAtlas = (async function () {
   const n = MAP_SHAPE_TYPES.length;
   const canvasWidth = iconWidthAtlas * n;
-  const images = await Promise.all(MAP_SHAPE_TYPES.map((x) => load(shapeUrls[x], ImageLoader, {})));
+  const options: LoaderOptions = {};
+  const loader: Loader = ImageLoader as unknown as Loader; // HACK type to satisfy load
+  const images = await Promise.all(MAP_SHAPE_TYPES.map((x) => load(shapeUrls[x], loader, options)));
 
   const offscreen = new OffscreenCanvas(canvasWidth, iconHeight);
   const ctx = offscreen.getContext('2d');
