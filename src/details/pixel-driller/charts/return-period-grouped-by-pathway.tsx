@@ -35,6 +35,11 @@ export function makeReturnPeriodGroupedByPathwaySpec(
           values: rpValues,
         },
       },
+      y: {
+        axis: {
+          tickCount: 10,
+        },
+      },
       color: {
         field: config.colorField,
         type: 'nominal',
