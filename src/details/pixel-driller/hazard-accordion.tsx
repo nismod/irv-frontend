@@ -48,9 +48,13 @@ export const SINGLE_ACCORDION_MODE = true;
 export interface PixelDrillerSectionAccordionProps {
   title: string;
   disabled?: boolean;
+  /** Shown in the expand-icon slot when disabled (e.g. exposure no-data RAG). */
+  disabledExpandIcon?: ReactNode;
   rightAdornment?: ReactNode;
   children: ReactNode;
 }
+
+const CHEVRON_PLACEHOLDER_SIZE_PX = 24;
 
 /**
  * Shared accordion used by both Hazards and Exposure sections.
@@ -59,6 +63,7 @@ export interface PixelDrillerSectionAccordionProps {
 export const PixelDrillerSectionAccordion: FC<PixelDrillerSectionAccordionProps> = ({
   title,
   disabled = false,
+  disabledExpandIcon,
   rightAdornment,
   children,
 }) => {
@@ -85,6 +90,7 @@ export const PixelDrillerSectionAccordion: FC<PixelDrillerSectionAccordionProps>
 
   const handleChange = useCallback(
     (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      if (disabled) return;
       if (SINGLE_ACCORDION_MODE) {
         // In single-accordion mode, track which accordion is open
         setOpenAccordion(isExpanded ? title : null);
@@ -93,7 +99,7 @@ export const PixelDrillerSectionAccordion: FC<PixelDrillerSectionAccordionProps>
         setIndividualExpanded(isExpanded);
       }
     },
-    [title, setIndividualExpanded, setOpenAccordion],
+    [disabled, title, setIndividualExpanded, setOpenAccordion],
   );
 
   return (
@@ -101,7 +107,6 @@ export const PixelDrillerSectionAccordion: FC<PixelDrillerSectionAccordionProps>
       expanded={expanded}
       onChange={handleChange}
       data-pixel-driller-section={title}
-      disabled={disabled}
       slotProps={{
         transition: {
           onEnter: incrementTransition,
@@ -112,13 +117,49 @@ export const PixelDrillerSectionAccordion: FC<PixelDrillerSectionAccordionProps>
       }}
     >
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
+        component={disabled ? 'div' : undefined}
+        expandIcon={
+          disabled ? (
+            <Box
+              sx={{
+                width: CHEVRON_PLACEHOLDER_SIZE_PX,
+                height: CHEVRON_PLACEHOLDER_SIZE_PX,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {disabledExpandIcon}
+            </Box>
+          ) : (
+            <ExpandMoreIcon />
+          )
+        }
+        aria-disabled={disabled || undefined}
         sx={{
+          ...(disabled
+            ? {
+                cursor: 'default !important',
+                '&.MuiButtonBase-root': { cursor: 'default !important' },
+                '& *': { cursor: 'default !important' },
+              }
+            : {
+                cursor: 'pointer',
+              }),
           '& .MuiAccordionSummary-content': {
             display: 'flex',
             alignItems: 'center',
             flex: 1,
           },
+          ...(disabled
+            ? {
+                color: 'text.secondary',
+                '&:hover': {
+                  cursor: 'default',
+                },
+              }
+            : null),
         }}
       >
         <Typography variant="subtitle1" sx={{ flex: 1 }}>
@@ -165,7 +206,11 @@ interface ExposureAccordionProps {
 
 export const ExposureAccordion: FC<ExposureAccordionProps> = ({ title, disabled, children }) => {
   return (
-    <PixelDrillerSectionAccordion title={title} disabled={disabled}>
+    <PixelDrillerSectionAccordion
+      title={title}
+      disabled={disabled}
+      disabledExpandIcon={disabled ? <RagIndicator status="no-data" /> : undefined}
+    >
       {children}
     </PixelDrillerSectionAccordion>
   );
