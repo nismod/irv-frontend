@@ -64,6 +64,8 @@ export function makeReturnPeriodGroupedByPathwaySpec(
         mark: {
           type: 'area',
           opacity: 0.15,
+          ariaRoleDescription: 'errorband',
+          style: 'errorband-band',
         },
         encoding: {
           y: {
@@ -73,6 +75,12 @@ export function makeReturnPeriodGroupedByPathwaySpec(
           },
           y2: {
             field: 'value_max',
+          },
+          color: {
+            field: config.colorField,
+            legend: {
+              symbolOpacity: 1,
+            },
           },
         },
       },
