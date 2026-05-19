@@ -146,13 +146,14 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 ## 6. Slice progress
 
-| Step                            | Status   | Notes                                                                                                                                                                                                   |
-| ------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1–3 (infra)                     | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
-| ~~"coexistence smoke test"~~    | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
-| **4a** (Place search)           | **Done** | First atoms migrated.                                                                                                                                                                                   |
-| 4b (Mobile tabs, Pixel driller) | Pending  |                                                                                                                                                                                                         |
-| 5–16                            | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| Step                                | Status   | Notes                                                                                                                                                                                                   |
+| ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–3 (infra)                         | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
+| ~~"coexistence smoke test"~~        | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
+| **4a** (Place search)               | **Done** | First atoms migrated.                                                                                                                                                                                   |
+| **4b — Mobile tabs** (§4.2 Slice 3) | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
+| 4b — Pixel driller (§4.2 Slice 4)   | Pending  |                                                                                                                                                                                                         |
+| 5–16                                | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -167,3 +168,17 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 - **Rename convention**: migrated state uses the `*Atom` suffix (e.g. `placeSearchActiveAtom`), matching the Jotai convention used in the slice 5 playbook. Adopt this for every future slice unless noted. Side benefit: a quick `rg "State\b.*from 'recoil'"` makes the remaining work greppable.
 - **No ESLint `additionalHooks` change for `useAtomCallback`.** Considered during the dropped 4a smoke test; rejected because `useAtomCallback(cb, options?)`'s second argument is `{ store }` — not a deps array. The deps array lives on the inner `useCallback` you pass in, which is already covered by the base `exhaustive-deps` rule. Adding `useAtomCallback` to `additionalHooks` would generate false positives.
+
+### Step 4b (mobile tabs) — Mobile tab content flags (2026-05-19)
+
+- `src/pages/map/layouts/mobile/tab-has-content.tsx`: `mobileTabHasContentState` → `mobileTabHasContentAtomFamily`. Built with `atomFamily` from `jotai-family` (the supported successor to `jotai/utils`' deprecated `atomFamily`). String `tabId` param → default reference equality is sufficient. `MobileTabContentWatcher`: `useSetRecoilState` → `useSetAtom`.
+- `src/lib/mobile-tabs/TabNavigationAction.tsx`: prop type `RecoilReadableStateFamily<boolean, string>` → `JotaiReadableStateFamily<boolean, string>` (from `@/lib/jotai/types`); prop renamed `tabHasContentState` → `tabHasContentAtomFamily`; `useRecoilValue` → `useAtomValue`.
+- `src/pages/map/layouts/mobile/MobileBottomSheet.tsx`: updated import + prop name.
+- Cross-cutting check (`rg "mobileTabHasContent"`): no orphaned references.
+- Verified: `npm run test:type-check`, eslint on changed folders.
+- Manual test (when at a browser): shrink to mobile width, switch between bottom-sheet tabs, verify tabs with no content stay disabled and the ones with content are enabled.
+
+### Decisions taken during Step 4b (mobile tabs)
+
+- **Atom family naming convention**: families get the `*AtomFamily` suffix (e.g. `mobileTabHasContentAtomFamily`). Rationale: a "family" is a function that produces atoms — calling the value itself an `*Atom` is misleading, and `*Atoms` (plural) is ambiguous with "array of atoms". Apply this everywhere atom families are renamed.
+- **Prop name follow-through**: when a component prop holds a state family (e.g. `TabNavigationAction`'s `tabHasContentState`), rename the prop alongside the export so the call site reads consistently (`tabHasContentAtomFamily={mobileTabHasContentAtomFamily}`). Slightly more disruptive but keeps the migrated surface self-documenting.

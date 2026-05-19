@@ -122,20 +122,25 @@ Reserved-but-skipped. No code change. See note above.
 
 ### Slice 3 — Mobile tab content flags
 
-**Nodes**: `mobileTabHasContentState` (atomFamily, param `string`).
+**Nodes**: `mobileTabHasContentState` (atomFamily, param `string`) → `mobileTabHasContentAtomFamily`.
 
 **Bridge nodes touched**: none — purely UI signaling between sibling components inside the mobile bottom sheet.
 
-**Files**: [`src/pages/map/layouts/mobile/tab-has-content.tsx`](../../../src/pages/map/layouts/mobile/tab-has-content.tsx), [`src/lib/mobile-tabs/TabNavigationAction.tsx`](../../../src/lib/mobile-tabs/TabNavigationAction.tsx) (consumer via `RecoilReadableStateFamily`), and the `MobileBottomSheet`/`MobileTabContentWatcher` consumers in the same layout folder.
+**Files**: [`src/pages/map/layouts/mobile/tab-has-content.tsx`](../../../src/pages/map/layouts/mobile/tab-has-content.tsx), [`src/lib/mobile-tabs/TabNavigationAction.tsx`](../../../src/lib/mobile-tabs/TabNavigationAction.tsx) (consumer via `RecoilReadableStateFamily`), [`src/pages/map/layouts/mobile/MobileBottomSheet.tsx`](../../../src/pages/map/layouts/mobile/MobileBottomSheet.tsx) (passes the family to `TabNavigationAction`).
 
 **Risk**: low.
 
 **Playbook**
 
-1. Replace `atomFamily({ key, default: false })` with `atomFamily((tabId: string) => atom(false))`.
-2. Update `TabNavigationAction` to take a Jotai atom family instead of `RecoilReadableStateFamily<boolean, string>`.
+1. Replace `atomFamily({ key, default: false })` with `atomFamily((tabId: string) => atom(false))` (from `jotai-family`).
+2. Rename `mobileTabHasContentState` → `mobileTabHasContentAtomFamily` (atom-family suffix convention; see "Naming conventions" in §4.1 / `05-implementation-notes.md`).
+3. Update `MobileTabContentWatcher`: `useSetRecoilState` → `useSetAtom`.
+4. Update `TabNavigationAction`: the prop type changes from `RecoilReadableStateFamily<boolean, string>` to `JotaiReadableStateFamily<boolean, string>` (from `@/lib/jotai/types`); rename the prop from `tabHasContentState` to `tabHasContentAtomFamily`; switch `useRecoilValue` → `useAtomValue`.
+5. Update `MobileBottomSheet.tsx` to import the new name and pass it under the new prop name.
 
-**Test plan**: shrink the viewport to mobile; switch tabs; tabs with no content should be visually muted.
+**Status**: done (2026-05-19).
+
+**Test plan**: shrink the viewport to mobile; switch tabs; tabs with no content should be visually muted. As you drag/swap content sections in and out of the tabs, the navigation buttons should enable/disable accordingly.
 
 ### Slice 4 — Pixel driller accordion
 
