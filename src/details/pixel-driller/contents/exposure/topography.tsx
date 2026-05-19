@@ -82,7 +82,25 @@ const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   license: 'CC-BY-NC-SA',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [],
+  sources: [
+    {
+      name: 'Global DEM derivatives based on MERIT DEM',
+      description:
+        'DEM derivatives computed using SAGA GIS at 250m and using MERIT DEM as input. Antarctica is not included.',
+      lineage:
+        'Hengl, T. (2018). Global DEM derivatives at 250m, 1 km and 2 km based on the MERIT DEM (1.0) [Data set]. Zenodo. doi:10.5281/zenodo.1447210. MERIT DEM was first reprojected to 6 global tiles based on the Equi7 grid system and then used to derive DEM derivatives.',
+      url: 'https://doi.org/10.5281/zenodo.1447210',
+      type: 'dataset',
+      component: 'exposure',
+      license: 'CC-BY-SA 4.0',
+      id: 'source_global_dem_derivatives_merit_dem',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Tomislav Hengl',
+    },
+  ],
 });
 
 const demExportConfig: ExportConfig = {

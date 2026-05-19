@@ -156,14 +156,32 @@ export const getAqueductRiverMetadata = ({ spatial }: MetadataArgs): RdlsDataset
     {
       name: 'Aqueduct Floods',
       description:
-        'Global riverine and coastal flood hazard maps including historical and future climate scenarios with multiple return periods.',
+        'Inundation depth in meters for coastal and riverine floods over 1km grid squares. The maps include 1 in 2 to 1 in 1000 year return periods, baseline and RCP 4.5 and 8.5 emissions scenarios, and current and future maps in 2030, 2050 and 2080.',
       lineage:
-        'Ward, P.J., et al. (2020). Developed by World Resources Institute. Provides flood inundation depths for coastal and river flooding at global scale.',
+        'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute.',
       url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
       type: 'dataset',
       component: 'hazard',
       license: 'CC-BY-4.0',
       id: 'source_aqueduct_floods',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Peter J. Ward',
+    },
+    {
+      name: 'Hessel C. Winsemius',
+    },
+    {
+      name: 'Samantha Kuzma',
+    },
+    {
+      name: 'Marc F.P. Bierkens',
+    },
+    {
+      name: 'World Resources Institute',
+      url: 'https://www.wri.org/',
     },
   ],
 });

@@ -87,10 +87,37 @@ export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: '',
+  license: 'CC-BY-NC-4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  attributions: [],
+  sources: [
+    {
+      name: 'Global Landslide Hazard Map',
+      description:
+        'Global gridded landslide hazard dataset with estimated annual frequency of significant landslides per square kilometre. The dataset includes rainfall-triggered, earthquake-triggered, and aggregate hazard layers for land areas between 60S and 72N.',
+      lineage:
+        'Arup (2021). Global Landslide Hazard Map, prepared for The World Bank and Global Facility for Disaster Reduction and Recovery.',
+      url: 'https://datacatalog.worldbank.org/search/dataset/0037584/Global-landslide-hazard-map',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY-NC-4.0',
+      id: 'source_global_landslide_hazard_map',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Arup',
+      url: 'https://www.arup.com/',
+    },
+    {
+      name: 'The World Bank',
+      url: 'https://www.worldbank.org/',
+    },
+    {
+      name: 'Global Facility for Disaster Reduction and Recovery',
+      url: 'https://www.gfdrr.org/',
+    },
+  ],
 });
 
 const landslideExportConfig: ExportConfig = {

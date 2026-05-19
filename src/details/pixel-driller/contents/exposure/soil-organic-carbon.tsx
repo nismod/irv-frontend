@@ -76,7 +76,43 @@ const getSoilOrganicCarbonMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
   license: 'CC-BY-NC-SA',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [],
+  sources: [
+    {
+      name: 'SoilGrids 2.0',
+      description:
+        'Soil organic carbon content at 0-30cm, in tonnes per hectare, aggregated to a 1000m grid.',
+      lineage:
+        'Poggio, L., de Sousa, L.M., Batjes, N.H., Heuvelink, G.B.M., Kempen, B., Ribeiro, E., Rossiter, D. (2021). SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240. doi:10.5194/soil-7-217-2021. Predictions were derived using digital soil mapping based on Quantile Random Forest, drawing on a global compilation of soil profile data and environmental layers.',
+      url: 'https://soilgrids.org/',
+      type: 'dataset',
+      component: 'exposure',
+      license: 'CC-BY 4.0',
+      id: 'source_soilgrids_2_0',
+    },
+  ],
+  attributions: [
+    {
+      name: 'L. Poggio',
+    },
+    {
+      name: 'L.M. de Sousa',
+    },
+    {
+      name: 'N.H. Batjes',
+    },
+    {
+      name: 'G.B.M. Heuvelink',
+    },
+    {
+      name: 'B. Kempen',
+    },
+    {
+      name: 'E. Ribeiro',
+    },
+    {
+      name: 'D. Rossiter',
+    },
+  ],
 });
 
 const soilOrganicCarbonExportConfig: ExportConfig = {

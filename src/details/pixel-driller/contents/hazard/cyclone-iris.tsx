@@ -99,7 +99,7 @@ export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset =
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: 'CC-BY 4.0',
+  license: 'CC-BY-4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
   sources: [
@@ -112,8 +112,20 @@ export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset =
       url: 'https://doi.org/10.1038/s41597-024-03250-y',
       type: 'dataset',
       component: 'hazard',
-      license: 'CC-BY 4.0',
+      license: 'CC-BY-4.0',
       id: 'source_cyclone_iris',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Nick Sparks',
+    },
+    {
+      name: 'Ralf Toumi',
+    },
+    {
+      name: 'Imperial College London',
+      url: 'https://www.imperial.ac.uk/',
     },
   ],
 });

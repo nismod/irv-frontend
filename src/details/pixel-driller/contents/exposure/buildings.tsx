@@ -82,7 +82,32 @@ const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   license: 'CC-BY-NC-SA',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [],
+  sources: [
+    {
+      name: 'GHS-BUILT-S - Global Human Settlement Built-up Surface Grid',
+      description:
+        'GHS-BUILT-S R2023A depicts built-up surface estimates between 1975 and 2030 in 5 year intervals and two functional use components: total built-up surface and non-residential built-up surface. The data is made by spatial-temporal interpolation of multi-sensor, multi-platform satellite imagery, including Landsat and Sentinel-2 composites.',
+      lineage:
+        'Pesaresi M., Politis P. (2023). European Commission Joint Research Centre. doi:10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA',
+      url: 'https://human-settlement.emergency.copernicus.eu/ghs_buS2023.php',
+      type: 'dataset',
+      component: 'exposure',
+      license: 'CC-BY-4.0',
+      id: 'source_ghs_built',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Martino Pesaresi',
+    },
+    {
+      name: 'Panagiotis Politis',
+    },
+    {
+      name: 'European Commission Joint Research Centre',
+      url: 'https://joint-research-centre.ec.europa.eu/',
+    },
+  ],
 });
 
 const buildingsExportConfig: ExportConfig = {

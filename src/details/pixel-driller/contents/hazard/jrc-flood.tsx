@@ -125,14 +125,36 @@ export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => (
     {
       name: 'JRC Global River Flood Hazard Maps',
       description:
-        'The global river flood hazard maps are a gridded data set representing inundation along the river network, for seven different flood return periods (from 1-in-10-years to 1-in-500-years). The input river flow data for the new maps are produced by means of the open-source hydrological model LISFLOOD, while inundation simulations are performed with the hydrodynamic model LISFLOOD-FP. The extent comprises the entire world with the exception of Greenland and Antarctica and small islands with river basins smaller than 500km². Cell values indicate water depth (in m). The maps can be used to assess the exposure of population and economic assets to river floods, and to perform flood risk assessments. The dataset is created as part of the Copernicus Emergency Management Service. NOTE: this dataset is not an official flood hazard map (for details and limitations please refer to related publications).',
+        'Global gridded river flood hazard maps representing inundation along the river network for seven flood return periods from 1-in-10-years to 1-in-500-years. Cell values indicate water depth in meters.',
       lineage:
-        "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset] Available online at:data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif.",
+        "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset]. The dataset is created as part of the Copernicus Emergency Management Service.",
       url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',
       type: 'dataset',
       component: 'hazard',
       license: 'CC-BY-4.0',
       id: 'source_jrc_floods',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Calum Baugh',
+    },
+    {
+      name: 'Juan Colonese',
+    },
+    {
+      name: "Claudia D'Angelo",
+    },
+    {
+      name: 'Francesco Dottori',
+    },
+    {
+      name: 'European Commission Joint Research Centre',
+      url: 'https://joint-research-centre.ec.europa.eu/',
+    },
+    {
+      name: 'Copernicus Emergency Management Service',
+      url: 'https://emergency.copernicus.eu/',
     },
   ],
 });

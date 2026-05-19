@@ -96,6 +96,21 @@ const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
       id: 'source_gem_earthquake',
     },
   ],
+  attributions: [
+    {
+      name: 'Global Earthquake Model Foundation',
+      url: 'https://www.globalquakemodel.org/',
+    },
+    {
+      name: 'M. Pagani',
+    },
+    {
+      name: 'K. Johnson',
+    },
+    {
+      name: 'M. Villani',
+    },
+  ],
 });
 
 const earthquakesExportConfig: ExportConfig = {

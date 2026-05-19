@@ -107,9 +107,9 @@ const getCycloneStormMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'STORM tropical cyclone wind speed return periods',
       description:
-        'Tropical cyclone wind speed return periods under historical and climate change scenarios.',
+        'Tropical cyclone maximum wind speed return periods under historical conditions, available at 10 km resolution.',
       lineage:
-        'Russell (2022), derived from Bloemendaal et al. (2020) STORM tropical cyclone dataset (doi:10.4121/12705164.v3) and Bloemendaal et al. (2022) climate change dataset (doi:10.4121/14510817.v3).',
+        'Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts, J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/12705164.v3. Aggregated as Russell, Tom. (2022). STORM tropical cyclone wind speed return periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo. doi:10.5281/zenodo.7438145.',
       url: 'https://doi.org/10.4121/12705164.v3',
       type: 'dataset',
       component: 'hazard',
@@ -119,14 +119,31 @@ const getCycloneStormMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'STORM climate change tropical cyclone wind speed return periods',
       description:
-        'Tropical cyclone wind speed return periods under climate change scenarios, providing future projections of cyclone hazards.',
+        'Tropical cyclone maximum wind speed return periods under future climate conditions, including RCP 8.5 future climate scenarios.',
       lineage:
-        'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J.; Haigh, I.D.; Martinez, Andrew B.; et al. (2022). doi:10.4121/14510817.v3',
+        'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J.; Haigh, I.D.; Martinez, Andrew B.; et al. (2022): STORM climate change tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/14510817.v3.',
       url: 'https://doi.org/10.4121/14510817.v3',
       type: 'dataset',
       component: 'hazard',
       license: 'CC-BY-4.0',
       id: 'source_storm_cyclone_cc',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Nadia Bloemendaal',
+    },
+    {
+      name: 'Hans de Moel',
+    },
+    {
+      name: 'Ivan Haigh',
+    },
+    {
+      name: 'Andrew B. Martinez',
+    },
+    {
+      name: 'Tom Russell',
     },
   ],
 });

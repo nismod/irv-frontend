@@ -112,7 +112,7 @@ const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'Annual probability of extreme heat and drought events',
       description:
-        'Derived dataset of extreme heat and drought event probabilities based on climate projections.',
+        'Annual probability of extreme heat events on a 0.5 degree grid, derived from ISIMIP2b climate impact event projections for baseline, RCP 2.6, and RCP 6.0 emissions scenarios and current and future maps in 2030, 2050, and 2080.',
       lineage:
         "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
       url: 'https://doi.org/10.5281/zenodo.8147088',
@@ -120,6 +120,24 @@ const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
       component: 'hazard',
       license: 'CC-BY-4.0',
       id: 'source_extreme_heat_drought',
+    },
+  ],
+  attributions: [
+    {
+      name: 'Tom Russell',
+    },
+    {
+      name: 'Chris Nicholas',
+    },
+    {
+      name: 'M. Bernhofen',
+    },
+    {
+      name: 'S. Lange',
+    },
+    {
+      name: 'ISIMIP',
+      url: 'https://www.isimip.org/',
     },
   ],
 });

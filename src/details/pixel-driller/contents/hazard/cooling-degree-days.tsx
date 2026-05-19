@@ -89,10 +89,41 @@ export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDat
     },
   ],
   publisher: COMMON_PUBLISHER,
-  license: '',
+  license: 'CC-BY',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  attributions: [],
+  sources: [
+    {
+      name: 'Global CDD difference between 1.5C and 2C global warming scenarios',
+      description:
+        'Absolute and relative mean increase of cooling degree days from 1.5C to 2C global warming scenarios, with standard deviation. Annual cooling degree days were calculated using a temperature threshold of 18C.',
+      lineage:
+        'Miranda, N.D., Lizana, J., Sparrow, S.N. et al. (2023). Change in cooling degree days with global mean temperature rise increasing from 1.5C to 2.0C. Nature Sustainability 6, 1326-1330. doi:10.1038/s41893-023-01155-z. Data: Miranda, N.D., Lizana, J., Sparrow, S.N., Wallom, D.C.H., Zachau-Walker, M., Watson, P., Khosla, R., & McCulloch, M. (2023). Changes in Cooling Degree Days (CDD) between the 1.5C and 2.0C global warming scenarios. University of Oxford.',
+      url: 'https://doi.org/10.1038/s41893-023-01155-z',
+      type: 'dataset',
+      component: 'hazard',
+      license: 'CC-BY',
+      id: 'source_cooling_degree_days',
+    },
+  ],
+  attributions: [
+    {
+      name: 'N.D. Miranda',
+    },
+    {
+      name: 'J. Lizana',
+    },
+    {
+      name: 'S.N. Sparrow',
+    },
+    {
+      name: 'D.C.H. Wallom',
+    },
+    {
+      name: 'University of Oxford',
+      url: 'https://www.ox.ac.uk/',
+    },
+  ],
 });
 
 const coolingDegreeDaysExportConfig: ExportConfig = {
