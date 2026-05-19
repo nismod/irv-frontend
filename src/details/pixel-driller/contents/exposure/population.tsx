@@ -54,14 +54,16 @@ const exportPopulation: ExportFunction = async (allRecords) => {
 const getPopulationMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: populationBaseName,
   title: 'Population density',
-  description: 'Population density (people per km²) at this site.',
+  description:
+    'Population density at this site from GHS-POP R2023A, a multitemporal global population grid derived from census and administrative estimates disaggregated to grid cells using GHSL built-up information.',
   risk_data_type: ['exposure'],
   spatial,
   resources: [
     {
       id: `${populationBaseName}.csv`,
       title: 'Population density',
-      description: 'Population density in people per km² at this site for the given epoch.',
+      description:
+        'Population density in people per km² at this site for the given epoch, derived from GHS-POP estimates and projections between 1975 and 2030.',
       format: 'csv',
       schema: {
         fields: structuredClone(populationColumns),
@@ -77,7 +79,7 @@ const getPopulationMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'GHS-POP - Global Human Settlement Population Grid',
       description:
-        'GHS-POP R2023A depicts the distribution of population, expressed as the number of people per cell. Residential population estimates between 1975 and 2020 in 5 year intervals and projections to 2025 and 2030 were disaggregated to grid cells, informed by the distribution, density, and classification of built-up areas mapped in the Global Human Settlement Layer.',
+        'GHS-POP R2023A depicts the distribution of population, expressed as the number of people per cell. Residential population estimates between 1975 and 2020 in 5 year intervals and projections to 2025 and 2030 were disaggregated to grid cells, informed by the distribution, density, and classification of built-up areas mapped in the Global Human Settlement Layer. This update uses more recent and detailed population estimates derived from GPWv4.11, integrating UN World Population Prospects 2022 country population data and World Urbanisation Prospects 2018 city data.',
       lineage:
         'Schiavina M., Freire S., Carioli A., MacManus K. (2023). European Commission Joint Research Centre. doi:10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE',
       url: 'https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php',

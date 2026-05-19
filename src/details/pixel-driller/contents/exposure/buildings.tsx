@@ -62,7 +62,8 @@ const exportBuildings: ExportFunction = async (allRecords) => {
 const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: buildingsBaseName,
   title: 'Built-up surface',
-  description: 'Built-up surface area (m²) at this site, by subtype.',
+  description:
+    'Built-up surface area at this site from GHS-BUILT-S R2023A, including total and non-residential built-up surface estimates derived from multitemporal satellite imagery.',
   risk_data_type: ['exposure'],
   spatial,
   resources: [
@@ -70,7 +71,7 @@ const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
       id: `${buildingsBaseName}.csv`,
       title: 'Built-up surface',
       description:
-        'Built-up surface area in m² at this site, for all buildings and for non-residential buildings only.',
+        'Built-up surface area in m² at this site for all buildings and non-residential buildings, based on GHS-BUILT-S total and non-residential built-up surface components.',
       format: 'csv',
       schema: {
         fields: structuredClone(buildingsColumns),
@@ -86,7 +87,7 @@ const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'GHS-BUILT-S - Global Human Settlement Built-up Surface Grid',
       description:
-        'GHS-BUILT-S R2023A depicts built-up surface estimates between 1975 and 2030 in 5 year intervals and two functional use components: total built-up surface and non-residential built-up surface. The data is made by spatial-temporal interpolation of multi-sensor, multi-platform satellite imagery, including Landsat and Sentinel-2 composites.',
+        'GHS-BUILT-S R2023A depicts built-up surface estimates between 1975 and 2030 in 5 year intervals and two functional use components: total built-up surface and non-residential built-up surface. The data is made by spatial-temporal interpolation of multi-sensor, multi-platform satellite imagery, including Landsat and Sentinel-2 composites. Built-up surface fraction is estimated at 10m resolution from Sentinel-2 image data using training data from GHS-BUILT-S2 R2020A, Facebook, Microsoft, and OpenStreetMap building delineation.',
       lineage:
         'Pesaresi M., Politis P. (2023). European Commission Joint Research Centre. doi:10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA',
       url: 'https://human-settlement.emergency.copernicus.eu/ghs_buS2023.php',

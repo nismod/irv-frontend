@@ -94,7 +94,7 @@ export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
     {
       name: 'Global Landslide Hazard Map',
       description:
-        'Global gridded landslide hazard dataset with estimated annual frequency of significant landslides per square kilometre. The dataset includes rainfall-triggered, earthquake-triggered, and aggregate hazard layers for land areas between 60S and 72N.',
+        'Global gridded landslide hazard dataset with estimated annual frequency of significant landslides per square kilometre for land areas between 60S and 72N. Significant landslides are those likely to have been reported had they occurred in a populated place. The dataset includes mean annual rainfall-triggered hazard, median annual rainfall-triggered hazard, mean annual earthquake-triggered hazard, and an aggregate hazard index from 1 (low) to 4 (very high).',
       lineage:
         'Arup (2021). Global Landslide Hazard Map, prepared for The World Bank and Global Facility for Disaster Reduction and Recovery.',
       url: 'https://datacatalog.worldbank.org/search/dataset/0037584/Global-landslide-hazard-map',

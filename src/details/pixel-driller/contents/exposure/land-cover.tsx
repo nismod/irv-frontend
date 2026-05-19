@@ -48,14 +48,16 @@ const exportLandCover: ExportFunction = async (allRecords) => {
 const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: landCoverBaseName,
   title: 'Land cover',
-  description: 'Land cover class at this site (categorical; codes match the map legend).',
+  description:
+    'Land cover class at this site from ESA Climate Change Initiative land cover classification gridded maps derived from satellite observations.',
   risk_data_type: ['exposure'],
   spatial,
   resources: [
     {
       id: `${landCoverBaseName}.csv`,
       title: 'Land cover',
-      description: 'Land cover class code at this site.',
+      description:
+        'Land cover class code at this site, using the ESA CCI land cover classification values shown in the map legend.',
       format: 'csv',
       schema: {
         fields: structuredClone(landCoverColumns),
@@ -71,7 +73,7 @@ const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'ESA Land cover classification',
       description:
-        'Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1.',
+        'Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. The source data are from the ESA Climate Change Initiative Land Cover project led by UCLouvain, the ESA Climate Change Initiative Land Cover project 2020, and EC C3S Land Cover.',
       lineage:
         'European Space Agency Climate Change Initiative Land Cover project (2021). Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. doi:10.24381/cds.006f2c9a. The source data are from the ESA Climate Change Initiative Land Cover project led by UCLouvain, ESA Climate Change Initiative - Land Cover project 2020, and EC C3S Land Cover.',
       url: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview',

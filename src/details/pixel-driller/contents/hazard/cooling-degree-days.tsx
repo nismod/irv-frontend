@@ -72,7 +72,7 @@ export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDat
   id: cddBaseName,
   title: 'Cooling Degree Days',
   description:
-    'Change in cooling degree days at this site, expressed as absolute and relative metrics.',
+    'Change in cooling degree days at this site between 1.5C and 2C global warming scenarios, expressed as absolute and relative metrics.',
   risk_data_type: ['hazard'],
   spatial,
   resources: [
@@ -80,7 +80,7 @@ export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDat
       id: `${cddBaseName}.csv`,
       title: 'Cooling Degree Days Data',
       description:
-        'Cooling degree days change data for this site, including absolute and relative metrics.',
+        'Cooling degree days change data for this site, including absolute and relative differences between 1.5C and 2C global warming scenarios.',
       format: 'csv',
       schema: {
         fields: structuredClone(cddColumns),
@@ -96,7 +96,7 @@ export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDat
     {
       name: 'Global CDD difference between 1.5C and 2C global warming scenarios',
       description:
-        'Absolute and relative mean increase of cooling degree days from 1.5C to 2C global warming scenarios, with standard deviation. Annual cooling degree days were calculated using a temperature threshold of 18C.',
+        'Absolute and relative mean increase of cooling degree days from 1.5C to 2C global warming scenarios, with standard deviation. The data has a horizontal resolution of 0.833 longitude by 0.556 latitude over land. Annual cooling degree days were calculated from an ensemble of 700 simulations per climate change scenario using an 18C temperature threshold, then mean values and differences between 1.5C and 2C were computed per coordinate.',
       lineage:
         'Miranda, N.D., Lizana, J., Sparrow, S.N. et al. (2023). Change in cooling degree days with global mean temperature rise increasing from 1.5C to 2.0C. Nature Sustainability 6, 1326-1330. doi:10.1038/s41893-023-01155-z. Data: Miranda, N.D., Lizana, J., Sparrow, S.N., Wallom, D.C.H., Zachau-Walker, M., Watson, P., Khosla, R., & McCulloch, M. (2023). Changes in Cooling Degree Days (CDD) between the 1.5C and 2.0C global warming scenarios. University of Oxford.',
       url: 'https://doi.org/10.1038/s41893-023-01155-z',

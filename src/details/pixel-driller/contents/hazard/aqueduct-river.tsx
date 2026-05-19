@@ -109,7 +109,7 @@ export const getAqueductRiverMetadata = ({ spatial }: MetadataArgs): RdlsDataset
       id: `${aqueductRiverBaseName}.csv`,
       title: 'Aqueduct River Flood Risk Data',
       description:
-        'River flood height data from the Aqueduct project, representing fluvial flood depths for this site across scenarios.',
+        'River flood height data from the Aqueduct project, representing fluvial inundation depth in meters at this site across return periods, emissions scenarios, and current and future epochs.',
       format: 'csv',
       schema: {
         fields: [

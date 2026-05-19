@@ -84,7 +84,7 @@ const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: droughtBaseName,
   title: 'Drought Occurrence (ISIMIP)',
   description:
-    'Probability of drought occurrence at this site across multiple emissions scenarios, epochs and climate models.',
+    'Annual probability of drought occurrence at this site from ISIMIP-derived climate impact projections across emissions scenarios, epochs, and climate models.',
   risk_data_type: ['hazard'],
   spatial,
   resources: [
@@ -92,7 +92,7 @@ const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
       id: `${droughtBaseName}.csv`,
       title: 'Drought Occurrence Data (ISIMIP)',
       description:
-        'Drought occurrence probabilities from the ISIMIP project for this site across scenarios.',
+        'Drought occurrence probabilities from ISIMIP-derived event time series at this site, processed into annual probability values across emissions scenarios and epochs.',
       format: 'csv',
       schema: {
         fields: structuredClone(droughtColumns),
@@ -108,7 +108,7 @@ const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'Annual probability of extreme heat and drought events',
       description:
-        'Annual probability of drought events on a 0.5 degree grid, derived from ISIMIP2b climate impact event projections for baseline, RCP 2.6, and RCP 6.0 emissions scenarios and current and future maps in 2030, 2050, and 2080.',
+        'Annual probability of drought events on a 0.5 degree grid, derived from ISIMIP2b climate impact event projections for baseline, RCP 2.6, and RCP 6.0 emissions scenarios and current and future maps in 2030, 2050, and 2080. Drought exposure follows Lange et al. event definitions where monthly soil moisture falls below the 2.5th percentile of the preindustrial baseline distribution for at least seven consecutive months. Time series of drought events were processed into annual probability of occurrence for visualisation.',
       lineage:
         "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
       url: 'https://doi.org/10.5281/zenodo.8147088',

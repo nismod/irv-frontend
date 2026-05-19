@@ -63,14 +63,16 @@ const exportDem: ExportFunction = async (allRecords) => {
 const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: demBaseName,
   title: 'Topography (DEM)',
-  description: 'Elevation (metres above sea level) and slope (degrees) at this site.',
+  description:
+    'Elevation (metres above sea level) and slope (degrees) at this site from global MERIT DEM derivatives produced at 250m resolution.',
   risk_data_type: ['exposure'],
   spatial,
   resources: [
     {
       id: `${demBaseName}.csv`,
       title: 'Topography',
-      description: 'DEM elevation and slope values at this site.',
+      description:
+        'DEM elevation and slope values at this site, based on MERIT DEM derivatives produced at 250m resolution.',
       format: 'csv',
       schema: {
         fields: structuredClone(demColumns),
@@ -86,7 +88,7 @@ const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'Global DEM derivatives based on MERIT DEM',
       description:
-        'DEM derivatives computed using SAGA GIS at 250m and using MERIT DEM as input. Antarctica is not included.',
+        'DEM derivatives computed using SAGA GIS at 250m and using MERIT DEM as input. Antarctica is not included. MERIT DEM was first reprojected to six global tiles based on the Equi7 grid system, and those tiles were then used to derive the DEM derivatives.',
       lineage:
         'Hengl, T. (2018). Global DEM derivatives at 250m, 1 km and 2 km based on the MERIT DEM (1.0) [Data set]. Zenodo. doi:10.5281/zenodo.1447210. MERIT DEM was first reprojected to 6 global tiles based on the Equi7 grid system and then used to derive DEM derivatives.',
       url: 'https://doi.org/10.5281/zenodo.1447210',

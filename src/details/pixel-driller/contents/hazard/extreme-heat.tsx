@@ -88,7 +88,7 @@ const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: extremeHeatBaseName,
   title: 'Extreme Heat Occurrence (ISIMIP)',
   description:
-    'Probability of extreme heat events at this site across multiple emissions scenarios, epochs and climate models.',
+    'Annual probability of extreme heat events at this site from ISIMIP-derived climate impact projections across emissions scenarios, epochs, and climate models.',
   risk_data_type: ['hazard'],
   spatial,
   resources: [
@@ -96,7 +96,7 @@ const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
       id: `${extremeHeatBaseName}.csv`,
       title: 'Extreme Heat Occurrence Data (ISIMIP)',
       description:
-        'Extreme heat occurrence probabilities from the ISIMIP project for this site across scenarios.',
+        'Extreme heat occurrence probabilities from ISIMIP-derived event time series at this site, processed into annual probability values across emissions scenarios and epochs.',
       format: 'csv',
       schema: {
         fields: structuredClone(extremeHeatColumns),
@@ -112,7 +112,7 @@ const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
     {
       name: 'Annual probability of extreme heat and drought events',
       description:
-        'Annual probability of extreme heat events on a 0.5 degree grid, derived from ISIMIP2b climate impact event projections for baseline, RCP 2.6, and RCP 6.0 emissions scenarios and current and future maps in 2030, 2050, and 2080.',
+        'Annual probability of extreme heat events on a 0.5 degree grid, derived from ISIMIP2b climate impact event projections for baseline, RCP 2.6, and RCP 6.0 emissions scenarios and current and future maps in 2030, 2050, and 2080. Extreme heat exposure follows Lange et al. event definitions based on relative temperature indicators and absolute temperature and relative humidity thresholds. Time series of extreme events were processed into annual probability of occurrence for visualisation.',
       lineage:
         "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
       url: 'https://doi.org/10.5281/zenodo.8147088',

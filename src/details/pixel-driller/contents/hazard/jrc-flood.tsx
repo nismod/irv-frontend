@@ -101,7 +101,7 @@ export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => (
   id: jrcFloodBaseName,
   title: 'River Flooding (JRC)',
   description:
-    'River flood height hazard at this site from the JRC dataset across multiple return periods.',
+    'River flood height hazard at this site from JRC global river flood hazard maps, a gridded inundation dataset for seven flood return periods.',
   risk_data_type: ['hazard'],
   spatial,
   resources: [
@@ -109,7 +109,7 @@ export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => (
       id: `${jrcFloodBaseName}.csv`,
       title: 'River Flooding (JRC) Data',
       description:
-        'River flood height data from the JRC dataset for this site across return periods.',
+        'River flood height data from the JRC global river flood hazard maps for this site across return periods, with cell values indicating water depth in meters.',
       format: 'csv',
       schema: {
         fields: structuredClone(jrcFloodColumns),
@@ -125,7 +125,7 @@ export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => (
     {
       name: 'JRC Global River Flood Hazard Maps',
       description:
-        'Global gridded river flood hazard maps representing inundation along the river network for seven flood return periods from 1-in-10-years to 1-in-500-years. Cell values indicate water depth in meters.',
+        'Global gridded river flood hazard maps representing inundation along the river network for seven flood return periods from 1-in-10-years to 1-in-500-years. River flow inputs are produced using the open-source hydrological model LISFLOOD, and inundation simulations use the hydrodynamic model LISFLOOD-FP. Cell values indicate water depth in meters, and the maps can support exposure and flood risk assessments.',
       lineage:
         "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset]. The dataset is created as part of the Copernicus Emergency Management Service.",
       url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',

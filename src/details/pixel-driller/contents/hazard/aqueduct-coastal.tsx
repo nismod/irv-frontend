@@ -109,7 +109,7 @@ export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDatas
       id: `${aqueductCoastalBaseName}.csv`,
       title: 'Aqueduct Coastal Flood Risk Data',
       description:
-        'Coastal flood height data from the Aqueduct project, representing coastal flood depths for this site across scenarios.',
+        'Coastal flood height data from the Aqueduct project, representing inundation depth in meters at this site across return periods, emissions scenarios, and current and future epochs.',
       format: 'csv',
       schema: {
         fields: structuredClone(aqueductCoastalColumns),

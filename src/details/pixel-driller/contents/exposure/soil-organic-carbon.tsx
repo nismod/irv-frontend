@@ -57,14 +57,16 @@ const exportSoilOrganicCarbon: ExportFunction = async (allRecords) => {
 const getSoilOrganicCarbonMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: socBaseName,
   title: 'Soil organic carbon',
-  description: 'Soil organic carbon (t/ha) at this site.',
+  description:
+    'Soil organic carbon stock at this site from SoilGrids 2.0, representing 0-30cm soil organic carbon content aggregated to a 1000m grid.',
   risk_data_type: ['exposure'],
   spatial,
   resources: [
     {
       id: `${socBaseName}.csv`,
       title: 'Soil organic carbon',
-      description: 'Soil organic carbon in tonnes per hectare at this site.',
+      description:
+        'Soil organic carbon in tonnes per hectare at this site, derived from SoilGrids 2.0 mean predictions resampled from 250m to 1000m cells.',
       format: 'csv',
       schema: {
         fields: structuredClone(socColumns),
@@ -80,7 +82,7 @@ const getSoilOrganicCarbonMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
     {
       name: 'SoilGrids 2.0',
       description:
-        'Soil organic carbon content at 0-30cm, in tonnes per hectare, aggregated to a 1000m grid.',
+        'Soil organic carbon content at 0-30cm, in tonnes per hectare, aggregated to a 1000m grid. Soil organic carbon content for the fine earth fraction is provided at six standard depths. Predictions were derived using digital soil mapping based on Quantile Random Forest, drawing on global soil profile data and environmental layers, then resampling mean SoilGrids 250m predictions for each 1000m cell.',
       lineage:
         'Poggio, L., de Sousa, L.M., Batjes, N.H., Heuvelink, G.B.M., Kempen, B., Ribeiro, E., Rossiter, D. (2021). SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240. doi:10.5194/soil-7-217-2021. Predictions were derived using digital soil mapping based on Quantile Random Forest, drawing on a global compilation of soil profile data and environmental layers.',
       url: 'https://soilgrids.org/',
