@@ -58,7 +58,7 @@ The folder mirrors `src/lib/recoil/` one-for-one so that, during the migration, 
    ```
 
 4. **`useAtomCallback` does not accept a dependency array.** The Recoil equivalents accepted one as their second argument. Callers must wrap their callback in `useCallback` themselves (we have done this for the ported helpers).
-5. **ESLint `additionalHooks`** in `eslint.config.mjs` currently lists `useRecoilCallback|useRecoilTransaction_UNSTABLE`. **TODO (handled in slice 1 of the migration, not now):** add `useAtomCallback` so the `exhaustive-deps` rule warns appropriately.
+5. **ESLint `additionalHooks`** — done in slice 4a: `eslint.config.mjs` now includes `useAtomCallback` alongside the Recoil hooks.
 
 ### Why some Recoil helpers were _not_ renamed identically
 
@@ -126,9 +126,9 @@ The Recoil version used `RecoilLocalStorageSync`, `RecoilURLSyncJSON` and `MapVi
 
 These were intentionally deferred to the per-slice migration:
 
-- `App.tsx` still wires up `<RecoilRoot>`, `<RecoilLocalStorageSync>` and `<RecoilURLSyncJSON>`. None of those are removed yet. A `<Provider>` from Jotai is _not_ yet mounted; the analysis (see `04-migration-slices.md`) recommends letting both coexist for the first few slices and switching the order/removing wrappers when consumers have migrated.
-- No existing atom or component has been changed to use Jotai. The new helpers are unused — verified by `npx tsc --noEmit` (build is clean, no consumers).
-- The ESLint `react-hooks/exhaustive-deps` `additionalHooks` regex still lists only the Recoil hooks. **Slice 1 should append `useAtomCallback` here.**
+- `App.tsx` still wires up `<RecoilRoot>`, `<RecoilLocalStorageSync>` and `<RecoilURLSyncJSON>`. None of those are removed yet.
+- **Slice 4a (coexistence smoke test):** Jotai `<Provider store={createStore()}>` is mounted inside `ArticleMap`'s nested `<RecoilRoot>`. No Jotai atoms are consumed yet; behaviour is unchanged. The per-instance store is ready for slice 9b.
+- No existing atom definitions have been migrated to Jotai yet — only infrastructure helpers under `src/lib/jotai/` exist without consumers outside that folder.
 - Tests for the new sync helpers are not yet written. The recommended additions, when slice 0 begins consuming them, are:
   - `atom-with-local-storage`: write, refresh, cross-tab `storage` event handling, validator rejection path.
   - `atom-with-url-sync`: read on mount, write via `replaceState`, `popstate` propagation, `syncDefault` true/false, custom codecs.
@@ -141,3 +141,29 @@ These were intentionally deferred to the per-slice migration:
 - `eslint` — manual lint runs on the new files (via the IDE's `ReadLints` integration) produced no errors.
 
 The build is **not** expected to behave differently at runtime; this is a purely additive change.
+
+---
+
+## 6. Slice progress
+
+| Step                            | Status   | Notes                                                                                                                                                                                                   |
+| ------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–3 (infra)                     | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
+| ~~"coexistence smoke test"~~    | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
+| **4a** (Place search)           | **Done** | First atoms migrated.                                                                                                                                                                                   |
+| 4b (Mobile tabs, Pixel driller) | Pending  |                                                                                                                                                                                                         |
+| 5–16                            | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+
+> Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
+
+### Step 4a — Place search (2026-05-19)
+
+- `src/lib/map/place-search/search-state.ts`: `placeSearchActiveState` / `placeSearchQueryState` → `placeSearchActiveAtom` / `placeSearchQueryAtom` (Jotai `atom(...)`).
+- `src/lib/map/place-search/MapSearch.tsx`, `src/lib/map/place-search/MapSearchField.tsx`: `useRecoilState` → `useAtom`.
+- Verified: `npm run test:type-check`, eslint on changed files. Cross-cutting check (`rg "placeSearch.*State"`) confirms no orphaned consumers.
+- Manual test (when back at a browser): expand the place-search field, type, select a result, confirm the map flies and the field collapses; re-expand and confirm the previous query persists.
+
+### Decisions taken during Step 4a
+
+- **Rename convention**: migrated state uses the `*Atom` suffix (e.g. `placeSearchActiveAtom`), matching the Jotai convention used in the slice 5 playbook. Adopt this for every future slice unless noted. Side benefit: a quick `rg "State\b.*from 'recoil'"` makes the remaining work greppable.
+- **No ESLint `additionalHooks` change for `useAtomCallback`.** Considered during the dropped 4a smoke test; rejected because `useAtomCallback(cb, options?)`'s second argument is `{ store }` — not a deps array. The deps array lives on the inner `useCallback` you pass in, which is already covered by the base `exhaustive-deps` rule. Adding `useAtomCallback` to `additionalHooks` would generate false positives.

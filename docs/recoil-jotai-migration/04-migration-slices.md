@@ -15,9 +15,8 @@ flowchart TD
     Step1[1. Add Jotai dependency<br/>Keep RecoilRoot mounted in parallel]
     Step2[2. Port lib/recoil/ helpers to lib/jotai/<br/>under new names, no callers yet]
     Step3[3. Build replacement sync layer<br/>localStorage + URL + route]
-    Step4a[4a. Coexistence smoke test<br/>Mount Jotai Provider; no atoms moved]
-    Step4b[4b. Migrate Place search slice<br/>real pilot: truly leaf, no bridges]
-    Step4c[4c. Migrate Mobile tabs and Pixel driller leaves]
+    Step4a[4a. Migrate Place search slice<br/>real pilot: truly leaf, no bridges]
+    Step4b[4b. Migrate Mobile tabs and Pixel driller leaves]
     Step5[5. Migrate Downloads slice<br/>first real test of localStorage sync]
     Step6[6. Migrate Map basemap + interaction mode slice]
     Step7[7. Migrate Map view + URL coords slice<br/>first real test of URL sync]
@@ -32,14 +31,14 @@ flowchart TD
     Step15[15. Migrate Sidebar visibility hub<br/>and view-layers aggregator]
     Step16[16. Remove RecoilRoot, recoil/recoil-sync packages]
 
-    Step1 --> Step2 --> Step3 --> Step4a --> Step4b --> Step4c --> Step5 --> Step6 --> Step7 --> Step8 --> Step9 --> Step9b --> Step10 --> Step11 --> Step12 --> Step13 --> Step14 --> Step15 --> Step16
+    Step1 --> Step2 --> Step3 --> Step4a --> Step4b --> Step5 --> Step6 --> Step7 --> Step8 --> Step9 --> Step9b --> Step10 --> Step11 --> Step12 --> Step13 --> Step14 --> Step15 --> Step16
 ```
 
 ### Why this order
 
 - **Infrastructure first (Steps 1-3).** Migrating any feature slice in isolation is painful as long as the sync helpers (`RecoilLocalStorageSync`, `RecoilURLSyncJSON`, `MapViewRouteSync`) still own the URL/storage protocol. Building Jotai-flavoured equivalents first means each feature slice has a deterministic landing pad.
 - **Pilot is Place search, NOT Articles map.** Earlier versions of this plan listed Articles map as Step 4 because of its nested `RecoilRoot`. That was wrong: `<RecoilRoot>` only isolates atom _values_ at runtime, not atom _definitions_ (atoms are module-level singletons). ArticleMap uses `hoverState` / `selectionState` from `lib/data-map/interactions/interaction-state.ts`, which is consumed by 8 other files in the main app — so migrating ArticleMap atomically means migrating all of them at once. See §4.3 for the full reasoning. **Place search** has no such cross-cutting dependency and is the right pilot.
-- **Step 4a is a coexistence smoke test, not a migration.** Mount a Jotai `<Provider>` somewhere harmless and confirm: build succeeds, both DevTools work, no rendering conflicts. ArticleMap is a fine place for this since it already isolates its tree.
+- **No separate "coexistence smoke test" step.** An earlier revision of this plan included one (mounting a Jotai `<Provider>` inside `ArticleMap` with no atoms attached). It was dropped: stacking two empty providers proves nothing the place-search migration doesn't already prove implicitly. The moment a real Jotai atom is consumed in the same app while Recoil is still mounted, coexistence is exercised end-to-end. ArticleMap also stays untouched until 9b per the original promise.
 - **Downloads (Step 5) proves localStorage sync** end-to-end before any bigger feature depends on it.
 - **Map view + URL coords (Step 7) proves URL sync** before any larger feature depends on it.
 - **Step 9b is just a one-line flip.** Once Slice 9 has migrated `interaction-state.ts` to Jotai, ArticleMap's `<RecoilRoot>` becomes useless (its atoms are no longer Recoil) and can be swapped for `<Provider store={...}>` in one edit.
@@ -91,29 +90,14 @@ Delete every bridge during step 16.
 
 For each slice: nodes inside (atoms/selectors), bridge nodes it touches, the files that change, an estimated risk level, and a per-slice playbook.
 
-### Slice 1 — Coexistence smoke test (no atoms moved)
+> **Note on previous plan revisions**:
+>
+> - An earlier version of this document listed "Articles map" as Slice 1. That was wrong — atom definitions are module-level singletons, so `ArticleMap`'s nested `<RecoilRoot>` doesn't isolate the migration boundary. See §4.3 for the full reasoning. ArticleMap is now Slice 9b — a one-line provider flip after Slice 9.
+> - A subsequent revision then inserted "Slice 1 — Coexistence smoke test" that mounted an empty Jotai `<Provider>` inside `ArticleMap`. It was also dropped: it would have touched `ArticleMap` ahead of 9b for no real verification gain. The first slice that actually moves atoms (Place search, below) implicitly exercises coexistence anyway. Slice numbering below is preserved from the previous revision so cross-references in other docs stay valid — Slice 1 is intentionally empty.
 
-> **Note on previous plan**: an earlier version of this document listed "Articles map" as Slice 1. That was incorrect — see §4.3 below for why. The actual ArticleMap flip is now Slice 9b, a one-line follow-up to Slice 9.
+### Slice 1 — _(intentionally empty)_
 
-**Goal**: confirm that Jotai's `<Provider>` can coexist with `<RecoilRoot>` in the same render tree, with no behaviour change for the user.
-
-**Nodes**: none (no atoms move yet).
-
-**Bridge nodes touched**: none.
-
-**Files**: [`src/pages/articles/components/ArticleMap.tsx`](../../../src/pages/articles/components/ArticleMap.tsx) (lowest-risk place to nest a `<Provider>`), [`src/App.tsx`](../../../src/App.tsx) (optionally — only if you'd rather mount the smoke-test `<Provider>` at the root).
-
-**Risk**: trivial.
-
-**Playbook**
-
-1. Add `import { Provider } from 'jotai';` in `ArticleMap.tsx`.
-2. Wrap the existing `<RecoilRoot>` subtree (or place inside it) with a Jotai `<Provider store={useMemo(() => createStore(), [])}>`. The two providers are independent and do not interact.
-3. Add `useAtomCallback` to the `additionalHooks` regex in `eslint.config.mjs` so `react-hooks/exhaustive-deps` warns about it in the same way it currently warns about `useRecoilCallback`. (This was deferred from the helper-port step.)
-4. Build, lint, type-check. Open `/articles/<slug>` and confirm hover/tooltip/legend still work identically.
-5. Open both Recoil DevTools and Jotai DevTools side-by-side to confirm they each see only their own (empty) store.
-
-**Test plan**: open any article page with an embedded `ArticleMap`. Verify hover, tooltip, and collapsible legend. Open DevTools. There should be **no observable change** in behaviour from before this slice.
+Reserved-but-skipped. No code change. See note above.
 
 ### Slice 2 — Place search (real pilot — first slice that actually moves atoms)
 
@@ -127,11 +111,14 @@ For each slice: nodes inside (atoms/selectors), bridge nodes it touches, the fil
 
 **Playbook**
 
-1. Replace the two `atom({ key, default })` with plain `atom(...)`.
-2. Replace `useRecoilState` calls with `useAtom`.
-3. No sync, no families, no helpers needed.
+1. Replace the two `atom({ key, default })` with plain `atom(...)` from Jotai.
+2. **Rename the exports** from `*State` → `*Atom` (`placeSearchActiveAtom`, `placeSearchQueryAtom`). This makes "what's been migrated" greppable and matches the Jotai convention used elsewhere in the plan (e.g. slice 5's `submittedJobsAtom`). Adopt the same rename for every future slice unless otherwise noted.
+3. Replace `useRecoilState` calls with `useAtom`.
+4. No sync, no families, no helpers needed.
 
-**Test plan**: open `/view/hazard`, type a place name into the search box, click a result, confirm the map flies and the search collapses.
+**Status**: done (2026-05-19).
+
+**Test plan**: open `/view/hazard`, click the search icon (chip should expand), type a place name into the search box (autocomplete should populate; the field's text should persist across re-expansions because of the atom), click a result, confirm the map flies and the search collapses (click-away handler still works). Re-expand the search and confirm the previous query is still visible.
 
 ### Slice 3 — Mobile tab content flags
 
