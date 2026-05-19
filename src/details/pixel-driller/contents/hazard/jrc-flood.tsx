@@ -44,7 +44,9 @@ const jrcFloodConfig: ChartConfig = {
 
 // Thresholds
 // Flood height above which damages are substantial (in meters)
-const FLOOD_HEIGHT_THRESHOLD = 4; // TODO: Make this configurable or derive from domain knowledge
+const FLOOD_HEIGHT_THRESHOLD = 0.3;
+// based on UK note - flood waters at any velocity with depth >= 0.3m pose risks to some
+// https://assets.publishing.service.gov.uk/media/602d04a98fa8f5037d371a08/FLOOD_HAZARD_RATINGS_AND_THRESHOLDS_explanatory_note.pdf
 
 // Helper function to calculate RAG status based on return period data
 // Uses maximum values (worst case) for RP 10 and RP 100 against a threshold
