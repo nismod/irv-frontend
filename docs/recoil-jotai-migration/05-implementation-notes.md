@@ -146,14 +146,14 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 ## 6. Slice progress
 
-| Step                                | Status   | Notes                                                                                                                                                                                                   |
-| ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1–3 (infra)                         | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
-| ~~"coexistence smoke test"~~        | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
-| **4a** (Place search)               | **Done** | First atoms migrated.                                                                                                                                                                                   |
-| **4b — Mobile tabs** (§4.2 Slice 3) | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
-| 4b — Pixel driller (§4.2 Slice 4)   | Pending  |                                                                                                                                                                                                         |
-| 5–16                                | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| Step                                  | Status   | Notes                                                                                                                                                                                                   |
+| ------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–3 (infra)                           | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
+| ~~"coexistence smoke test"~~          | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
+| **4a** (Place search)                 | **Done** | First atoms migrated.                                                                                                                                                                                   |
+| **4b — Mobile tabs** (§4.2 Slice 3)   | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
+| **4b — Pixel driller** (§4.2 Slice 4) | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
+| 5–16                                  | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -182,3 +182,36 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 - **Atom family naming convention**: families get the `*AtomFamily` suffix (e.g. `mobileTabHasContentAtomFamily`). Rationale: a "family" is a function that produces atoms — calling the value itself an `*Atom` is misleading, and `*Atoms` (plural) is ambiguous with "array of atoms". Apply this everywhere atom families are renamed.
 - **Prop name follow-through**: when a component prop holds a state family (e.g. `TabNavigationAction`'s `tabHasContentState`), rename the prop alongside the export so the call site reads consistently (`tabHasContentAtomFamily={mobileTabHasContentAtomFamily}`). Slightly more disruptive but keeps the migrated surface self-documenting.
+
+### Step 4b (pixel driller) — full pixel-driller slice (2026-05-19)
+
+**Accordion atoms** (initial batch):
+
+- `src/details/pixel-driller/hazard-accordion.tsx`:
+  - `hazardAccordionExpandedState` (atomFamily, `string` key) → `hazardAccordionExpandedAtomFamily`, built with `atomFamily` from `jotai-family`. String key → default reference equality is fine; no `fast-deep-equal` needed.
+  - `openAccordionState` (`string | null`) → `openAccordionAtom`. Initial value bound to a typed local (`const INITIAL_OPEN_ACCORDION: string | null = null`) — see decision below.
+  - `accordionTransitionCountState` (`number`) → `accordionTransitionCountAtom`.
+  - Hook switches: `useRecoilState` → `useAtom`, `useSetRecoilState` → `useSetAtom`. Updater-function calls (`setTransitionCount((n) => n + 1)`) Just Work — Jotai's primitive setters accept `SetStateAction<T>` exactly like Recoil's `SetterOrUpdater`.
+
+**Interaction mode, click location, URL sync** (expanded scope, same slice):
+
+- Cross-cutting check before expanding: `rg 'get\(mapInteractionModeState\)|get\(pixelDrillerClickLocationState\)|get\(pixelDrillerSiteUrlState\)'` → zero hits. No selectors compose these atoms with other Recoil state. They were grouped with `backgroundState`/`showLabelsState` in the old Slice 6 plan only because `MapView.tsx` reads all of them — not because the atom definitions are intertwined. Safe to migrate as part of the pixel-driller feature slice.
+- `src/state/map-view/map-interaction-state.ts`: `mapInteractionModeState` → `mapInteractionModeAtom` (plain atom, default `'standard'`); `pixelDrillerClickLocationState` → `pixelDrillerClickLocationAtom` (nullable initial, typed-local workaround).
+- `src/state/map-view/pixel-driller-url-state.ts`: `pixelDrillerSiteUrlState` → `pixelDrillerSiteUrlAtom` via `atomWithUrlSync('site', { defaultValue: null, syncDefault: false, serialize })`. Custom `serialize` returns `null` (remove param) when value is `null` or `''` — mirrors the old Recoil `writeSiteParam` reset behaviour; the default JSON serializer would write `"null"` instead. Wire format stays JSON-encoded (`?site=%22lat%2Clng%22`) for backwards compatibility with existing shared URLs.
+- Consumers updated: `MapInteractionModeSelector.tsx`, `MapView.tsx` (partial — three Jotai atoms; map view / layers / fit-bounds still Recoil), `DetailsContent.tsx` (reads `mapInteractionModeAtom` alongside Recoil `selectionState` — UI branching only), `PixelDrillerDetailsPanel.tsx`, `SiteDetailsContent.tsx` (now fully Jotai for this feature).
+- Verified: `npm run test:type-check`, eslint on changed files (clean). `rg "mapInteractionModeState|pixelDrillerClickLocationState|pixelDrillerSiteUrlState"` over `src/` → zero hits.
+
+### Decisions taken during Step 4b (pixel driller)
+
+- **Jotai `atom<T | null>(null)` overload-ambiguity workaround**: writing `atom<string | null>(null)` is sometimes resolved to the **read-only** `atom(readFn)` overload, after which `useAtom(...)` returns `[never, never]` and downstream callers fail to type-check (`This expression is not callable`). The reliable fix is to bind the initial value to a typed variable first:
+
+  ```ts
+  const INITIAL_OPEN_ACCORDION: string | null = null;
+  export const openAccordionAtom = atom(INITIAL_OPEN_ACCORDION);
+  ```
+
+  Same trick was used inside `makeSelectAtom` during Step 2c. **Apply this pattern any time the initial value is `null` (or otherwise legally callable / `unknown`-shaped); a short inline comment is worth leaving in.**
+
+- **"Shared consumer" ≠ "intertwined atoms"**: `MapView.tsx` reading both pixel-driller Jotai atoms and Recoil map/layer atoms is expected during migration and does not block moving the pixel-driller atoms earlier. The cross-cutting check to run before expanding a slice is whether any _atom/selector definitions_ `get(...)` the candidate nodes — not whether a React component happens to import from both libraries.
+- **First production `atomWithUrlSync`**: `pixelDrillerSiteUrlAtom` validates the URL-sync helper against real usage. Kept JSON wire format (not `makeUrlStringCodec`) so existing bookmarked URLs keep working.
+- **Slice 6 narrowed**: `backgroundState` / `showLabelsState` remain in Slice 6; interaction/URL atoms removed from that slice's scope.

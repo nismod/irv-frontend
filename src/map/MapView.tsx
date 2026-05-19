@@ -1,3 +1,4 @@
+import { useAtom } from 'jotai';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import { MapMouseEvent } from 'react-map-gl/maplibre';
 import { atom, useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
@@ -15,11 +16,11 @@ import { viewLayersState } from '@/state/layers/view-layers';
 import { viewLayersParamsState } from '@/state/layers/view-layers-params';
 import {
   MapInteractionMode,
-  mapInteractionModeState,
-  pixelDrillerClickLocationState,
+  mapInteractionModeAtom,
+  pixelDrillerClickLocationAtom,
 } from '@/state/map-view/map-interaction-state';
 import { mapViewStateState, useSyncMapUrl } from '@/state/map-view/map-view-state';
-import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
+import { pixelDrillerSiteUrlAtom } from '@/state/map-view/pixel-driller-url-state';
 
 import { backgroundState, showLabelsState } from './layers/layers-state';
 import { TooltipContent } from './tooltip/TooltipContent';
@@ -42,9 +43,9 @@ const MapViewContent = ({ children }) => {
   const viewLayersParams = useRecoilValue(viewLayersParamsState);
 
   const interactionGroups = useRecoilValue(interactionGroupsState);
-  const [interactionMode, setInteractionMode] = useRecoilState(mapInteractionModeState);
-  const [clickLocation, setClickLocation] = useRecoilState(pixelDrillerClickLocationState);
-  const [siteParam, setSiteParam] = useRecoilState(pixelDrillerSiteUrlState);
+  const [interactionMode, setInteractionMode] = useAtom(mapInteractionModeAtom);
+  const [clickLocation, setClickLocation] = useAtom(pixelDrillerClickLocationAtom);
+  const [siteParam, setSiteParam] = useAtom(pixelDrillerSiteUrlAtom);
 
   const fitBounds = useRecoilValue(mapFitBoundsState);
 

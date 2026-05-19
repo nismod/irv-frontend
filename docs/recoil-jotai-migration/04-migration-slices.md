@@ -142,22 +142,34 @@ Reserved-but-skipped. No code change. See note above.
 
 **Test plan**: shrink the viewport to mobile; switch tabs; tabs with no content should be visually muted. As you drag/swap content sections in and out of the tabs, the navigation buttons should enable/disable accordingly.
 
-### Slice 4 — Pixel driller accordion
+### Slice 4 — Pixel driller
 
-**Nodes**: `hazardAccordionExpandedState` (atomFamily per section), `openAccordionState`, `accordionTransitionCountState`.
+**Nodes**:
 
-**Bridge nodes touched**: none.
+- Accordion UI: `hazardAccordionExpandedState` → `hazardAccordionExpandedAtomFamily`, `openAccordionState` → `openAccordionAtom`, `accordionTransitionCountState` → `accordionTransitionCountAtom`.
+- Interaction mode & click location: `mapInteractionModeState` → `mapInteractionModeAtom`, `pixelDrillerClickLocationState` → `pixelDrillerClickLocationAtom`.
+- URL sync: `pixelDrillerSiteUrlState` → `pixelDrillerSiteUrlAtom` (`atomWithUrlSync('site', …)` — first real consumer of the URL-sync helper; wire format stays JSON-encoded to match `RecoilURLSyncJSON`).
 
-**Files**: [`src/details/pixel-driller/hazard-accordion.tsx`](../../../src/details/pixel-driller/hazard-accordion.tsx), [`src/details/pixel-driller/SiteDetailsContent.tsx`](../../../src/details/pixel-driller/SiteDetailsContent.tsx).
+**Bridge nodes touched**: none at the atom-definition level. `MapView.tsx` and `DetailsContent.tsx` still read other Recoil state (map view, layers, selection) but do not _define_ or _compose_ pixel-driller atoms with it — the three interaction/URL atoms are plain leaves with no selector dependencies (`rg 'get\(mapInteractionModeState\)|get\(pixelDrillerClickLocationState\)|get\(pixelDrillerSiteUrlState\)'` → zero hits).
 
-**Risk**: low.
+**Files**: [`src/details/pixel-driller/hazard-accordion.tsx`](../../../src/details/pixel-driller/hazard-accordion.tsx), [`src/details/pixel-driller/SiteDetailsContent.tsx`](../../../src/details/pixel-driller/SiteDetailsContent.tsx), [`src/details/pixel-driller/PixelDrillerDetailsPanel.tsx`](../../../src/details/pixel-driller/PixelDrillerDetailsPanel.tsx), [`src/details/DetailsContent.tsx`](../../../src/details/DetailsContent.tsx), [`src/state/map-view/map-interaction-state.ts`](../../../src/state/map-view/map-interaction-state.ts), [`src/state/map-view/pixel-driller-url-state.ts`](../../../src/state/map-view/pixel-driller-url-state.ts), [`src/map/MapInteractionModeSelector.tsx`](../../../src/map/MapInteractionModeSelector.tsx), [`src/map/MapView.tsx`](../../../src/map/MapView.tsx) (partial — only the three pixel-driller atoms; map view / layers / fit-bounds remain on Recoil until Slices 6–7).
+
+**Cross-cutting check**: `rg "mapInteractionModeState|pixelDrillerClickLocationState|pixelDrillerSiteUrlState"` over `src/` → zero hits after migration. The old Slice 6 plan grouped these with `backgroundState`/`showLabelsState` because they share `MapView.tsx` as a consumer, not because the atom definitions are intertwined.
+
+**Risk**: low–medium. Accordion atoms are trivial; `pixelDrillerSiteUrlAtom` is the first production use of `atomWithUrlSync` and must preserve the existing `?site=%22lat%2Clng%22` wire format (`syncDefault: false`, custom `serialize` that returns `null` for absent site).
 
 **Playbook**
 
-1. Replace 3 atoms (one is `atomFamily`).
-2. Replace consumer hooks.
+1. Accordion atoms — see original steps in `hazard-accordion.tsx` (atomFamily + nullable-initial workaround for `openAccordionAtom`).
+2. `map-interaction-state.ts`: two plain Jotai atoms; apply nullable-initial workaround for `pixelDrillerClickLocationAtom`.
+3. `pixel-driller-url-state.ts`: replace `urlSyncEffect` with `atomWithUrlSync('site', { defaultValue: null, syncDefault: false, serialize: … })`. Custom `serialize` must return `null` (remove param) when value is `null` or `''` — the default JSON serializer would write `"null"` instead.
+4. Update consumer hooks across the eight files listed above.
+5. `MapView.tsx` keeps its three `useEffect`s that coordinate mode ↔ click location ↔ URL param; only the hook imports change.
+6. Run `npm run test:type-check` + eslint on changed files.
 
-**Test plan**: enter pixel-driller mode (click the toggle in `MapInteractionModeSelector`), click on the map, open/close accordions, confirm only one is open at a time.
+**Status**: done (2026-05-19).
+
+**Test plan**: toggle site-inspection mode via `MapInteractionModeSelector`; click the map and confirm the marker + details panel appear; open/close accordions (only one open at a time; scroll-into-view after animation); copy the URL and open in a new tab — marker and mode should restore; exit mode and confirm marker + `site` param are cleared.
 
 ### Slice 5 — Downloads jobs
 
@@ -200,25 +212,25 @@ export function useMoveJobToCompleted() {
 
 **Test plan**: open `/downloads`, expand a dataset, "submit" a job (the stub `submitJob` throws — instead, manually inject via DevTools or comment-out the throw). Reload the tab and confirm `submittedJobs`/`completedJobs` survive. Open a second tab and confirm cross-tab updates work (write a job in tab 1, see tab 2 update). Verify `usePruneOldJobs` still moves stale jobs.
 
-### Slice 6 — Map basemap & interaction mode
+### Slice 6 — Map basemap
 
-**Nodes**: `backgroundState`, `showLabelsState`, `mapInteractionModeState`, `pixelDrillerClickLocationState`, `pixelDrillerSiteUrlState` (`urlSyncEffect` → `site` query param).
+**Nodes**: `backgroundState`, `showLabelsState`.
 
-**Bridge nodes touched**: `backgroundState` and `showLabelsState` are read by `nbsScopeRegionLayerState` — moving them changes that selector's deps too. `pixelDrillerSiteUrlState` depends on the URL-sync layer from step 3.
+**Bridge nodes touched**: `backgroundState` and `showLabelsState` are read by `nbsScopeRegionLayerState` — moving them changes that selector's deps too.
 
-**Files**: [`src/map/layers/layers-state.ts`](../../../src/map/layers/layers-state.ts), [`src/map/layers/MapLayerSelection.tsx`](../../../src/map/layers/MapLayerSelection.tsx), [`src/map/MapInteractionModeSelector.tsx`](../../../src/map/MapInteractionModeSelector.tsx), [`src/state/map-view/map-interaction-state.ts`](../../../src/state/map-view/map-interaction-state.ts), [`src/state/map-view/pixel-driller-url-state.ts`](../../../src/state/map-view/pixel-driller-url-state.ts), [`src/state/layers/data-layers/nbs.ts`](../../../src/state/layers/data-layers/nbs.ts) (only insofar as it `get`s `backgroundState`/`showLabelsState`).
+**Files**: [`src/map/layers/layers-state.ts`](../../../src/map/layers/layers-state.ts), [`src/map/layers/MapLayerSelection.tsx`](../../../src/map/layers/MapLayerSelection.tsx), [`src/state/layers/data-layers/nbs.ts`](../../../src/state/layers/data-layers/nbs.ts) (only insofar as it `get`s `backgroundState`/`showLabelsState`).
 
-**Risk**: medium (URL atom is the canary for our `atomWithUrlSync`).
+**Note**: `mapInteractionModeState`, `pixelDrillerClickLocationState`, and `pixelDrillerSiteUrlState` were originally listed here because they share `MapView.tsx` as a consumer. They are **not** intertwined at the atom-definition level and were moved to Slice 4 (pixel driller).
+
+**Risk**: medium (cross-slice read via `nbsScopeRegionLayerState`).
 
 **Playbook**
 
 1. `backgroundState` and `showLabelsState` → plain Jotai atoms.
-2. `mapInteractionModeState`, `pixelDrillerClickLocationState` → plain Jotai atoms.
-3. `pixelDrillerSiteUrlState` → `atomWithUrlSync('site', null, { serialize, parse, syncDefault: false })` from the new URL-sync helper.
-4. Update consumers (`useRecoilState` → `useAtom`, `useSetRecoilState` → `useSetAtom`).
-5. Until slice 10 (NbS), `nbsScopeRegionLayerState` still reads via `useRecoilValue`. Use the `RecoilToJotaiBridge` pattern from §4.1 if needed (or wait to combine slices 6 and 10).
+2. Update consumers (`useRecoilState` → `useAtom`, `useSetRecoilState` → `useSetAtom`).
+3. Until slice 10 (NbS), `nbsScopeRegionLayerState` still reads via `useRecoilValue`. Use the `RecoilToJotaiBridge` pattern from §4.1 if needed (or wait to combine slices 6 and 10).
 
-**Test plan**: switch basemaps in `MapLayerSelection`; toggle labels; switch into pixel-driller mode; place a marker; copy the URL; open it in a new tab and confirm the marker re-appears.
+**Test plan**: switch basemaps in `MapLayerSelection`; toggle labels.
 
 ### Slice 7 — Map view + URL coords
 

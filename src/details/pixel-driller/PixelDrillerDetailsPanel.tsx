@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import { useAtomValue } from 'jotai';
 import { FC } from 'react';
-import { useRecoilValue } from 'recoil';
 
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
-import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
+import { pixelDrillerClickLocationAtom } from '@/state/map-view/map-interaction-state';
 
 import { SiteDetailsContent } from './SiteDetailsContent';
 
@@ -16,7 +16,7 @@ import { SiteDetailsContent } from './SiteDetailsContent';
  * Takes up all available vertical space.
  */
 export const PixelDrillerDetailsPanel: FC = () => {
-  const clickLocation = useRecoilValue(pixelDrillerClickLocationState);
+  const clickLocation = useAtomValue(pixelDrillerClickLocationAtom);
 
   return (
     <Paper

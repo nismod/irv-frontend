@@ -30,3 +30,21 @@
 - confirm the Selection tab content is displayed with details for the clicked feature
 - click on an empty area of the map
 - confirm the Selection tab content is cleared
+
+## Pixel driller
+
+- go to the map page
+- turn on pixel driller mode using the HUD button
+- click on the map to set the click location
+- confirm the pixel driller panel is displayed with the details for the clicked location
+- expand one of the hazard accordion sections that are available for the clicked location
+- confirm the hazard accordion section is expanded
+- expand another hazard accordion section
+- confirm the first hazard accordion section is collapsed and the second hazard accordion section is expanded
+- click on the map to set a new click location
+- confirm the new location data is displayed in the pixel driller panel and the second expanded hazard accordion section is still expanded
+- when clicking to pick new locations, confirm that the URL is updated with a `site=<lat>,<lng>` parameter
+- hit F5 to refresh the page
+- confirm the pixel driller panel is displayed with the details for the most recently clicked location
+- clear the site selection by clicking the clear button in the pixel driller panel
+- confirm the URL is updated to remove the `site` parameter

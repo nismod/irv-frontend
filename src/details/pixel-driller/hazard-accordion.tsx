@@ -4,8 +4,9 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { atom, useAtom, useSetAtom } from 'jotai';
+import { atomFamily } from 'jotai-family';
 import React, { FC, ReactNode, useCallback } from 'react';
-import { atom, atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
@@ -16,28 +17,23 @@ import { RagStatus } from './rag/rag-types';
  * State family tracking expanded state of pixel driller accordions.
  * Keyed by section title/identifier.
  */
-export const hazardAccordionExpandedState = atomFamily<boolean, string>({
-  key: 'hazardAccordionExpandedState',
-  default: false,
-});
+export const hazardAccordionExpandedAtomFamily = atomFamily((_title: string) => atom(false));
 
 /**
  * Tracks which accordion is currently open (for single-accordion mode).
  * Set to null if no accordion is open or if multiple can be open.
  */
-export const openAccordionState = atom<string | null>({
-  key: 'openAccordionState',
-  default: null,
-});
+// Note: bind the `null` initial value to a typed variable to avoid Jotai's
+// `atom(value)` overload being resolved as the read-only `atom(readFn)` form,
+// which would make the setter `never`.
+const INITIAL_OPEN_ACCORDION: string | null = null;
+export const openAccordionAtom = atom(INITIAL_OPEN_ACCORDION);
 
 /**
  * Counts how many accordion transitions (entering / exiting) are currently running.
  * Used to avoid scrolling while layout is still in flux.
  */
-export const accordionTransitionCountState = atom<number>({
-  key: 'accordionTransitionCountState',
-  default: 0,
-});
+export const accordionTransitionCountAtom = atom<number>(0);
 
 /**
  * Configuration: Set to false to allow multiple accordions open at once.
@@ -67,11 +63,11 @@ export const PixelDrillerSectionAccordion: FC<PixelDrillerSectionAccordionProps>
   rightAdornment,
   children,
 }) => {
-  const [individualExpanded, setIndividualExpanded] = useRecoilState(
-    hazardAccordionExpandedState(title),
+  const [individualExpanded, setIndividualExpanded] = useAtom(
+    hazardAccordionExpandedAtomFamily(title),
   );
-  const [openAccordion, setOpenAccordion] = useRecoilState(openAccordionState);
-  const setTransitionCount = useSetRecoilState(accordionTransitionCountState);
+  const [openAccordion, setOpenAccordion] = useAtom(openAccordionAtom);
+  const setTransitionCount = useSetAtom(accordionTransitionCountAtom);
 
   const incrementTransition = useCallback(() => {
     setTransitionCount((n) => n + 1);
@@ -81,7 +77,7 @@ export const PixelDrillerSectionAccordion: FC<PixelDrillerSectionAccordionProps>
     setTransitionCount((n) => (n > 0 ? n - 1 : 0));
   }, [setTransitionCount]);
 
-  // In single-accordion mode, use openAccordionState; otherwise use individual state.
+  // In single-accordion mode, use openAccordionAtom; otherwise use individual state.
   // However, if this section is disabled (no data / not implemented), force it
   // visually collapsed while still preserving the logical "open" selection so
   // that it can re-expand when data becomes available again.

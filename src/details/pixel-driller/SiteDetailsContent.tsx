@@ -2,9 +2,9 @@ import { Close } from '@mui/icons-material';
 import { Alert, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { buildZipFile } from '@/lib/downloads/download-utils';
 import { DownloadButton } from '@/lib/downloads/DownloadButton';
@@ -12,8 +12,8 @@ import { DownloadFile } from '@/lib/downloads/types';
 import { ExtLink } from '@/lib/nav';
 import { CopyableLink } from '@/lib/nav/CopyableLink';
 
-import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
-import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
+import { pixelDrillerClickLocationAtom } from '@/state/map-view/map-interaction-state';
+import { pixelDrillerSiteUrlAtom } from '@/state/map-view/pixel-driller-url-state';
 
 import { PixelDrillerLayerList } from './contents/PixelDrillerLayerList';
 import { asPixelResponse } from './data-transforms';
@@ -21,7 +21,7 @@ import { DownloadDataProvider, useDownloadDataContext } from './download/downloa
 import { buildReadmeFile } from './download/download-generators';
 import { createSpatialPoint } from './download/metadata-common';
 import { RdlsMetadataPackage } from './download/metadata-types';
-import { accordionTransitionCountState, openAccordionState } from './hazard-accordion';
+import { accordionTransitionCountAtom, openAccordionAtom } from './hazard-accordion';
 import { PixelResponse } from './types';
 
 interface SiteDetailsContentProps {
@@ -38,11 +38,11 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const openAccordion = useRecoilValue(openAccordionState);
-  const transitionCount = useRecoilValue(accordionTransitionCountState);
+  const openAccordion = useAtomValue(openAccordionAtom);
+  const transitionCount = useAtomValue(accordionTransitionCountAtom);
   const { getAllExportConfigs } = useDownloadDataContext();
-  const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
-  const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
+  const setPixelDrillerClickLocation = useSetAtom(pixelDrillerClickLocationAtom);
+  const setPixelDrillerSiteParam = useSetAtom(pixelDrillerSiteUrlAtom);
 
   const coordinatesUrl = useMemo(() => {
     const siteValue = `"${lat.toFixed(6)},${lng.toFixed(6)}"`;
