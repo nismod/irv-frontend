@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack';
+import { useAtomValue } from 'jotai';
 import { FC, ReactNode, Suspense, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { SubSectionToggle } from '@/lib/data-selection/sidebar/SubSectionToggle';
@@ -16,15 +16,16 @@ import { RCPControl } from '@/sidebar/ui/params/RCPControl';
 import { ReturnPeriodControl } from '@/sidebar/ui/params/ReturnPeriodControl';
 import { SSPControl } from '@/sidebar/ui/params/SSPControl';
 import { TriggerControl } from '@/sidebar/ui/params/TriggerControl';
-import { hazardDomainsConfigState } from '@/state/data-domains/hazards';
-import { paramsConfigState, useLoadParamsConfig } from '@/state/data-params';
+import { hazardDomainsConfigAtomFamily } from '@/state/data-domains/hazards';
+import { paramsConfigAtomFamily, useLoadParamsConfig } from '@/state/data-params';
 import { hazardSelectionState } from '@/state/data-selection/hazards';
 
 /**
  * Takes the config for the specified hazard type and loads all the param domains/dependencies from the backend
  */
 export const LoadHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
-  useLoadParamsConfig(hazardDomainsConfigState(type), type);
+  // config loading uses Jotai
+  useLoadParamsConfig(hazardDomainsConfigAtomFamily(type), type);
 
   return null;
 };
@@ -33,7 +34,7 @@ export const LoadHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
  *  Ensures the config for the specified data param group has been loaded
  */
 const EnsureHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
-  useRecoilValue(paramsConfigState(type));
+  useAtomValue(paramsConfigAtomFamily(type));
 
   return null;
 };
@@ -70,6 +71,7 @@ const HazardControlLayout = ({ children }) => {
 };
 
 function ActivateHazardViewLayer({ type }: { type: HazardType }) {
+  // Layer visibility still on Recoil; config loading above is Jotai.
   return <LinkViewLayerToPath state={hazardSelectionState(type)} />;
 }
 

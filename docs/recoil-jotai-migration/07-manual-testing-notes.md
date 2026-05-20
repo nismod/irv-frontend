@@ -67,3 +67,29 @@
 - refresh the page
 - confirm the map is still displayed at the same location as before the refresh
 - confirm the URL includes the `x`, `y`, and `z` parameters for the Exposure view
+
+## Damages / data-params config (Slice 8)
+
+### Hazards section param dropdowns
+
+- go to `/view/exposure`
+- expand each hazard control once (Fluvial, Coastal, Cyclone, CDD, Extreme Heat, Drought, Landslide, Earthquake)
+- for each: confirm every param dropdown (epoch / RCP / SSP / GCM / return period / trigger, where applicable) is populated with values
+- in one hazard, change RCP and confirm Epoch / return period dropdowns reflow correctly (some combinations disappear or change)
+
+### Infrastructure risk section
+
+- go to `/view/risk`, open Infrastructure Risk
+- toggle the sector dropdown (Roads / Rail / Power) — confirm the hazard dropdown options reflow accordingly (Power → Cyclone only, etc.)
+- switch the hazard and confirm the map damage layer updates
+
+### Damages drill-down (right-hand asset panel)
+
+- on `/view/risk`, turn on Infrastructure Risk and ensure a sector layer is visible on the map
+- zoom in and click an asset (e.g. a road segment)
+- confirm the right-hand "Asset details" panel renders the Expected Annual Damages section and Return Period Damages section
+- confirm the hazard / epoch / return-period dropdowns are populated
+- change hazard, epoch, and return period filters; confirm the charts and tables update accordingly
+- click "Download CSV" on each section; confirm a CSV file is downloaded with the expected columns
+- click a different asset and confirm the panel re-renders with the new feature's data
+- deselect (click the deselect button or click empty map area) and confirm the panel closes

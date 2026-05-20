@@ -259,39 +259,34 @@ export function useMoveJobToCompleted() {
 
 **Test plan**: pan/zoom the map; observe the URL `?x=...&y=...&z=...` updates after ~2 s; reload — camera should restore; place search should fly to bounding box; NbS prioritisation panel fit-bounds should still work.
 
-### Slice 8 — Damages drill-down details
+### Slice 8 — Damages drill-down details + config half of Slice 14
 
-**Nodes**: everything in [`src/details/features/damages/`](../../../src/details/features/damages/) — `featureState`, `hazardDataParamsState` (uses `noWait`), `damagesDataState`, `damagesOrderingState`, `selectedDamagesDataState`, `rpDamageDataState`, `rpOrderingState`, `selectedRpDataState`, `filteredTableDataState`, `hazardsState`, `epochsState`, `rpOptionsState`, plus three `makeSelectState` products (`selectedHazardState`, `selectedEpochState`, `selectedRpOptionState`).
+**Status**: done (2026-05-20).
 
-**Bridge nodes touched**: `paramsConfigState` (via `noWait`) and `apiFeatureQuery` (read once in `asset-details.tsx`, pushed into `featureState` via `useSyncValueToRecoil`).
+**What shipped (bigger than originally scoped):** the entire **damages drill-down feature** _and_ the **config half** of the data-params spine + the **upstream `data-domains` chain**, in one coherent slice. The value half of the spine (`paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, and the three `dataParamsByGroupState` layer consumers) stays on Recoil.
 
-**Helpers needed**: Jotai versions of `makeSelectState` and `useSyncValueToAtom` (both from step 2).
+This wider scope was possible because the **only Recoil selector-context read of `paramsConfigState`** was inside `useUpdateDataParam`'s `useRecoilTransaction_UNSTABLE`. Every other consumer was hook-context. Lifting that read out of the transaction (and into hook scope via `useAtomValue(paramsConfigAtomFamily(group))`) decoupled the config half from the rest of the spine — see _Design decision: split the spine_ in `05-implementation-notes.md`.
 
-**Risk**: medium (uses `noWait` → `loadable`; uses `makeSelectState`).
+**Nodes migrated to Jotai:**
 
-**Playbook**
+- Damages feature (everything in [`src/details/features/damages/`](../../../src/details/features/damages/)): `featureAtom`, `hazardDataParamsAtom`, `damagesDataAtom`, `damagesOrderingAtom`, `selectedDamagesDataAtom`, `rpDamageDataAtom`, `rpOrderingAtom`, `selectedRpDataAtom`, `filteredTableDataAtom`, `hazardsAtom`, `epochsAtom`, `rpOptionsAtom`, plus three `makeSelectAtom` products (`selectedHazardAtom`, `selectedEpochAtom`, `selectedRpOptionAtom`).
+- Data-domain queries: `rasterAllSourcesAtom`, `rasterSourceByDomainAtomFamily`, `rasterSourceDomainsAtomFamily`, `hazardDomainsConfigAtomFamily`.
+- Config half of the data-params hub: `paramsConfigAtomFamily`, `paramsConfigLoadableAtomFamily` (memoised `loadable` view used by `hazardDataParamsAtom`).
+- Configuration sources: `infrastructureRiskConfigAtom` (Jotai `atom(...)` literal).
 
-1. Port atoms/selectors mechanically.
-2. Replace `noWait(paramsConfigState(hazard))` with `loadable(paramsConfigAtoms(hazard))`:
+**Nodes still on Recoil (deferred to a coordinated Slice 14):** `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, `useUpdateDataParam`'s transaction body, plus the three downstream layer selectors (`hazardLayerState`, `populationExposureLayerState`, `damagesFieldState`).
 
-```ts
-const c = get(loadable(paramsConfigAtoms(hazard)));
-return c.state === 'hasData' ? c.data : undefined;
-```
+**Files touched**: damages folder (4 files); [`src/state/data-domains/sources.ts`](../../../src/state/data-domains/sources.ts); [`src/state/data-domains/hazards.ts`](../../../src/state/data-domains/hazards.ts); [`src/state/data-params.ts`](../../../src/state/data-params.ts); [`src/sidebar/sections/hazards/HazardsControl.tsx`](../../../src/sidebar/sections/hazards/HazardsControl.tsx); [`src/sidebar/sections/risk/infrastructure-risk.tsx`](../../../src/sidebar/sections/risk/infrastructure-risk.tsx).
 
-Note `'hasValue'` → `'hasData'` and `c.contents` → `c.data`. 3. Replace `makeSelectState(prefix, optionsState)` with `makeSelectAtom(optionsAtom)` from the ported helper. The three call sites become:
+**Bridge nodes touched**: none. No `RecoilToJotaiBridge` was needed because `paramsConfigAtomFamily` is now fully Jotai, and `useLoadParamsConfig` writes Jotai config + Recoil `paramsState` in the same effect (both writes are batched by React 18 anyway).
 
-```ts
-export const selectedHazardAtom = makeSelectAtom(hazardsAtom);
-export const selectedEpochAtom = makeSelectAtom(epochsAtom);
-export const selectedRpOptionAtom = makeSelectAtom(rpOptionsAtom);
-```
+**Helpers used**: `makeSelectAtom`, `useSyncValueToAtom`, `atomFamily` from `jotai-family`, `loadable` from `jotai/utils`.
 
-4. Replace `useSyncValueToRecoil(fd, featureState)` with the ported `useSyncValueToAtom`.
+**Cross-cutting check after migration**: `rg "paramsConfigState|hazardDomainsConfigState|rasterAllSourcesQuery|rasterSourceByDomainQuery|rasterSourceDomainsQuery|hazardDataParamsState|damagesDataState|selectedRpDataState|selected(Hazard|Epoch|RpOption)State|hazardsState|epochsState|rpOptionsState|infrastructureRiskConfig\b"` over `src/` → zero matches (one historical reference remains inside a JSDoc comment in `data-params.ts`, intentional).
 
-**Pre-req**: needs `paramsConfigState` reachable — port it now alongside this slice **or** keep `paramsConfigState` on Recoil and bridge `loadable(...)` via `RecoilToJotaiBridge`. The cleanest order is to do slice 8 after the data-params spine (step 14) — but since the data-params spine is a hub, doing slice 8 **first** with a single bridge is also acceptable and gives us a chance to validate the `loadable` shape early. **Recommendation**: do slice 8 before slice 14 with the bridge.
+**Risk taken**: medium — first production Jotai async-of-async chain (`rasterSourceDomainsAtomFamily` `await`s `rasterSourceByDomainAtomFamily`). Validates the Jotai pattern called out earlier as needing a smoke test.
 
-**Test plan**: click an asset (a road segment) on the map; the right-hand "Asset details" panel should render damage tables; switch hazard / epoch / RP filters and confirm tables update.
+**Test plan**: open `/view/exposure`, expand each hazard control (Fluvial, Coastal, Cyclone, CDD, Extreme Heat, Drought, Landslide, Earthquake) — every param dropdown should be populated and dependent dropdowns should reflow when a sibling changes; open `/view/risk` → Infrastructure Risk → toggle sector + hazard dropdowns; click an asset on the map → side-panel damage tables should populate; switch hazard / epoch / RP filters and confirm tables update.
 
 ### Slice 9 — Map interactions + view-layer params
 
@@ -437,11 +432,13 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **Test plan**: enable several hazards in the sidebar; confirm the map shows them; click into Population Exposure and confirm switching its hazard radio drives the matching sidebar visibility toggle via `showOneHazardStateEffect`.
 
-### Slice 14 — Data-params spine + data-domain queries
+### Slice 14 — Data-params spine (value half) + downstream layer selectors
 
-**Nodes**: `paramsConfigState`, `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, `useLoadParamsConfig`, `useUpdateDataParam`; `rasterAllSourcesQuery`, `rasterSourceByDomainQuery`, `rasterSourceDomainsQuery`, `hazardDomainsConfigState`; `infrastructureRiskConfig`.
+**What's left after Slice 8**: the config half of the spine + `useLoadParamsConfig` + the upstream data-domain query chain + `infrastructureRiskConfig` all shipped in Slice 8. This slice now covers only the **value half** of the hub and its downstream consumers.
 
-**Bridge nodes touched**: this _is_ a hub — many slices read it. Once migrated, remove the bridges added in slices 8, 11, 12.
+**Nodes**: `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, the **transaction body** of `useUpdateDataParam`. Plus the three layer selectors that `get()` `dataParamsByGroupState`: `hazardLayerState`, `populationExposureLayerState`, `damagesFieldState`. Plus `damageMapStyleParamsState` (transitively reads `damagesFieldState`).
+
+**Bridge nodes touched**: this is the **dynamic** hub — `hazardLayerState`, `populationExposureLayerState`, `damagesFieldState` also read other Recoil state (hazards selection, sidebar visibility, damage-map atoms), so this slice needs to coordinate with Slices 11–13 or accept transitive Recoil reads via bridges. Once migrated, the data-params hub is fully Jotai.
 
 **Files**: [`src/state/data-params.ts`](../../../src/state/data-params.ts), [`src/state/data-domains/sources.ts`](../../../src/state/data-domains/sources.ts), [`src/state/data-domains/hazards.ts`](../../../src/state/data-domains/hazards.ts), [`src/sidebar/ui/DataParam.tsx`](../../../src/sidebar/ui/DataParam.tsx), [`src/sidebar/sections/hazards/HazardsControl.tsx`](../../../src/sidebar/sections/hazards/HazardsControl.tsx).
 

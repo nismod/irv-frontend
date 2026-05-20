@@ -1,35 +1,31 @@
 import { FeatureOut } from '@nismod/irv-api-client';
+import { atom } from 'jotai';
 import _ from 'lodash';
-import { atom, noWait, selector } from 'recoil';
 
 import { DataParamGroupConfig, ParamGroup } from '@/lib/controls/data-params';
 import { cartesian } from '@/lib/helpers';
-import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
+import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 
 import { HAZARD_DOMAINS_CONFIG } from '@/config/hazards/domains';
 import { HazardType } from '@/config/hazards/metadata';
-import { paramsConfigState } from '@/state/data-params';
+import { paramsConfigLoadableAtomFamily } from '@/state/data-params';
 
 import { ExpectedDamagesSection } from './ExpectedDamagesSection';
 import { RPDamagesSection } from './RPDamagesSection';
 
-export const featureState = atom<FeatureOut>({
-  key: 'DamagesSection/featureState',
-  default: null,
-});
+const INITIAL_FEATURE: FeatureOut | null = null;
+export const featureAtom = atom<FeatureOut | null>(INITIAL_FEATURE);
 
-export const hazardDataParamsState = selector({
-  key: 'DamagesSection/hazardDataParams',
-  get: ({ get }) => {
-    return _.mapValues(HAZARD_DOMAINS_CONFIG, (_, hazard) => {
-      const c = get(noWait(paramsConfigState(hazard)));
-      return c.state === 'hasValue' ? c.contents : undefined;
-    });
-  },
+// Reads Jotai paramsConfig populated by sidebar useLoadParamsConfig (which also writes Recoil paramsState).
+export const hazardDataParamsAtom = atom((get) => {
+  return _.mapValues(HAZARD_DOMAINS_CONFIG, (_unused, hazard) => {
+    const c = get(paramsConfigLoadableAtomFamily(hazard));
+    return c.state === 'hasData' ? c.data : undefined;
+  });
 });
 
 export const DamagesSection = ({ fd }: { fd: FeatureOut }) => {
-  useSyncValueToRecoil(fd, featureState);
+  useSyncValueToAtom(fd, featureAtom);
 
   return (
     <>

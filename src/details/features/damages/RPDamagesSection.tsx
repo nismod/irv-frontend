@@ -2,25 +2,25 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ReturnPeriodDamage } from '@nismod/irv-api-client';
+import { atom, useAtomValue } from 'jotai';
 import _ from 'lodash';
-import { selector, useRecoilValue } from 'recoil';
 
 import { InputRow } from '@/sidebar/ui/InputRow';
 
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
 import {
   buildOrdering,
-  featureState,
-  hazardDataParamsState,
+  featureAtom,
+  hazardDataParamsAtom,
   orderDamages,
   QUIRKY_FIELDS_MAPPING,
 } from './DamagesSection';
 import {
   EpochSelect,
   ReturnPeriodSelect,
-  selectedEpochState,
-  selectedHazardState,
-  selectedRpOptionState,
+  selectedEpochAtom,
+  selectedHazardAtom,
+  selectedRpOptionAtom,
   SHOW_ALL_OPTION,
 } from './param-controls';
 import { ReturnPeriodDamageChart } from './ReturnPeriodDamageChart';
@@ -78,63 +78,51 @@ function makeRPDamagesCsv(damages: RPDamageCell[]) {
   );
 }
 
-const rpOrderingState = selector({
-  key: 'rpOrderingState',
-  get: ({ get }) => {
-    const params = get(hazardDataParamsState);
+const rpOrderingAtom = atom((get) => {
+  const params = get(hazardDataParamsAtom);
 
-    return buildOrdering(params, ['rp', 'rcp', 'epoch']);
-  },
+  return buildOrdering(params, ['rp', 'rcp', 'epoch']);
 });
 
-const rpDamageDataState = selector({
-  key: 'DamagesSection/rpDamageDataState',
-  get: ({ get }) => {
-    const raw = get(featureState)?.damages_return_period;
-    if (raw == null) return [];
+const rpDamageDataAtom = atom((get) => {
+  const raw = get(featureAtom)?.damages_return_period;
+  if (raw == null) return [];
 
-    const prepared = raw.map(getRPDamageObject);
+  const prepared = raw.map(getRPDamageObject);
 
-    return orderDamages(prepared, get(rpOrderingState), getRPDamageKey);
-  },
+  return orderDamages(prepared, get(rpOrderingAtom), getRPDamageKey);
 });
 
-export const selectedRpDataState = selector({
-  key: 'DamagesSection/selectedRpDataState',
-  get: ({ get }) => {
-    const selectedHazard = get(selectedHazardState);
+export const selectedRpDataAtom = atom((get) => {
+  const selectedHazard = get(selectedHazardAtom);
 
-    return selectedHazard
-      ? get(rpDamageDataState).filter(
-          (x) => x.hazard === selectedHazard && x.epoch === get(selectedEpochState),
-        )
-      : null;
-  },
+  return selectedHazard
+    ? get(rpDamageDataAtom).filter(
+        (x) => x.hazard === selectedHazard && x.epoch === get(selectedEpochAtom),
+      )
+    : null;
 });
 
-const filteredTableDataState = selector({
-  key: 'DamagesSection/filteredTableDataState',
-  get: ({ get }) => {
-    const selectedRpOption = get(selectedRpOptionState);
-    const selectedRpData = get(selectedRpDataState);
+const filteredTableDataAtom = atom((get) => {
+  const selectedRpOption = get(selectedRpOptionAtom);
+  const selectedRpData = get(selectedRpDataAtom);
 
-    if (!selectedRpData) {
-      return null;
-    }
+  if (!selectedRpData) {
+    return null;
+  }
 
-    if (!selectedRpOption || selectedRpOption === SHOW_ALL_OPTION) {
-      return selectedRpData;
-    }
+  if (!selectedRpOption || selectedRpOption === SHOW_ALL_OPTION) {
+    return selectedRpData;
+  }
 
-    return selectedRpData.filter((dataRow) => dataRow.rp === +selectedRpOption);
-  },
+  return selectedRpData.filter((dataRow) => dataRow.rp === +selectedRpOption);
 });
 
 export const RPDamagesSection = () => {
-  const fd = useRecoilValue(featureState);
-  const returnPeriodDamagesData = useRecoilValue(rpDamageDataState);
-  const selectedRPData = useRecoilValue(selectedRpDataState);
-  const filteredTableData = useRecoilValue(filteredTableDataState);
+  const fd = useAtomValue(featureAtom);
+  const returnPeriodDamagesData = useAtomValue(rpDamageDataAtom);
+  const selectedRPData = useAtomValue(selectedRpDataAtom);
+  const filteredTableData = useAtomValue(filteredTableDataAtom);
 
   return (
     <Box py={2}>

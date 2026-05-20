@@ -30,6 +30,7 @@ const MapViewContent = ({ children }) => {
   const [viewState, setViewState] = useAtom(mapViewStateAtom);
   useSyncMapUrl();
 
+  // Recoil↔Jotai migration: map camera + pixel driller are Jotai; layers/basemap still Recoil.
   const background = useRecoilValue(backgroundState);
   const showLabels = useRecoilValue(showLabelsState);
   const { mapStyle, firstLabelId } = useBasemapStyle(background, showLabels);

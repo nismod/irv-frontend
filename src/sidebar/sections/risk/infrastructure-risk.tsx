@@ -1,8 +1,9 @@
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { atom } from 'jotai';
 import _ from 'lodash';
 import { Suspense, useEffect } from 'react';
-import { atom, useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { DataGroup } from '@/lib/data-selection/DataGroup';
@@ -32,23 +33,21 @@ import { hideExposure, syncExposure } from './population-exposure';
 
 type SectorType = 'roads' | 'rail' | 'power';
 
-const infrastructureRiskConfig = atom({
-  key: 'infrastructureRiskConfig',
-  default: {
-    paramDomains: {
-      sector: ['roads', 'rail', 'power'],
-      hazard: ['fluvial', 'cyclone'],
-    },
-    paramDefaults: {
-      sector: 'roads',
-      hazard: 'fluvial',
-    },
-    paramDependencies: {
-      hazard: ({ sector }) => {
-        if (sector === 'roads') return ['fluvial'];
-        if (sector === 'rail') return ['fluvial'];
-        if (sector === 'power') return ['cyclone'];
-      },
+// Recoil↔Jotai migration: static config lives in Jotai; param values and sidebar state stay on Recoil.
+const infrastructureRiskConfigAtom = atom({
+  paramDomains: {
+    sector: ['roads', 'rail', 'power'],
+    hazard: ['fluvial', 'cyclone'],
+  },
+  paramDefaults: {
+    sector: 'roads',
+    hazard: 'fluvial',
+  },
+  paramDependencies: {
+    hazard: ({ sector }) => {
+      if (sector === 'roads') return ['fluvial'];
+      if (sector === 'rail') return ['fluvial'];
+      if (sector === 'power') return ['cyclone'];
     },
   },
 });
@@ -102,7 +101,8 @@ const InitInfrastructureView = () => {
 };
 
 export const InfrastructureRiskSection = () => {
-  useLoadParamsConfig(infrastructureRiskConfig, 'infrastructure-risk');
+  // useLoadParamsConfig writes Jotai paramsConfigAtomFamily + Recoil paramsState.
+  useLoadParamsConfig(infrastructureRiskConfigAtom, 'infrastructure-risk');
   const damageSource = useRecoilValue(damageSourceState);
 
   const [showHazard, setShowHazard] = useRecoilState(

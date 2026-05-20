@@ -155,7 +155,8 @@ The build is **not** expected to behave differently at runtime; this is a purely
 | **4b — Pixel driller** (§4.2 Slice 4) | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
 | ~~6 — Map basemap~~                   | Deferred | Blocked on NbS cross-read; revisit with Slice 10 or if NbS is cut.                                                                                                                                      |
 | **7 — Map view + URL coords**         | **Done** | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
-| 5, 8–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| **8 — Damages + config half of 14**   | **Done** | Damages drill-down + data-domain query chain + `paramsConfigAtomFamily` + `useLoadParamsConfig` migrated together. Spine value half (`paramsState`, layer selectors) deferred to Slice 14.              |
+| 5, 9–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -247,3 +248,65 @@ The build is **not** expected to behave differently at runtime; this is a purely
 **Fix:** view-tab links in `Nav.tsx` preserve query params via `viewTabTo(pathname, search)`. Use `useLiveLocationSearch()` (not `useLocation().search`) so link `href`s update when map coords write via `history.replaceState` — React Router does not re-render on those URL changes. Secondary links (About, Downloads, etc.) and home logo keep plain paths.
 
 **Removed:** `useReassertMapUrlParamsAfterRecoilUrlWrite` shim from `map-view-state.ts` (was coupling map state to Recoil `viewState`/`sections`).
+
+### Step 8 — Damages + config half of Slice 14 (2026-05-20)
+
+Combined slice that wasn't originally planned as one: the entire damages drill-down feature, the upstream `data-domains` async query chain, and the config half of the data-params spine — all migrated in one PR without any Recoil↔Jotai bridge component.
+
+**Files migrated**:
+
+- `src/state/data-domains/sources.ts` — `rasterAllSourcesAtom`, `rasterSourceByDomainAtomFamily`, `rasterSourceDomainsAtomFamily` (all async, including async-of-async).
+- `src/state/data-domains/hazards.ts` — `hazardDomainsConfigAtomFamily`.
+- `src/state/data-params.ts` — `paramsConfigAtomFamily`, `paramsConfigLoadableAtomFamily`, new Jotai-aware `useLoadParamsConfig`, refactored `useUpdateDataParam`. `paramsState`/`paramValueState`/`paramOptionsState`/`dataParamsByGroupState` deliberately **left on Recoil**.
+- `src/sidebar/sections/hazards/HazardsControl.tsx` — `LoadHazardConfig` / `EnsureHazardConfig` flipped to Jotai.
+- `src/sidebar/sections/risk/infrastructure-risk.tsx` — `infrastructureRiskConfigAtom`.
+- `src/details/features/damages/*.tsx` (4 files) — full slice on Jotai; `selectedHazardAtom` / `selectedEpochAtom` / `selectedRpOptionAtom` via `makeSelectAtom`; `featureAtom` driven by `useSyncValueToAtom`.
+
+**Verified**: `npm run test:type-check` (clean), `eslint` on all changed files (clean), `rg` over the old Recoil names confirms only one historical-reference mention remains (a JSDoc comment).
+
+**Manual test (when at a browser)**:
+
+- `/view/exposure` → each hazard control opens; dropdowns populate; dependent dropdowns reflow.
+- `/view/risk` → Infrastructure Risk → sector / hazard dropdowns.
+- Click a road asset on the map → damage tables populate; hazard / epoch / RP filters update tables.
+
+### Design decision: split the data-params spine at the right seam (2026-05-20)
+
+The doc-comment in the original `data-params.ts` flagged the constraint that defined the spine:
+
+> `useUpdateDataParams` relies on `useRecoilTransaction` which currently doesn't support reading from selectors. This forces `paramsConfigState` to be an atom family, but that prevents loading the config from the API with async selectors.
+
+That single transaction-context read of `paramsConfigState` was also the **only** read of it from any Recoil selector graph. Every other reference (`HazardsControl.tsx`'s `useRecoilValue`, `useLoadParamsConfig`'s `useSetRecoilState`/`useRecoilValueLoadable`, the damages slice's `noWait(paramsConfigState(hazard))`) was hook-context or migrating-anyway.
+
+**Wedge**: lift the `paramsConfigState` read out of the Recoil transaction and into hook scope as a Jotai `useAtomValue(paramsConfigAtomFamily(group))`. The captured `config` is added to `useRecoilTransaction_UNSTABLE`'s dependency array; the transaction body itself only reads/writes the Recoil `paramsState` family (closure for `config`). Because the per-group config is set exactly once by `useLoadParamsConfig` and never updated, the reference is stable and the callback identity is stable too.
+
+This decoupled the config half (config + loader + `paramsConfigLoadableAtomFamily` + the upstream `data-domains` chain) from the value half (current values + `dataParamsByGroupState` + three layer selectors). The config half went to Jotai in this slice; the value half stays on Recoil until Slice 14 because its consumers (hazards / population-exposure / damages-styling layers) are entangled with Slices 11–13.
+
+**Why no Recoil↔Jotai bridge component was needed**:
+
+- All previous Recoil **selectors** that read `paramsConfigState` are either gone (lifted out of the transaction) or migrated (damages).
+- `useLoadParamsConfig` does two writes per group (Jotai config + Recoil `paramsState`). Both writes happen in the same effect tick; readers of either always Suspend until both have run, so no torn read is observable.
+
+**Key Jotai-isms encountered**:
+
+1. **`atom(promise)` overload-ambiguity, again.** Direct `atom<Promise<T>>(new Promise(() => {}))` resolves to the read-only `atom(read)` overload (because TS sees a Promise as a callable-like). Workaround: bind the initial value to a `T | Promise<T>` typed local **and** annotate the `atom<...>(...)` generic explicitly. Without the explicit generic, `atomFamily`'s return-type inference narrows the value back to `Promise<T>`. The union value type also conveniently lets `useSetAtom` accept a plain `T` (the loaded config), while `useAtomValue` returns `Awaited<T | Promise<T>>` = `T`.
+
+   ```ts
+   export const paramsConfigAtomFamily = atomFamily((_group: string) => {
+     const initial: DataParamGroupConfig | Promise<DataParamGroupConfig> = new Promise(() => {});
+     return atom<DataParamGroupConfig | Promise<DataParamGroupConfig>>(initial);
+   });
+   ```
+
+2. **`loadable(atom)` must be memoised per family key.** Calling `loadable(paramsConfigAtomFamily(hazard))` inside another atom's read function (e.g. `hazardDataParamsAtom`) would create a fresh derived atom on every read. The fix: define a parallel `paramsConfigLoadableAtomFamily` that wraps each member once and reuse it. This is the Jotai analogue of memoising a selector's recoil dependencies.
+
+3. **Async-of-async in Jotai**: `rasterSourceDomainsAtomFamily` does `await get(rasterSourceByDomainAtomFamily(domain))` — the migration doc had flagged this pattern as something to validate. Jotai's async atoms handle nested `await get(...)` of other async atoms naturally; no special handling needed. The migration of this chain to Jotai is the first production validation of that pattern in this codebase.
+
+4. **`useUpdateDataParam` is intentionally cross-library** during the migration. It uses `useAtomValue(paramsConfigAtomFamily(group))` at hook scope and `useRecoilTransaction_UNSTABLE` for the body. A JSDoc on the function records why.
+
+### Things explicitly **not** done in Step 8
+
+- `paramsState` / `paramValueState` / `paramOptionsState` / `dataParamsByGroupState` still on Recoil. Their migration is now the entirety of Slice 14, scoped to a coordinated cutover with the three layer selectors (`hazardLayerState`, `populationExposureLayerState`, `damagesFieldState`).
+- `DataParam.tsx` still reads `paramsState` / `paramValueState` / `paramOptionsState` (all Recoil); switches to Jotai when Slice 14 lands.
+- `useUpdateDataParam`'s transaction body still uses `useRecoilTransaction_UNSTABLE`. Converts to `useAtomCallback` in Slice 14.
+- Slice 14 in `04-migration-slices.md` has been rewritten to reflect what remains rather than the original full-spine playbook.
