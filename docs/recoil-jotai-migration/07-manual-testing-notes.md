@@ -48,3 +48,22 @@
 - confirm the pixel driller panel is displayed with the details for the most recently clicked location
 - clear the site selection by clicking the clear button in the pixel driller panel
 - confirm the URL is updated to remove the `site` parameter
+
+## Map view state
+
+- go to the map page - Hazard view
+- confirm the map is displayed with the initial view state
+- confirm the URL is updated to include the `x`, `y`, and `z` parameters
+- zoom in to a point off the center of the map
+- confirm the URL is updated to include the new `x`, `y`, and `z` parameters
+- go to the About page
+- confirm the URL does not include the `x`, `y`, and `z` parameters
+- navigate to the map page - Hazard view again
+- confirm the map is displayed at the same location as before the navigation to the About page
+- confirm the URL includes the `x`, `y`, and `z` parameters for the Hazard view
+- navigate to the map page - Exposure view
+- confirm the map is still displayed at the same location as before the navigation to the Exposure view
+- confirm the URL includes the `x`, `y`, and `z` parameters for the Exposure view
+- refresh the page
+- confirm the map is still displayed at the same location as before the refresh
+- confirm the URL includes the `x`, `y`, and `z` parameters for the Exposure view

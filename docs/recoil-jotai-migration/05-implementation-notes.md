@@ -153,7 +153,9 @@ The build is **not** expected to behave differently at runtime; this is a purely
 | **4a** (Place search)                 | **Done** | First atoms migrated.                                                                                                                                                                                   |
 | **4b — Mobile tabs** (§4.2 Slice 3)   | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
 | **4b — Pixel driller** (§4.2 Slice 4) | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
-| 5–16                                  | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| ~~6 — Map basemap~~                   | Deferred | Blocked on NbS cross-read; revisit with Slice 10 or if NbS is cut.                                                                                                                                      |
+| **7 — Map view + URL coords**         | **Done** | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
+| 5, 8–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -215,3 +217,33 @@ The build is **not** expected to behave differently at runtime; this is a purely
 - **"Shared consumer" ≠ "intertwined atoms"**: `MapView.tsx` reading both pixel-driller Jotai atoms and Recoil map/layer atoms is expected during migration and does not block moving the pixel-driller atoms earlier. The cross-cutting check to run before expanding a slice is whether any _atom/selector definitions_ `get(...)` the candidate nodes — not whether a React component happens to import from both libraries.
 - **First production `atomWithUrlSync`**: `pixelDrillerSiteUrlAtom` validates the URL-sync helper against real usage. Kept JSON wire format (not `makeUrlStringCodec`) so existing bookmarked URLs keep working.
 - **Slice 6 narrowed**: `backgroundState` / `showLabelsState` remain in Slice 6; interaction/URL atoms removed from that slice's scope.
+
+### Step 7 — Map view + URL coords (2026-05-19)
+
+- **Slice 6 skipped** for now: basemap atoms have a cross-read from `nbsScopeRegionLayerState`; deferred until NbS slice or NbS removal.
+- `src/state/map-view/map-url.ts`: three Recoil `urlSyncEffect` atoms → `mapZoomUrlAtom`, `mapLonUrlAtom`, `mapLatUrlAtom` via `atomWithUrlSync` + `makeUrlNumberCodec(2/5/5)`. Wire format preserved (`?z=3.0&x=-40.00000&y=20.00000`, `syncDefault: true`).
+- `src/state/map-view/map-view-state.ts`:
+  - Internal coord atoms: `atomWithDefault((get) => get(map*UrlAtom))` — Jotai equivalent of Recoil's `default: urlAtom`.
+  - `nonCoordsMapViewStateAtom`: `atomWithReset` (not plain `atom`) so `mapViewStateAtom`'s RESET cascade type-checks.
+  - `mapViewStateAtom`: writable derived atom replacing the Recoil selector; no `dangerouslyAllowMutability` equivalent needed.
+  - `mapFitBoundsAtom`: `atomWithReset(null)` — moved here from `MapView.tsx`.
+  - `useSyncMapUrl`: Jotai `useSyncStateThrottled` (internal → URL, 2000 ms).
+- Consumers: `MapView.tsx` (partial Jotai), `hud.tsx`, `use-map-fit-bounds.ts`.
+- Verified: `npm run test:type-check`, eslint on changed files.
+- Manual test: pan/zoom → URL updates after ~2 s; reload restores camera; place search flies to bbox; NbS fit-bounds still works.
+
+### Decisions taken during Step 7
+
+- **`atomWithReset` for RESET cascade targets**: plain `atom(...)` setters don't accept `RESET` in their type signature. Both `nonCoordsMapViewStateAtom` and `mapFitBoundsAtom` use `atomWithReset` so `set(atom, RESET)` and `useResetAtom` work without casts.
+- **`atomWithDefault` for Recoil `default: otherAtom` pattern**: matches "read URL value until user pans, then hold local override until RESET" semantics exactly.
+- **`mapFitBoundsAtom` colocated in `map-view-state.ts`**: removed the Recoil atom definition from `MapView.tsx`; all map camera state now lives under `state/map-view/`.
+
+### URL params on view-tab navigation (2026-05-19)
+
+**Symptom:** switching Hazard → Exposure dropped `x`/`y`/`z` from the URL; they only reappeared after panning/zooming.
+
+**Cause:** view-tab `NavLink`s used bare paths (`/view/exposure`), stripping the query string. Map coord URL atoms (`syncDefault: true`) only write on mount or when coords change — not when another param (`sections`) updates the URL.
+
+**Fix:** view-tab links in `Nav.tsx` preserve query params via `viewTabTo(pathname, search)`. Use `useLiveLocationSearch()` (not `useLocation().search`) so link `href`s update when map coords write via `history.replaceState` — React Router does not re-render on those URL changes. Secondary links (About, Downloads, etc.) and home logo keep plain paths.
+
+**Removed:** `useReassertMapUrlParamsAfterRecoilUrlWrite` shim from `map-view-state.ts` (was coupling map state to Recoil `viewState`/`sections`).

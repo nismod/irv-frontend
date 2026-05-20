@@ -214,6 +214,8 @@ export function useMoveJobToCompleted() {
 
 ### Slice 6 — Map basemap
 
+**Status**: deferred (2026-05-19). `backgroundState` / `showLabelsState` are blocked on NbS cross-read via `nbsScopeRegionLayerState`; skipping until NbS slice or NbS removal is decided.
+
 **Nodes**: `backgroundState`, `showLabelsState`.
 
 **Bridge nodes touched**: `backgroundState` and `showLabelsState` are read by `nbsScopeRegionLayerState` — moving them changes that selector's deps too.
@@ -234,34 +236,28 @@ export function useMoveJobToCompleted() {
 
 ### Slice 7 — Map view + URL coords
 
-**Nodes**: `mapZoomUrlState`, `mapLonUrlState`, `mapLatUrlState` (all `urlSyncEffect`), internal `mapZoomState`/`mapLonState`/`mapLatState`, `nonCoordsMapViewStateState`, `mapViewStateState` (writable selector w/ `dangerouslyAllowMutability`), `mapFitBoundsState`.
+**Nodes**: `mapZoomUrlState` → `mapZoomUrlAtom`, `mapLonUrlState` → `mapLonUrlAtom`, `mapLatUrlState` → `mapLatUrlAtom` (all `atomWithUrlSync` + `makeUrlNumberCodec`); internal `mapZoomState`/`mapLonState`/`mapLatState` → `atomWithDefault` wrappers; `nonCoordsMapViewStateState` → `nonCoordsMapViewStateAtom` (`atomWithReset`); `mapViewStateState` → `mapViewStateAtom` (writable derived atom); `mapFitBoundsState` → `mapFitBoundsAtom` (`atomWithReset`).
 
-**Bridge nodes touched**: `mapFitBoundsState` is set from `use-map-fit-bounds.ts`, `hud.tsx` (HUD button), and `NbsPrioritisationPanel` (via `useMapFitBounds`).
+**Bridge nodes touched**: none at atom-definition level. `MapView.tsx` still reads Recoil for basemap, view layers, and interaction groups.
 
 **Files**: [`src/state/map-view/map-url.ts`](../../../src/state/map-view/map-url.ts), [`src/state/map-view/map-view-state.ts`](../../../src/state/map-view/map-view-state.ts), [`src/map/MapView.tsx`](../../../src/map/MapView.tsx), [`src/map/use-map-fit-bounds.ts`](../../../src/map/use-map-fit-bounds.ts), [`src/pages/map/layouts/hud.tsx`](../../../src/pages/map/layouts/hud.tsx).
 
-**Helpers needed**: the new URL-sync helper from step 3, plus a Jotai port of `useSyncStateThrottled` (already in step 2).
+**Cross-cutting check**: `rg "mapViewStateState|mapZoomUrlState|mapLonUrlState|mapLatUrlState|mapFitBoundsState"` over `src/` → zero hits after migration.
 
 **Risk**: medium (writable selector with reset cascade + throttled URL writes).
 
 **Playbook**
 
-1. Port the three URL atoms with `atomWithUrlSync({ key: 'z' | 'x' | 'y', serialize: roundTo(2/5), parse: Number, syncDefault: true })`.
-2. Port the three internal coord atoms: in Jotai, `default: anotherAtom` is not supported directly. Use:
+1. Port the three URL atoms with `atomWithUrlSync('z'|'x'|'y', { serialize/deserialize: makeUrlNumberCodec(2/5/5), syncDefault: true })`.
+2. Port internal coord atoms with `atomWithDefault((get) => get(mapLatUrlAtom))` etc.
+3. Port `nonCoordsMapViewStateAtom` with `atomWithReset` (needed for RESET cascade from `mapViewStateAtom`).
+4. Port `mapViewStateAtom` as writable derived atom; RESET branch resets all four inner atoms.
+5. Rewrite `useSyncMapUrl` with Jotai `useSyncStateThrottled` (2000 ms, internal → URL direction unchanged).
+6. Port `mapFitBoundsAtom` with `atomWithReset(null)`; move definition from `MapView.tsx` to `map-view-state.ts`; update `hud.tsx`, `use-map-fit-bounds.ts`.
 
-```ts
-const mapLatAtom = atomWithDefault((get) => get(mapLatUrlAtom));
-```
+**Status**: done (2026-05-19).
 
-from `jotai/utils`, which exactly matches "use this atom's value unless I've set my own".
-
-3. Port `nonCoordsMapViewStateState` as a plain atom.
-4. Port `mapViewStateState` as a writable derived atom, with the `RESET` branch resetting the four inner atoms via `set(innerAtom, RESET)`.
-5. Drop `dangerouslyAllowMutability` — Jotai does not perform the mutation check at all.
-6. Rewrite `useSyncMapUrl` using the new `useSyncStateThrottled` (Jotai version), still at 2000 ms.
-7. `mapFitBoundsState` → plain atom. `useResetRecoilState(mapFitBoundsState)` → `useResetAtom(mapFitBoundsAtom)` (atom needs `atomWithReset(null)`).
-
-**Test plan**: pan/zoom the map; observe the URL `?x=...&y=...&z=...` updates after ~2 s; reload, the camera should be restored; click "Reset view" (or whichever HUD button triggers `useResetRecoilState(mapFitBoundsState)`).
+**Test plan**: pan/zoom the map; observe the URL `?x=...&y=...&z=...` updates after ~2 s; reload — camera should restore; place search should fly to bounding box; NbS prioritisation panel fit-bounds should still work.
 
 ### Slice 8 — Damages drill-down details
 

@@ -1,9 +1,9 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
+import { useResetAtom } from 'jotai/utils';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import { MapMouseEvent } from 'react-map-gl/maplibre';
-import { atom, useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
-import { BoundingBox } from '@/lib/bounding-box';
 import { BaseMap } from '@/lib/data-map/BaseMap';
 import { DataMap } from '@/lib/data-map/DataMap';
 import { DataMapTooltip } from '@/lib/data-map/DataMapTooltip';
@@ -19,20 +19,15 @@ import {
   mapInteractionModeAtom,
   pixelDrillerClickLocationAtom,
 } from '@/state/map-view/map-interaction-state';
-import { mapViewStateState, useSyncMapUrl } from '@/state/map-view/map-view-state';
+import { mapFitBoundsAtom, mapViewStateAtom, useSyncMapUrl } from '@/state/map-view/map-view-state';
 import { pixelDrillerSiteUrlAtom } from '@/state/map-view/pixel-driller-url-state';
 
 import { backgroundState, showLabelsState } from './layers/layers-state';
 import { TooltipContent } from './tooltip/TooltipContent';
 import { useBasemapStyle } from './use-basemap-style';
 
-export const mapFitBoundsState = atom<BoundingBox>({
-  key: 'mapFitBoundsState',
-  default: null,
-});
-
 const MapViewContent = ({ children }) => {
-  const [viewState, setViewState] = useRecoilState(mapViewStateState);
+  const [viewState, setViewState] = useAtom(mapViewStateAtom);
   useSyncMapUrl();
 
   const background = useRecoilValue(backgroundState);
@@ -47,11 +42,11 @@ const MapViewContent = ({ children }) => {
   const [clickLocation, setClickLocation] = useAtom(pixelDrillerClickLocationAtom);
   const [siteParam, setSiteParam] = useAtom(pixelDrillerSiteUrlAtom);
 
-  const fitBounds = useRecoilValue(mapFitBoundsState);
+  const fitBounds = useAtomValue(mapFitBoundsAtom);
 
   const prevInteractionModeRef = useRef<MapInteractionMode | null>(null);
 
-  const resetFitBounds = useResetRecoilState(mapFitBoundsState);
+  const resetFitBounds = useResetAtom(mapFitBoundsAtom);
   useEffect(() => {
     // reset map fit bounds whenever MapView is mounted
     resetFitBounds();
