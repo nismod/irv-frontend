@@ -16,7 +16,6 @@ import { RPDamagesSection } from './RPDamagesSection';
 const INITIAL_FEATURE: FeatureOut | null = null;
 export const featureAtom = atom<FeatureOut | null>(INITIAL_FEATURE);
 
-// Reads Jotai paramsConfig populated by sidebar useLoadParamsConfig (which also writes Recoil paramsState).
 export const hazardDataParamsAtom = atom((get) => {
   return _.mapValues(HAZARD_DOMAINS_CONFIG, (_unused, hazard) => {
     const c = get(paramsConfigLoadableAtomFamily(hazard));

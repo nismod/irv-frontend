@@ -443,37 +443,27 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **Known issues deferred:** Risk view round-trip sidebar/layer restore — still pre-existing; fix in Slice 15.
 
-### Slice 14 — Data-params spine (value half) + downstream layer selectors
+### Slice 14 — Data-params spine (value half)
 
-**What's left after Slice 8**: the config half of the spine + `useLoadParamsConfig` + the upstream data-domain query chain + `infrastructureRiskConfig` all shipped in Slice 8. This slice now covers only the **value half** of the hub and its downstream consumers.
+**Status**: done (2026-05-20).
 
-**Nodes**: `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, the **transaction body** of `useUpdateDataParam`. Downstream layer selectors already on Jotai read params via replicas until this slice (`populationExposureLayerAtom`, `damagesFieldAtom`; `hazardLayersAtom` migrated in Slice 13).
+**What shipped:** value half of the data-params hub on Jotai — `paramsAtomFamily`, `paramValueAtomFamily`, `paramOptionsAtomFamily`, `dataParamsByGroupAtomFamily`; `useUpdateDataParam` via `useAtomCallback`; `DataParam.tsx` on Jotai. Removed all three param replica bridges from Slices 11–13 — layer atoms and `damagesFieldAtom` now read `dataParamsByGroupAtomFamily(group)` directly.
 
-**Bridge nodes touched**: this is the **dynamic** hub — `hazardLayerState`, `populationExposureLayerState`, `damagesFieldState` also read other Recoil state (hazards selection, sidebar visibility, damage-map atoms), so this slice needs to coordinate with Slices 11–13 or accept transitive Recoil reads via bridges. Once migrated, the data-params hub is fully Jotai.
+**Nodes migrated to Jotai:** `paramsState` → `paramsAtomFamily`, `paramValueState` → `paramValueAtomFamily`, `paramOptionsState` → `paramOptionsAtomFamily`, `dataParamsByGroupState` → `dataParamsByGroupAtomFamily`, `useUpdateDataParam` transaction body.
 
-**Files**: [`src/state/data-params.ts`](../../../src/state/data-params.ts), [`src/state/data-domains/sources.ts`](../../../src/state/data-domains/sources.ts), [`src/state/data-domains/hazards.ts`](../../../src/state/data-domains/hazards.ts), [`src/sidebar/ui/DataParam.tsx`](../../../src/sidebar/ui/DataParam.tsx), [`src/sidebar/sections/hazards/HazardsControl.tsx`](../../../src/sidebar/sections/hazards/HazardsControl.tsx).
+**Bridge nodes removed:** `damageGroupParamsReplicaAtom`, `populationExposureGroupParamsReplicaAtom`, `hazardGroupParamsReplicaAtomFamily` (+ sync components `DamageGroupParamsSync`, `PopulationExposureGroupParamsSync`, `HazardGroupParamsSync`).
 
-**Risk**: high (Suspense semantics + transaction + object-keyed selector families + cross-slice consumers).
+**Files touched:** [`data-params.ts`](../../../src/state/data-params.ts), [`DataParam.tsx`](../../../src/sidebar/ui/DataParam.tsx), [`damage-style-params.ts`](../../../src/state/data-selection/damage-mapping/damage-style-params.ts), [`hazards.ts` (layers)](../../../src/state/layers/data-layers/hazards.ts), [`population-exposure.ts` (layers)](../../../src/state/layers/data-layers/population-exposure.ts), [`HazardsControl.tsx`](../../../src/sidebar/sections/hazards/HazardsControl.tsx), [`population-exposure.tsx`](../../../src/sidebar/sections/risk/population-exposure.tsx), [`infrastructure-risk.tsx`](../../../src/sidebar/sections/risk/infrastructure-risk.tsx).
 
-**Playbook**
+**Cross-cutting check:** `rg "paramsState|paramValueState|paramOptionsState|dataParamsByGroupState|damageGroupParamsReplica|populationExposureGroupParamsReplica|hazardGroupParamsReplica"` over `src/` → zero hits.
 
-1. **`paramsConfigState`** and **`paramsState`** — port to async-default Jotai atoms (the equivalent of "default = `new Promise(() => {})`"):
+**Test plan:** smoke-test every section that uses `useLoadParamsConfig`:
 
-```ts
-export const paramsConfigAtoms = atomFamily((group: string) =>
-  atom(async () => new Promise<DataParamGroupConfig>(() => {})),
-);
-```
+- Hazards: each hazard control — param dropdowns populate; changing RCP reflows dependent options; map hazard layers update on epoch/RCP change.
+- Infrastructure Risk: sector + hazard dropdowns; damage layer styling updates when params change.
+- Population Exposure: hazard radio + epoch/RCP; choropleth updates.
 
-The first read suspends forever; `useLoadParamsConfig` overrides via `useSetAtom(paramsConfigAtoms(group))` once the config is loaded. **Test this isolated** before wiring the rest — Jotai's Suspense behavior for never-resolving promises has historically had edge cases under React 18 concurrent mode.
-
-An alternative: use a primitive `atom<DataParamGroupConfig | undefined>(undefined)` and wrap reads in `Suspense` only if value is `undefined`. This is more explicit but loses the "Suspense on first read" ergonomics. Pick one and stick with it. 2. **`paramValueState`**, **`paramOptionsState`** — `atomFamily(..., fastDeepEqual)` (object param!). 3. **`dataParamsByGroupState`** — straightforward `atomFamily(group => atom(get => ...))`. 4. **`useLoadParamsConfig`** — drop `useRecoilValueLoadable`; use Jotai's `loadable(paramsConfigAtoms(group))` to check `state === 'hasData'`. 5. **`useUpdateDataParam`** — `useAtomCallback` with sequential `get`/`set` calls inside. 6. Port the three async raster queries; remember that `rasterSourceDomainsQuery` does `async ({ get }) => { const id = get(rasterSourceByDomainQuery(domain)); ... }` — in Jotai, async atoms can `await get(...)` other async atoms naturally. 7. Port `hazardDomainsConfigState` as `atomFamily((hazardType) => atom(async (get) => ...))`. 8. Port `infrastructureRiskConfig` as a plain atom in [`src/sidebar/sections/risk/infrastructure-risk.tsx`](../../../src/sidebar/sections/risk/infrastructure-risk.tsx). 9. Update `DataParam.tsx` to use `useAtomValue` over the new families. 10. Remove all bridges added in earlier slices.
-
-**Test plan**: smoke-test every section that uses `useLoadParamsConfig`:
-
-- Hazards: each hazard control (`Fluvial`, `Coastal`, `Cyclone`, `CDD`, `Extreme Heat`, `Drought`, `Landslide`, `Earthquake`).
-- Infrastructure Risk: sector + hazard dropdowns; verify `damageSourceState` propagates.
-- Population Exposure: hazard radio + epoch/RCP.
+**Known issues deferred:** Risk view round-trip sidebar/layer restore — still pre-existing; fix in Slice 15.
 
 ### Slice 15 — Sidebar visibility hub + view-layers aggregator
 

@@ -70,22 +70,24 @@
 
 ## Damages / data-params config (Slice 8)
 
+Param **values** migrated in Slice 14 — the tests below cover both config loading (Slice 8) and value updates (Slice 14).
+
 ### Hazards section param dropdowns
 
-- go to `/view/exposure`
+- go to map page - Hazard view
 - expand each hazard control once (Fluvial, Coastal, Cyclone, CDD, Extreme Heat, Drought, Landslide, Earthquake)
 - for each: confirm every param dropdown (epoch / RCP / SSP / GCM / return period / trigger, where applicable) is populated with values
 - in one hazard, change RCP and confirm Epoch / return period dropdowns reflow correctly (some combinations disappear or change)
 
 ### Infrastructure risk section
 
-- go to `/view/risk`, open Infrastructure Risk
+- go to map page - Risk view, open Infrastructure Risk
 - toggle the sector dropdown (Roads / Rail / Power) — confirm the hazard dropdown options reflow accordingly (Power → Cyclone only, etc.)
 - switch the hazard and confirm the map damage layer updates
 
 ### Damages drill-down (right-hand asset panel)
 
-- on `/view/risk`, turn on Infrastructure Risk and ensure a sector layer is visible on the map
+- on map page - Risk view, turn on Infrastructure Risk and ensure a sector layer is visible on the map
 - zoom in and click an asset (e.g. a road segment)
 - confirm the right-hand "Asset details" panel renders the Expected Annual Damages section and Return Period Damages section
 - confirm the hazard / epoch / return-period dropdowns are populated

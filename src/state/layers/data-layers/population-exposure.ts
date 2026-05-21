@@ -4,28 +4,20 @@ import { atom } from 'recoil';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { exposureViewLayer } from '@/config/hazards/exposure/exposure-view-layer';
-import {
-  populationExposureGroupParamsReplicaAtom,
-  populationExposureHazardAtom,
-} from '@/sidebar/sections/risk/population-exposure';
+import { populationExposureHazardAtom } from '@/sidebar/sections/risk/population-exposure';
+import { dataParamsByGroupAtomFamily } from '@/state/data-params';
 
-/**
- * Recoil↔Jotai migration: sidebar path visibility is still Recoil (Slice 15).
- * `SidebarPathVisibilityBridgeSync` syncs `sidebarPathVisibilityState('risk/population')` here.
- */
+/** Mirrors `sidebarPathVisibilityState('risk/population')` via `SidebarPathVisibilityBridgeSync`. */
 export const riskPopulationVisibleReplicaAtom = jotaiAtom<boolean>(false);
 
 export const populationExposureLayerAtom = jotaiAtom((get): ViewLayer | false => {
   if (!get(riskPopulationVisibleReplicaAtom)) return false;
 
   const hazard = get(populationExposureHazardAtom);
-  return exposureViewLayer(hazard, get(populationExposureGroupParamsReplicaAtom));
+  return exposureViewLayer(hazard, get(dataParamsByGroupAtomFamily(hazard)));
 });
 
-/**
- * Recoil↔Jotai migration: population exposure layer is computed in Jotai (`populationExposureLayerAtom`).
- * `ViewLayersBridgeSync` writes into this replica atom so `viewLayersState` keeps its ordering.
- */
+/** Recoil passthrough for `viewLayersState`; fed by `ViewLayersBridgeSync` from `populationExposureLayerAtom`. */
 export const populationExposureLayerState = atom<ViewLayer | false>({
   key: 'populationExposureLayerState',
   default: false,

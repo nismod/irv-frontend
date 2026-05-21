@@ -1,14 +1,10 @@
+import isDeepEqual from 'fast-deep-equal';
 import type { Atom } from 'jotai';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { atomFamily } from 'jotai-family';
+import { useAtomCallback } from 'jotai/utils';
 import _ from 'lodash';
-import { useEffect } from 'react';
-import {
-  atomFamily as recoilAtomFamily,
-  selectorFamily,
-  useRecoilTransaction_UNSTABLE,
-  useSetRecoilState,
-} from 'recoil';
+import { useCallback, useEffect } from 'react';
 
 import {
   DataParamGroupConfig,
@@ -21,35 +17,20 @@ import { loadable } from '@/lib/jotai/loadable';
 /**
  * Data params config state (domains, defaults, dependencies) per group.
  *
- * Recoil↔Jotai migration: config half of the data-params hub (Jotai). Param values
- * remain in Recoil `paramsState` until Slice 14.
- *
  * The default is a never-resolving promise so first reads Suspend until
- * `useLoadParamsConfig` writes the loaded config (same pattern as the previous Recoil
- * `atomFamily`).
+ * `useLoadParamsConfig` writes the loaded config.
  *
  * NOTE: the initial value is bound to a typed local before being passed to `atom(...)` —
  * passing `new Promise(() => {})` inline can resolve to the read-only `atom(read)`
- * overload, which then breaks `useSetAtom` callers downstream (same Jotai pitfall as
- * the `T | null` case in `makeSelectAtom`).
+ * overload, which then breaks `useSetAtom` callers downstream.
  */
 export const paramsConfigAtomFamily = atomFamily((_group: string) => {
-  // Union with the sync type so `useSetAtom` accepts a plain `DataParamGroupConfig` —
-  // Jotai resolves `useAtomValue` via `Awaited<Value>`, so consumers still observe
-  // the unwrapped config. The explicit generic on `atom<...>(...)` is required: without
-  // it, `atomFamily`'s return-type inference narrows to `Promise<DataParamGroupConfig>`
-  // and breaks `useSetAtom(...)` with a sync value.
   const initial: DataParamGroupConfig | Promise<DataParamGroupConfig> = new Promise(() => {});
   return atom<DataParamGroupConfig | Promise<DataParamGroupConfig>>(initial);
 });
 
 /**
  * `loadable`-wrapped view of {@link paramsConfigAtomFamily} per group.
- *
- * Memoised as its own family so that consumers reading from a Jotai `get(...)` (e.g.
- * `hazardDataParamsAtom` in the damages slice) do not create a fresh derived atom on
- * every read. Returns Jotai's `{ state: 'loading' | 'hasData' | 'hasError', ... }`
- * shape rather than suspending.
  */
 export const paramsConfigLoadableAtomFamily = atomFamily((group: string) =>
   loadable(paramsConfigAtomFamily(group)),
@@ -63,26 +44,18 @@ interface ValueAndOptions<T = any> {
 /**
  * Data params state (current value + available options) per group.
  *
- * Still on Recoil for now — migrating this requires coordinating with the layer
- * selectors that read `dataParamsByGroupState` (hazards, population exposure,
- * damages styling). The corresponding Jotai migration is scheduled with the rest of
- * Slice 14.
+ * Default is a never-resolving promise until `useLoadParamsConfig` initializes the group.
  */
-export const paramsState = recoilAtomFamily<Record<string, ValueAndOptions>, string>({
-  key: 'paramsState',
-  default: () => new Promise(() => {}),
+export const paramsAtomFamily = atomFamily((_group: string) => {
+  const initial: Record<string, ValueAndOptions> | Promise<Record<string, ValueAndOptions>> =
+    new Promise(() => {});
+  return atom<Record<string, ValueAndOptions> | Promise<Record<string, ValueAndOptions>>>(initial);
 });
 
 /**
  * Initialize data params state (value/options) and config for a group, based on an external config atom.
  *
- * Splits the writes across stores during the in-progress Recoil → Jotai migration:
- * the **config** half lives in {@link paramsConfigAtomFamily} (Jotai); the **state**
- * half (current values + resolved options) is still written to the Recoil
- * `paramsState` family. `useLoadParamsConfig` only runs once per group — once the
- * Jotai config atom has data, the effect is a no-op.
- *
- * @param configAtom a Jotai atom (sync or async) producing the loaded configuration
+ * @param configAtom atom (sync or async) producing the loaded configuration
  * @param targetGroup string representing the target data params group
  */
 export function useLoadParamsConfig(
@@ -91,42 +64,29 @@ export function useLoadParamsConfig(
 ) {
   const config = useAtomValue(configAtom);
   const setTargetConfig = useSetAtom(paramsConfigAtomFamily(targetGroup));
-  const setTargetState = useSetRecoilState(paramsState(targetGroup));
+  const setTargetState = useSetAtom(paramsAtomFamily(targetGroup));
   const targetConfigLoadable = useAtomValue(paramsConfigLoadableAtomFamily(targetGroup));
 
   useEffect(() => {
     if (targetConfigLoadable.state !== 'hasData') {
       const [values, options] = resolveParamDependencies(config.paramDefaults, config);
       const initialState = _.mapValues(values, (value, key) => ({ value, options: options[key] }));
-      setTargetState(initialState); // Recoil (param values)
-      setTargetConfig(config); // Jotai (param config)
+      setTargetState(initialState);
+      setTargetConfig(config);
     }
   }, [config, setTargetConfig, setTargetState, targetConfigLoadable.state]);
 }
 
 /**
- * Returns a recoil transaction callback for updating a data param with a new value.
- *
- * Resolves dependencies between individual parameters, to update the available options for each param.
- *
- * During the migration: the per-group config is read from the Jotai
- * {@link paramsConfigAtomFamily} at hook scope and captured by closure, sidestepping
- * the Recoil transaction limitation that `get` may not read selectors. The transaction
- * body itself only reads and writes the Recoil `paramsState` family. This is what
- * lets `paramsConfigState` migrate to Jotai independently of the rest of the spine.
- *
- * @param group data param group name
- * @param paramId data param name
- * @returns the value update callback
+ * Returns a callback for updating a data param with a new value, resolving dependent options.
  */
 export function useUpdateDataParam(group: string, paramId: string) {
-  const config = useAtomValue(paramsConfigAtomFamily(group)); // Jotai
+  const config = useAtomValue(paramsConfigAtomFamily(group));
 
-  return useRecoilTransaction_UNSTABLE(
-    // Recoil
-    ({ get, set }) =>
-      (newValue) => {
-        const state = get(paramsState(group));
+  return useAtomCallback(
+    useCallback(
+      (get, set, newValue: ParamValue) => {
+        const state = get(paramsAtomFamily(group)) as Record<string, ValueAndOptions>;
 
         const oldValues = _.mapValues(state, (x) => x.value);
         const newValues = { ...oldValues, [paramId]: newValue };
@@ -141,49 +101,37 @@ export function useUpdateDataParam(group: string, paramId: string) {
           options: resolvedOptions[key],
         }));
 
-        set(paramsState(group), resolvedState);
+        set(paramsAtomFamily(group), resolvedState);
       },
-    [group, paramId, config],
+      [group, paramId, config],
+    ),
   );
 }
 
-/**
- * Recoil atom/selector family param describing a data parameter (data group + data param name)
- */
+/** Object param for atomFamily lookups: `{ group, param }`. */
 export type DataParamParam = Readonly<{
   group: string;
   param: string;
 }>;
 
-/**
- * Data param current value per group+param
- */
-export const paramValueState = selectorFamily<ParamValue, DataParamParam>({
-  key: 'paramValueState',
-  get:
-    ({ group, param }) =>
-    ({ get }) =>
-      get(paramsState(group))?.[param]?.value,
-});
+/** Data param current value per group+param */
+export const paramValueAtomFamily = atomFamily(
+  ({ group, param }: DataParamParam) =>
+    atom((get) => get(paramsAtomFamily(group))?.[param]?.value as ParamValue),
+  isDeepEqual,
+);
 
-/**
- * Data param available options per group+param
- */
-export const paramOptionsState = selectorFamily<ParamDomain, DataParamParam>({
-  key: 'paramOptionsState',
-  get:
-    ({ group, param }) =>
-    ({ get }) =>
-      get(paramsState(group))?.[param]?.options ?? [],
-});
+/** Data param available options per group+param */
+export const paramOptionsAtomFamily = atomFamily(
+  ({ group, param }: DataParamParam) =>
+    atom((get) => (get(paramsAtomFamily(group))?.[param]?.options ?? []) as ParamDomain),
+  isDeepEqual,
+);
 
-/**
- * Dictionary of all param current values, per group
- */
-export const dataParamsByGroupState = selectorFamily({
-  key: 'dataParamsByGroupState',
-  get:
-    (group: string) =>
-    ({ get }) =>
-      _.mapValues(get(paramsState(group)), (x) => x.value),
-});
+/** Dictionary of all param current values, per group */
+export const dataParamsByGroupAtomFamily = atomFamily((group: string) =>
+  atom((get) => {
+    const state = get(paramsAtomFamily(group)) as Record<string, ValueAndOptions>;
+    return _.mapValues(state, (x) => x.value);
+  }),
+);

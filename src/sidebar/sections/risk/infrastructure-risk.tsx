@@ -4,12 +4,11 @@ import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useAtomCallback } from 'jotai/utils';
 import _ from 'lodash';
 import { Suspense, useCallback, useEffect } from 'react';
-import { useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilTransaction_UNSTABLE } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { makeOptions } from '@/lib/helpers';
-import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 
 import { getHazardSidebarPath, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
@@ -21,12 +20,11 @@ import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
-import { dataParamsByGroupState, paramValueState, useLoadParamsConfig } from '@/state/data-params';
+import { paramValueAtomFamily, useLoadParamsConfig } from '@/state/data-params';
 import {
   damageSourceAtom,
   showInfrastructureRiskAtom,
 } from '@/state/data-selection/damage-mapping/damage-map';
-import { damageGroupParamsReplicaAtom } from '@/state/data-selection/damage-mapping/damage-style-params';
 import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
@@ -34,7 +32,6 @@ import { hideExposure, syncExposure } from './exposure-sidebar-sync';
 
 type SectorType = 'roads' | 'rail' | 'power';
 
-// Recoil↔Jotai migration: static config lives in Jotai; param values and sidebar state stay on Recoil.
 const infrastructureRiskConfigAtom = atom({
   paramDomains: {
     sector: ['roads', 'rail', 'power'],
@@ -66,8 +63,8 @@ const SECTOR_LAYERS: Record<SectorType, NetworkLayerType[]> = {
 };
 
 function SyncInfrastructureHazardToSidebar() {
-  const hazard = useRecoilValue(
-    paramValueState({ group: 'infrastructure-risk', param: 'hazard' }),
+  const hazard = useAtomValue(
+    paramValueAtomFamily({ group: 'infrastructure-risk', param: 'hazard' }),
   ) as HazardType;
   const applyHazardEffect = useRecoilTransaction_UNSTABLE(
     (iface) => (newHazard: HazardType) =>
@@ -106,21 +103,10 @@ const InitInfrastructureView = () => {
   return null;
 };
 
-/**
- * Recoil↔Jotai migration: syncs active damage-source param values from Recoil into Jotai
- * so `damagesFieldAtom` can read them without touching `dataParamsByGroupState` in atom get().
- */
-function DamageGroupParamsSync() {
-  const damageSource = useAtomValue(damageSourceAtom);
-  const groupParams = useRecoilValue(dataParamsByGroupState(damageSource));
-  useSyncValueToAtom(groupParams, damageGroupParamsReplicaAtom);
-  return null;
-}
-
-/** Recoil↔Jotai migration: sector param is still Recoil; network tree selection is Jotai. */
+/** When sector changes, reset the network tree to that sector's default layers. */
 function SyncSectorToNetworkTree() {
-  const sector = useRecoilValue(
-    paramValueState({ group: 'infrastructure-risk', param: 'sector' }),
+  const sector = useAtomValue(
+    paramValueAtomFamily({ group: 'infrastructure-risk', param: 'sector' }),
   ) as SectorType;
 
   const syncSector = useAtomCallback(
@@ -136,10 +122,10 @@ function SyncSectorToNetworkTree() {
   return null;
 }
 
-/** Recoil↔Jotai migration: hazard param is still Recoil; damage source atom is Jotai. */
+/** Keep damageSourceAtom aligned with the hazard param (epoch/RCP group + damage styling). */
 function SyncHazardToDamageSource() {
-  const hazard = useRecoilValue(
-    paramValueState({ group: 'infrastructure-risk', param: 'hazard' }),
+  const hazard = useAtomValue(
+    paramValueAtomFamily({ group: 'infrastructure-risk', param: 'hazard' }),
   ) as HazardType;
   const setDamageSource = useSetAtom(damageSourceAtom);
 
@@ -155,7 +141,6 @@ function labelHazard(x) {
 }
 
 export const InfrastructureRiskSection = () => {
-  // Recoil↔Jotai migration: useLoadParamsConfig writes Jotai paramsConfigAtomFamily + Recoil paramsState.
   useLoadParamsConfig(infrastructureRiskConfigAtom, 'infrastructure-risk');
   const damageSource = useAtomValue(damageSourceAtom);
 
@@ -169,7 +154,6 @@ export const InfrastructureRiskSection = () => {
     <Suspense fallback="Loading data...">
       <LinkViewLayerToPath atom={showInfrastructureRiskAtom} resetOnUnmount />
       <InitInfrastructureView />
-      <DamageGroupParamsSync />
       <SyncSectorToNetworkTree />
       <SyncHazardToDamageSource />
       <SyncInfrastructureHazardToSidebar />

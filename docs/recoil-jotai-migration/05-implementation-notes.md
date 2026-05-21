@@ -146,21 +146,24 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 ## 6. Slice progress
 
-| Step                                   | Status   | Notes                                                                                                                                                                                                   |
-| -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1–3 (infra)                            | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
-| ~~"coexistence smoke test"~~           | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
-| **4a** (Place search)                  | **Done** | First atoms migrated.                                                                                                                                                                                   |
-| **4b — Mobile tabs** (§4.2 Slice 3)    | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
-| **4b — Pixel driller** (§4.2 Slice 4)  | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
-| ~~6 — Map basemap~~                    | **Done** | Shipped with Slice 10 (2026-05-20); NbS scope-regions layer needed Jotai basemap atoms.                                                                                                                 |
-| **7 — Map view + URL coords**          | **Done** | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
-| **8 — Damages + config half of 14**    | **Done** | Damages drill-down + data-domain query chain + `paramsConfigAtomFamily` + `useLoadParamsConfig` migrated together. Spine value half (`paramsState`, layer selectors) deferred to Slice 14.              |
-| **9 — Map interactions + view params** | **Done** | `interaction-state.ts` on Jotai; Recoil→Jotai `viewLayersReplicaAtom` bridge for params.                                                                                                                |
-| **9b — ArticleMap provider flip**      | **Done** | Nested `RecoilRoot` → per-instance Jotai `<Provider store={createStore()}>`.                                                                                                                            |
-| **10 — NbS + basemap**                 | **Done** | Full NbS graph on Jotai; Jotai→Recoil layer replicas preserve `viewLayersState` ordering.                                                                                                               |
-| **11 — Networks / damages styling**    | **Done** | Damage/network graph on Jotai; two R→J replicas (data-params values + exposure/infrastructure visibility); network layer J→R replica.                                                                   |
-| 5, 12–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| Step                                    | Status   | Notes                                                                                                                                                                                                   |
+| --------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–3 (infra)                             | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
+| ~~"coexistence smoke test"~~            | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
+| **4a** (Place search)                   | **Done** | First atoms migrated.                                                                                                                                                                                   |
+| **4b — Mobile tabs** (§4.2 Slice 3)     | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
+| **4b — Pixel driller** (§4.2 Slice 4)   | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
+| ~~6 — Map basemap~~                     | **Done** | Shipped with Slice 10 (2026-05-20); NbS scope-regions layer needed Jotai basemap atoms.                                                                                                                 |
+| **7 — Map view + URL coords**           | **Done** | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
+| **8 — Damages + config half of 14**     | **Done** | Damages drill-down + data-domain query chain + `paramsConfigAtomFamily` + `useLoadParamsConfig` migrated together. Spine value half (`paramsState`, layer selectors) deferred to Slice 14.              |
+| **9 — Map interactions + view params**  | **Done** | `interaction-state.ts` on Jotai; Recoil→Jotai `viewLayersReplicaAtom` bridge for params.                                                                                                                |
+| **9b — ArticleMap provider flip**       | **Done** | Nested `RecoilRoot` → per-instance Jotai `<Provider store={createStore()}>`.                                                                                                                            |
+| **10 — NbS + basemap**                  | **Done** | Full NbS graph on Jotai; Jotai→Recoil layer replicas preserve `viewLayersState` ordering.                                                                                                               |
+| **11 — Networks / damages styling**     | **Done** | Damage/network graph on Jotai; param + visibility replicas (param replica removed in Slice 14); network layer J→R replica.                                                                              |
+| **12 — Population & regional exposure** | **Done** | Population/regional data + layers on Jotai; param replica removed in Slice 14.                                                                                                                          |
+| **13 — Hazards selection**              | **Done** | Hazard selection/visibility/layers on Jotai; param replica removed in Slice 14.                                                                                                                         |
+| **14 — Data-params value half**         | **Done** | Full data-params spine on Jotai; removed param replica bridges from Slices 11–13; `useUpdateDataParam` → `useAtomCallback`.                                                                             |
+| 5, 15–16                                | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -492,4 +495,36 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 
 - `dataParamsByGroupState` hub — Slice 14 (hazard layers read params via per-hazard replicas only).
 - `sidebarVisibilityToggleState` hub — Slice 15 (`showOneHazardStateEffect` still writes Recoil toggles).
+- Risk view round-trip layer restore bug — deferred to Slice 15.
+
+### Step 14 — Data-params value half (2026-05-20)
+
+**Files migrated:**
+
+- `src/state/data-params.ts` — `paramsAtomFamily`, `paramValueAtomFamily`, `paramOptionsAtomFamily`, `dataParamsByGroupAtomFamily`; `useUpdateDataParam` → `useAtomCallback`; all Recoil imports removed. Object-param families use `isDeepEqual` via `jotai-family`.
+- `src/sidebar/ui/DataParam.tsx` — `useAtomValue` over Jotai families.
+- `src/state/data-selection/damage-mapping/damage-style-params.ts` — `damagesFieldAtom` reads `dataParamsByGroupAtomFamily(damageSource)` directly; `damageGroupParamsReplicaAtom` removed.
+- `src/state/layers/data-layers/hazards.ts` — `hazardLayersAtom` reads `dataParamsByGroupAtomFamily(hazard)` directly; replica removed.
+- `src/state/layers/data-layers/population-exposure.ts` — reads `dataParamsByGroupAtomFamily(hazard)` directly.
+- `src/sidebar/sections/hazards/HazardsControl.tsx` — removed `HazardGroupParamsSync`.
+- `src/sidebar/sections/risk/population-exposure.tsx` — removed `PopulationExposureGroupParamsSync` + replica atom.
+- `src/sidebar/sections/risk/infrastructure-risk.tsx` — removed `DamageGroupParamsSync`; uses `paramValueAtomFamily` for sector/hazard sync.
+
+**Bridge nodes removed:**
+
+| Removed bridge                             | Was synced from          | Was consumed by               |
+| ------------------------------------------ | ------------------------ | ----------------------------- |
+| `damageGroupParamsReplicaAtom`             | `dataParamsByGroupState` | `damagesFieldAtom`            |
+| `populationExposureGroupParamsReplicaAtom` | `dataParamsByGroupState` | `populationExposureLayerAtom` |
+| `hazardGroupParamsReplicaAtomFamily`       | `dataParamsByGroupState` | `hazardLayersAtom`            |
+
+**Design notes:**
+
+- Async-default pattern preserved: `paramsAtomFamily` holds `Promise<...>` until `useLoadParamsConfig` writes initial state (same as config half from Slice 8).
+- `dataParamsByGroupAtomFamily` casts resolved state to `Record<string, ValueAndOptions>` — by the time layer atoms read it, the loader has hydrated the group.
+
+### Things explicitly **not** done in Step 14
+
+- `sidebarVisibilityToggleState` hub — Slice 15.
+- Layer hub replicas (`hazardLayerState`, `populationExposureLayerState`, etc.) — Slice 15.
 - Risk view round-trip layer restore bug — deferred to Slice 15.

@@ -3,20 +3,15 @@ import { atom } from 'jotai';
 import { FieldSpec, StyleParams } from '@/lib/data-map/view-layers';
 
 import { DAMAGE_COLORMAP } from '@/config/damage-mapping/colors';
+import { dataParamsByGroupAtomFamily } from '@/state/data-params';
 
 import { damageSourceAtom, damageTypeAtom } from './damage-map';
-
-/**
- * Recoil↔Jotai migration: param values still live in Recoil `dataParamsByGroupState` (Slice 14).
- * `InfrastructureRiskSection` syncs the active damage-source group here.
- */
-export const damageGroupParamsReplicaAtom = atom<Record<string, unknown>>({});
 
 export const damagesFieldAtom = atom((get): FieldSpec | null => {
   const damageSource = get(damageSourceAtom);
   if (damageSource == null) return null;
   const damageType = get(damageTypeAtom);
-  const damageParams = get(damageGroupParamsReplicaAtom);
+  const damageParams = get(dataParamsByGroupAtomFamily(damageSource));
 
   return {
     fieldGroup: 'damages_expected',

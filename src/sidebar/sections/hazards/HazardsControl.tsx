@@ -1,11 +1,9 @@
 import Stack from '@mui/material/Stack';
 import { useAtomValue } from 'jotai';
 import { FC, ReactNode, Suspense, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { SubSectionToggle } from '@/lib/data-selection/sidebar/SubSectionToggle';
-import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { HazardType } from '@/config/hazards/metadata';
@@ -19,19 +17,13 @@ import { ReturnPeriodControl } from '@/sidebar/ui/params/ReturnPeriodControl';
 import { SSPControl } from '@/sidebar/ui/params/SSPControl';
 import { TriggerControl } from '@/sidebar/ui/params/TriggerControl';
 import { hazardDomainsConfigAtomFamily } from '@/state/data-domains/hazards';
-import {
-  dataParamsByGroupState,
-  paramsConfigAtomFamily,
-  useLoadParamsConfig,
-} from '@/state/data-params';
+import { paramsConfigAtomFamily, useLoadParamsConfig } from '@/state/data-params';
 import { hazardSelectionAtomFamily } from '@/state/data-selection/hazards';
-import { hazardGroupParamsReplicaAtomFamily } from '@/state/layers/data-layers/hazards';
 
 /**
  * Takes the config for the specified hazard type and loads all the param domains/dependencies from the backend
  */
 export const LoadHazardConfig: FC<{ type: HazardType }> = ({ type }) => {
-  // config loading uses Jotai
   useLoadParamsConfig(hazardDomainsConfigAtomFamily(type), type);
 
   return null;
@@ -77,19 +69,8 @@ const HazardControlLayout = ({ children }) => {
   return <Stack spacing={3}>{children}</Stack>;
 };
 
-function HazardGroupParamsSync({ type }: { type: HazardType }) {
-  const groupParams = useRecoilValue(dataParamsByGroupState(type));
-  useSyncValueToAtom(groupParams, hazardGroupParamsReplicaAtomFamily(type));
-  return null;
-}
-
 function ActivateHazardViewLayer({ type }: { type: HazardType }) {
-  return (
-    <>
-      <HazardGroupParamsSync type={type} />
-      <LinkViewLayerToPath atom={hazardSelectionAtomFamily(type)} />
-    </>
-  );
+  return <LinkViewLayerToPath atom={hazardSelectionAtomFamily(type)} />;
 }
 
 /** Packages up all functionality for a hazard layer control that only controls one hazard type. */

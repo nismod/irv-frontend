@@ -6,10 +6,9 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Switch from '@mui/material/Switch';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { useEffect } from 'react';
-import { useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilTransaction_UNSTABLE } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
-import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 
 import { ExposureSource } from '@/config/hazards/exposure/exposure-view-layer';
 import { getHazardSidebarPath } from '@/config/hazards/metadata';
@@ -19,18 +18,11 @@ import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
-import { dataParamsByGroupState } from '@/state/data-params';
 import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 
 import { hideExposure, syncExposure } from './exposure-sidebar-sync';
 
 export const populationExposureHazardAtom = atom<ExposureSource>('extreme_heat');
-
-/**
- * Recoil↔Jotai migration: param values still live in Recoil `dataParamsByGroupState` (Slice 14).
- * Synced here so `populationExposureLayerAtom` can read them without touching Recoil in atom get().
- */
-export const populationExposureGroupParamsReplicaAtom = atom<Record<string, unknown>>({});
 
 const InitPopulationView = () => {
   const updateExposureTx = useRecoilTransaction_UNSTABLE(
@@ -53,14 +45,7 @@ const InitPopulationView = () => {
   return null;
 };
 
-function PopulationExposureGroupParamsSync() {
-  const hazard = useAtomValue(populationExposureHazardAtom);
-  const groupParams = useRecoilValue(dataParamsByGroupState(hazard));
-  useSyncValueToAtom(groupParams, populationExposureGroupParamsReplicaAtom);
-  return null;
-}
-
-/** Recoil↔Jotai migration: hazard atom is Jotai; hazard sidebar toggles are still Recoil (Slice 13). */
+/** Keep hazards sidebar toggles aligned with the selected exposure hazard. */
 function SyncPopulationHazardToSidebar() {
   const hazard = useAtomValue(populationExposureHazardAtom);
   const applyHazardEffect = useRecoilTransaction_UNSTABLE(
@@ -92,7 +77,6 @@ export const PopulationExposureSection = () => {
   return (
     <>
       <InitPopulationView />
-      <PopulationExposureGroupParamsSync />
       <SyncPopulationHazardToSidebar />
       <DataNotice>
         <DataNoticeTextBlock>
