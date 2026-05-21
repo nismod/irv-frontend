@@ -2,9 +2,8 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { useAtomValue } from 'jotai';
 import { FC } from 'react';
-import { useRecoilValue } from 'recoil';
 
-import { selectionState } from '@/lib/data-map/interactions/interaction-state';
+import { selectionAtomFamily } from '@/lib/data-map/interactions/interaction-state';
 import { ContentWatcher } from '@/lib/mobile-tabs/content-watcher';
 
 import { NbsPrioritisationPanel } from '@/config/nbs/components/NbsPrioritisationPanel';
@@ -14,7 +13,7 @@ import { PixelDrillerDetailsPanel } from './pixel-driller/PixelDrillerDetailsPan
 import { DetailsPanel } from './ui/DetailsPanel';
 
 const InteractionGroupDetails = ({ group }) => {
-  const selection = useRecoilValue(selectionState(group));
+  const selection = useAtomValue(selectionAtomFamily(group));
 
   return selection?.viewLayer.renderDetails ? (
     <>

@@ -1,85 +1,80 @@
-import { atom, atomFamily, selector } from 'recoil';
+import { atom } from 'jotai';
+import { atomFamily } from 'jotai-family';
+import { atomWithReset, RESET } from 'jotai/utils';
 
-import { isReset } from '@/lib/recoil/is-reset';
+import { isReset } from '@/lib/jotai/is-reset';
 
 import { InteractionTarget } from './types';
 
 /**
  * State family containing an array of hovered targets, per interaction group
  */
-export const hoverState = atomFamily<InteractionTarget[], string>({
-  key: 'hoverState',
-  default: [],
-});
+export const hoverAtomFamily = atomFamily((_group: string) =>
+  atomWithReset<InteractionTarget[]>([]),
+);
 
 export type HoverAnchorLngLat = { lng: number; lat: number };
+
+const INITIAL_HOVER_POSITION: HoverAnchorLngLat | null = null;
 
 /**
  * Geographic anchor for the data map tooltip (re-projected to screen on map move).
  */
-export const hoverPositionState = atom<HoverAnchorLngLat | null>({
-  key: 'hoverPosition',
-  default: null,
-});
+export const hoverPositionAtom = atom<HoverAnchorLngLat | null>(INITIAL_HOVER_POSITION);
 
 /**
  * State family containing one selected target (or null), per interaction group
  */
-export const selectionState = atomFamily<InteractionTarget, string>({
-  key: 'selectionState',
-  default: null,
+export const selectionAtomFamily = atomFamily((_group: string) => {
+  const initial: InteractionTarget | null = null;
+  return atomWithReset(initial);
 });
 
 type AllowedGroupLayers = Record<string, string[]>;
 
-const allowedGroupLayersInternal = atom<AllowedGroupLayers>({
-  key: 'allowedGroupLayersInternal',
-  default: {},
-});
+const allowedGroupLayersInternalAtom = atom<AllowedGroupLayers>({});
 
 /**
  * State containing a dictionary with keys being interaction group IDs, and values being arrays of allowed view layer IDs for the given group.
  *
  * When this state is updated, layers that aren't allowed anymore are removed from the hover / selection state.
  */
-export const allowedGroupLayersState = selector<AllowedGroupLayers>({
-  key: 'allowedGroupLayersState',
-  get: ({ get }) => get(allowedGroupLayersInternal),
-  set: ({ get, set, reset }, newAllowedGroups) => {
-    const oldAllowedGroupLayers = get(allowedGroupLayersInternal);
+export const allowedGroupLayersAtom = atom(
+  (get) => get(allowedGroupLayersInternalAtom),
+  (get, set, newAllowedGroups: AllowedGroupLayers | typeof RESET) => {
+    const oldAllowedGroupLayers = get(allowedGroupLayersInternalAtom);
     const shouldReset = isReset(newAllowedGroups);
 
     for (const group of Object.keys(oldAllowedGroupLayers)) {
       if (shouldReset) {
-        reset(hoverState(group));
-        reset(selectionState(group));
+        set(hoverAtomFamily(group), RESET);
+        set(selectionAtomFamily(group), RESET);
       } else {
         const newAllowedLayers = newAllowedGroups[group];
 
         if (newAllowedLayers == null || newAllowedLayers.length === 0) {
           // if the interaction group is no longer present or has no allowed layers, reset the hover and select state for this group
-          reset(hoverState(group));
-          reset(selectionState(group));
+          set(hoverAtomFamily(group), RESET);
+          set(selectionAtomFamily(group), RESET);
         } else {
           // if the interaction group is still present, keep only those hovered/selected layers that are still allowed
 
           // only leave hover targets if they are from allowed layers
-          const oldHoverTargets = get(hoverState(group));
-          set(hoverState(group), filterTargets(oldHoverTargets, newAllowedLayers));
+          const oldHoverTargets = get(hoverAtomFamily(group));
+          set(hoverAtomFamily(group), filterTargets(oldHoverTargets, newAllowedLayers));
 
-          // only leave selection target if it is from an allowed layer
-          const oldSelectionTarget = get(selectionState(group));
+          const oldSelectionTarget = get(selectionAtomFamily(group));
           set(
-            selectionState(group),
+            selectionAtomFamily(group),
             newAllowedLayers.includes(oldSelectionTarget?.viewLayer.id) ? oldSelectionTarget : null,
           );
         }
       }
     }
 
-    set(allowedGroupLayersInternal, newAllowedGroups);
+    set(allowedGroupLayersInternalAtom, shouldReset ? {} : newAllowedGroups);
   },
-});
+);
 
 function filterTargets(
   oldHoverTargets: InteractionTarget[],

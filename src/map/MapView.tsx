@@ -7,13 +7,14 @@ import { useRecoilValue } from 'recoil';
 import { BaseMap } from '@/lib/data-map/BaseMap';
 import { DataMap } from '@/lib/data-map/DataMap';
 import { DataMapTooltip } from '@/lib/data-map/DataMapTooltip';
+import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
 import { LocationMarker } from '@/lib/map/pixel-driller/LocationMarker';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { interactionGroupsState } from '@/state/layers/interaction-groups';
 import { viewLayersState } from '@/state/layers/view-layers';
-import { viewLayersParamsState } from '@/state/layers/view-layers-params';
+import { viewLayersParamsAtom, viewLayersReplicaAtom } from '@/state/layers/view-layers-params';
 import {
   MapInteractionMode,
   mapInteractionModeAtom,
@@ -36,7 +37,9 @@ const MapViewContent = ({ children }) => {
   const { mapStyle, firstLabelId } = useBasemapStyle(background, showLabels);
 
   const viewLayers = useRecoilValue(viewLayersState);
-  const viewLayersParams = useRecoilValue(viewLayersParamsState);
+  // Recoil↔Jotai migration: layer list still computed in Recoil; replica feeds Jotai view-layer params.
+  useSyncValueToAtom(viewLayers, viewLayersReplicaAtom);
+  const viewLayersParams = useAtomValue(viewLayersParamsAtom);
 
   const interactionGroups = useRecoilValue(interactionGroupsState);
   const [interactionMode, setInteractionMode] = useAtom(mapInteractionModeAtom);

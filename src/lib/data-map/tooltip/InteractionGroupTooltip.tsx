@@ -1,7 +1,7 @@
+import { useAtomValue } from 'jotai';
 import React, { ReactNode } from 'react';
-import { useRecoilValue } from 'recoil';
 
-import { hoverState } from '@/lib/data-map/interactions/interaction-state';
+import { hoverAtomFamily } from '@/lib/data-map/interactions/interaction-state';
 import { InteractionTarget } from '@/lib/data-map/interactions/types';
 
 const ViewLayerTooltip = ({ hover }: { hover: InteractionTarget }) => {
@@ -28,7 +28,7 @@ export const InteractionGroupTooltip = ({
 
   WrapperComponent?: React.ComponentType<{ children?: ReactNode }>;
 }) => {
-  const hoveredObjects = useRecoilValue(hoverState(group));
+  const hoveredObjects = useAtomValue(hoverAtomFamily(group));
 
   if (hoveredObjects.length === 0) return null;
 

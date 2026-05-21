@@ -1,9 +1,11 @@
+import { useSetAtom } from 'jotai';
 import { useMemo } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
-import { selectionState } from '@/lib/data-map/interactions/interaction-state';
+import { selectionAtomFamily } from '@/lib/data-map/interactions/interaction-state';
 import { makeOptions } from '@/lib/helpers';
+import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 
 import {
   NBS_ADAPTATION_TYPE_LABELS,
@@ -22,6 +24,7 @@ import { InputSection } from '@/sidebar/ui/InputSection';
 import {
   nbsAdaptationHazardState,
   nbsAdaptationTypeState,
+  nbsRegionScopeLevelReplicaAtom,
   nbsRegionScopeLevelState,
   nbsVariableState,
 } from '@/state/data-selection/nbs';
@@ -30,8 +33,11 @@ export const NbsAdaptationSection = () => {
   const [adaptationType, setAdaptationType] = useRecoilState(nbsAdaptationTypeState);
   const [scopeLevel, setScopeLevel] = useRecoilState(nbsRegionScopeLevelState);
   const [colorBy, setColorBy] = useRecoilState(nbsVariableState);
-  const setScopeRegionSelection = useSetRecoilState(selectionState('scope_regions'));
+  const setScopeRegionSelection = useSetAtom(selectionAtomFamily('scope_regions'));
   const setHazard = useSetRecoilState(nbsAdaptationHazardState);
+
+  // Recoil↔Jotai migration: scope level still on Recoil; replica feeds Jotai selected-region atoms.
+  useSyncValueToAtom(scopeLevel, nbsRegionScopeLevelReplicaAtom);
 
   const handleScopeLevelChange = (newScopeLevel: NbsRegionScopeLevel) => {
     setScopeLevel(newScopeLevel);

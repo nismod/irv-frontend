@@ -1,17 +1,17 @@
 import type { MapboxOverlay } from '@deck.gl/mapbox';
+import { useSetAtom } from 'jotai';
 import _ from 'lodash';
 import { useCallback, useMemo } from 'react';
-import { useSetRecoilState } from 'recoil';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
-import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
-import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
+import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
+import { useSetAtomFamily } from '@/lib/jotai/use-set-atom-family';
 
 import {
-  allowedGroupLayersState,
-  hoverPositionState,
-  hoverState,
-  selectionState,
+  allowedGroupLayersAtom,
+  hoverAtomFamily,
+  hoverPositionAtom,
+  selectionAtomFamily,
 } from './interaction-state';
 import { processPicked } from './process-picked';
 import { InteractionGroupConfig, InteractionTarget } from './types';
@@ -34,10 +34,10 @@ export function useInteractions(
   /** Default picking radius to use when no interaction group is present */
   defaultPickingRadius: number = DEFAULT_PICKING_RADIUS,
 ) {
-  const setHoverAnchor = useSetRecoilState(hoverPositionState);
+  const setHoverAnchor = useSetAtom(hoverPositionAtom);
 
-  const setInteractionGroupHover = useSetRecoilStateFamily(hoverState);
-  const setInteractionGroupSelection = useSetRecoilStateFamily(selectionState);
+  const setInteractionGroupHover = useSetAtomFamily(hoverAtomFamily);
+  const setInteractionGroupSelection = useSetAtomFamily(selectionAtomFamily);
 
   const interactionGroupLookup = useMemo(
     () => _.keyBy(interactionGroups, (group) => group.id),
@@ -71,7 +71,7 @@ export function useInteractions(
     [interactiveLayers],
   );
 
-  useSyncValueToRecoil(activeGroupLayerIds, allowedGroupLayersState);
+  useSyncValueToAtom(activeGroupLayerIds, allowedGroupLayersAtom);
 
   const onHover = useCallback(
     (info: any, deck: MapboxOverlay) => {

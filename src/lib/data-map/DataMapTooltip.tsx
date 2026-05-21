@@ -1,12 +1,12 @@
+import { useAtomValue } from 'jotai';
 import React, { Children, FC, ReactNode } from 'react';
 import { useMap } from 'react-map-gl/maplibre';
-import { useRecoilValue } from 'recoil';
 
-import { hoverPositionState } from './interactions/interaction-state';
+import { hoverPositionAtom } from './interactions/interaction-state';
 
 /** Positions children from the hover anchor (lng/lat), projected into the map container. Hidden if the anchor is off-canvas or there are no children. */
 export const DataMapTooltip: FC<{ children?: ReactNode }> = ({ children }) => {
-  const anchor = useRecoilValue(hoverPositionState);
+  const anchor = useAtomValue(hoverPositionAtom);
   const mapRef = useMap()?.current;
   const map = mapRef?.getMap();
 

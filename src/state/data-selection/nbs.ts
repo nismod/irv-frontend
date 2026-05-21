@@ -1,9 +1,9 @@
-import { Feature } from 'geojson';
+import { atom as jotaiAtom } from 'jotai';
 import { atom, selector } from 'recoil';
 
 import { LayerSpec, ScopeSpec } from '@/lib/asset-list/use-sorted-features';
-import { bboxWktToAppBoundingBox, BoundingBox, extendBbox } from '@/lib/bounding-box';
-import { selectionState } from '@/lib/data-map/interactions/interaction-state';
+import { bboxWktToAppBoundingBox, extendBbox } from '@/lib/bounding-box';
+import { selectionAtomFamily } from '@/lib/data-map/interactions/interaction-state';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ColorSpec, FieldSpec, StyleParams } from '@/lib/data-map/view-layers';
 
@@ -38,73 +38,66 @@ export const nbsRegionScopeLevelIdPropertyState = selector<string>({
   },
 });
 
-// === NBS Selected Region State ===
+// === NBS Selected Region State (Jotai — reads Jotai selectionAtomFamily) ===
 
-export const nbsSelectedScopeRegionState = selector<Feature | null>({
-  key: 'nbsSelectedScopeRegionState',
-  get: ({ get }) => {
-    const nbsRegionSelection = get(
-      selectionState('scope_regions'),
-    ) as InteractionTarget<VectorTarget>;
-    return nbsRegionSelection?.target.feature ?? null;
-  },
+/**
+ * Recoil↔Jotai migration: scope level is still edited via Recoil `nbsRegionScopeLevelState`;
+ * NbsAdaptationSection syncs the current value here for Jotai derived atoms below.
+ */
+export const nbsRegionScopeLevelReplicaAtom = jotaiAtom<NbsRegionScopeLevel>('adm0');
+
+export const nbsSelectedScopeRegionAtom = jotaiAtom((get) => {
+  const nbsRegionSelection = get(
+    selectionAtomFamily('scope_regions'),
+  ) as InteractionTarget<VectorTarget> | null;
+  return nbsRegionSelection?.target.feature ?? null;
 });
 
-export const nbsSelectedScopeRegionBboxState = selector<BoundingBox | null>({
-  key: 'nbsSelectedScopeRegionBboxState',
-  get: ({ get }) => {
-    const selectedRegion = get(nbsSelectedScopeRegionState);
-    if (!selectedRegion) {
-      return null;
-    }
+export const nbsSelectedScopeRegionBboxAtom = jotaiAtom((get) => {
+  const selectedRegion = get(nbsSelectedScopeRegionAtom);
+  if (!selectedRegion) {
+    return null;
+  }
 
-    return extendBbox(bboxWktToAppBoundingBox(selectedRegion.properties.bbox_wkt), 5);
-  },
+  return extendBbox(bboxWktToAppBoundingBox(selectedRegion.properties.bbox_wkt), 5);
 });
 
-export const nbsSelectedScopeRegionIdState = selector<number | string | null>({
-  key: 'nbsSelectedScopeRegionIdState',
-  get: ({ get }) => {
-    const selectedRegion = get(nbsSelectedScopeRegionState);
-    const idProperty = get(nbsRegionScopeLevelIdPropertyState);
+export const nbsSelectedScopeRegionIdAtom = jotaiAtom((get) => {
+  const selectedRegion = get(nbsSelectedScopeRegionAtom);
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelReplicaAtom);
+  const idProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
 
-    if (!selectedRegion || !idProperty) {
-      return null;
-    }
+  if (!selectedRegion || !idProperty) {
+    return null;
+  }
 
-    return selectedRegion.properties[idProperty];
-  },
+  return selectedRegion.properties[idProperty];
 });
 
-export const nbsSelectedScopeRegionNameState = selector<string | null>({
-  key: 'nbsSelectedScopeRegionNameState',
-  get: ({ get }) => {
-    const selectedRegion = get(nbsSelectedScopeRegionState);
-    const nameProperty =
-      NBS_REGION_SCOPE_LEVEL_METADATA[get(nbsRegionScopeLevelState)]?.nameProperty;
+export const nbsSelectedScopeRegionNameAtom = jotaiAtom((get) => {
+  const selectedRegion = get(nbsSelectedScopeRegionAtom);
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelReplicaAtom);
+  const nameProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.nameProperty;
 
-    if (!selectedRegion || !nameProperty) {
-      return null;
-    }
+  if (!selectedRegion || !nameProperty) {
+    return null;
+  }
 
-    return selectedRegion.properties[nameProperty] ?? null;
-  },
+  return selectedRegion.properties[nameProperty] ?? null;
 });
 
-export const nbsAdaptationScopeSpecState = selector<ScopeSpec>({
-  key: 'nbsAdaptationScopeSpecState',
-  get: ({ get }) => {
-    const idProperty = get(nbsRegionScopeLevelIdPropertyState);
-    const selectedRegionId = get(nbsSelectedScopeRegionIdState);
+export const nbsAdaptationScopeSpecAtom = jotaiAtom((get): ScopeSpec | null => {
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelReplicaAtom);
+  const idProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
+  const selectedRegionId = get(nbsSelectedScopeRegionIdAtom);
 
-    if (!idProperty || !selectedRegionId) {
-      return null;
-    }
+  if (!idProperty || !selectedRegionId) {
+    return null;
+  }
 
-    return {
-      [idProperty]: selectedRegionId,
-    };
-  },
+  return {
+    [idProperty]: selectedRegionId,
+  };
 });
 
 // === NBS Adaptation Hazard State ===

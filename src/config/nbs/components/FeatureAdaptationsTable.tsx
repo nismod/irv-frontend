@@ -3,6 +3,7 @@ import ZoomOut from '@mui/icons-material/ZoomOut';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
+import { useAtomValue } from 'jotai';
 import { FC, useMemo } from 'react';
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -15,7 +16,7 @@ import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 import { apiClient } from '@/api-client';
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
 import {
-  nbsAdaptationScopeSpecState,
+  nbsAdaptationScopeSpecAtom,
   nbsColorSpecState,
   nbsFieldSpecState,
   nbsLayerSpecState,
@@ -42,7 +43,7 @@ export const FeatureAdaptationsTable: FC<{
   const layerSpec = useRecoilValue(nbsLayerSpecState);
   const fieldSpec = useRecoilValue(nbsFieldSpecState);
   const colorSpec = useRecoilValue(nbsColorSpecState);
-  const scopeSpec = useRecoilValue(nbsAdaptationScopeSpecState);
+  const scopeSpec = useAtomValue(nbsAdaptationScopeSpecAtom);
 
   const setBoundedFeature = useSetRecoilState(boundedFeatureState);
   const [selectedFeature, setSelectedFeature] = useRecoilState(selectedAdaptationFeatureState);

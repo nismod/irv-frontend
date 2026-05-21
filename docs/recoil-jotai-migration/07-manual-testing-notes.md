@@ -93,3 +93,43 @@
 - click "Download CSV" on each section; confirm a CSV file is downloaded with the expected columns
 - click a different asset and confirm the panel re-renders with the new feature's data
 - deselect (click the deselect button or click empty map area) and confirm the panel closes
+
+## Map interactions + view-layer params
+
+### Map interactions
+
+- go to map page - Exposure view
+- turn on Infrastructure layer
+- from the Infrastructure sidebar section, select the Roads sector
+- zoom in to see some vector assets up close
+- hover over an asset on the map
+- confirm the hover tooltip is displayed with the asset's details
+- click on an asset to select it
+- confirm the right-hand "Asset details" panel renders containing the selected road's details and the asset on the map is highlighted, even when not hovering over it
+- deselect the asset by clicking the deselect button
+- confirm the right-hand "Asset details" panel closes and the asset on the map is no longer highlighted
+- select another asset by clicking on it
+- click on an empty area of the map
+- confirm the asset on the map is no longer highlighted and the right-hand "Asset details" panel closes
+- now click again to select an asset
+- in the left-hand sidebar, select the Rail sector, and then deselect the Roads sector
+- confirm the asset on the map is no longer highlighted and the right-hand "Asset details" panel closes
+- now re-select the Roads sector
+- confirm the asset on the map is no longer highlighted
+
+### NBS scope regions layer
+
+- go to map page - Adaptations view
+- ensure Nature-Based Solutions is enabled
+- ensure the scope region level is set to Country
+- hover over a country on the map
+- confirm a notice is displayed in the tooltip that you can click on the region to view adaptations in this region
+- click on a country to select it
+- confirm the NBS Prioritisation panel is displayed with the adaptations table for the selected country
+- confirm the NBS Prioritisation panel contains the name of the selected country in the title
+- click on an empty area of the map
+- confirm the selected country is still selected and the NBS Prioritisation panel is still displayed
+- change the scope region level to Admin 1
+- confirm the NBS Prioritisation panel disappears and no region is selected
+- switch back to Country scope level
+- confirm the NBS Prioritisation panel is still not displayed, and no region is selected
