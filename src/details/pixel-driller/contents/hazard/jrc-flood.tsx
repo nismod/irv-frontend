@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { RagStatus } from '../../rag/rag-types';
@@ -97,54 +96,28 @@ const exportJrcFlood: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(jrcFloodBaseName, jrcFloodColumns, filtered);
 };
 
-export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: jrcFloodBaseName,
-  title: 'River Flooding (JRC)',
-  description:
-    'River flood height hazard at this site from JRC global river flood hazard maps, a gridded inundation dataset for seven flood return periods.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${jrcFloodBaseName}.csv`,
-      title: 'River Flooding (JRC) Data',
-      description:
-        'River flood height data from the JRC global river flood hazard maps for this site across return periods, with cell values indicating water depth in meters.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(jrcFloodColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY 4.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(jrcFloodBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_jrc_floods',
-        name: "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset]. The dataset is created as part of the Copernicus Emergency Management Service.",
-        url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-4.0',
+        id: `${jrcFloodBaseName}.csv`,
+        title: 'River Flooding (JRC) Data',
+        description:
+          'River flood height data from the JRC global river flood hazard maps for this site across return periods, with cell values indicating water depth in meters.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(jrcFloodColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const jrcFloodExportConfig: ExportConfig = {
   exportFunction: exportJrcFlood,
   metadataFunction: getJrcFloodMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'coastal and river flooding (Ward et al 2020; Baugh et al 2024)',
-    datasetSources: [
-      "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset] PID: http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif",
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(jrcFloodBaseName),
 };
 
 export const RiverFloodingJrc: FC<PixelComponentProps> = ({ records }) => {

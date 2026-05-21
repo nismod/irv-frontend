@@ -9,12 +9,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../../rag/rag-calculation';
@@ -84,56 +83,28 @@ const exportExtremeHeat: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(extremeHeatBaseName, extremeHeatColumns, filtered);
 };
 
-const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: extremeHeatBaseName,
-  title: 'Extreme Heat Occurrence (ISIMIP)',
-  description:
-    'Annual probability of extreme heat events at this site from ISIMIP-derived climate impact projections across emissions scenarios, epochs, and climate models.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${extremeHeatBaseName}.csv`,
-      title: 'Extreme Heat Occurrence Data (ISIMIP)',
-      description:
-        'Extreme heat occurrence probabilities from ISIMIP-derived event time series at this site, processed into annual probability values across emissions scenarios and epochs.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(extremeHeatColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC0 1.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(extremeHeatBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_extreme_heat_drought',
-        name: "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
-        url: 'https://doi.org/10.5281/zenodo.8147088',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-4.0',
+        id: `${extremeHeatBaseName}.csv`,
+        title: 'Extreme Heat Occurrence Data (ISIMIP)',
+        description:
+          'Extreme heat occurrence probabilities from ISIMIP-derived event time series at this site, processed into annual probability values across emissions scenarios and epochs.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(extremeHeatColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const extremeHeatExportConfig: ExportConfig = {
   exportFunction: exportExtremeHeat,
   metadataFunction: getExtremeHeatMetadata,
-  readmeFunction: () => ({
-    datasetDescription:
-      'extreme heat and drought (Russell et al 2023, derived from Lange et al 2020)',
-    datasetSources: [
-      'Russell, T., Nicholas, C., & Bernhofen, M. (2023). Annual probability of extreme heat and drought events, derived from Lange et al 2020 (Version 2) [Dataset]. Zenodo. DOI: https://doi.org/10.5281/zenodo.8147088',
-      "Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al. (2020). Projecting exposure to extreme climate impact events across six event categories and three spatial scales. Earth's Future, 8, e2020EF001616. DOI: https://doi.org/10.1029/2020EF001616",
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(extremeHeatBaseName),
 };
 
 export const ExtremeHeat: FC<PixelComponentProps> = ({ records }) => {

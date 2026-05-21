@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import {
@@ -68,52 +67,28 @@ const exportCoolingDegreeDays: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(cddBaseName, cddColumns, filtered);
 };
 
-export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: cddBaseName,
-  title: 'Cooling Degree Days',
-  description:
-    'Change in cooling degree days at this site between 1.5C and 2C global warming scenarios, expressed as absolute and relative metrics.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${cddBaseName}.csv`,
-      title: 'Cooling Degree Days Data',
-      description:
-        'Cooling degree days change data for this site, including absolute and relative differences between 1.5C and 2C global warming scenarios.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(cddColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(cddBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_cooling_degree_days',
-        name: 'Miranda, N.D., Lizana, J., Sparrow, S.N. et al. (2023). Change in cooling degree days with global mean temperature rise increasing from 1.5C to 2.0C. Nature Sustainability 6, 1326-1330. doi:10.1038/s41893-023-01155-z. Data: Miranda, N.D., Lizana, J., Sparrow, S.N., Wallom, D.C.H., Zachau-Walker, M., Watson, P., Khosla, R., & McCulloch, M. (2023). Changes in Cooling Degree Days (CDD) between the 1.5C and 2.0C global warming scenarios. University of Oxford.',
-        url: 'https://doi.org/10.1038/s41893-023-01155-z',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY',
+        id: `${cddBaseName}.csv`,
+        title: 'Cooling Degree Days Data',
+        description:
+          'Cooling degree days change data for this site, including absolute and relative differences between 1.5C and 2C global warming scenarios.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(cddColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const coolingDegreeDaysExportConfig: ExportConfig = {
   exportFunction: exportCoolingDegreeDays,
   metadataFunction: getCoolingDegreeDaysMetadata,
-  readmeFunction: () => ({
-    datasetDescription: '',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(cddBaseName),
 };
 
 export const CoolingDegreeDays: FC<PixelComponentProps> = ({ records }) => {

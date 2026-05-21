@@ -12,12 +12,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
 import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
@@ -45,52 +44,28 @@ const exportLandCover: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(landCoverBaseName, landCoverColumns, filtered);
 };
 
-const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: landCoverBaseName,
-  title: 'Land cover',
-  description:
-    'Land cover class at this site from ESA Climate Change Initiative land cover classification gridded maps derived from satellite observations.',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${landCoverBaseName}.csv`,
-      title: 'Land cover',
-      description:
-        'Land cover class code at this site, using the ESA CCI land cover classification values shown in the map legend.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(landCoverColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(landCoverBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_esa_cci_land_cover',
-        name: 'European Space Agency Climate Change Initiative Land Cover project (2021). Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. doi:10.24381/cds.006f2c9a. The source data are from the ESA Climate Change Initiative Land Cover project led by UCLouvain, ESA Climate Change Initiative - Land Cover project 2020, and EC C3S Land Cover.',
-        url: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview',
-        type: 'dataset',
-        risk_data_type: 'exposure',
-        license: 'ESA CCI',
+        id: `${landCoverBaseName}.csv`,
+        title: 'Land cover',
+        description:
+          'Land cover class code at this site, using the ESA CCI land cover classification values shown in the map legend.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(landCoverColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const landCoverExportConfig: ExportConfig = {
   exportFunction: exportLandCover,
   metadataFunction: getLandCoverMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'land cover (categorical class codes; same legend as map layer)',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(landCoverBaseName),
 };
 
 function classCodeFromValue(value: number | null): number | null {

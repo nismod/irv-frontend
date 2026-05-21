@@ -9,12 +9,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
@@ -97,54 +96,28 @@ const exportAqueductCoastal: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(aqueductCoastalBaseName, aqueductCoastalColumns, filtered);
 };
 
-export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: aqueductCoastalBaseName,
-  title: 'Aqueduct Coastal Flood Risk',
-  description:
-    'Coastal flood risk at this site as modelled by the Aqueduct project, including flood heights for multiple return periods and scenarios.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${aqueductCoastalBaseName}.csv`,
-      title: 'Aqueduct Coastal Flood Risk Data',
-      description:
-        'Coastal flood height data from the Aqueduct project, representing inundation depth in meters at this site across return periods, emissions scenarios, and current and future epochs.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(aqueductCoastalColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY 4.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(aqueductCoastalBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_aqueduct_floods',
-        name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute.',
-        url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-4.0',
+        id: `${aqueductCoastalBaseName}.csv`,
+        title: 'Aqueduct Coastal Flood Risk Data',
+        description:
+          'Coastal flood height data from the Aqueduct project, representing inundation depth in meters at this site across return periods, emissions scenarios, and current and future epochs.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(aqueductCoastalColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const aqueductCoastalExportConfig: ExportConfig = {
   exportFunction: exportAqueductCoastal,
   metadataFunction: getAqueductCoastalMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'coastal and river flooding (Ward et al 2020; Baugh et al 2024)',
-    datasetSources: [
-      'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020) Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-floods-methodology',
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(aqueductCoastalBaseName),
 };
 
 export const CoastalFlooding: FC<PixelComponentProps> = ({ records }) => {

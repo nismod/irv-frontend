@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
 import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
@@ -54,52 +53,28 @@ const exportSoilOrganicCarbon: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(socBaseName, socColumns, filtered);
 };
 
-const getSoilOrganicCarbonMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: socBaseName,
-  title: 'Soil organic carbon',
-  description:
-    'Soil organic carbon stock at this site from SoilGrids 2.0, representing 0-30cm soil organic carbon content aggregated to a 1000m grid.',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${socBaseName}.csv`,
-      title: 'Soil organic carbon',
-      description:
-        'Soil organic carbon in tonnes per hectare at this site, derived from SoilGrids 2.0 mean predictions resampled from 250m to 1000m cells.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(socColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+const getSoilOrganicCarbonMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(socBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_soilgrids_2_0',
-        name: 'Poggio, L., de Sousa, L.M., Batjes, N.H., Heuvelink, G.B.M., Kempen, B., Ribeiro, E., Rossiter, D. (2021). SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL 7, 217-240. doi:10.5194/soil-7-217-2021. Predictions were derived using digital soil mapping based on Quantile Random Forest, drawing on a global compilation of soil profile data and environmental layers.',
-        url: 'https://soilgrids.org/',
-        type: 'dataset',
-        risk_data_type: 'exposure',
-        license: 'CC-BY 4.0',
+        id: `${socBaseName}.csv`,
+        title: 'Soil organic carbon',
+        description:
+          'Soil organic carbon in tonnes per hectare at this site, derived from SoilGrids 2.0 mean predictions resampled from 250m to 1000m cells.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(socColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const soilOrganicCarbonExportConfig: ExportConfig = {
   exportFunction: exportSoilOrganicCarbon,
   metadataFunction: getSoilOrganicCarbonMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'soil organic carbon (t/ha)',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(socBaseName),
 };
 
 const formatSoilOrganicCarbon = (value: number | null): string => {

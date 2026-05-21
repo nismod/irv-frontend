@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
@@ -79,64 +78,28 @@ const exportCycloneStorm: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(cycloneStormBaseName, cycloneStormColumns, filtered);
 };
 
-const getCycloneStormMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: cycloneStormBaseName,
-  title: 'Tropical Cyclones (STORM)',
-  description:
-    'STORM tropical cyclone wind speed hazard at this site across multiple return periods, scenarios and climate models.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${cycloneStormBaseName}.csv`,
-      title: 'Tropical Cyclones (STORM) Data',
-      description:
-        'Tropical cyclone wind speed data from the STORM project for this site across return periods and scenarios.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(cycloneStormColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC0 1.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+const getCycloneStormMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(cycloneStormBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_storm_cyclone',
-        name: 'Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts, J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/12705164.v3. Aggregated as Russell, Tom. (2022). STORM tropical cyclone wind speed return periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo. doi:10.5281/zenodo.7438145.',
-        url: 'https://doi.org/10.4121/12705164.v3',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-4.0',
-      },
-      {
-        id: 'source_storm_cyclone_cc',
-        name: 'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J.; Haigh, I.D.; Martinez, Andrew B.; et al. (2022): STORM climate change tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/14510817.v3.',
-        url: 'https://doi.org/10.4121/14510817.v3',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-4.0',
+        id: `${cycloneStormBaseName}.csv`,
+        title: 'Tropical Cyclones (STORM) Data',
+        description:
+          'Tropical cyclone wind speed data from the STORM project for this site across return periods and scenarios.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(cycloneStormColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const cycloneStormExportConfig: ExportConfig = {
   exportFunction: exportCycloneStorm,
   metadataFunction: getCycloneStormMetadata,
-  readmeFunction: () => ({
-    datasetDescription:
-      'tropical cyclone wind speeds (Sparks and Toumi 2024; Russell 2022, derived from Bloemendaal et al 2020 and Bloemendaal et al 2022)',
-    datasetSources: [
-      'Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts, J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods. 4TU.ResearchData. [Dataset]. DOI: https://doi.org/10.4121/12705164.v3',
-      'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J. (Reindert); Haigh, I.D. (Ivan); Martinez, Andrew B.; et al. (2022): STORM climate change tropical cyclone wind speed return periods. 4TU.ResearchData. [Dataset]. DOI: https://doi.org/10.4121/14510817.v3',
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(cycloneStormBaseName),
 };
 
 export const TropicalCyclonesStorm: FC<PixelComponentProps> = ({ records }) => {

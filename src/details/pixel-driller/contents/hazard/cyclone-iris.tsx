@@ -9,12 +9,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
@@ -78,56 +77,28 @@ const exportCycloneIris: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(cycloneIrisBaseName, cycloneIrisColumns, filtered);
 };
 
-export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: cycloneIrisBaseName,
-  title: 'Tropical Cyclones (IRIS)',
-  description:
-    'IRIS tropical cyclone wind speed hazard at this site across multiple return periods, scenarios and climate models.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${cycloneIrisBaseName}.csv`,
-      title: 'Tropical Cyclones (IRIS) Data',
-      description:
-        'Tropical cyclone wind speed data from the IRIS project for this site across return periods and scenarios.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(cycloneIrisColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-4.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(cycloneIrisBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_cyclone_iris',
-        name: 'Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset. Scientific Data 11, 424 DOI 10.1038/s41597-024-03250-y and Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model. Figshare. Collection. DOI 10.6084/m9.figshare.c.6724251.v1',
-        url: 'https://doi.org/10.1038/s41597-024-03250-y',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-4.0',
+        id: `${cycloneIrisBaseName}.csv`,
+        title: 'Tropical Cyclones (IRIS) Data',
+        description:
+          'Tropical cyclone wind speed data from the IRIS project for this site across return periods and scenarios.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(cycloneIrisColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const cycloneIrisExportConfig: ExportConfig = {
   exportFunction: exportCycloneIris,
   metadataFunction: getCycloneIrisMetadata,
-  readmeFunction: () => ({
-    datasetDescription:
-      'tropical cyclone wind speeds (Sparks and Toumi 2024; Russell 2022, derived from Bloemendaal et al 2020 and Bloemendaal et al 2022)',
-    datasetSources: [
-      'Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset. Scientific Data 11, 424 DOI https://doi.org/10.1038/s41597-024-03250-y',
-      'Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model. Figshare. Collection. DOI https://doi.org/10.6084/m9.figshare.c.6724251.v1',
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(cycloneIrisBaseName),
 };
 
 export const TropicalCyclonesIris: FC<PixelComponentProps> = ({ records }) => {

@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
 import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
@@ -60,52 +59,28 @@ const exportDem: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(demBaseName, demColumns, filtered);
 };
 
-const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: demBaseName,
-  title: 'Topography (DEM)',
-  description:
-    'Elevation (metres above sea level) and slope (degrees) at this site from global MERIT DEM derivatives produced at 250m resolution.',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${demBaseName}.csv`,
-      title: 'Topography',
-      description:
-        'DEM elevation and slope values at this site, based on MERIT DEM derivatives produced at 250m resolution.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(demColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(demBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_global_dem_derivatives_merit_dem',
-        name: 'Hengl, T. (2018). Global DEM derivatives at 250m, 1 km and 2 km based on the MERIT DEM (1.0) [Data set]. Zenodo. doi:10.5281/zenodo.1447210. MERIT DEM was first reprojected to 6 global tiles based on the Equi7 grid system and then used to derive DEM derivatives.',
-        url: 'https://doi.org/10.5281/zenodo.1447210',
-        type: 'dataset',
-        risk_data_type: 'exposure',
-        license: 'CC-BY-SA 4.0',
+        id: `${demBaseName}.csv`,
+        title: 'Topography',
+        description:
+          'DEM elevation and slope values at this site, based on MERIT DEM derivatives produced at 250m resolution.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(demColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const demExportConfig: ExportConfig = {
   exportFunction: exportDem,
   metadataFunction: getDemMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'topography: elevation (m a.s.l.) and slope (°) from DEM',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(demBaseName),
 };
 
 const formatElevationM = (value: number | null): string => {

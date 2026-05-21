@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { RagStatus } from '../../rag/rag-types';
@@ -66,52 +65,28 @@ const exportLandslide: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(landslideBaseName, landslideColumns, filtered);
 };
 
-export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: landslideBaseName,
-  title: 'Landslide Susceptibility and Probabilities',
-  description:
-    'Landslide susceptibility and annual probabilities for different triggers at this site.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${landslideBaseName}.csv`,
-      title: 'Landslide Data',
-      description:
-        'Landslide susceptibility and annual probabilities for earthquake and rainfall triggers at this site.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(landslideColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-4.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(landslideBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_global_landslide_hazard_map',
-        name: 'Arup (2021). Global Landslide Hazard Map, prepared for The World Bank and Global Facility for Disaster Reduction and Recovery.',
-        url: 'https://datacatalog.worldbank.org/search/dataset/0037584/Global-landslide-hazard-map',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-NC-4.0',
+        id: `${landslideBaseName}.csv`,
+        title: 'Landslide Data',
+        description:
+          'Landslide susceptibility and annual probabilities for earthquake and rainfall triggers at this site.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(landslideColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const landslideExportConfig: ExportConfig = {
   exportFunction: exportLandslide,
   metadataFunction: getLandslidesMetadata,
-  readmeFunction: () => ({
-    datasetDescription: '',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(landslideBaseName),
 };
 
 export const Landslides: FC<PixelComponentProps> = ({ records }) => {

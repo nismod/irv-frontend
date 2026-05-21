@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
 import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
@@ -59,52 +58,28 @@ const exportBuildings: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(buildingsBaseName, buildingsColumns, filtered);
 };
 
-const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: buildingsBaseName,
-  title: 'Built-up surface',
-  description:
-    'Built-up surface area at this site from GHS-BUILT-S R2023A, including total and non-residential built-up surface estimates derived from multitemporal satellite imagery.',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${buildingsBaseName}.csv`,
-      title: 'Built-up surface',
-      description:
-        'Built-up surface area in m² at this site for all buildings and non-residential buildings, based on GHS-BUILT-S total and non-residential built-up surface components.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(buildingsColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(buildingsBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_ghs_built',
-        name: 'Pesaresi M., Politis P. (2023). European Commission Joint Research Centre. doi:10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA',
-        url: 'https://human-settlement.emergency.copernicus.eu/ghs_buS2023.php',
-        type: 'dataset',
-        risk_data_type: 'exposure',
-        license: 'CC-BY-4.0',
+        id: `${buildingsBaseName}.csv`,
+        title: 'Built-up surface',
+        description:
+          'Built-up surface area in m² at this site for all buildings and non-residential buildings, based on GHS-BUILT-S total and non-residential built-up surface components.',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(buildingsColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const buildingsExportConfig: ExportConfig = {
   exportFunction: exportBuildings,
   metadataFunction: getBuildingsMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'built-up surface area by subtype (m²)',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(buildingsBaseName),
 };
 
 const formatBuiltUpSurfaceM2 = (value: number | null): string => {

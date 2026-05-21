@@ -10,12 +10,11 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
+import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../../rag/rag-calculation';
@@ -58,54 +57,28 @@ const exportEarthquakes: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(earthquakeBaseName, earthquakeColumns, filtered);
 };
 
-const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: earthquakeBaseName,
-  title: 'Earthquake Ground Shaking',
-  description:
-    'Modelled Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${earthquakeBaseName}.csv`,
-      title: 'GEM Global Earthquake Hazard',
-      description:
-        'The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1) depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years, computed for reference rock conditions (shear wave velocity, VS30, of 760-800 m/s).',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(earthquakeColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  lineage: {
-    description: 'Point data extract from source.',
-    sources: [
+const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(earthquakeBaseName, {
+    spatial,
+    resources: [
       {
-        id: 'source_gem_earthquake',
-        name: 'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1), DOI: 10.1177/8755293020931866. and Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S., Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A., Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data set]. Zenodo. DOI 10.5281/zenodo.8409647',
-        url: 'https://doi.org/10.5281/zenodo.8409647',
-        type: 'dataset',
-        risk_data_type: 'hazard',
-        license: 'CC-BY-NC-SA 4.0',
+        id: `${earthquakeBaseName}.csv`,
+        title: 'GEM Global Earthquake Hazard',
+        description:
+          'The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1) depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years, computed for reference rock conditions (shear wave velocity, VS30, of 760-800 m/s).',
+        format: 'csv',
+        schema: {
+          fields: structuredClone(earthquakeColumns),
+        },
+        dialect: COMMON_DIALECT,
       },
     ],
-  },
-});
+  });
 
 const earthquakesExportConfig: ExportConfig = {
   exportFunction: exportEarthquakes,
   metadataFunction: getEarthquakesMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'earthquake (Pagani et al 2019)',
-    datasetSources: [
-      'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1). DOI: https://doi.org/10.1177/8755293020931866',
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(earthquakeBaseName),
 };
 
 export const Earthquakes: FC<PixelComponentProps> = ({ records }) => {
