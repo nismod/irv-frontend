@@ -431,11 +431,41 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 
 ### Known issues deferred (pre-existing; not introduced by migration)
 
-- **Risk view round-trip:** enable Infrastructure Risk on `/view/risk`, switch to another view, return to Risk — sidebar may show Infrastructure Risk as visible but map layers stay off until toggled. Root cause: `InitInfrastructureView` `hideExposure` on unmount clears `exposure/infrastructure`; `syncExposure` on remount races with `viewTransitionEffect` re-showing the Risk section. Fix properly in Slice 12/15 when `syncExposure` and layer gating are migrated off the Exposure path hack.
+- **Risk view round-trip:** enable Infrastructure Risk on `/view/risk`, switch to another view, return to Risk — sidebar may show Infrastructure Risk as visible but map layers stay off until toggled. Root cause: `InitInfrastructureView` `hideExposure` on unmount clears `exposure/infrastructure`; `syncExposure` on remount races with `viewTransitionEffect` re-showing the Risk section. Fix properly in Slice 15 when layer gating is migrated off the Exposure path hack.
 
 ### Things explicitly **not** done in Step 11
 
 - `dataParamsByGroupState`, `paramsState`, `paramValueState`, `DataParam` — Slice 14.
 - `showOneHazardStateEffect`, hazard sidebar toggles — Slice 13.
-- `syncExposure` / `hideExposure` in `InitInfrastructureView` — Slice 12.
+- `syncExposure` / `hideExposure` — Slice 12 (done).
 - `viewLayersState` hub teardown — Slice 15.
+
+### Step 12 — Population & regional exposure (2026-05-20)
+
+**Files migrated:**
+
+- `src/sidebar/sections/risk/population-exposure.tsx` — `populationExposureHazardAtom`, `populationExposureGroupParamsReplicaAtom` (colocated with section); `InitPopulationView` keeps `useRecoilTransaction_UNSTABLE`; `PopulationExposureGroupParamsSync`, `SyncPopulationHazardToSidebar`.
+- `src/sidebar/sections/risk/regional-risk.tsx` — `regionalExposureVariableAtom` (colocated; was Recoil atom in `state/data-selection/regional-risk.ts`).
+- `src/sidebar/sections/risk/exposure-sidebar-sync.ts` — `syncExposure` / `hideExposure` shared by population + infrastructure Risk sections; still typed against Recoil `TransactionInterface_UNSTABLE`.
+- `src/state/layers/data-layers/population-exposure.ts`, `regional-risk.ts` — Jotai layer atoms + Recoil replicas; layer files import atoms from sidebar section modules.
+- `src/sidebar/sections/risk/infrastructure-risk.tsx` — imports shared exposure sync; keeps `useRecoilTransaction_UNSTABLE`.
+
+**Hub bridges:**
+
+| Bridge                                                                               | Direction | Sync site                           |
+| ------------------------------------------------------------------------------------ | --------- | ----------------------------------- |
+| `dataParamsByGroupState(hazard)` → `populationExposureGroupParamsReplicaAtom`        | R→J       | `PopulationExposureGroupParamsSync` |
+| `sidebarPathVisibilityState('risk/population')` → `riskPopulationVisibleReplicaAtom` | R→J       | `SidebarPathVisibilityBridgeSync`   |
+| `sidebarPathVisibilityState('risk/regional')` → `riskRegionalVisibleReplicaAtom`     | R→J       | `SidebarPathVisibilityBridgeSync`   |
+| `populationExposureLayerAtom` → `populationExposureLayerState`                       | J→R       | `ViewLayersBridgeSync`              |
+| `regionalExposureLayerAtom` → `regionalExposureLayerState`                           | J→R       | `ViewLayersBridgeSync`              |
+
+**Cross-library hazard effect:** `SyncPopulationHazardToSidebar` watches Jotai `populationExposureHazardAtom` and applies Recoil `showOneHazardStateEffect` via `useRecoilTransaction_UNSTABLE` (Slice 13 migrates the effect itself).
+
+**Colocation:** section-scoped Jotai atoms live in sidebar section files; layer derivation imports from there (same pattern as pre-migration Recoil). Exposure sync stays Recoil-transactional until Slice 15 sidebar hub migration.
+
+### Things explicitly **not** done in Step 12
+
+- `showOneHazardStateEffect`, `hazardSelectionState` — Slice 13.
+- `dataParamsByGroupState` hub — Slice 14 (population layer reads params via replica only).
+- Risk view round-trip layer restore bug — deferred to Slice 15.

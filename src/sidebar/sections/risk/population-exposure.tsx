@@ -4,58 +4,33 @@ import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Switch from '@mui/material/Switch';
-import _ from 'lodash';
+import { atom, useAtom, useAtomValue } from 'jotai';
 import { useEffect } from 'react';
-import {
-  atom,
-  TransactionInterface_UNSTABLE,
-  useRecoilState,
-  useRecoilTransaction_UNSTABLE,
-} from 'recoil';
+import { useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
-import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
+import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 
 import { ExposureSource } from '@/config/hazards/exposure/exposure-view-layer';
 import { getHazardSidebarPath } from '@/config/hazards/metadata';
-import {
-  sidebarPathChildrenState,
-  sidebarPathVisibilityState,
-  sidebarVisibilityToggleState,
-} from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
+import { dataParamsByGroupState } from '@/state/data-params';
 import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 
-export const populationExposureHazardState = atom<ExposureSource>({
-  key: 'populationExposureHazardState',
-  default: 'extreme_heat',
-});
+import { hideExposure, syncExposure } from './exposure-sidebar-sync';
+
+export const populationExposureHazardAtom = atom<ExposureSource>('extreme_heat');
 
 /**
- * set only population layer to visible
+ * Recoil↔Jotai migration: param values still live in Recoil `dataParamsByGroupState` (Slice 14).
+ * Synced here so `populationExposureLayerAtom` can read them without touching Recoil in atom get().
  */
-export function syncExposure({ get, set }: TransactionInterface_UNSTABLE, layer: string) {
-  const hazardSubPaths = get(sidebarPathChildrenState('exposure'));
-
-  /**
-   * Using sidebarVisibilityToggleState here for individual levels
-   * instead of the recursive sidebarPathVisibilityState
-   * because Recoil doesn't allow setting selectors in atomic transactions
-   */
-
-  set(sidebarVisibilityToggleState('exposure'), true);
-  _.forEach(hazardSubPaths, (subPath) => {
-    set(sidebarVisibilityToggleState(`exposure/${subPath}`), subPath === layer);
-  });
-}
-
-export function hideExposure({ set }: TransactionInterface_UNSTABLE, layer: string) {
-  set(sidebarVisibilityToggleState(`exposure/${layer}`), false);
-}
+export const populationExposureGroupParamsReplicaAtom = atom<Record<string, unknown>>({});
 
 const InitPopulationView = () => {
   const updateExposureTx = useRecoilTransaction_UNSTABLE(
@@ -66,6 +41,7 @@ const InitPopulationView = () => {
     (iface) => () => hideExposure(iface, 'population'),
     [],
   );
+
   useEffect(() => {
     updateExposureTx();
 
@@ -77,8 +53,30 @@ const InitPopulationView = () => {
   return null;
 };
 
+function PopulationExposureGroupParamsSync() {
+  const hazard = useAtomValue(populationExposureHazardAtom);
+  const groupParams = useRecoilValue(dataParamsByGroupState(hazard));
+  useSyncValueToAtom(groupParams, populationExposureGroupParamsReplicaAtom);
+  return null;
+}
+
+/** Recoil↔Jotai migration: hazard atom is Jotai; hazard sidebar toggles are still Recoil (Slice 13). */
+function SyncPopulationHazardToSidebar() {
+  const hazard = useAtomValue(populationExposureHazardAtom);
+  const applyHazardEffect = useRecoilTransaction_UNSTABLE(
+    (iface) => (newHazard: ExposureSource) => showOneHazardStateEffect(iface, newHazard),
+    [],
+  );
+
+  useEffect(() => {
+    applyHazardEffect(hazard);
+  }, [hazard, applyHazardEffect]);
+
+  return null;
+}
+
 export const PopulationExposureSection = () => {
-  const [hazard, setHazard] = useRecoilState(populationExposureHazardState);
+  const [hazard, setHazard] = useAtom(populationExposureHazardAtom);
 
   const [showHazards, setShowHazards] = useRecoilState(
     sidebarPathVisibilityState(getHazardSidebarPath(hazard)),
@@ -90,7 +88,8 @@ export const PopulationExposureSection = () => {
   return (
     <>
       <InitPopulationView />
-      <StateEffectRoot state={populationExposureHazardState} effect={showOneHazardStateEffect} />
+      <PopulationExposureGroupParamsSync />
+      <SyncPopulationHazardToSidebar />
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows expected annual population exposed to extreme events, based on the annual

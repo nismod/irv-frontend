@@ -187,4 +187,20 @@
 
 ### Known bug (pre-existing — do not regress, not fixed in Slice 11)
 
-- enable Infrastructure Risk on `/view/risk`, switch to another view, return to `/view/risk` — sidebar may show Infrastructure Risk visible but map layers absent until toggled off/on. Defer to Slice 12/15 (`syncExposure` remount vs `viewTransitionEffect` timing).
+- enable Infrastructure Risk on `/view/risk`, switch to another view, return to `/view/risk` — sidebar may show Infrastructure Risk visible but map layers absent until toggled off/on. Defer to Slice 15 (`syncExposure` remount vs `viewTransitionEffect` timing).
+
+## Population & regional exposure (Slice 12)
+
+### Population exposure (`/view/risk` → Population Exposure)
+
+- switch hazard radio (Extreme Heat / Droughts) — confirm map layer updates and matching hazard sidebar visibility toggles follow
+- change epoch and RCP — confirm population exposure choropleth updates (`populationExposureGroupParamsReplicaAtom` bridge)
+- toggle Population layer and Hazard layer switches — confirm map gating
+
+### Regional summary (`/view/risk` → Regional Summary)
+
+- change "Population exposed to" dropdown — confirm regional choropleth updates on map
+
+### Risk sub-section switching
+
+- switch between Population Exposure, Infrastructure Risk, and Regional Summary — confirm only the active section's exposure sidebar leaf and map layer show (exercises `syncExposure` via `useRecoilCallback`)

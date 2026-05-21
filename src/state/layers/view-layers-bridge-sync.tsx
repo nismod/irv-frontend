@@ -10,6 +10,14 @@ import {
 } from '@/state/layers/data-layers/nbs';
 import { networkLayersAtom, networkLayersState } from '@/state/layers/data-layers/networks';
 import {
+  populationExposureLayerAtom,
+  populationExposureLayerState,
+} from '@/state/layers/data-layers/population-exposure';
+import {
+  regionalExposureLayerAtom,
+  regionalExposureLayerState,
+} from '@/state/layers/data-layers/regional-risk';
+import {
   featureBoundingBoxLayerAtom,
   featureBoundingBoxLayerState,
 } from '@/state/layers/ui-layers/feature-bbox';
@@ -23,11 +31,15 @@ export function ViewLayersBridgeSync() {
   const nbsScopeRegionLayer = useAtomValue(nbsScopeRegionLayerAtom);
   const featureBboxLayer = useAtomValue(featureBoundingBoxLayerAtom);
   const networkLayers = useAtomValue(networkLayersAtom);
+  const populationExposureLayer = useAtomValue(populationExposureLayerAtom);
+  const regionalExposureLayer = useAtomValue(regionalExposureLayerAtom);
 
   useSyncValueToRecoil(nbsLayer, nbsLayerState);
   useSyncValueToRecoil(nbsScopeRegionLayer, nbsScopeRegionLayerState);
   useSyncValueToRecoil(featureBboxLayer, featureBoundingBoxLayerState);
   useSyncValueToRecoil(networkLayers, networkLayersState);
+  useSyncValueToRecoil(populationExposureLayer, populationExposureLayerState);
+  useSyncValueToRecoil(regionalExposureLayer, regionalExposureLayerState);
 
   return null;
 }

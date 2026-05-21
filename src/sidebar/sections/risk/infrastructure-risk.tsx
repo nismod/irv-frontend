@@ -32,7 +32,7 @@ import { damageGroupParamsReplicaAtom } from '@/state/data-selection/damage-mapp
 import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
-import { hideExposure, syncExposure } from './population-exposure';
+import { hideExposure, syncExposure } from './exposure-sidebar-sync';
 
 type SectorType = 'roads' | 'rail' | 'power';
 
@@ -80,6 +80,7 @@ const InitInfrastructureView = () => {
     (iface) => () => hideExposure(iface, 'infrastructure'),
     [],
   );
+
   useEffect(() => {
     updateExposureTx();
 

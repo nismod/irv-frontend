@@ -401,27 +401,27 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **Test plan:** navigate to `/view/risk`, expand Infrastructure Risk; toggle sectors; toggle hazards; confirm map damage styling updates; expand Exposure → Infrastructure and confirm the network tree checkbox state synchronises; toggle individual network layers and confirm map updates; from Risk with Infrastructure Risk enabled, switch to Exposure → Infrastructure and confirm **standard** (non-damage) styling; **known bug:** Risk → other view → Risk may not restore map layers until infra risk is toggled (pre-existing).
 
-**Known issues deferred:** Risk view round-trip layer restore (`syncExposure` / `viewTransitionEffect` timing) — fix in Slice 12/15, not patched in this slice.
+**Known issues deferred:** Risk view round-trip layer restore (`syncExposure` / `viewTransitionEffect` timing) — fix in Slice 15, not patched in this slice.
 
 ### Slice 12 — Population & regional exposure
 
-**Nodes**: `populationExposureHazardState`, `regionalExposureVariableState`; `populationExposureLayerState`, `regionalExposureLayerState`; `syncExposure`/`hideExposure` transactions (not Recoil atoms but written here).
+**Status**: done (2026-05-20).
 
-**Bridge nodes touched**: `dataParamsByGroupState`, `sidebarPathVisibilityState('risk/population')`, `sidebarPathVisibilityState('risk/regional')`, and writes into `sidebarVisibilityToggleState`/`sidebarPathChildrenState` via `syncExposure`. Also reads `showOneHazardStateEffect` via a `StateEffectRoot`.
+**What shipped:** population/regional data atoms on Jotai (colocated in sidebar section files); layer derivation on Jotai with Recoil hub replicas; `syncExposure`/`hideExposure` in `sidebar/sections/risk/exposure-sidebar-sync.ts`, still called via `useRecoilTransaction_UNSTABLE`; hazard sidebar effect split into `SyncPopulationHazardToSidebar` (Jotai hazard atom → Recoil `showOneHazardStateEffect` via transaction).
 
-**Files**: [`src/sidebar/sections/risk/population-exposure.tsx`](../../../src/sidebar/sections/risk/population-exposure.tsx), [`src/sidebar/sections/risk/regional-risk.tsx`](../../../src/sidebar/sections/risk/regional-risk.tsx), [`src/state/data-selection/regional-risk.ts`](../../../src/state/data-selection/regional-risk.ts), [`src/state/layers/data-layers/population-exposure.ts`](../../../src/state/layers/data-layers/population-exposure.ts), [`src/state/layers/data-layers/regional-risk.ts`](../../../src/state/layers/data-layers/regional-risk.ts).
+**Nodes migrated to Jotai:** `populationExposureHazardAtom`, `populationExposureGroupParamsReplicaAtom`, `regionalExposureVariableAtom`, `populationExposureLayerAtom`, `regionalExposureLayerAtom`.
 
-**Risk**: medium-high (two `useRecoilTransaction_UNSTABLE` sites + a `StateEffectRoot`).
+**Nodes still on Recoil (bridges until later slices):** `populationExposureLayerState`, `regionalExposureLayerState` (replicas → Slice 15), `dataParamsByGroupState` (replica source → Slice 14), `sidebarPathVisibilityState` (replica source → Slice 15), `showOneHazardStateEffect` / hazard sidebar writes (Slice 13).
 
-**Playbook**
+**Bridge pattern:** `riskPopulationVisibleReplicaAtom`, `riskRegionalVisibleReplicaAtom` in `SidebarPathVisibilityBridgeSync`; `populationExposureGroupParamsReplicaAtom` synced in `PopulationExposureSection`; layer atoms → replicas in `ViewLayersBridgeSync`.
 
-1. Port the two atoms.
-2. Rewrite `syncExposure` / `hideExposure` to take `{ get, set }` (Jotai signature). Today they explicitly write the leaf atomFamily; keep that behavior in Jotai too (it's still cleaner than writing the selector even though Jotai allows it).
-3. Convert `useRecoilTransaction_UNSTABLE` call sites to `useAtomCallback`.
-4. Port `populationExposureLayerState` and `regionalExposureLayerState`.
-5. Replace `StateEffectRoot state={populationExposureHazardState} effect={showOneHazardStateEffect}` with the ported `StateEffectRoot` (which is now a unified component).
+**Files touched:** [`exposure-sidebar-sync.ts`](../../../src/sidebar/sections/risk/exposure-sidebar-sync.ts), [`population-exposure.ts` (layers)](../../../src/state/layers/data-layers/population-exposure.ts), [`regional-risk.ts` (layers)](../../../src/state/layers/data-layers/regional-risk.ts), [`population-exposure.tsx`](../../../src/sidebar/sections/risk/population-exposure.tsx) (Jotai atoms + section UI), [`regional-risk.tsx`](../../../src/sidebar/sections/risk/regional-risk.tsx), [`infrastructure-risk.tsx`](../../../src/sidebar/sections/risk/infrastructure-risk.tsx), bridge sync files.
 
-**Test plan**: navigate to `/view/risk`; switch between "Population Exposure", "Infrastructure Risk", "Regional Summary"; for each switch, observe that the relevant exposure sub-layer becomes visible and others hide.
+**Cross-cutting check:** `rg "populationExposureHazardState|regionalExposureVariableState|populationExposureLayerState\\b.*selector|regionalExposureLayerState\\b.*selector"` over `src/` → zero hits (replica layer atoms remain).
+
+**Test plan:** navigate to `/view/risk`; switch between Population Exposure, Infrastructure Risk, Regional Summary — relevant exposure sub-layer and map layer update; change population hazard radio and epoch/RCP; change regional variable dropdown.
+
+**Known issues deferred:** Risk view round-trip layer restore — still pre-existing; fix in Slice 15.
 
 ### Slice 13 — Hazards selection
 
@@ -446,7 +446,7 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **What's left after Slice 8**: the config half of the spine + `useLoadParamsConfig` + the upstream data-domain query chain + `infrastructureRiskConfig` all shipped in Slice 8. This slice now covers only the **value half** of the hub and its downstream consumers.
 
-**Nodes**: `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, the **transaction body** of `useUpdateDataParam`. Plus the three layer selectors that `get()` `dataParamsByGroupState`: `hazardLayerState`, `populationExposureLayerState`, `damagesFieldState`. Plus `damageMapStyleParamsState` (transitively reads `damagesFieldState`).
+**Nodes**: `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, the **transaction body** of `useUpdateDataParam`. Plus layer selectors that still `get()` `dataParamsByGroupState`: `hazardLayerState` (and `damagesFieldAtom` / `populationExposureLayerAtom` already on Jotai but read params via replicas until hub migrates).
 
 **Bridge nodes touched**: this is the **dynamic** hub — `hazardLayerState`, `populationExposureLayerState`, `damagesFieldState` also read other Recoil state (hazards selection, sidebar visibility, damage-map atoms), so this slice needs to coordinate with Slices 11–13 or accept transitive Recoil reads via bridges. Once migrated, the data-params hub is fully Jotai.
 
