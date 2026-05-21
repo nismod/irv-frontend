@@ -1,11 +1,9 @@
-import { useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useMemo } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { selectionAtomFamily } from '@/lib/data-map/interactions/interaction-state';
 import { makeOptions } from '@/lib/helpers';
-import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 
 import {
   NBS_ADAPTATION_TYPE_LABELS,
@@ -22,22 +20,18 @@ import {
 import { DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import {
-  nbsAdaptationHazardState,
-  nbsAdaptationTypeState,
-  nbsRegionScopeLevelReplicaAtom,
-  nbsRegionScopeLevelState,
-  nbsVariableState,
+  nbsAdaptationHazardAtom,
+  nbsAdaptationTypeAtom,
+  nbsRegionScopeLevelAtom,
+  nbsVariableAtom,
 } from '@/state/data-selection/nbs';
 
 export const NbsAdaptationSection = () => {
-  const [adaptationType, setAdaptationType] = useRecoilState(nbsAdaptationTypeState);
-  const [scopeLevel, setScopeLevel] = useRecoilState(nbsRegionScopeLevelState);
-  const [colorBy, setColorBy] = useRecoilState(nbsVariableState);
+  const [adaptationType, setAdaptationType] = useAtom(nbsAdaptationTypeAtom);
+  const [scopeLevel, setScopeLevel] = useAtom(nbsRegionScopeLevelAtom);
+  const [colorBy, setColorBy] = useAtom(nbsVariableAtom);
   const setScopeRegionSelection = useSetAtom(selectionAtomFamily('scope_regions'));
-  const setHazard = useSetRecoilState(nbsAdaptationHazardState);
-
-  // Recoil↔Jotai migration: scope level still on Recoil; replica feeds Jotai selected-region atoms.
-  useSyncValueToAtom(scopeLevel, nbsRegionScopeLevelReplicaAtom);
+  const setHazard = useSetAtom(nbsAdaptationHazardAtom);
 
   const handleScopeLevelChange = (newScopeLevel: NbsRegionScopeLevel) => {
     setScopeLevel(newScopeLevel);
@@ -107,8 +101,8 @@ function useDataVariableOptions(adaptationType: NbsAdaptationType) {
 }
 
 function AdaptationHazardSection({ showHazard }) {
-  const adaptationType = useRecoilValue(nbsAdaptationTypeState);
-  const [hazard, setHazard] = useRecoilState(nbsAdaptationHazardState);
+  const adaptationType = useAtomValue(nbsAdaptationTypeAtom);
+  const [hazard, setHazard] = useAtom(nbsAdaptationHazardAtom);
 
   const hazards = NBS_HAZARDS_PER_ADAPTATION_TYPE[adaptationType];
 

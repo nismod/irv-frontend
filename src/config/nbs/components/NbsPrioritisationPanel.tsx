@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useAtomValue } from 'jotai';
 import { FC, useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
 
 import { ListFeature } from '@/lib/asset-list/use-sorted-features';
 import { extendBbox } from '@/lib/bounding-box';
@@ -12,28 +11,27 @@ import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { NBS_ADAPTATION_TYPE_LABEL_LOOKUP } from '@/config/nbs/metadata';
 import { SidePanel } from '@/details/ui/SidePanel';
 import { useMapFitBounds } from '@/map/use-map-fit-bounds';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import {
-  nbsAdaptationTypeState,
-  nbsIsDataVariableContinuous,
+  nbsAdaptationTypeAtom,
+  nbsIsDataVariableContinuousAtom,
   nbsSelectedScopeRegionBboxAtom,
   nbsSelectedScopeRegionIdAtom,
   nbsSelectedScopeRegionNameAtom,
 } from '@/state/data-selection/nbs';
+import { adaptationNbsVisibleReplicaAtom } from '@/state/layers/data-layers/nbs';
 
 import { FeatureAdaptationsTable } from './FeatureAdaptationsTable';
 
 export const NbsPrioritisationPanel: FC = () => {
-  // selected scope region id / name / extent migrated to Jotai, rest is still Recoil
-  const adaptationType = useRecoilValue(nbsAdaptationTypeState);
-  const sidebarVisible = useRecoilValue(sidebarPathVisibilityState('adaptation/nbs'));
-  const selectedRegionId = useAtomValue(nbsSelectedScopeRegionIdAtom); // migrated to Jotai
-  const isContinuous = useRecoilValue(nbsIsDataVariableContinuous);
+  const adaptationType = useAtomValue(nbsAdaptationTypeAtom);
+  const sidebarVisible = useAtomValue(adaptationNbsVisibleReplicaAtom);
+  const selectedRegionId = useAtomValue(nbsSelectedScopeRegionIdAtom);
+  const isContinuous = useAtomValue(nbsIsDataVariableContinuousAtom);
   const showPrioritisation = sidebarVisible && selectedRegionId != null && isContinuous;
 
-  const selectedRegionName = useAtomValue(nbsSelectedScopeRegionNameAtom); // migrated to Jotai
+  const selectedRegionName = useAtomValue(nbsSelectedScopeRegionNameAtom);
 
-  const scopeRegionExtent = useAtomValue(nbsSelectedScopeRegionBboxAtom); // migrated to Jotai
+  const scopeRegionExtent = useAtomValue(nbsSelectedScopeRegionBboxAtom);
   const { setMapFitBounds } = useMapFitBounds();
 
   function handleZoomInFeature(feature: ListFeature) {

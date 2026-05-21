@@ -146,17 +146,20 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 ## 6. Slice progress
 
-| Step                                  | Status   | Notes                                                                                                                                                                                                   |
-| ------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1–3 (infra)                           | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
-| ~~"coexistence smoke test"~~          | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
-| **4a** (Place search)                 | **Done** | First atoms migrated.                                                                                                                                                                                   |
-| **4b — Mobile tabs** (§4.2 Slice 3)   | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
-| **4b — Pixel driller** (§4.2 Slice 4) | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
-| ~~6 — Map basemap~~                   | Deferred | Blocked on NbS cross-read; revisit with Slice 10 or if NbS is cut.                                                                                                                                      |
-| **7 — Map view + URL coords**         | **Done** | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
-| **8 — Damages + config half of 14**   | **Done** | Damages drill-down + data-domain query chain + `paramsConfigAtomFamily` + `useLoadParamsConfig` migrated together. Spine value half (`paramsState`, layer selectors) deferred to Slice 14.              |
-| 5, 9–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| Step                                   | Status   | Notes                                                                                                                                                                                                   |
+| -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–3 (infra)                            | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
+| ~~"coexistence smoke test"~~           | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
+| **4a** (Place search)                  | **Done** | First atoms migrated.                                                                                                                                                                                   |
+| **4b — Mobile tabs** (§4.2 Slice 3)    | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
+| **4b — Pixel driller** (§4.2 Slice 4)  | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
+| ~~6 — Map basemap~~                    | **Done** | Shipped with Slice 10 (2026-05-20); NbS scope-regions layer needed Jotai basemap atoms.                                                                                                                 |
+| **7 — Map view + URL coords**          | **Done** | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
+| **8 — Damages + config half of 14**    | **Done** | Damages drill-down + data-domain query chain + `paramsConfigAtomFamily` + `useLoadParamsConfig` migrated together. Spine value half (`paramsState`, layer selectors) deferred to Slice 14.              |
+| **9 — Map interactions + view params** | **Done** | `interaction-state.ts` on Jotai; Recoil→Jotai `viewLayersReplicaAtom` bridge for params.                                                                                                                |
+| **9b — ArticleMap provider flip**      | **Done** | Nested `RecoilRoot` → per-instance Jotai `<Provider store={createStore()}>`.                                                                                                                            |
+| **10 — NbS + basemap**                 | **Done** | Full NbS graph on Jotai; Jotai→Recoil layer replicas preserve `viewLayersState` ordering.                                                                                                               |
+| 5, 11–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -221,7 +224,7 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 ### Step 7 — Map view + URL coords (2026-05-19)
 
-- **Slice 6 skipped** for now: basemap atoms have a cross-read from `nbsScopeRegionLayerState`; deferred until NbS slice or NbS removal.
+- **Slice 6 deferred** at the time: basemap atoms had a cross-read from `nbsScopeRegionLayerState`; shipped with Slice 10 (2026-05-20) instead.
 - `src/state/map-view/map-url.ts`: three Recoil `urlSyncEffect` atoms → `mapZoomUrlAtom`, `mapLonUrlAtom`, `mapLatUrlAtom` via `atomWithUrlSync` + `makeUrlNumberCodec(2/5/5)`. Wire format preserved (`?z=3.0&x=-40.00000&y=20.00000`, `syncDefault: true`).
 - `src/state/map-view/map-view-state.ts`:
   - Internal coord atoms: `atomWithDefault((get) => get(map*UrlAtom))` — Jotai equivalent of Recoil's `default: urlAtom`.
@@ -310,3 +313,79 @@ This decoupled the config half (config + loader + `paramsConfigLoadableAtomFamil
 - `DataParam.tsx` still reads `paramsState` / `paramValueState` / `paramOptionsState` (all Recoil); switches to Jotai when Slice 14 lands.
 - `useUpdateDataParam`'s transaction body still uses `useRecoilTransaction_UNSTABLE`. Converts to `useAtomCallback` in Slice 14.
 - Slice 14 in `04-migration-slices.md` has been rewritten to reflect what remains rather than the original full-spine playbook.
+
+### Step 9 — Map interactions + view-layer params (2026-05-20)
+
+**Files migrated**:
+
+- `src/lib/data-map/interactions/interaction-state.ts` — `hoverAtomFamily`, `selectionAtomFamily`, `hoverPositionAtom`, `allowedGroupLayersInternalAtom`, writable derived `allowedGroupLayersAtom` (RESET cascade via `atomWithReset` + `RESET` from `@/lib/jotai/is-reset`).
+- `src/lib/data-map/state/make-view-layer-params-atom.ts` — Jotai port of `makeViewLayerParamsState`.
+- `src/state/layers/view-layers-params.ts` — `viewLayersReplicaAtom`, `viewLayersParamsAtom`.
+- Consumers: `use-interactions.ts`, tooltip components, `DetailsContent`, `DeselectButton`, `MapView.tsx`.
+
+**Bridge (Recoil → Jotai)**: `viewLayersState` is still the Recoil hub (Slice 15). `MapView` reads `useRecoilValue(viewLayersState)` and syncs into `viewLayersReplicaAtom` via `useSyncValueToAtom` so `viewLayersParamsAtom` can `get()` the current layer list in Jotai.
+
+**NbS coordination**: Slice 9 landed `selectionAtomFamily('scope_regions')` on Jotai first. Slice 10 initially bridged `nbsRegionScopeLevelState` (Recoil) → `nbsRegionScopeLevelReplicaAtom` (Jotai) in `NbsAdaptationSection`; that interim bridge was removed when Slice 10 migrated the full NbS graph.
+
+**Verified**: `npm run test:type-check`, eslint on changed files.
+
+### Decisions taken during Step 9
+
+- **Bidirectional layer bridges, opposite directions.** Slice 9 syncs Recoil hub → Jotai for _params_ (`viewLayersReplicaAtom`). Slice 10 syncs Jotai → Recoil for _NbS/bbox layer slots_ (see below). Both use the same `useSyncValueToAtom` / `useSyncValueToRecoil` helpers and the same one-frame `useEffect` timing — acceptable because layer params and layer geometry both tolerate a single deferred tick.
+- **`allowedGroupLayersAtom` RESET cascade** mirrors the Recoil writable selector: iterate known groups, `set(hoverAtomFamily(g), RESET)` / `set(selectionAtomFamily(g), RESET)`, then reset the internal atom. The only `isReset` consumer in the codebase lives here.
+
+### Step 9b — ArticleMap provider flip (2026-05-20)
+
+- `src/pages/articles/components/ArticleMap.tsx`: `<RecoilRoot>` → `<Provider store={createStore()}>` (per mount via `useMemo`).
+- **Why**: after Step 9, interaction atoms are module-level Jotai singletons. A nested `RecoilRoot` no longer isolates hover/selection — without a per-instance Jotai store, two `ArticleMap` instances on the same page would share hover state.
+- **Verified**: typecheck + eslint; manual test = two article maps, hover one, confirm the other is unaffected.
+
+### Step 10 — NbS adaptation + basemap (Slice 6 absorbed) (2026-05-20)
+
+Combined slice: deferred Slice 6 (basemap) and Slice 10 (NbS) shipped together because `nbsScopeRegionLayerAtom` reads `backgroundAtom` / `showLabelsAtom` for scope-region label styling.
+
+**Files migrated**:
+
+- `src/state/data-selection/nbs.ts` — 4 primitive atoms + 12 derived atoms; all Recoil removed. Interim `nbsRegionScopeLevelReplicaAtom` (Slice 9 bridge) deleted.
+- `src/map/layers/layers-state.ts` — `backgroundAtom`, `showLabelsAtom`.
+- `src/state/layers/data-layers/nbs.ts` — Jotai layer atoms (`nbsLayerAtom`, `nbsScopeRegionLayerAtom`, `adaptationNbsVisibleReplicaAtom`) **co-located** with Recoil replica atoms (`nbsLayerState`, `nbsScopeRegionLayerState`), same layout as `feature-bbox.ts`.
+- `src/state/layers/ui-layers/feature-bbox.ts` — `boundedFeatureAtom`, `featureBoundingBoxLayerAtom` + Recoil `featureBoundingBoxLayerState` replica.
+- `src/state/layers/nbs-view-layers-sync.tsx` — bridge component mounted in `MapView`.
+- UI: `NbsAdaptationSection`, `NbsPrioritisationPanel`, `FeatureAdaptationsTable` — fully Jotai. Deleted orphan `hoveredAdaptationFeatureState`; `selectedAdaptationFeatureState` → `selectedAdaptationFeatureAtom`.
+
+**Verified**: `npm run test:type-check`, eslint, cross-cutting `rg` for old `*State` names → zero hits in `src/`.
+
+### Design decision: Jotai layer source → Recoil hub replicas (not MapView merge)
+
+Early plan for Slice 10 considered removing NbS slots from Recoil `viewLayersState` and merging two layer lists in `MapView`. **Rejected** because `viewLayersState`'s `waitForAll` array encodes draw order — NbS data layer sits between population exposure and RWI; scope regions and feature bbox are in the UI section at fixed indices. Duplicating that ordering in a merge function would be fragile and would fight Slice 15 (hub migration).
+
+**Chosen pattern**:
+
+```
+Jotai: nbsLayerAtom / nbsScopeRegionLayerAtom / featureBoundingBoxLayerAtom
+  ↓ useSyncValueToRecoil (NbsViewLayersSync)
+Recoil: nbsLayerState / nbsScopeRegionLayerState / featureBoundingBoxLayerState  (replica atoms, default null)
+  ↓ unchanged waitForAll positions
+Recoil: viewLayersState hub
+  ↓ useSyncValueToAtom (MapView)
+Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
+```
+
+`view-layers.ts` imports and slot order are **unchanged**. Slice 15 teardown: delete replica atoms + sync hooks; fold Jotai layer atoms directly into a Jotai `viewLayersAtom` at the same indices.
+
+**Sidebar visibility bridge**: `sidebarPathVisibilityState('adaptation/nbs')` stays Recoil until Slice 15. `NbsViewLayersSync` syncs it → `adaptationNbsVisibleReplicaAtom` for layer gating and for `NbsPrioritisationPanel` visibility (replacing inline `useRecoilValue` on the hub selector).
+
+**Co-location convention**: files that straddle the boundary (`nbs.ts`, `feature-bbox.ts`) put Jotai definitions first, Recoil replicas second, with `Recoil↔Jotai migration` comments on the replica exports and on the sync component. Fully migrated files (`state/data-selection/nbs.ts`, section components) carry no bridge comments.
+
+### Decisions taken during Step 10
+
+- **Slice 6 bundled, not bridged.** Basemap atoms migrated to Jotai rather than syncing Recoil → Jotai at the map boundary — only two consumers (`MapLayerSelection`, `MapView`) and NbS layer derivation reads them directly.
+- **`nbsScopeRegionLayerAtom` returns `ViewLayer[] | null`**, matching the old Recoil selector (array of one layer when visible, `null` when hidden). Recoil replica atom type matches.
+- **Nullable writable atoms**: `boundedFeatureAtom` and `selectedAdaptationFeatureAtom` use the typed-local initial workaround (`const INITIAL_*: T | null = null; atom(INITIAL_*)`) — same pitfall as Step 4b/8.
+- **One-frame sync lag on NbS layer toggle** is the same tradeoff accepted in Step 9 for view-layer params. If flicker appears when toggling Adaptation visibility, `useLayoutEffect` in the sync helpers is the escape hatch — not applied preemptively.
+
+### Things explicitly **not** done in Step 10
+
+- `viewLayersState` hub, `sidebarPathVisibilityState`, and the three NbS/bbox Recoil replica atoms — remain until Slice 15.
+- `interactionGroupsState` — still Recoil; `MapView` reads it alongside Jotai params.
+- All non-NbS layer selectors in `view-layers.ts` — unchanged (Slices 11–15).

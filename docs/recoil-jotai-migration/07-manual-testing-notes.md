@@ -133,3 +133,33 @@
 - confirm the NBS Prioritisation panel disappears and no region is selected
 - switch back to Country scope level
 - confirm the NBS Prioritisation panel is still not displayed, and no region is selected
+
+## Map basemap
+
+- go to map page - any view
+- open the basemap control (layers icon, bottom-left HUD)
+- switch between Map and Satellite — confirm basemap updates
+- toggle "Show labels" off and on — confirm label visibility changes
+- go to Adaptation view with Nature-Based Solutions enabled
+- with scope level Country, confirm scope-region boundaries/labels remain readable on both basemaps
+
+## NbS adaptation
+
+### Controls and map layers
+
+- go to map page - Adaptations view, enable Nature-Based Solutions
+- change adaptation type, geographic scope, color-by variable, and hazard (where shown)
+- confirm the NbS data layer and scope-region overlay update on the map
+- switch color-by from a continuous variable (e.g. Avoided EAD) to a categorical one — confirm map styling changes (no prioritisation table)
+
+### Scope region selection and prioritisation panel
+
+- set scope level to Country, color-by to a continuous variable
+- click a country — confirm prioritisation panel opens with region name in title and adaptations table
+- hover rows in the table — confirm a bounding-box highlight appears on the map for that feature
+- click zoom-in on a row — confirm map zooms to feature; click zoom-out — confirm map returns to region extent
+- deselect by clicking empty map — confirm region stays selected and panel remains (existing behaviour)
+
+### Basemap interaction with scope regions
+
+- with a country selected and scope regions visible, switch basemap Map ↔ Satellite and toggle labels — confirm scope-region layer outline and label colours remain legible

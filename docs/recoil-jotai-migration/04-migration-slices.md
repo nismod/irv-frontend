@@ -214,25 +214,24 @@ export function useMoveJobToCompleted() {
 
 ### Slice 6 — Map basemap
 
-**Status**: deferred (2026-05-19). `backgroundState` / `showLabelsState` are blocked on NbS cross-read via `nbsScopeRegionLayerState`; skipping until NbS slice or NbS removal is decided.
+**Status**: done (2026-05-20), shipped together with Slice 10 (NbS needed basemap atoms on Jotai for `nbsScopeRegionLayerAtom`).
 
-**Nodes**: `backgroundState`, `showLabelsState`.
+**Nodes**: `backgroundState` → `backgroundAtom`, `showLabelsState` → `showLabelsAtom`.
 
-**Bridge nodes touched**: `backgroundState` and `showLabelsState` are read by `nbsScopeRegionLayerState` — moving them changes that selector's deps too.
+**Bridge nodes touched**: none at atom-definition level after Slice 10 (NbS scope-regions layer reads Jotai basemap atoms directly).
 
-**Files**: [`src/map/layers/layers-state.ts`](../../../src/map/layers/layers-state.ts), [`src/map/layers/MapLayerSelection.tsx`](../../../src/map/layers/MapLayerSelection.tsx), [`src/state/layers/data-layers/nbs.ts`](../../../src/state/layers/data-layers/nbs.ts) (only insofar as it `get`s `backgroundState`/`showLabelsState`).
+**Files**: [`src/map/layers/layers-state.ts`](../../../src/map/layers/layers-state.ts), [`src/map/layers/MapLayerSelection.tsx`](../../../src/map/layers/MapLayerSelection.tsx), [`src/map/MapView.tsx`](../../../src/map/MapView.tsx).
 
 **Note**: `mapInteractionModeState`, `pixelDrillerClickLocationState`, and `pixelDrillerSiteUrlState` were originally listed here because they share `MapView.tsx` as a consumer. They are **not** intertwined at the atom-definition level and were moved to Slice 4 (pixel driller).
 
-**Risk**: medium (cross-slice read via `nbsScopeRegionLayerState`).
+**Risk**: medium (cross-slice read via `nbsScopeRegionLayerState` — resolved by combining with Slice 10).
 
 **Playbook**
 
-1. `backgroundState` and `showLabelsState` → plain Jotai atoms.
-2. Update consumers (`useRecoilState` → `useAtom`, `useSetRecoilState` → `useSetAtom`).
-3. Until slice 10 (NbS), `nbsScopeRegionLayerState` still reads via `useRecoilValue`. Use the `RecoilToJotaiBridge` pattern from §4.1 if needed (or wait to combine slices 6 and 10).
+1. `backgroundState` and `showLabelsState` → plain Jotai atoms (`backgroundAtom`, `showLabelsAtom`).
+2. Update consumers (`useRecoilState` → `useAtom`, `useRecoilValue` → `useAtomValue`).
 
-**Test plan**: switch basemaps in `MapLayerSelection`; toggle labels.
+**Test plan**: switch basemaps in `MapLayerSelection`; toggle labels; on Adaptation view confirm scope-region label colours track basemap (light vs satellite, labels on/off).
 
 ### Slice 7 — Map view + URL coords
 
@@ -352,26 +351,37 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **Test plan**: open an article page with at least two `ArticleMap` instances side-by-side (or, if none, render two of them in a Storybook/playground). Hover one map — confirm the hover/tooltip does **not** appear on the other map. (This is the exact behaviour the original nested `RecoilRoot` was protecting.)
 
-### Slice 10 — NbS adaptation
+### Slice 10 — NbS adaptation (+ basemap from Slice 6)
 
-**Nodes**: all of `state/data-selection/nbs.ts` (4 atoms + 12 selectors); `nbsLayerState`, `nbsScopeRegionLayerState` in `state/layers/data-layers/nbs.ts`; `showPrioritisationState` in `config/nbs/components/NbsPrioritisationPanel.tsx`; `hoveredAdaptationFeatureState` (orphan — delete), `selectedAdaptationFeatureState`.
+**Status**: done (2026-05-20).
 
-**Bridge nodes touched**: `selectionState('scope_regions')` (slice 9), `sidebarPathVisibilityState('adaptation/nbs')` (hub), `backgroundState`/`showLabelsState` (slice 6), `boundedFeatureState` (slice 9-adjacent — defined in `state/layers/ui-layers/feature-bbox.ts`).
+**What shipped:** full NbS data graph on Jotai; basemap atoms (`backgroundAtom`, `showLabelsAtom`); feature-bbox on Jotai; NbS/bbox view layers computed in Jotai and synced into Recoil replica atoms so `viewLayersState` keeps its existing `waitForAll` ordering (no MapView layer-list merge).
 
-**Files**: [`src/state/data-selection/nbs.ts`](../../../src/state/data-selection/nbs.ts), [`src/state/layers/data-layers/nbs.ts`](../../../src/state/layers/data-layers/nbs.ts), [`src/config/nbs/components/NbsPrioritisationPanel.tsx`](../../../src/config/nbs/components/NbsPrioritisationPanel.tsx), [`src/config/nbs/components/FeatureAdaptationsTable.tsx`](../../../src/config/nbs/components/FeatureAdaptationsTable.tsx), [`src/sidebar/sections/adaptation/NbsAdaptationSection.tsx`](../../../src/sidebar/sections/adaptation/NbsAdaptationSection.tsx), [`src/state/layers/ui-layers/feature-bbox.ts`](../../../src/state/layers/ui-layers/feature-bbox.ts).
+**Nodes migrated to Jotai:**
 
-**Risk**: medium (largest single selector graph in the project).
+- All of [`src/state/data-selection/nbs.ts`](../../../src/state/data-selection/nbs.ts): 4 primitive atoms + 12 derived atoms (`*Atom` naming).
+- Basemap: `backgroundAtom`, `showLabelsAtom` in [`src/map/layers/layers-state.ts`](../../../src/map/layers/layers-state.ts).
+- Layer derivation: `nbsLayerAtom`, `nbsScopeRegionLayerAtom` in [`src/state/layers/data-layers/nbs.ts`](../../../src/state/layers/data-layers/nbs.ts) (alongside Recoil replica atoms).
+- Feature bbox: `boundedFeatureAtom`, `featureBoundingBoxLayerAtom` in [`src/state/layers/ui-layers/feature-bbox.ts`](../../../src/state/layers/ui-layers/feature-bbox.ts).
+- UI: `selectedAdaptationFeatureAtom` in [`src/config/nbs/components/FeatureAdaptationsTable.tsx`](../../../src/config/nbs/components/FeatureAdaptationsTable.tsx).
 
-**Playbook**
+**Deleted:** `hoveredAdaptationFeatureState` (orphan), `nbsRegionScopeLevelReplicaAtom` (interim Slice 9 bridge).
 
-1. Delete `hoveredAdaptationFeatureState` (orphan).
-2. Port the 4 atoms.
-3. Port the 12 selectors in `state/data-selection/nbs.ts` — they're all sync, no families, mechanical.
-4. Port `nbsScopeRegionLayerState` and `nbsLayerState` (both still read `sidebarPathVisibilityState` — bridge until slice 15).
-5. Port `boundedFeatureState` and `featureBoundingBoxLayerState`.
-6. Update consumers.
+**Nodes still on Recoil (bridges until Slice 15):**
 
-**Test plan**: navigate to `/view/adaptation`; pick a scope level, pick an adaptation type, switch hazard, switch variable; click a scope region (calls into `selectionState('scope_regions')`); confirm `nbsSelectedScopeRegion*State` selectors update; the `NbsPrioritisationPanel` should show; switch a continuous variable to a categorical one and confirm style params change.
+- `nbsLayerState`, `nbsScopeRegionLayerState`, `featureBoundingBoxLayerState` — replica atoms written by [`NbsViewLayersSync`](../../../src/state/layers/nbs-view-layers-sync.tsx).
+- `sidebarPathVisibilityState('adaptation/nbs')` → `adaptationNbsVisibleReplicaAtom` (same sync component).
+- `viewLayersState` hub (unchanged ordering in [`view-layers.ts`](../../../src/state/layers/view-layers.ts)).
+
+**Bridge pattern:** Jotai layer atoms → `useSyncValueToRecoil` → Recoil replica atoms → existing `viewLayersState` `waitForAll`. Symmetric inverse of Slice 9's `viewLayersReplicaAtom` (Recoil hub → Jotai params).
+
+**Files touched:** nbs data + layers files above; [`src/map/MapView.tsx`](../../../src/map/MapView.tsx), [`src/map/layers/MapLayerSelection.tsx`](../../../src/map/layers/MapLayerSelection.tsx), [`src/sidebar/sections/adaptation/NbsAdaptationSection.tsx`](../../../src/sidebar/sections/adaptation/NbsAdaptationSection.tsx), [`src/config/nbs/components/NbsPrioritisationPanel.tsx`](../../../src/config/nbs/components/NbsPrioritisationPanel.tsx), [`src/config/nbs/components/FeatureAdaptationsTable.tsx`](../../../src/config/nbs/components/FeatureAdaptationsTable.tsx).
+
+**Cross-cutting check:** `rg "nbsAdaptationTypeState|nbsRegionScopeLevelState|nbsVariableState|backgroundState|showLabelsState|boundedFeatureState|hoveredAdaptationFeatureState|nbsRegionScopeLevelReplicaAtom"` over `src/` → zero hits.
+
+**Risk**: medium (largest single selector graph in the project; Jotai→Recoil layer sync).
+
+**Test plan**: navigate to `/view/adaptation`; pick a scope level, pick an adaptation type, switch hazard, switch variable; click a scope region; confirm prioritisation panel + table; hover table rows and confirm feature bbox highlight on map; switch basemap/labels and confirm scope-region styling; switch continuous variable to categorical and confirm map style changes.
 
 ### Slice 11 — Networks / damages styling
 

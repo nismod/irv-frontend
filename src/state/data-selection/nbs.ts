@@ -1,5 +1,4 @@
-import { atom as jotaiAtom } from 'jotai';
-import { atom, selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { LayerSpec, ScopeSpec } from '@/lib/asset-list/use-sorted-features';
 import { bboxWktToAppBoundingBox, extendBbox } from '@/lib/bounding-box';
@@ -20,40 +19,25 @@ import {
   NbsRegionScopeLevel,
 } from '@/config/nbs/metadata';
 
-export const nbsAdaptationTypeState = atom<NbsAdaptationType>({
-  key: 'nbsAdaptationTypeState',
-  default: 'slope_vegetation:natural_regeneration',
+export const nbsAdaptationTypeAtom = atom<NbsAdaptationType>(
+  'slope_vegetation:natural_regeneration',
+);
+
+export const nbsRegionScopeLevelAtom = atom<NbsRegionScopeLevel>('adm0');
+
+export const nbsRegionScopeLevelIdPropertyAtom = atom((get) => {
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
+  return NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
 });
 
-export const nbsRegionScopeLevelState = atom<NbsRegionScopeLevel>({
-  key: 'nbsRegionScopeLevelState',
-  default: 'adm0',
-});
-
-export const nbsRegionScopeLevelIdPropertyState = selector<string>({
-  key: 'nbsRegionScopeLevelIdPropertyState',
-  get: ({ get }) => {
-    const nbsRegionScopeLevel = get(nbsRegionScopeLevelState);
-    return NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
-  },
-});
-
-// === NBS Selected Region State (Jotai — reads Jotai selectionAtomFamily) ===
-
-/**
- * Recoil↔Jotai migration: scope level is still edited via Recoil `nbsRegionScopeLevelState`;
- * NbsAdaptationSection syncs the current value here for Jotai derived atoms below.
- */
-export const nbsRegionScopeLevelReplicaAtom = jotaiAtom<NbsRegionScopeLevel>('adm0');
-
-export const nbsSelectedScopeRegionAtom = jotaiAtom((get) => {
+export const nbsSelectedScopeRegionAtom = atom((get) => {
   const nbsRegionSelection = get(
     selectionAtomFamily('scope_regions'),
   ) as InteractionTarget<VectorTarget> | null;
   return nbsRegionSelection?.target.feature ?? null;
 });
 
-export const nbsSelectedScopeRegionBboxAtom = jotaiAtom((get) => {
+export const nbsSelectedScopeRegionBboxAtom = atom((get) => {
   const selectedRegion = get(nbsSelectedScopeRegionAtom);
   if (!selectedRegion) {
     return null;
@@ -62,9 +46,9 @@ export const nbsSelectedScopeRegionBboxAtom = jotaiAtom((get) => {
   return extendBbox(bboxWktToAppBoundingBox(selectedRegion.properties.bbox_wkt), 5);
 });
 
-export const nbsSelectedScopeRegionIdAtom = jotaiAtom((get) => {
+export const nbsSelectedScopeRegionIdAtom = atom((get) => {
   const selectedRegion = get(nbsSelectedScopeRegionAtom);
-  const nbsRegionScopeLevel = get(nbsRegionScopeLevelReplicaAtom);
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
   const idProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
 
   if (!selectedRegion || !idProperty) {
@@ -74,9 +58,9 @@ export const nbsSelectedScopeRegionIdAtom = jotaiAtom((get) => {
   return selectedRegion.properties[idProperty];
 });
 
-export const nbsSelectedScopeRegionNameAtom = jotaiAtom((get) => {
+export const nbsSelectedScopeRegionNameAtom = atom((get) => {
   const selectedRegion = get(nbsSelectedScopeRegionAtom);
-  const nbsRegionScopeLevel = get(nbsRegionScopeLevelReplicaAtom);
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
   const nameProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.nameProperty;
 
   if (!selectedRegion || !nameProperty) {
@@ -86,8 +70,8 @@ export const nbsSelectedScopeRegionNameAtom = jotaiAtom((get) => {
   return selectedRegion.properties[nameProperty] ?? null;
 });
 
-export const nbsAdaptationScopeSpecAtom = jotaiAtom((get): ScopeSpec | null => {
-  const nbsRegionScopeLevel = get(nbsRegionScopeLevelReplicaAtom);
+export const nbsAdaptationScopeSpecAtom = atom((get): ScopeSpec | null => {
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
   const idProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
   const selectedRegionId = get(nbsSelectedScopeRegionIdAtom);
 
@@ -100,122 +84,90 @@ export const nbsAdaptationScopeSpecAtom = jotaiAtom((get): ScopeSpec | null => {
   };
 });
 
-// === NBS Adaptation Hazard State ===
+export const nbsAdaptationHazardAtom = atom<NbsHazardType>('ls');
 
-export const nbsAdaptationHazardState = atom<NbsHazardType>({
-  key: 'nbsAdaptationHazardState',
-  default: 'ls',
+export const nbsVariableAtom = atom<NbsDataVariable>('avoided_ead_mean');
+
+export const nbsIsDataVariableContinuousAtom = atom((get) => {
+  const nbsVariable = get(nbsVariableAtom);
+  return NBS_DATA_VARIABLE_METADATA[nbsVariable]?.dataType === 'continuous';
 });
 
-// === NBS Data Variable State ===
+export const nbsLayerSpecAtom = atom((get): LayerSpec => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return null;
+  }
 
-export const nbsVariableState = atom<NbsDataVariable>({
-  key: 'nbsVariableState',
-  default: 'avoided_ead_mean',
+  return {
+    layer: NBS_VECTOR_LAYER_PER_ADAPTATION_TYPE[get(nbsAdaptationTypeAtom)],
+  };
 });
 
-export const nbsIsDataVariableContinuous = selector<boolean>({
-  key: 'nbsIsDataVariableContinuous',
-  get: ({ get }) => {
-    const nbsVariable = get(nbsVariableState);
-    return NBS_DATA_VARIABLE_METADATA[nbsVariable]?.dataType === 'continuous';
-  },
+export const nbsFieldSpecAtom = atom((get): FieldSpec => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return null;
+  }
+  const nbsAdaptationType = get(nbsAdaptationTypeAtom);
+  const nbsVariable = get(nbsVariableAtom);
+  const nbsAdaptationHazard = get(nbsAdaptationHazardAtom);
+
+  return {
+    fieldGroup: 'adaptation',
+    field: nbsVariable,
+    fieldDimensions: {
+      hazard: nbsAdaptationHazard,
+      rcp: 'baseline',
+      adaptation_name: nbsAdaptationType,
+      adaptation_protection_level: 1,
+    },
+    fieldParams: {},
+  };
 });
 
-export const nbsLayerSpecState = selector<LayerSpec>({
-  key: 'nbsLayerSpecState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return null;
-    }
+export const nbsColorSpecAtom = atom((get): ColorSpec => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return null;
+  }
 
-    return {
-      layer: NBS_VECTOR_LAYER_PER_ADAPTATION_TYPE[get(nbsAdaptationTypeState)],
-    };
-  },
+  const nbsVariable = get(nbsVariableAtom);
+
+  return NBS_ADAPTATION_COLORMAPS[nbsVariable];
 });
 
-export const nbsFieldSpecState = selector<FieldSpec>({
-  key: 'nbsFieldSpecState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return null;
-    }
-    const nbsAdaptationType = get(nbsAdaptationTypeState);
-    const nbsVariable = get(nbsVariableState);
-    const nbsAdaptationHazard = get(nbsAdaptationHazardState);
+export const nbsStyleParamsAtom = atom((get): StyleParams => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return {};
+  }
 
-    return {
-      fieldGroup: 'adaptation',
-      field: nbsVariable,
-      fieldDimensions: {
-        hazard: nbsAdaptationHazard,
-        rcp: 'baseline',
-        adaptation_name: nbsAdaptationType,
-        adaptation_protection_level: 1,
-      },
-      fieldParams: {},
-    };
-  },
+  const fieldSpec = get(nbsFieldSpecAtom);
+  const colorSpec = get(nbsColorSpecAtom);
+
+  return {
+    colorMap: {
+      colorSpec,
+      fieldSpec,
+    },
+  };
 });
 
-export const nbsColorSpecState = selector<ColorSpec>({
-  key: 'nbsColorSpecState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return null;
-    }
-
-    const nbsVariable = get(nbsVariableState);
-
-    return NBS_ADAPTATION_COLORMAPS[nbsVariable];
-  },
+const nbsPrimaryCategoricalVariableAtom = atom((get) => {
+  const nbsAdaptationType = get(nbsAdaptationTypeAtom);
+  return NBS_PRIMARY_CATEGORICAL_VARIABLE_PER_ADAPTATION_TYPE[nbsAdaptationType];
 });
 
-export const nbsStyleParamsState = selector<StyleParams>({
-  key: 'nbsStyleParamsState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return {};
-    }
+export const nbsCategoricalConfigAtom = atom((get): NbsCategoricalConfig => {
+  const nbsVariable = get(nbsVariableAtom);
+  const variableMeta = NBS_DATA_VARIABLE_METADATA[nbsVariable];
+  if (variableMeta.dataType === 'categorical') {
+    return variableMeta.categoricalConfig;
+  }
 
-    const fieldSpec = get(nbsFieldSpecState);
-    const colorSpec = get(nbsColorSpecState);
+  const primaryCategoricalVariable = get(nbsPrimaryCategoricalVariableAtom);
+  const categoricalVarMeta = NBS_DATA_VARIABLE_METADATA[primaryCategoricalVariable];
 
-    return {
-      colorMap: {
-        colorSpec,
-        fieldSpec,
-      },
-    };
-  },
-});
+  if (categoricalVarMeta.dataType !== 'categorical') {
+    return null;
+  }
 
-const nbsPrimaryCategoricalVariableState = selector<NbsDataVariable>({
-  key: 'nbsPrimaryCategoricalVariableState',
-  get: ({ get }) => {
-    const nbsAdaptationType = get(nbsAdaptationTypeState);
-    return NBS_PRIMARY_CATEGORICAL_VARIABLE_PER_ADAPTATION_TYPE[nbsAdaptationType];
-  },
-});
-
-export const nbsCategoricalConfigState = selector<NbsCategoricalConfig>({
-  key: 'nbsCategoricalConfigState',
-  get: ({ get }) => {
-    const nbsVariable = get(nbsVariableState);
-    const variableMeta = NBS_DATA_VARIABLE_METADATA[nbsVariable];
-    if (variableMeta.dataType === 'categorical') {
-      return variableMeta.categoricalConfig;
-    } else {
-      const primaryCategoricalVariable = get(nbsPrimaryCategoricalVariableState);
-
-      const categoricalVarMeta = NBS_DATA_VARIABLE_METADATA[primaryCategoricalVariable];
-
-      if (categoricalVarMeta.dataType !== 'categorical') {
-        return null;
-      }
-
-      return categoricalVarMeta.categoricalConfig;
-    }
-  },
+  return categoricalVarMeta.categoricalConfig;
 });

@@ -13,6 +13,7 @@ import { LocationMarker } from '@/lib/map/pixel-driller/LocationMarker';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { interactionGroupsState } from '@/state/layers/interaction-groups';
+import { NbsViewLayersSync } from '@/state/layers/nbs-view-layers-sync';
 import { viewLayersState } from '@/state/layers/view-layers';
 import { viewLayersParamsAtom, viewLayersReplicaAtom } from '@/state/layers/view-layers-params';
 import {
@@ -23,7 +24,7 @@ import {
 import { mapFitBoundsAtom, mapViewStateAtom, useSyncMapUrl } from '@/state/map-view/map-view-state';
 import { pixelDrillerSiteUrlAtom } from '@/state/map-view/pixel-driller-url-state';
 
-import { backgroundState, showLabelsState } from './layers/layers-state';
+import { backgroundAtom, showLabelsAtom } from './layers/layers-state';
 import { TooltipContent } from './tooltip/TooltipContent';
 import { useBasemapStyle } from './use-basemap-style';
 
@@ -31,13 +32,12 @@ const MapViewContent = ({ children }) => {
   const [viewState, setViewState] = useAtom(mapViewStateAtom);
   useSyncMapUrl();
 
-  // Recoil↔Jotai migration: map camera + pixel driller are Jotai; layers/basemap still Recoil.
-  const background = useRecoilValue(backgroundState);
-  const showLabels = useRecoilValue(showLabelsState);
+  const background = useAtomValue(backgroundAtom);
+  const showLabels = useAtomValue(showLabelsAtom);
   const { mapStyle, firstLabelId } = useBasemapStyle(background, showLabels);
 
   const viewLayers = useRecoilValue(viewLayersState);
-  // Recoil↔Jotai migration: layer list still computed in Recoil; replica feeds Jotai view-layer params.
+  // Recoil↔Jotai migration: layer list hub is still Recoil; replica feeds Jotai view-layer params.
   useSyncValueToAtom(viewLayers, viewLayersReplicaAtom);
   const viewLayersParams = useAtomValue(viewLayersParamsAtom);
 
@@ -123,6 +123,8 @@ const MapViewContent = ({ children }) => {
       onViewState={setViewState}
       onClick={isPixelDrillerMode ? handleMapClick : undefined}
     >
+      {/* Recoil↔Jotai migration: NbS/bbox layers computed in Jotai, synced into Recoil viewLayers hub. */}
+      <NbsViewLayersSync />
       <DataMap
         beforeId={firstLabelId}
         viewLayers={viewLayers}
