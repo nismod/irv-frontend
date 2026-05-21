@@ -90,34 +90,19 @@ export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
   license: 'CC-BY-NC-4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'Global Landslide Hazard Map',
-      description:
-        'Global gridded landslide hazard dataset with estimated annual frequency of significant landslides per square kilometre for land areas between 60S and 72N. Significant landslides are those likely to have been reported had they occurred in a populated place. The dataset includes mean annual rainfall-triggered hazard, median annual rainfall-triggered hazard, mean annual earthquake-triggered hazard, and an aggregate hazard index from 1 (low) to 4 (very high).',
-      lineage:
-        'Arup (2021). Global Landslide Hazard Map, prepared for The World Bank and Global Facility for Disaster Reduction and Recovery.',
-      url: 'https://datacatalog.worldbank.org/search/dataset/0037584/Global-landslide-hazard-map',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-NC-4.0',
-      id: 'source_global_landslide_hazard_map',
-    },
-  ],
-  attributions: [
-    {
-      name: 'Arup',
-      url: 'https://www.arup.com/',
-    },
-    {
-      name: 'The World Bank',
-      url: 'https://www.worldbank.org/',
-    },
-    {
-      name: 'Global Facility for Disaster Reduction and Recovery',
-      url: 'https://www.gfdrr.org/',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_global_landslide_hazard_map',
+        name: 'Arup (2021). Global Landslide Hazard Map, prepared for The World Bank and Global Facility for Disaster Reduction and Recovery.',
+        url: 'https://datacatalog.worldbank.org/search/dataset/0037584/Global-landslide-hazard-map',
+        type: 'dataset',
+        risk_data_type: 'hazard',
+        license: 'CC-BY-NC-4.0',
+      },
+    ],
+  },
 });
 
 const landslideExportConfig: ExportConfig = {

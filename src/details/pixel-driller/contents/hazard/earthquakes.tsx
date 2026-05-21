@@ -62,15 +62,15 @@ const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   id: earthquakeBaseName,
   title: 'Earthquake Ground Shaking',
   description:
-    'Modelled ground shaking intensity for earthquake scenarios at this site for a given return period and medium.',
+    'Modelled Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years.',
   risk_data_type: ['hazard'],
   spatial,
   resources: [
     {
       id: `${earthquakeBaseName}.csv`,
-      title: 'Earthquake Ground Shaking Data',
+      title: 'GEM Global Earthquake Hazard',
       description:
-        'Ground shaking intensity values for earthquake scenarios at this site, including return period and ground medium.',
+        'The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1) depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years, computed for reference rock conditions (shear wave velocity, VS30, of 760-800 m/s).',
       format: 'csv',
       schema: {
         fields: structuredClone(earthquakeColumns),
@@ -82,35 +82,19 @@ const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   license: 'CC-BY-NC-SA',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'GEM Global Earthquake Hazard Map',
-      description:
-        'The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1) depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years, computed for reference rock conditions (shear wave velocity, VS30, of 760-800 m/s).',
-      lineage:
-        'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1), DOI: 10.1177/8755293020931866. and Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S., Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A., Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data set]. Zenodo. DOI 10.5281/zenodo.8409647',
-      url: 'https://doi.org/10.5281/zenodo.8409647',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-NC-SA 4.0',
-      id: 'source_gem_earthquake',
-    },
-  ],
-  attributions: [
-    {
-      name: 'Global Earthquake Model Foundation',
-      url: 'https://www.globalquakemodel.org/',
-    },
-    {
-      name: 'M. Pagani',
-    },
-    {
-      name: 'K. Johnson',
-    },
-    {
-      name: 'M. Villani',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_gem_earthquake',
+        name: 'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1), DOI: 10.1177/8755293020931866. and Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S., Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A., Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data set]. Zenodo. DOI 10.5281/zenodo.8409647',
+        url: 'https://doi.org/10.5281/zenodo.8409647',
+        type: 'dataset',
+        risk_data_type: 'hazard',
+        license: 'CC-BY-NC-SA 4.0',
+      },
+    ],
+  },
 });
 
 const earthquakesExportConfig: ExportConfig = {

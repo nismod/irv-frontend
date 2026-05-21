@@ -108,38 +108,19 @@ const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   license: 'CC0 1.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'Annual probability of extreme heat and drought events',
-      description:
-        'Annual probability of extreme heat events on a 0.5 degree grid, derived from ISIMIP2b climate impact event projections for baseline, RCP 2.6, and RCP 6.0 emissions scenarios and current and future maps in 2030, 2050, and 2080. Extreme heat exposure follows Lange et al. event definitions based on relative temperature indicators and absolute temperature and relative humidity thresholds. Time series of extreme events were processed into annual probability of occurrence for visualisation.',
-      lineage:
-        "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
-      url: 'https://doi.org/10.5281/zenodo.8147088',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_extreme_heat_drought',
-    },
-  ],
-  attributions: [
-    {
-      name: 'Tom Russell',
-    },
-    {
-      name: 'Chris Nicholas',
-    },
-    {
-      name: 'M. Bernhofen',
-    },
-    {
-      name: 'S. Lange',
-    },
-    {
-      name: 'ISIMIP',
-      url: 'https://www.isimip.org/',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_extreme_heat_drought',
+        name: "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
+        url: 'https://doi.org/10.5281/zenodo.8147088',
+        type: 'dataset',
+        risk_data_type: 'hazard',
+        license: 'CC-BY-4.0',
+      },
+    ],
+  },
 });
 
 const extremeHeatExportConfig: ExportConfig = {

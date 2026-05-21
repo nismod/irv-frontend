@@ -121,38 +121,19 @@ export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDatas
   license: 'CC-BY 4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'Aqueduct Floods',
-      description:
-        'Inundation depth in meters for coastal and riverine floods over 1km grid squares. The maps include 1 in 2 to 1 in 1000 year return periods, baseline and RCP 4.5 and 8.5 emissions scenarios, and current and future maps in 2030, 2050 and 2080.',
-      lineage:
-        'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute.',
-      url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_aqueduct_floods',
-    },
-  ],
-  attributions: [
-    {
-      name: 'Peter J. Ward',
-    },
-    {
-      name: 'Hessel C. Winsemius',
-    },
-    {
-      name: 'Samantha Kuzma',
-    },
-    {
-      name: 'Marc F.P. Bierkens',
-    },
-    {
-      name: 'World Resources Institute',
-      url: 'https://www.wri.org/',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_aqueduct_floods',
+        name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute.',
+        url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
+        type: 'dataset',
+        risk_data_type: 'hazard',
+        license: 'CC-BY-4.0',
+      },
+    ],
+  },
 });
 
 const aqueductCoastalExportConfig: ExportConfig = {

@@ -69,31 +69,19 @@ const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   license: 'CC-BY-NC-SA',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'ESA Land cover classification',
-      description:
-        'Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. The source data are from the ESA Climate Change Initiative Land Cover project led by UCLouvain, the ESA Climate Change Initiative Land Cover project 2020, and EC C3S Land Cover.',
-      lineage:
-        'European Space Agency Climate Change Initiative Land Cover project (2021). Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. doi:10.24381/cds.006f2c9a. The source data are from the ESA Climate Change Initiative Land Cover project led by UCLouvain, ESA Climate Change Initiative - Land Cover project 2020, and EC C3S Land Cover.',
-      url: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview',
-      type: 'dataset',
-      component: 'exposure',
-      license: 'ESA CCI',
-      id: 'source_esa_cci_land_cover',
-    },
-  ],
-  attributions: [
-    {
-      name: 'European Space Agency Climate Change Initiative Land Cover project',
-    },
-    {
-      name: 'UCLouvain',
-    },
-    {
-      name: 'EC C3S Land Cover',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_esa_cci_land_cover',
+        name: 'European Space Agency Climate Change Initiative Land Cover project (2021). Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. doi:10.24381/cds.006f2c9a. The source data are from the ESA Climate Change Initiative Land Cover project led by UCLouvain, ESA Climate Change Initiative - Land Cover project 2020, and EC C3S Land Cover.',
+        url: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview',
+        type: 'dataset',
+        risk_data_type: 'exposure',
+        license: 'ESA CCI',
+      },
+    ],
+  },
 });
 
 const landCoverExportConfig: ExportConfig = {

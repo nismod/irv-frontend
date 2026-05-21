@@ -31,8 +31,5 @@ export const COMMON_DIALECT: DatapackageTableDialect = {
  * The same location is re-used for all datasets in the metadata package.
  */
 export const createSpatialPoint = (lat: number, lng: number): RdlsLocation => ({
-  geometry: {
-    type: 'Point',
-    coordinates: [lng, lat],
-  },
+  centroid: [lng, lat],
 });

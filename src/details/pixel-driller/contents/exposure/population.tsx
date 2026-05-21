@@ -75,38 +75,19 @@ const getPopulationMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   license: 'CC-BY-NC-SA',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'GHS-POP - Global Human Settlement Population Grid',
-      description:
-        'GHS-POP R2023A depicts the distribution of population, expressed as the number of people per cell. Residential population estimates between 1975 and 2020 in 5 year intervals and projections to 2025 and 2030 were disaggregated to grid cells, informed by the distribution, density, and classification of built-up areas mapped in the Global Human Settlement Layer. This update uses more recent and detailed population estimates derived from GPWv4.11, integrating UN World Population Prospects 2022 country population data and World Urbanisation Prospects 2018 city data.',
-      lineage:
-        'Schiavina M., Freire S., Carioli A., MacManus K. (2023). European Commission Joint Research Centre. doi:10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE',
-      url: 'https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php',
-      type: 'dataset',
-      component: 'exposure',
-      license: 'CC-BY-4.0',
-      id: 'source_ghs_pop',
-    },
-  ],
-  attributions: [
-    {
-      name: 'Marcello Schiavina',
-    },
-    {
-      name: 'Sergio Freire',
-    },
-    {
-      name: 'Alessandra Carioli',
-    },
-    {
-      name: 'Kytt MacManus',
-    },
-    {
-      name: 'European Commission Joint Research Centre',
-      url: 'https://joint-research-centre.ec.europa.eu/',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_ghs_pop',
+        name: 'Schiavina M., Freire S., Carioli A., MacManus K. (2023). European Commission Joint Research Centre. doi:10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE',
+        url: 'https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php',
+        type: 'dataset',
+        risk_data_type: 'exposure',
+        license: 'CC-BY-4.0',
+      },
+    ],
+  },
 });
 
 const populationExportConfig: ExportConfig = {

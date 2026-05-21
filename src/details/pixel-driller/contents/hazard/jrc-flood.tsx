@@ -121,42 +121,19 @@ export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset => (
   license: 'CC-BY 4.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'JRC Global River Flood Hazard Maps',
-      description:
-        'Global gridded river flood hazard maps representing inundation along the river network for seven flood return periods from 1-in-10-years to 1-in-500-years. River flow inputs are produced using the open-source hydrological model LISFLOOD, and inundation simulations use the hydrodynamic model LISFLOOD-FP. Cell values indicate water depth in meters, and the maps can support exposure and flood risk assessments.',
-      lineage:
-        "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset]. The dataset is created as part of the Copernicus Emergency Management Service.",
-      url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_jrc_floods',
-    },
-  ],
-  attributions: [
-    {
-      name: 'Calum Baugh',
-    },
-    {
-      name: 'Juan Colonese',
-    },
-    {
-      name: "Claudia D'Angelo",
-    },
-    {
-      name: 'Francesco Dottori',
-    },
-    {
-      name: 'European Commission Joint Research Centre',
-      url: 'https://joint-research-centre.ec.europa.eu/',
-    },
-    {
-      name: 'Copernicus Emergency Management Service',
-      url: 'https://emergency.copernicus.eu/',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_jrc_floods',
+        name: "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset]. The dataset is created as part of the Copernicus Emergency Management Service.",
+        url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',
+        type: 'dataset',
+        risk_data_type: 'hazard',
+        license: 'CC-BY-4.0',
+      },
+    ],
+  },
 });
 
 const jrcFloodExportConfig: ExportConfig = {

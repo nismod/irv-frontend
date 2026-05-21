@@ -103,49 +103,27 @@ const getCycloneStormMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
   license: 'CC0 1.0',
   contact_point: COMMON_CONTACT_POINT,
   creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'STORM tropical cyclone wind speed return periods',
-      description:
-        'Tropical cyclone maximum wind speed return periods generated using the STORM datasets. The maps cover 1 in 10 to 1 in 10,000 year return periods at 10 km resolution, with baseline conditions represented for the current epoch.',
-      lineage:
-        'Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts, J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/12705164.v3. Aggregated as Russell, Tom. (2022). STORM tropical cyclone wind speed return periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo. doi:10.5281/zenodo.7438145.',
-      url: 'https://doi.org/10.4121/12705164.v3',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_storm_cyclone',
-    },
-    {
-      name: 'STORM climate change tropical cyclone wind speed return periods',
-      description:
-        'Tropical cyclone maximum wind speed return periods generated using the STORM climate change datasets. The maps cover 1 in 10 to 1 in 10,000 year return periods at 10 km resolution, with RCP 8.5 climate scenarios for future 2050 epochs.',
-      lineage:
-        'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J.; Haigh, I.D.; Martinez, Andrew B.; et al. (2022): STORM climate change tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/14510817.v3.',
-      url: 'https://doi.org/10.4121/14510817.v3',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_storm_cyclone_cc',
-    },
-  ],
-  attributions: [
-    {
-      name: 'Nadia Bloemendaal',
-    },
-    {
-      name: 'Hans de Moel',
-    },
-    {
-      name: 'Ivan Haigh',
-    },
-    {
-      name: 'Andrew B. Martinez',
-    },
-    {
-      name: 'Tom Russell',
-    },
-  ],
+  lineage: {
+    description: 'Point data extract from source.',
+    sources: [
+      {
+        id: 'source_storm_cyclone',
+        name: 'Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts, J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/12705164.v3. Aggregated as Russell, Tom. (2022). STORM tropical cyclone wind speed return periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo. doi:10.5281/zenodo.7438145.',
+        url: 'https://doi.org/10.4121/12705164.v3',
+        type: 'dataset',
+        risk_data_type: 'hazard',
+        license: 'CC-BY-4.0',
+      },
+      {
+        id: 'source_storm_cyclone_cc',
+        name: 'Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J.; Haigh, I.D.; Martinez, Andrew B.; et al. (2022): STORM climate change tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. doi:10.4121/14510817.v3.',
+        url: 'https://doi.org/10.4121/14510817.v3',
+        type: 'dataset',
+        risk_data_type: 'hazard',
+        license: 'CC-BY-4.0',
+      },
+    ],
+  },
 });
 
 const cycloneStormExportConfig: ExportConfig = {
