@@ -19,7 +19,7 @@ import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadat
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../../rag/rag-calculation';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Drought-specific key type definition
 interface DroughtKeys extends PixelRecordKeys {
@@ -129,7 +129,7 @@ const droughtsExportConfig: ExportConfig = {
   }),
 };
 
-export const Droughts: FC<HazardComponentProps> = ({ records }) => {
+export const Droughts: FC<PixelComponentProps> = ({ records }) => {
   // Filter for drought records (probability values)
   const droughtRecords = useMemo(() => filterDroughtRecords(records), [records]);
 

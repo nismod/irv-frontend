@@ -21,7 +21,7 @@ import { HazardAccordion } from '../../hazard-accordion';
 import { RagStatus } from '../../rag/rag-types';
 import {
   ChartConfig,
-  HazardComponentProps,
+  PixelComponentProps,
   PixelRecord,
   PixelRecordKeys,
   ReturnPeriodRow,
@@ -147,7 +147,7 @@ const jrcFloodExportConfig: ExportConfig = {
   }),
 };
 
-export const RiverFloodingJrc: FC<HazardComponentProps> = ({ records }) => {
+export const RiverFloodingJrc: FC<PixelComponentProps> = ({ records }) => {
   const filteredRecords = useMemo(() => filterJrcFloodRecords(records), [records]);
 
   const data = useMemo(

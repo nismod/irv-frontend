@@ -18,7 +18,7 @@ import {
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface BuildingKeys extends PixelRecordKeys {
   subtype?: string;
@@ -113,7 +113,7 @@ const formatBuiltUpSurfaceM2 = (value: number | null): string => {
   return `${n} m²`;
 };
 
-export const Buildings: FC<HazardComponentProps> = ({ records }) => {
+export const Buildings: FC<PixelComponentProps> = ({ records }) => {
   const buildingRecords = useMemo(() => filterBuildingRecords(records), [records]);
 
   const allRecord = useMemo(() => findBySubtype(buildingRecords, SUBTYPE_ALL), [buildingRecords]);

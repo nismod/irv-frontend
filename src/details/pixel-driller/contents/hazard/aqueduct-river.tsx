@@ -18,7 +18,7 @@ import {
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
-import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { ChartConfig, PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Aqueduct-specific key type definition
 export interface AqueductKeys extends PixelRecordKeys {
@@ -178,7 +178,7 @@ const aqueductRiverExportConfig: ExportConfig = {
   }),
 };
 
-export const RiverFloodingAqueduct: FC<HazardComponentProps> = ({ records }) => {
+export const RiverFloodingAqueduct: FC<PixelComponentProps> = ({ records }) => {
   const data = useMemo(
     () => toReturnPeriodRows(filterAqueductRiverRecords(records), aqueductRiverChartConfig),
     [records],

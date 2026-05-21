@@ -20,7 +20,7 @@ import {
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface LandCoverKeys extends PixelRecordKeys {}
 
@@ -98,7 +98,7 @@ function classCodeFromValue(value: number | null): number | null {
   return Math.round(value);
 }
 
-export const LandCover: FC<HazardComponentProps> = ({ records }) => {
+export const LandCover: FC<PixelComponentProps> = ({ records }) => {
   const landCoverRecords = useMemo(() => filterLandCoverRecords(records), [records]);
 
   const primaryRecord = useMemo(

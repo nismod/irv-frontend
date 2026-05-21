@@ -19,7 +19,7 @@ import {
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Landslide-specific key type definition
 export interface LandslideKeys extends PixelRecordKeys {
@@ -114,7 +114,7 @@ const landslideExportConfig: ExportConfig = {
   }),
 };
 
-export const Landslides: FC<HazardComponentProps> = ({ records }) => {
+export const Landslides: FC<PixelComponentProps> = ({ records }) => {
   const landslideRecords = useMemo(() => filterLandslideRecords(records), [records]);
 
   // Extract values for each subtype (treat null as zero for numeric values)

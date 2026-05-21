@@ -23,7 +23,7 @@ import {
   combineRagStatusesMax,
 } from '../../rag/rag-calculation';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Cooling degree days-specific key type definition
 interface CddKeys extends PixelRecordKeys {
@@ -116,7 +116,7 @@ const coolingDegreeDaysExportConfig: ExportConfig = {
   }),
 };
 
-export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
+export const CoolingDegreeDays: FC<PixelComponentProps> = ({ records }) => {
   const cddRecords = useMemo(() => filterCddRecords(records), [records]);
 
   const absoluteValue = useMemo(() => {

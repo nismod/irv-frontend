@@ -18,7 +18,7 @@ import {
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface DemKeys extends PixelRecordKeys {
   derivative?: string;
@@ -120,7 +120,7 @@ const formatSlopeDegrees = (value: number | null): string => {
   return `${n}°`;
 };
 
-export const Topography: FC<HazardComponentProps> = ({ records }) => {
+export const Topography: FC<PixelComponentProps> = ({ records }) => {
   const demRecords = useMemo(() => filterDemRecords(records), [records]);
 
   const elevationRecord = useMemo(

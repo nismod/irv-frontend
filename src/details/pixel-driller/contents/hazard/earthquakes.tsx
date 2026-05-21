@@ -19,7 +19,7 @@ import {
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../../rag/rag-calculation';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Earthquake-specific key type definition
 interface EarthquakeKeys extends PixelRecordKeys {
@@ -108,7 +108,7 @@ const earthquakesExportConfig: ExportConfig = {
   }),
 };
 
-export const Earthquakes: FC<HazardComponentProps> = ({ records }) => {
+export const Earthquakes: FC<PixelComponentProps> = ({ records }) => {
   const earthquakeRecords = useMemo(() => filterEarthquakeRecords(records), [records]);
 
   // There should effectively be a single value per location.

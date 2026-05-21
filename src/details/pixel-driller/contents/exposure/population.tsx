@@ -18,7 +18,7 @@ import {
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface PopulationKeys extends PixelRecordKeys {
   epoch?: string;
@@ -105,7 +105,7 @@ const formatPopulationDensity = (value: number | null): string => {
   return `${n} people/km²`;
 };
 
-export const Population: FC<HazardComponentProps> = ({ records }) => {
+export const Population: FC<PixelComponentProps> = ({ records }) => {
   const populationRecords = useMemo(() => filterPopulationRecords(records), [records]);
 
   const primaryRecord = useMemo(

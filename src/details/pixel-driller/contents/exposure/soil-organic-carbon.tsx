@@ -18,7 +18,7 @@ import {
 } from '../../download/metadata-common';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface NatureOrganicCarbonKeys extends PixelRecordKeys {
   subtype?: string;
@@ -108,7 +108,7 @@ const formatSoilOrganicCarbon = (value: number | null): string => {
   return `${n} t/ha`;
 };
 
-export const SoilOrganicCarbon: FC<HazardComponentProps> = ({ records }) => {
+export const SoilOrganicCarbon: FC<PixelComponentProps> = ({ records }) => {
   const socRecords = useMemo(() => filterSoilOrganicCarbonRecords(records), [records]);
 
   const primaryRecord = useMemo(

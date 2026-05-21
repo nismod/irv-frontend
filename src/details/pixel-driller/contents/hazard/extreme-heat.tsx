@@ -19,7 +19,7 @@ import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadat
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../../rag/rag-calculation';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Extreme Heat-specific key type definition
 export interface ExtremeHeatKeys extends PixelRecordKeys {
@@ -136,7 +136,7 @@ const extremeHeatExportConfig: ExportConfig = {
   }),
 };
 
-export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
+export const ExtremeHeat: FC<PixelComponentProps> = ({ records }) => {
   // Filter for extreme heat records (probability values)
   const extremeHeatRecords = useMemo(() => filterExtremeHeatRecords(records), [records]);
 

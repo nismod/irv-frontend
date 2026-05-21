@@ -19,7 +19,7 @@ import {
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
-import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { ChartConfig, PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Cyclone STORM-specific key type definition
 export interface CycloneStormKeys extends PixelRecordKeys {
@@ -139,7 +139,7 @@ const cycloneStormExportConfig: ExportConfig = {
   }),
 };
 
-export const TropicalCyclonesStorm: FC<HazardComponentProps> = ({ records }) => {
+export const TropicalCyclonesStorm: FC<PixelComponentProps> = ({ records }) => {
   const filteredRecords = useMemo(() => filterCycloneStormRecords(records), [records]);
 
   const data = useMemo(

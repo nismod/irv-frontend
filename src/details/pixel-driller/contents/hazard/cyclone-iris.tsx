@@ -18,7 +18,7 @@ import {
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
-import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { ChartConfig, PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Cyclone IRIS-specific key type definition
 export interface CycloneIrisKeys extends PixelRecordKeys {
@@ -130,7 +130,7 @@ const cycloneIrisExportConfig: ExportConfig = {
   }),
 };
 
-export const TropicalCyclonesIris: FC<HazardComponentProps> = ({ records }) => {
+export const TropicalCyclonesIris: FC<PixelComponentProps> = ({ records }) => {
   const data = useMemo(
     () => toReturnPeriodRows(filterCycloneIrisRecords(records), irisCycloneChartConfig),
     [records],
