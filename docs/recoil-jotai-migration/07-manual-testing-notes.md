@@ -204,3 +204,16 @@
 ### Risk sub-section switching
 
 - switch between Population Exposure, Infrastructure Risk, and Regional Summary — confirm only the active section's exposure sidebar leaf and map layer show (exercises `syncExposure` via `useRecoilCallback`)
+
+## Hazards selection (Slice 13)
+
+### Hazard view (`/view/hazard`)
+
+- enable several hazard layers (e.g. Extreme Heat, Drought, River Flooding → Aqueduct) — confirm map raster layers appear
+- change epoch and RCP on one hazard — confirm map layer updates (`hazardGroupParamsReplicaAtomFamily` bridge)
+- disable a hazard — confirm its map layer disappears
+
+### Cross-view hazard sync (Population / Infrastructure Risk)
+
+- on `/view/risk` → Population Exposure, switch hazard radio — confirm matching hazard sidebar path toggles follow
+- on `/view/risk` → Infrastructure Risk, switch hazard dropdown — confirm matching hazard sidebar path toggles follow

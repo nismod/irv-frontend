@@ -10,13 +10,11 @@ import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { makeOptions } from '@/lib/helpers';
 import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
-import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
-import { StateEffect } from '@/lib/recoil/state-effects/types';
 
 import { getHazardSidebarPath, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
 import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { DataParam } from '@/sidebar/ui/DataParam';
 import { InputRow } from '@/sidebar/ui/InputRow';
@@ -67,9 +65,25 @@ const SECTOR_LAYERS: Record<SectorType, NetworkLayerType[]> = {
   power: ['power_distribution', 'power_transmission'],
 };
 
-const syncHazardSidebarEffect: StateEffect<HazardType> = (iface, hazard) => {
-  showOneHazardStateEffect(iface, hazard);
-};
+function SyncInfrastructureHazardToSidebar() {
+  const hazard = useRecoilValue(
+    paramValueState({ group: 'infrastructure-risk', param: 'hazard' }),
+  ) as HazardType;
+  const applyHazardEffect = useRecoilTransaction_UNSTABLE(
+    (iface) => (newHazard: HazardType) =>
+      showOneHazardStateEffect(
+        (path, visible) => iface.set(sidebarVisibilityToggleState(path), visible),
+        newHazard,
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    applyHazardEffect(hazard);
+  }, [hazard, applyHazardEffect]);
+
+  return null;
+}
 
 const InitInfrastructureView = () => {
   const updateExposureTx = useRecoilTransaction_UNSTABLE(
@@ -158,11 +172,8 @@ export const InfrastructureRiskSection = () => {
       <DamageGroupParamsSync />
       <SyncSectorToNetworkTree />
       <SyncHazardToDamageSource />
+      <SyncInfrastructureHazardToSidebar />
       <InputSection>
-        <StateEffectRoot
-          state={paramValueState({ group: 'infrastructure-risk', param: 'hazard' })}
-          effect={syncHazardSidebarEffect}
-        />
         <DataNotice>
           <DataNoticeTextBlock>
             Power sector assets (transmission lines) are assumed to be vulnerable to high wind

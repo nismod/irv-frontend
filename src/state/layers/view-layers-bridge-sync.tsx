@@ -2,6 +2,7 @@ import { useAtomValue } from 'jotai';
 
 import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
 
+import { hazardLayersAtom, hazardLayerState } from '@/state/layers/data-layers/hazards';
 import {
   nbsLayerAtom,
   nbsLayerState,
@@ -27,6 +28,7 @@ import {
  * so `viewLayersState` keeps its waitForAll ordering (Slice 15 hub stays on Recoil).
  */
 export function ViewLayersBridgeSync() {
+  const hazardLayers = useAtomValue(hazardLayersAtom);
   const nbsLayer = useAtomValue(nbsLayerAtom);
   const nbsScopeRegionLayer = useAtomValue(nbsScopeRegionLayerAtom);
   const featureBboxLayer = useAtomValue(featureBoundingBoxLayerAtom);
@@ -34,6 +36,7 @@ export function ViewLayersBridgeSync() {
   const populationExposureLayer = useAtomValue(populationExposureLayerAtom);
   const regionalExposureLayer = useAtomValue(regionalExposureLayerAtom);
 
+  useSyncValueToRecoil(hazardLayers, hazardLayerState);
   useSyncValueToRecoil(nbsLayer, nbsLayerState);
   useSyncValueToRecoil(nbsScopeRegionLayer, nbsScopeRegionLayerState);
   useSyncValueToRecoil(featureBboxLayer, featureBoundingBoxLayerState);

@@ -13,7 +13,7 @@ import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 
 import { ExposureSource } from '@/config/hazards/exposure/exposure-view-layer';
 import { getHazardSidebarPath } from '@/config/hazards/metadata';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
@@ -64,7 +64,11 @@ function PopulationExposureGroupParamsSync() {
 function SyncPopulationHazardToSidebar() {
   const hazard = useAtomValue(populationExposureHazardAtom);
   const applyHazardEffect = useRecoilTransaction_UNSTABLE(
-    (iface) => (newHazard: ExposureSource) => showOneHazardStateEffect(iface, newHazard),
+    (iface) => (newHazard: ExposureSource) =>
+      showOneHazardStateEffect(
+        (path, visible) => iface.set(sidebarVisibilityToggleState(path), visible),
+        newHazard,
+      ),
     [],
   );
 

@@ -425,28 +425,29 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 ### Slice 13 — Hazards selection
 
-**Nodes**: `hazardSelectionState`, `hazardVisibilityState`, `showOneHazardStateEffect` (the effect helper, not a Recoil atom).
+**Status**: done (2026-05-20).
 
-**Bridge nodes touched**: `sidebarVisibilityToggleState` (writes from `showOneHazardStateEffect`); `hazardLayerState` (reads `hazardVisibilityState`).
+**What shipped:** `hazardSelectionAtomFamily`, `hazardVisibilityAtom`, `hazardLayersAtom` on Jotai; `hazardLayerState` Recoil replica in `viewLayersState` hub; `hazardGroupParamsReplicaAtomFamily` bridged from Recoil `dataParamsByGroupState` per hazard control; `showOneHazardStateEffect` rewritten with library-agnostic `SidebarVisibilitySetter` (callers still use `useRecoilTransaction_UNSTABLE` for sidebar hub writes until Slice 15); `LinkViewLayerToPath` on Jotai atoms in `HazardsControl`; last Recoil `StateEffectRoot` for hazard sync replaced with `SyncInfrastructureHazardToSidebar`.
 
-**Files**: [`src/state/data-selection/hazards.ts`](../../../src/state/data-selection/hazards.ts), [`src/sidebar/sections/hazards/HazardsControl.tsx`](../../../src/sidebar/sections/hazards/HazardsControl.tsx), [`src/state/layers/data-layers/hazards.ts`](../../../src/state/layers/data-layers/hazards.ts), [`src/sidebar/LinkViewLayerToPath.tsx`](../../../src/sidebar/LinkViewLayerToPath.tsx) (transitively).
+**Nodes migrated to Jotai:** `hazardSelectionAtomFamily`, `hazardVisibilityAtom`, `hazardLayersAtom`, `showOneHazardStateEffect` (effect helper).
 
-**Risk**: low-medium (depends on the sidebar hub being ready or bridged).
+**Nodes still on Recoil (bridges until later slices):** `hazardLayerState` (replica → Slice 15), `dataParamsByGroupState` (replica source → Slice 14), `sidebarVisibilityToggleState` (writes from `showOneHazardStateEffect` → Slice 15).
 
-**Playbook**
+**Bridge pattern:** `HazardGroupParamsSync` in each hazard control (R→J params replica); `hazardLayersAtom` → `hazardLayerState` in `ViewLayersBridgeSync`.
 
-1. Port `hazardSelectionState` (atomFamily) and `hazardVisibilityState` (selector).
-2. Rewrite `showOneHazardStateEffect` with the new `{ get, set }` signature; it still writes the leaf `sidebarVisibilityToggleState` atomFamily.
-3. Port `hazardLayerState`.
-4. Update `HazardsControl.tsx` and the various hazard controls that wire `LinkViewLayerToPath` with `hazardSelectionState(type)`.
+**Files touched:** [`hazards.ts`](../../../src/state/data-selection/hazards.ts), [`hazards.ts` (layers)](../../../src/state/layers/data-layers/hazards.ts), [`HazardsControl.tsx`](../../../src/sidebar/sections/hazards/HazardsControl.tsx), [`view-layers-bridge-sync.tsx`](../../../src/state/layers/view-layers-bridge-sync.tsx), [`infrastructure-risk.tsx`](../../../src/sidebar/sections/risk/infrastructure-risk.tsx), [`population-exposure.tsx`](../../../src/sidebar/sections/risk/population-exposure.tsx).
 
-**Test plan**: enable several hazards in the sidebar; confirm the map shows them; click into Population Exposure and confirm switching its hazard radio drives the matching sidebar visibility toggle via `showOneHazardStateEffect`.
+**Cross-cutting check:** `rg "hazardSelectionState|hazardVisibilityState|hazardLayerState\\b.*selector"` over `src/` → zero hits (replica `hazardLayerState` atom remains).
+
+**Test plan:** enable several hazards in the sidebar; confirm map layers update; change epoch/RCP on a hazard; navigate to Population Exposure and confirm hazard radio drives sidebar visibility; navigate to Infrastructure Risk and confirm hazard dropdown drives sidebar visibility.
+
+**Known issues deferred:** Risk view round-trip sidebar/layer restore — still pre-existing; fix in Slice 15.
 
 ### Slice 14 — Data-params spine (value half) + downstream layer selectors
 
 **What's left after Slice 8**: the config half of the spine + `useLoadParamsConfig` + the upstream data-domain query chain + `infrastructureRiskConfig` all shipped in Slice 8. This slice now covers only the **value half** of the hub and its downstream consumers.
 
-**Nodes**: `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, the **transaction body** of `useUpdateDataParam`. Plus layer selectors that still `get()` `dataParamsByGroupState`: `hazardLayerState` (and `damagesFieldAtom` / `populationExposureLayerAtom` already on Jotai but read params via replicas until hub migrates).
+**Nodes**: `paramsState`, `paramValueState`, `paramOptionsState`, `dataParamsByGroupState`, the **transaction body** of `useUpdateDataParam`. Downstream layer selectors already on Jotai read params via replicas until this slice (`populationExposureLayerAtom`, `damagesFieldAtom`; `hazardLayersAtom` migrated in Slice 13).
 
 **Bridge nodes touched**: this is the **dynamic** hub — `hazardLayerState`, `populationExposureLayerState`, `damagesFieldState` also read other Recoil state (hazards selection, sidebar visibility, damage-map atoms), so this slice needs to coordinate with Slices 11–13 or accept transitive Recoil reads via bridges. Once migrated, the data-params hub is fully Jotai.
 

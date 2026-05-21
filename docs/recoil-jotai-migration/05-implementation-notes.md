@@ -416,7 +416,7 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 
 - `SyncSectorToNetworkTree` — `useRecoilValue(sector)` + `useAtomCallback` → `syncInfrastructureSelectionStateEffect` on Jotai tree.
 - `SyncHazardToDamageSource` — `useRecoilValue(hazard)` + `useSetAtom(damageSourceAtom)`.
-- Recoil `StateEffectRoot` retained **only** for `showOneHazardStateEffect` (Slice 13 / sidebar hub writes).
+- Recoil `StateEffectRoot` retained **only** for `viewTransitionEffect` on `viewState` (Slice 15 sidebar hub migration).
 
 **`LinkViewLayerToPath` for `risk/infrastructure`:** path context → `showInfrastructureRiskAtom` via `useSyncValueToAtom` with **`resetOnUnmount`** (not a sidebar-hub replica — no Recoil selector read inside Jotai `get()`). Clears stale `true` when the Risk section unmounts on view change so Exposure infrastructure gets standard (non-damage) styling.
 
@@ -466,6 +466,30 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 
 ### Things explicitly **not** done in Step 12
 
-- `showOneHazardStateEffect`, `hazardSelectionState` — Slice 13.
 - `dataParamsByGroupState` hub — Slice 14 (population layer reads params via replica only).
+- Risk view round-trip layer restore bug — deferred to Slice 15.
+
+### Step 13 — Hazards selection (2026-05-20)
+
+**Files migrated:**
+
+- `src/state/data-selection/hazards.ts` — `hazardSelectionAtomFamily`, `hazardVisibilityAtom`; `showOneHazardStateEffect` takes `SidebarVisibilitySetter` (sidebar hub still Recoil until Slice 15).
+- `src/state/layers/data-layers/hazards.ts` — `hazardLayersAtom`, `hazardGroupParamsReplicaAtomFamily`, Recoil `hazardLayerState` replica.
+- `src/sidebar/sections/hazards/HazardsControl.tsx` — Jotai `LinkViewLayerToPath` + `HazardGroupParamsSync` per hazard type.
+- `src/sidebar/sections/risk/infrastructure-risk.tsx` — `SyncInfrastructureHazardToSidebar` replaces last Recoil `StateEffectRoot` for hazard sidebar sync.
+- `src/sidebar/sections/risk/population-exposure.tsx` — updated `showOneHazardStateEffect` call signature.
+
+**Hub bridges:**
+
+| Bridge                                                                          | Direction | Sync site                                      |
+| ------------------------------------------------------------------------------- | --------- | ---------------------------------------------- |
+| `dataParamsByGroupState(hazard)` → `hazardGroupParamsReplicaAtomFamily(hazard)` | R→J       | `HazardGroupParamsSync` in each hazard control |
+| `hazardLayersAtom` → `hazardLayerState`                                         | J→R       | `ViewLayersBridgeSync`                         |
+
+**`showOneHazardStateEffect`:** pure function over `(path, visible) => void`; Population/Infrastructure Risk sections wrap with `useRecoilTransaction_UNSTABLE` + `sidebarVisibilityToggleState` writes.
+
+### Things explicitly **not** done in Step 13
+
+- `dataParamsByGroupState` hub — Slice 14 (hazard layers read params via per-hazard replicas only).
+- `sidebarVisibilityToggleState` hub — Slice 15 (`showOneHazardStateEffect` still writes Recoil toggles).
 - Risk view round-trip layer restore bug — deferred to Slice 15.
