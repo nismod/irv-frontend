@@ -13,8 +13,9 @@ import { LocationMarker } from '@/lib/map/pixel-driller/LocationMarker';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
 import { interactionGroupsState } from '@/state/layers/interaction-groups';
-import { NbsViewLayersSync } from '@/state/layers/nbs-view-layers-sync';
+import { SidebarPathVisibilityBridgeSync } from '@/state/layers/sidebar-path-visibility-bridge-sync';
 import { viewLayersState } from '@/state/layers/view-layers';
+import { ViewLayersBridgeSync } from '@/state/layers/view-layers-bridge-sync';
 import { viewLayersParamsAtom, viewLayersReplicaAtom } from '@/state/layers/view-layers-params';
 import {
   MapInteractionMode,
@@ -123,8 +124,10 @@ const MapViewContent = ({ children }) => {
       onViewState={setViewState}
       onClick={isPixelDrillerMode ? handleMapClick : undefined}
     >
-      {/* Recoil↔Jotai migration: NbS/bbox layers computed in Jotai, synced into Recoil viewLayers hub. */}
-      <NbsViewLayersSync />
+      {/* Recoil↔Jotai migration: sidebar path visibility (Recoil) → Jotai replicas for layer gating. */}
+      <SidebarPathVisibilityBridgeSync />
+      {/* Recoil↔Jotai migration: Jotai-computed layers → Recoil viewLayers hub replicas. */}
+      <ViewLayersBridgeSync />
       <DataMap
         beforeId={firstLabelId}
         viewLayers={viewLayers}

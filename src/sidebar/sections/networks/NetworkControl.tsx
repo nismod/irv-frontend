@@ -1,5 +1,5 @@
+import { useAtom } from 'jotai';
 import { FC } from 'react';
-import { useRecoilState } from 'recoil';
 
 import { CheckboxTree } from '@/lib/controls/checkbox-tree/CheckboxTree';
 
@@ -7,14 +7,14 @@ import { NETWORK_LAYERS_HIERARCHY } from '@/config/networks/hierarchy';
 import { NETWORKS_METADATA } from '@/config/networks/metadata';
 import { LayerLabel } from '@/sidebar/ui/LayerLabel';
 import {
-  networkTreeCheckboxState,
+  networkTreeCheckboxAtom,
   networkTreeConfig,
-  networkTreeExpandedState,
+  networkTreeExpandedAtom,
 } from '@/state/data-selection/networks/network-selection';
 
 export const NetworkControl: FC<{}> = () => {
-  const [checkboxState, setCheckboxState] = useRecoilState(networkTreeCheckboxState);
-  const [expanded, setExpanded] = useRecoilState(networkTreeExpandedState);
+  const [checkboxState, setCheckboxState] = useAtom(networkTreeCheckboxAtom);
+  const [expanded, setExpanded] = useAtom(networkTreeExpandedAtom);
 
   return (
     <CheckboxTree

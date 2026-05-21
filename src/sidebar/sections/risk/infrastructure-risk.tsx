@@ -1,13 +1,15 @@
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { atom } from 'jotai';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomCallback } from 'jotai/utils';
 import _ from 'lodash';
-import { Suspense, useEffect } from 'react';
+import { Suspense, useCallback, useEffect } from 'react';
 import { useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { makeOptions } from '@/lib/helpers';
+import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
 import { StateEffect } from '@/lib/recoil/state-effects/types';
 
@@ -21,11 +23,12 @@ import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
-import { paramValueState, useLoadParamsConfig } from '@/state/data-params';
+import { dataParamsByGroupState, paramValueState, useLoadParamsConfig } from '@/state/data-params';
 import {
-  damageSourceState,
-  showInfrastructureRiskState,
+  damageSourceAtom,
+  showInfrastructureRiskAtom,
 } from '@/state/data-selection/damage-mapping/damage-map';
+import { damageGroupParamsReplicaAtom } from '@/state/data-selection/damage-mapping/damage-style-params';
 import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
@@ -64,21 +67,9 @@ const SECTOR_LAYERS: Record<SectorType, NetworkLayerType[]> = {
   power: ['power_distribution', 'power_transmission'],
 };
 
-const syncInfrastructureWithSectorEffect: StateEffect<SectorType> = (iface, sector) => {
-  const layers = SECTOR_LAYERS[sector];
-
-  syncInfrastructureSelectionStateEffect(iface, layers);
-};
-
-const syncHazardEffect: StateEffect<HazardType> = (iface, hazard) => {
+const syncHazardSidebarEffect: StateEffect<HazardType> = (iface, hazard) => {
   showOneHazardStateEffect(iface, hazard);
-
-  iface.set(damageSourceState, hazard);
 };
-
-function labelHazard(x) {
-  return HAZARDS_METADATA[x].label;
-}
 
 const InitInfrastructureView = () => {
   const updateExposureTx = useRecoilTransaction_UNSTABLE(
@@ -100,10 +91,58 @@ const InitInfrastructureView = () => {
   return null;
 };
 
+/**
+ * Recoil↔Jotai migration: syncs active damage-source param values from Recoil into Jotai
+ * so `damagesFieldAtom` can read them without touching `dataParamsByGroupState` in atom get().
+ */
+function DamageGroupParamsSync() {
+  const damageSource = useAtomValue(damageSourceAtom);
+  const groupParams = useRecoilValue(dataParamsByGroupState(damageSource));
+  useSyncValueToAtom(groupParams, damageGroupParamsReplicaAtom);
+  return null;
+}
+
+/** Recoil↔Jotai migration: sector param is still Recoil; network tree selection is Jotai. */
+function SyncSectorToNetworkTree() {
+  const sector = useRecoilValue(
+    paramValueState({ group: 'infrastructure-risk', param: 'sector' }),
+  ) as SectorType;
+
+  const syncSector = useAtomCallback(
+    useCallback((get, set, layers: NetworkLayerType[]) => {
+      syncInfrastructureSelectionStateEffect({ get, set }, layers);
+    }, []),
+  );
+
+  useEffect(() => {
+    syncSector(SECTOR_LAYERS[sector]);
+  }, [sector, syncSector]);
+
+  return null;
+}
+
+/** Recoil↔Jotai migration: hazard param is still Recoil; damage source atom is Jotai. */
+function SyncHazardToDamageSource() {
+  const hazard = useRecoilValue(
+    paramValueState({ group: 'infrastructure-risk', param: 'hazard' }),
+  ) as HazardType;
+  const setDamageSource = useSetAtom(damageSourceAtom);
+
+  useEffect(() => {
+    setDamageSource(hazard);
+  }, [hazard, setDamageSource]);
+
+  return null;
+}
+
+function labelHazard(x) {
+  return HAZARDS_METADATA[x].label;
+}
+
 export const InfrastructureRiskSection = () => {
-  // useLoadParamsConfig writes Jotai paramsConfigAtomFamily + Recoil paramsState.
+  // Recoil↔Jotai migration: useLoadParamsConfig writes Jotai paramsConfigAtomFamily + Recoil paramsState.
   useLoadParamsConfig(infrastructureRiskConfigAtom, 'infrastructure-risk');
-  const damageSource = useRecoilValue(damageSourceState);
+  const damageSource = useAtomValue(damageSourceAtom);
 
   const [showHazard, setShowHazard] = useRecoilState(
     sidebarPathVisibilityState(getHazardSidebarPath(damageSource)),
@@ -113,16 +152,15 @@ export const InfrastructureRiskSection = () => {
     // the top-level Suspense prevents deadlock between the `useLoadParamConfig()` and components that use the state that hook loads
     // both the hook and the components suspend, and in React 18 concurrent mode, this makes React suspend the tree indefinitely
     <Suspense fallback="Loading data...">
-      <LinkViewLayerToPath state={showInfrastructureRiskState} />
+      <LinkViewLayerToPath atom={showInfrastructureRiskAtom} resetOnUnmount />
       <InitInfrastructureView />
+      <DamageGroupParamsSync />
+      <SyncSectorToNetworkTree />
+      <SyncHazardToDamageSource />
       <InputSection>
         <StateEffectRoot
-          state={paramValueState({ group: 'infrastructure-risk', param: 'sector' })}
-          effect={syncInfrastructureWithSectorEffect}
-        />
-        <StateEffectRoot
           state={paramValueState({ group: 'infrastructure-risk', param: 'hazard' })}
-          effect={syncHazardEffect}
+          effect={syncHazardSidebarEffect}
         />
         <DataNotice>
           <DataNoticeTextBlock>

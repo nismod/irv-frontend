@@ -1,37 +1,33 @@
 import { useAtomValue } from 'jotai';
-import { useRecoilValue } from 'recoil';
 
-import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
 import { useSyncValueToRecoil } from '@/lib/recoil/state-sync/use-sync-state';
 
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
 import {
-  adaptationNbsVisibleReplicaAtom,
   nbsLayerAtom,
   nbsLayerState,
   nbsScopeRegionLayerAtom,
   nbsScopeRegionLayerState,
 } from '@/state/layers/data-layers/nbs';
+import { networkLayersAtom, networkLayersState } from '@/state/layers/data-layers/networks';
 import {
   featureBoundingBoxLayerAtom,
   featureBoundingBoxLayerState,
 } from '@/state/layers/ui-layers/feature-bbox';
 
 /**
- * Recoil↔Jotai migration bridge (Slice 10): Jotai NbS/bbox layers → Recoil `viewLayersState` hub.
- * Sidebar visibility is Recoil → Jotai replica for layer gating.
+ * Recoil↔Jotai migration bridge: Jotai-computed view layers → Recoil replica atoms
+ * so `viewLayersState` keeps its waitForAll ordering (Slice 15 hub stays on Recoil).
  */
-export function NbsViewLayersSync() {
-  const sidebarVisible = useRecoilValue(sidebarPathVisibilityState('adaptation/nbs'));
-  useSyncValueToAtom(sidebarVisible, adaptationNbsVisibleReplicaAtom);
-
+export function ViewLayersBridgeSync() {
   const nbsLayer = useAtomValue(nbsLayerAtom);
   const nbsScopeRegionLayer = useAtomValue(nbsScopeRegionLayerAtom);
   const featureBboxLayer = useAtomValue(featureBoundingBoxLayerAtom);
+  const networkLayers = useAtomValue(networkLayersAtom);
 
   useSyncValueToRecoil(nbsLayer, nbsLayerState);
   useSyncValueToRecoil(nbsScopeRegionLayer, nbsScopeRegionLayerState);
   useSyncValueToRecoil(featureBboxLayer, featureBoundingBoxLayerState);
+  useSyncValueToRecoil(networkLayers, networkLayersState);
 
   return null;
 }

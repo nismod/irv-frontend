@@ -37,7 +37,7 @@ The new helpers in `src/lib/jotai/sync-stores/` are exactly the right shape for 
 | `atomWithLocalStorage` | round-trip, date revival, cross-tab `storage` event, validator rejection falls back to default, `RESET` removes the key                                                                      |
 | `atomWithUrlSync`      | hydrate from URL on mount, `replaceState` on write, `popstate` propagation, `syncDefault: true/false`, multi-atom write ordering, custom codecs (`makeUrlNumberCodec`, `makeUrlStringCodec`) |
 | `make-select-atom`     | options shrinks → falls back to default, `RESET` clears selection, options grow → keeps current selection                                                                                    |
-| `state-effects`        | effect fires on change, `previousValue` correctness, hookType `'effect'` vs `'layoutEffect'`, `reset(atom)` desugars to `set(atom, RESET)`                                                   |
+| `state-effects`        | effect fires on change, `previousValue` correctness, hookType `'effect'` vs `'layoutEffect'`, reset via `set(atom, RESET)`                                                                   |
 
 `@testing-library/react` + a per-test Jotai `Provider` is the canonical setup (~10 lines of boilerplate). The project doesn't yet have that scaffolding; adding it is a small one-off cost for the whole migration.
 

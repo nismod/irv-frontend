@@ -32,17 +32,17 @@ Added the following to `package.json` (via `npm install --save`):
 
 The folder mirrors `src/lib/recoil/` one-for-one so that, during the migration, two files in the same role live next to each other and a diff between the two can be reviewed easily.
 
-| New path                                                                                | Replaces                                       | Notes                                                                                                                                                                                                                                                     |
-| --------------------------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lib/jotai/types.ts`                                                                    | `lib/recoil/types.ts`                          | Renamed types (`RecoilStateFamily` → `JotaiStateFamily`, etc.). Family types now use `AtomFamily` from `jotai-family`.                                                                                                                                    |
-| `lib/jotai/is-reset.ts`                                                                 | `lib/recoil/is-reset.ts`                       | `isReset` now checks for the `RESET` Symbol from `jotai/utils`. Also re-exports `RESET` so callers don't have to import from `jotai/utils` separately.                                                                                                    |
-| `lib/jotai/StateWatcher.tsx`                                                            | `lib/recoil/StateWatcher.tsx`                  | Same shape, uses `useAtomValue`.                                                                                                                                                                                                                          |
-| `lib/jotai/use-set-atom-family.ts`                                                      | `lib/recoil/use-set-recoil-state-family.ts`    | Renamed `useSetRecoilStateFamily` → `useSetAtomFamily`. Internally uses `useAtomCallback`.                                                                                                                                                                |
-| `lib/jotai/make-state/make-select-atom.ts`                                              | `lib/recoil/make-state/make-select-state.ts`   | Renamed `makeSelectState` → `makeSelectAtom`. **No longer takes a `key` argument** (Jotai atoms don't carry stable keys — set `result.debugLabel` if you need one for devtools). The setter accepts the existing `RESET` sentinel to clear the selection. |
-| `lib/jotai/state-sync/{use-sync-state,use-sync-state-throttled,StateSyncRoot}.{ts,tsx}` | `lib/recoil/state-sync/*`                      | Same shape; uses `useAtomValue` + `useSetAtom`.                                                                                                                                                                                                           |
-| `lib/jotai/state-effects/types.ts`                                                      | `lib/recoil/state-effects/types.ts`            | New `StateEffectInterface = { get, set, reset }`. The Recoil "atomic" and "async" interface aliases are preserved for one-to-one renaming, but **point to the same type in Jotai** because there is no transaction layer.                                 |
-| `lib/jotai/state-effects/use-state-effect.ts`                                           | `lib/recoil/state-effects/use-state-effect.ts` | Both `useStateEffectAtomic` and `useStateEffectAsync` are kept (and identical) for naming parity. Implemented on top of `useAtomCallback`. The `reset(atom)` helper is sugar over `set(atom, RESET)`.                                                     |
-| `lib/jotai/state-effects/StateEffectRoot.tsx`                                           | `lib/recoil/state-effects/StateEffectRoot.tsx` | Same shape; `StateEffectRoot` and `StateEffectRootAsync` are both kept.                                                                                                                                                                                   |
+| New path                                                                                | Replaces                                       | Notes                                                                                                                                                                                                                                                                             |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/jotai/types.ts`                                                                    | `lib/recoil/types.ts`                          | Renamed types (`RecoilStateFamily` → `JotaiStateFamily`, etc.). Family types now use `AtomFamily` from `jotai-family`.                                                                                                                                                            |
+| `lib/jotai/is-reset.ts`                                                                 | `lib/recoil/is-reset.ts`                       | `isReset` now checks for the `RESET` Symbol from `jotai/utils`. Also re-exports `RESET` so callers don't have to import from `jotai/utils` separately.                                                                                                                            |
+| `lib/jotai/StateWatcher.tsx`                                                            | `lib/recoil/StateWatcher.tsx`                  | Same shape, uses `useAtomValue`.                                                                                                                                                                                                                                                  |
+| `lib/jotai/use-set-atom-family.ts`                                                      | `lib/recoil/use-set-recoil-state-family.ts`    | Renamed `useSetRecoilStateFamily` → `useSetAtomFamily`. Internally uses `useAtomCallback`.                                                                                                                                                                                        |
+| `lib/jotai/make-state/make-select-atom.ts`                                              | `lib/recoil/make-state/make-select-state.ts`   | Renamed `makeSelectState` → `makeSelectAtom`. **No longer takes a `key` argument** (Jotai atoms don't carry stable keys — set `result.debugLabel` if you need one for devtools). The setter accepts the existing `RESET` sentinel to clear the selection.                         |
+| `lib/jotai/state-sync/{use-sync-state,use-sync-state-throttled,StateSyncRoot}.{ts,tsx}` | `lib/recoil/state-sync/*`                      | Same shape; uses `useAtomValue` + `useSetAtom`.                                                                                                                                                                                                                                   |
+| `lib/jotai/state-effects/types.ts`                                                      | `lib/recoil/state-effects/types.ts`            | `StateEffectInterface = { get, set }`. Reset via `set(atom, RESET)` (import from `@/lib/jotai/is-reset`). The Recoil "atomic" and "async" interface aliases are preserved for one-to-one renaming, but **point to the same type in Jotai** because there is no transaction layer. |
+| `lib/jotai/state-effects/use-state-effect.ts`                                           | `lib/recoil/state-effects/use-state-effect.ts` | Both `useStateEffectAtomic` and `useStateEffectAsync` are kept (and identical) for naming parity. Implemented on top of `useAtomCallback`; passes `{ get, set }` directly to effects.                                                                                             |
+| `lib/jotai/state-effects/StateEffectRoot.tsx`                                           | `lib/recoil/state-effects/StateEffectRoot.tsx` | Same shape; `StateEffectRoot` and `StateEffectRootAsync` are both kept.                                                                                                                                                                                                           |
 
 ### Key behavioural deltas to be aware of when migrating consumers
 
@@ -159,7 +159,8 @@ The build is **not** expected to behave differently at runtime; this is a purely
 | **9 — Map interactions + view params** | **Done** | `interaction-state.ts` on Jotai; Recoil→Jotai `viewLayersReplicaAtom` bridge for params.                                                                                                                |
 | **9b — ArticleMap provider flip**      | **Done** | Nested `RecoilRoot` → per-instance Jotai `<Provider store={createStore()}>`.                                                                                                                            |
 | **10 — NbS + basemap**                 | **Done** | Full NbS graph on Jotai; Jotai→Recoil layer replicas preserve `viewLayersState` ordering.                                                                                                               |
-| 5, 11–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| **11 — Networks / damages styling**    | **Done** | Damage/network graph on Jotai; two R→J replicas (data-params values + exposure/infrastructure visibility); network layer J→R replica.                                                                   |
+| 5, 12–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -350,7 +351,7 @@ Combined slice: deferred Slice 6 (basemap) and Slice 10 (NbS) shipped together b
 - `src/map/layers/layers-state.ts` — `backgroundAtom`, `showLabelsAtom`.
 - `src/state/layers/data-layers/nbs.ts` — Jotai layer atoms (`nbsLayerAtom`, `nbsScopeRegionLayerAtom`, `adaptationNbsVisibleReplicaAtom`) **co-located** with Recoil replica atoms (`nbsLayerState`, `nbsScopeRegionLayerState`), same layout as `feature-bbox.ts`.
 - `src/state/layers/ui-layers/feature-bbox.ts` — `boundedFeatureAtom`, `featureBoundingBoxLayerAtom` + Recoil `featureBoundingBoxLayerState` replica.
-- `src/state/layers/nbs-view-layers-sync.tsx` — bridge component mounted in `MapView`.
+- `src/state/layers/view-layers-bridge-sync.tsx` — bridge component mounted in `MapView` (renamed from `nbs-view-layers-sync.tsx` in Slice 11).
 - UI: `NbsAdaptationSection`, `NbsPrioritisationPanel`, `FeatureAdaptationsTable` — fully Jotai. Deleted orphan `hoveredAdaptationFeatureState`; `selectedAdaptationFeatureState` → `selectedAdaptationFeatureAtom`.
 
 **Verified**: `npm run test:type-check`, eslint, cross-cutting `rg` for old `*State` names → zero hits in `src/`.
@@ -363,7 +364,7 @@ Early plan for Slice 10 considered removing NbS slots from Recoil `viewLayersSta
 
 ```
 Jotai: nbsLayerAtom / nbsScopeRegionLayerAtom / featureBoundingBoxLayerAtom
-  ↓ useSyncValueToRecoil (NbsViewLayersSync)
+  ↓ useSyncValueToRecoil (ViewLayersBridgeSync)
 Recoil: nbsLayerState / nbsScopeRegionLayerState / featureBoundingBoxLayerState  (replica atoms, default null)
   ↓ unchanged waitForAll positions
 Recoil: viewLayersState hub
@@ -373,7 +374,7 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 
 `view-layers.ts` imports and slot order are **unchanged**. Slice 15 teardown: delete replica atoms + sync hooks; fold Jotai layer atoms directly into a Jotai `viewLayersAtom` at the same indices.
 
-**Sidebar visibility bridge**: `sidebarPathVisibilityState('adaptation/nbs')` stays Recoil until Slice 15. `NbsViewLayersSync` syncs it → `adaptationNbsVisibleReplicaAtom` for layer gating and for `NbsPrioritisationPanel` visibility (replacing inline `useRecoilValue` on the hub selector).
+**Sidebar visibility bridge**: `sidebarPathVisibilityState('adaptation/nbs')` stays Recoil until Slice 15. `SidebarPathVisibilityBridgeSync` syncs it → `adaptationNbsVisibleReplicaAtom` for layer gating and for `NbsPrioritisationPanel` visibility (replacing inline `useRecoilValue` on the hub selector).
 
 **Co-location convention**: files that straddle the boundary (`nbs.ts`, `feature-bbox.ts`) put Jotai definitions first, Recoil replicas second, with `Recoil↔Jotai migration` comments on the replica exports and on the sync component. Fully migrated files (`state/data-selection/nbs.ts`, section components) carry no bridge comments.
 
@@ -389,3 +390,52 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 - `viewLayersState` hub, `sidebarPathVisibilityState`, and the three NbS/bbox Recoil replica atoms — remain until Slice 15.
 - `interactionGroupsState` — still Recoil; `MapView` reads it alongside Jotai params.
 - All non-NbS layer selectors in `view-layers.ts` — unchanged (Slices 11–15).
+
+### Step 11 — Networks / damages styling (2026-05-20)
+
+**Files migrated:**
+
+- `src/state/data-selection/damage-mapping/damage-map.ts` — primitives + `showInfrastructureDamagesAtom` derived.
+- `src/state/data-selection/damage-mapping/damage-style-params.ts` — `damagesFieldAtom`, `damageMapStyleParamsAtom`, **`damageGroupParamsReplicaAtom`** (bridge target).
+- `src/state/data-selection/networks/networks-style.ts`, `network-selection.ts` — tree + selection; `syncInfrastructureSelectionStateEffect` now takes Jotai `StateEffectInterface`.
+- `src/state/layers/data-layers/networks.ts` — Jotai layer/style atoms co-located with Recoil **`networkLayersState`** replica; **`exposureInfrastructureVisibleReplicaAtom`**.
+- `src/state/layers/sidebar-path-visibility-bridge-sync.tsx`, `view-layers-bridge-sync.tsx` — split Recoil→Jotai sidebar visibility sync from Jotai→Recoil layer replica sync.
+- `src/sidebar/LinkViewLayerToPath.tsx` — accepts Recoil state **or** Jotai atom (split subcomponents to satisfy rules of hooks).
+- `src/sidebar/sections/networks/NetworkControl.tsx`, `src/sidebar/sections/risk/infrastructure-risk.tsx` — Jotai hooks + three cross-store sync null components.
+
+**Hub bridges (same playbook as Slice 10):**
+
+| Bridge                                                                                               | Direction | Sync site                                              |
+| ---------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------ |
+| `dataParamsByGroupState(damageSource)` → `damageGroupParamsReplicaAtom`                              | R→J       | `DamageGroupParamsSync` in `InfrastructureRiskSection` |
+| `sidebarPathVisibilityState('exposure/infrastructure')` → `exposureInfrastructureVisibleReplicaAtom` | R→J       | `SidebarPathVisibilityBridgeSync` in `MapView`         |
+| `sidebarPathVisibilityState('adaptation/nbs')` → `adaptationNbsVisibleReplicaAtom`                   | R→J       | `SidebarPathVisibilityBridgeSync` in `MapView`         |
+| `networkLayersAtom` → `networkLayersState`                                                           | J→R       | `ViewLayersBridgeSync`                                 |
+
+**Cross-library effects (not hub replicas):** sector param and hazard param are still Recoil (`paramValueState`). Rather than passing Jotai `set` through Recoil `StateEffectRoot`, split into:
+
+- `SyncSectorToNetworkTree` — `useRecoilValue(sector)` + `useAtomCallback` → `syncInfrastructureSelectionStateEffect` on Jotai tree.
+- `SyncHazardToDamageSource` — `useRecoilValue(hazard)` + `useSetAtom(damageSourceAtom)`.
+- Recoil `StateEffectRoot` retained **only** for `showOneHazardStateEffect` (Slice 13 / sidebar hub writes).
+
+**`LinkViewLayerToPath` for `risk/infrastructure`:** path context → `showInfrastructureRiskAtom` via `useSyncValueToAtom` with **`resetOnUnmount`** (not a sidebar-hub replica — no Recoil selector read inside Jotai `get()`). Clears stale `true` when the Risk section unmounts on view change so Exposure infrastructure gets standard (non-damage) styling.
+
+**`StateEffectInterface`:** reduced to `{ get, set }` only; reset via `set(atom, RESET)` from `@/lib/jotai/is-reset`. Removed unused `reset` helper that caused `WritableAtom` typing issues with `RESET`.
+
+### Decisions taken during Step 11
+
+- **Split bridge sync into two MapView children** — `SidebarPathVisibilityBridgeSync` (Recoil→Jotai path visibility replicas) and `ViewLayersBridgeSync` (Jotai→Recoil layer hub replicas), so direction of each bridge is obvious at the call site.
+- **`networkLayersState` replica defaults to `[]`** (not `null`) because the hub slot always expected an array from the old selector.
+- **`damageGroupParamsReplicaAtom` typed as `Record<string, unknown>`** — loose enough for `rcp`/`epoch` until Slice 14 migrates `dataParamsByGroupState` and the replica is deleted.
+- **`LinkViewLayerToPath.resetOnUnmount`** — opt-in (default false). Used only for `showInfrastructureRiskAtom` so a one-way path sync does not leave damage styling enabled after leaving Risk view. Hazards still use the Recoil variant without reset.
+
+### Known issues deferred (pre-existing; not introduced by migration)
+
+- **Risk view round-trip:** enable Infrastructure Risk on `/view/risk`, switch to another view, return to Risk — sidebar may show Infrastructure Risk as visible but map layers stay off until toggled. Root cause: `InitInfrastructureView` `hideExposure` on unmount clears `exposure/infrastructure`; `syncExposure` on remount races with `viewTransitionEffect` re-showing the Risk section. Fix properly in Slice 12/15 when `syncExposure` and layer gating are migrated off the Exposure path hack.
+
+### Things explicitly **not** done in Step 11
+
+- `dataParamsByGroupState`, `paramsState`, `paramValueState`, `DataParam` — Slice 14.
+- `showOneHazardStateEffect`, hazard sidebar toggles — Slice 13.
+- `syncExposure` / `hideExposure` in `InitInfrastructureView` — Slice 12.
+- `viewLayersState` hub teardown — Slice 15.

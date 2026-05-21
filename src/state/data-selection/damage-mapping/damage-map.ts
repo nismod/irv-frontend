@@ -1,27 +1,15 @@
-import { atom, selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { HazardType } from '@/config/hazards/metadata';
 
 /** Is the Infrastructure Risk sidebar section shown */
-export const showInfrastructureRiskState = atom({
-  key: 'infrastructureRiskShownState',
-  default: false,
-});
+export const showInfrastructureRiskAtom = atom(false);
 
 /** Should infrastructure layers visualise damage values */
-export const showInfrastructureDamagesState = selector({
-  key: 'showInfrastructureDamagesState',
-  get: ({ get }) => get(showInfrastructureRiskState),
-});
+export const showInfrastructureDamagesAtom = atom((get) => get(showInfrastructureRiskAtom));
 
 export type DamageSource = HazardType;
 
-export const damageSourceState = atom<DamageSource>({
-  key: 'damageSourceState',
-  default: 'fluvial',
-});
+export const damageSourceAtom = atom<DamageSource>('fluvial');
 
-export const damageTypeState = atom({
-  key: 'damageTypeState',
-  default: 'direct',
-});
+export const damageTypeAtom = atom<'direct' | 'indirect'>('direct');

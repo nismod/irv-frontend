@@ -163,3 +163,28 @@
 ### Basemap interaction with scope regions
 
 - with a country selected and scope regions visible, switch basemap Map ↔ Satellite and toggle labels — confirm scope-region layer outline and label colours remain legible
+
+## Networks / damages styling (Slice 11)
+
+### Infrastructure risk (damage map styling)
+
+- go to `/view/risk`, expand Infrastructure Risk
+- toggle sector (Roads / Rail / Power) — confirm network layers on the map update to match sector defaults
+- toggle hazard — confirm damage choropleth / styling updates and hazard sidebar visibility toggles follow
+- change epoch and RCP — confirm damage layer colours update
+
+### Exposure infrastructure (network tree)
+
+- go to `/view/exposure`, expand Infrastructure
+- toggle individual network layers in the tree — confirm matching infrastructure layers appear/disappear on the map
+- collapse/expand tree nodes — confirm UI state persists while toggling
+- navigate away from Exposure and back — confirm layer visibility gating still correct
+
+### Cross-view styling (Slice 11 fix)
+
+- on `/view/risk`, enable Infrastructure Risk — confirm damage choropleth styling
+- switch to `/view/exposure`, enable Infrastructure — confirm **standard type colours**, not damage styling
+
+### Known bug (pre-existing — do not regress, not fixed in Slice 11)
+
+- enable Infrastructure Risk on `/view/risk`, switch to another view, return to `/view/risk` — sidebar may show Infrastructure Risk visible but map layers absent until toggled off/on. Defer to Slice 12/15 (`syncExposure` remount vs `viewTransitionEffect` timing).

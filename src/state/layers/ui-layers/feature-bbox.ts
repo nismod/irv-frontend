@@ -36,7 +36,7 @@ export const featureBoundingBoxLayerAtom = jotaiAtom((get): ViewLayer | null => 
 
 /**
  * Recoil↔Jotai migration: feature bbox layer is computed in Jotai (`featureBoundingBoxLayerAtom`).
- * `NbsViewLayersSync` writes into this replica atom so `viewLayersState` keeps its ordering.
+ * `ViewLayersBridgeSync` writes into this replica atom so `viewLayersState` keeps its ordering.
  */
 export const featureBoundingBoxLayerState = atom<ViewLayer | null>({
   key: 'featureBoundingBoxLayerState',

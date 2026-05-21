@@ -1,6 +1,4 @@
-import type { Getter, Setter, WritableAtom } from 'jotai';
-
-import { RESET } from '../is-reset';
+import type { Getter, Setter } from 'jotai';
 
 /**
  * The transaction-like operations available inside a synchronous state effect.
@@ -10,13 +8,11 @@ import { RESET } from '../is-reset';
  * lets you read the latest store value and synchronously write multiple atoms in one
  * callback — successive `set`s become visible to subsequent `get`s.
  *
- * `reset(atom)` is provided as sugar for `set(atom, RESET)`.
+ * To reset an atom, use `set(atom, RESET)` with `RESET` from `@/lib/jotai/is-reset`.
  */
 export interface StateEffectInterface {
   get: Getter;
   set: Setter;
-  /** Reset a writable atom to its initial value. Only works for atoms that accept RESET. */
-  reset: <V, A extends [typeof RESET] | unknown[], R>(atom: WritableAtom<V, A, R>) => void;
 }
 
 /**
@@ -38,7 +34,7 @@ export type StateEffectAsyncInterface = StateEffectInterface;
 
 /**
  * Type for a function to be used as a state effect.
- * The function will be called with the Jotai transaction-like interface (get, set, reset),
+ * The function will be called with the Jotai transaction-like interface (get, set),
  * the current value, and previous value of the watched atom.
  */
 export type StateEffect<T> = (ops: StateEffectInterface, value: T, previousValue: T) => void;

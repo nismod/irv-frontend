@@ -369,7 +369,7 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **Nodes still on Recoil (bridges until Slice 15):**
 
-- `nbsLayerState`, `nbsScopeRegionLayerState`, `featureBoundingBoxLayerState` — replica atoms written by [`NbsViewLayersSync`](../../../src/state/layers/nbs-view-layers-sync.tsx).
+- `nbsLayerState`, `nbsScopeRegionLayerState`, `featureBoundingBoxLayerState` — replica atoms written by [`ViewLayersBridgeSync`](../../../src/state/layers/view-layers-bridge-sync.tsx).
 - `sidebarPathVisibilityState('adaptation/nbs')` → `adaptationNbsVisibleReplicaAtom` (same sync component).
 - `viewLayersState` hub (unchanged ordering in [`view-layers.ts`](../../../src/state/layers/view-layers.ts)).
 
@@ -385,23 +385,23 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 ### Slice 11 — Networks / damages styling
 
-**Nodes**: `showInfrastructureRiskState`, `showInfrastructureDamagesState`, `damageSourceState`, `damageTypeState`, `damagesFieldState`, `damageMapStyleParamsState`, `networksStyleState`, `networkTreeExpandedState`, `networkTreeCheckboxState`, `networkSelectionState`; `networkLayersState`, `networkStyleParamsState`.
+**Status**: done (2026-05-20).
 
-**Bridge nodes touched**: `dataParamsByGroupState` (data-params hub), `sidebarPathVisibilityState('exposure/infrastructure')` (sidebar hub), `sidebarVisibilityToggleState('risk/infrastructure')` (via `LinkViewLayerToPath`).
+**What shipped:** full networks/damage styling graph on Jotai; `networkLayersAtom` synced into Recoil replica; two Recoil→Jotai replicas for hub reads (`damageGroupParamsReplicaAtom`, `exposureInfrastructureVisibleReplicaAtom`); `LinkViewLayerToPath` generalized for Jotai targets; bridge sync split into `SidebarPathVisibilityBridgeSync` (R→J) and `ViewLayersBridgeSync` (J→R).
 
-**Files**: [`src/state/data-selection/damage-mapping/damage-map.ts`](../../../src/state/data-selection/damage-mapping/damage-map.ts), [`src/state/data-selection/damage-mapping/damage-style-params.ts`](../../../src/state/data-selection/damage-mapping/damage-style-params.ts), [`src/state/data-selection/networks/networks-style.ts`](../../../src/state/data-selection/networks/networks-style.ts), [`src/state/data-selection/networks/network-selection.ts`](../../../src/state/data-selection/networks/network-selection.ts), [`src/state/layers/data-layers/networks.ts`](../../../src/state/layers/data-layers/networks.ts), [`src/sidebar/sections/networks/NetworkControl.tsx`](../../../src/sidebar/sections/networks/NetworkControl.tsx), [`src/sidebar/LinkViewLayerToPath.tsx`](../../../src/sidebar/LinkViewLayerToPath.tsx).
+**Nodes migrated to Jotai:** `showInfrastructureRiskAtom`, `showInfrastructureDamagesAtom`, `damageSourceAtom`, `damageTypeAtom`, `damagesFieldAtom`, `damageMapStyleParamsAtom`, `networksStyleAtom`, `networkTreeExpandedAtom`, `networkTreeCheckboxAtom`, `networkSelectionAtom`, `networkStyleParamsAtom`, `networkLayersAtom`.
 
-**Helpers needed**: ported `useSyncValueToAtom` (used by `LinkViewLayerToPath`).
+**Nodes still on Recoil (bridges until later slices):** `networkLayersState` (replica → Slice 15), `dataParamsByGroupState` (replica source → Slice 14), `sidebarPathVisibilityState` (replica source → Slice 15), `paramValueState` / `DataParam` in infrastructure-risk (Slice 14), `showOneHazardStateEffect` (Slice 13), `syncExposure`/`hideExposure` (Slice 12).
 
-**Risk**: medium.
+**Bridge pattern:** same as Slice 10 — Jotai layer atom → Recoil replica in `viewLayersState` hub; Recoil hub reads → Jotai replicas at sync boundaries; cross-library sector/hazard effects split into hook-boundary sync components (Recoil param watch → Jotai network/damage atoms).
 
-**Playbook**
+**Files touched:** [`damage-map.ts`](../../../src/state/data-selection/damage-mapping/damage-map.ts), [`damage-style-params.ts`](../../../src/state/data-selection/damage-mapping/damage-style-params.ts), [`networks-style.ts`](../../../src/state/data-selection/networks/networks-style.ts), [`network-selection.ts`](../../../src/state/data-selection/networks/network-selection.ts), [`networks.ts`](../../../src/state/layers/data-layers/networks.ts), [`view-layers-bridge-sync.tsx`](../../../src/state/layers/view-layers-bridge-sync.tsx), [`LinkViewLayerToPath.tsx`](../../../src/sidebar/LinkViewLayerToPath.tsx), [`NetworkControl.tsx`](../../../src/sidebar/sections/networks/NetworkControl.tsx), [`infrastructure-risk.tsx`](../../../src/sidebar/sections/risk/infrastructure-risk.tsx), [`MapView.tsx`](../../../src/map/MapView.tsx).
 
-1. Port the 4 atoms (`showInfrastructureRiskState`, `damageSourceState`, `damageTypeState`, `networkTreeExpandedState`, `networkTreeCheckboxState`) and 5 selectors.
-2. Rewrite `syncInfrastructureSelectionStateEffect` to take a `{ get, set }` (the new `StateEffectInterface` from step 2) instead of `TransactionInterface_UNSTABLE`.
-3. Update consumers; bridge sidebar hub reads.
+**Cross-cutting check:** `rg "showInfrastructureRiskState|damageSourceState|networkTreeCheckboxState|networkLayersState\\b.*selector|networkSelectionState|damagesFieldState|networksStyleState"` over `src/` → zero hits (replica `networkLayersState` atom remains).
 
-**Test plan**: navigate to `/view/risk`, expand Infrastructure Risk; toggle sectors; toggle hazards; confirm map updates; expand Exposure → Infrastructure and confirm the network tree checkbox state synchronises.
+**Test plan:** navigate to `/view/risk`, expand Infrastructure Risk; toggle sectors; toggle hazards; confirm map damage styling updates; expand Exposure → Infrastructure and confirm the network tree checkbox state synchronises; toggle individual network layers and confirm map updates; from Risk with Infrastructure Risk enabled, switch to Exposure → Infrastructure and confirm **standard** (non-damage) styling; **known bug:** Risk → other view → Risk may not restore map layers until infra risk is toggled (pre-existing).
+
+**Known issues deferred:** Risk view round-trip layer restore (`syncExposure` / `viewTransitionEffect` timing) — fix in Slice 12/15, not patched in this slice.
 
 ### Slice 12 — Population & regional exposure
 

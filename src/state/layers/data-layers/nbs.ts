@@ -15,7 +15,7 @@ import {
 
 /**
  * Recoil↔Jotai migration: sidebar path visibility is still Recoil (Slice 15).
- * `NbsViewLayersSync` syncs `sidebarPathVisibilityState('adaptation/nbs')` here.
+ * `SidebarPathVisibilityBridgeSync` syncs `sidebarPathVisibilityState('adaptation/nbs')` here.
  */
 export const adaptationNbsVisibleReplicaAtom = jotaiAtom<boolean>(false);
 
@@ -37,7 +37,7 @@ export const nbsLayerAtom = jotaiAtom((get): ViewLayer | null => {
 
 /**
  * Recoil↔Jotai migration: NbS view layers are computed in Jotai (`nbsLayerAtom`, `nbsScopeRegionLayerAtom`).
- * `NbsViewLayersSync` writes into these replica atoms so `viewLayersState` keeps its ordering.
+ * `ViewLayersBridgeSync` writes into these replica atoms so `viewLayersState` keeps its ordering.
  */
 export const nbsScopeRegionLayerState = atom<ViewLayer[] | null>({
   key: 'nbsScopeRegionLayerState',

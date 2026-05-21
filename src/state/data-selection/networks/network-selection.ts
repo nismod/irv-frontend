@@ -1,46 +1,39 @@
+import { atom } from 'jotai';
 import _ from 'lodash';
-import { atom, selector, TransactionInterface_UNSTABLE } from 'recoil';
 
 import {
   buildTreeConfig,
   CheckboxTreeState,
   recalculateCheckboxStates,
 } from '@/lib/controls/checkbox-tree/CheckboxTree';
+import { StateEffectInterface } from '@/lib/jotai/state-effects/types';
 
 import { NETWORK_LAYERS_HIERARCHY } from '@/config/networks/hierarchy';
 import { NetworkLayerType } from '@/config/networks/metadata';
 
-export const networkTreeExpandedState = atom<string[]>({
-  key: 'networkTreeExpandedState',
-  default: [],
-});
+export const networkTreeExpandedAtom = atom<string[]>([]);
 
 export const networkTreeConfig = buildTreeConfig(NETWORK_LAYERS_HIERARCHY);
 
-export const networkTreeCheckboxState = atom<CheckboxTreeState>({
-  key: 'networkTreeSelectionState',
-  default: {
-    checked: _.mapValues(networkTreeConfig.nodes, () => false),
-    indeterminate: _.mapValues(networkTreeConfig.nodes, () => false),
-  },
-});
+const INITIAL_NETWORK_TREE_CHECKBOX: CheckboxTreeState = {
+  checked: _.mapValues(networkTreeConfig.nodes, () => false),
+  indeterminate: _.mapValues(networkTreeConfig.nodes, () => false),
+};
+export const networkTreeCheckboxAtom = atom(INITIAL_NETWORK_TREE_CHECKBOX);
 
-export const networkSelectionState = selector<NetworkLayerType[]>({
-  key: 'networkSelectionState',
-  get: ({ get }) => {
-    const checkboxState = get(networkTreeCheckboxState);
+export const networkSelectionAtom = atom((get): NetworkLayerType[] => {
+  const checkboxState = get(networkTreeCheckboxAtom);
 
-    return Object.keys(checkboxState.checked).filter(
-      (id) => checkboxState.checked[id] && !networkTreeConfig.nodes[id].children,
-    ) as NetworkLayerType[];
-  },
+  return Object.keys(checkboxState.checked).filter(
+    (id) => checkboxState.checked[id] && !networkTreeConfig.nodes[id].children,
+  ) as NetworkLayerType[];
 });
 
 export function syncInfrastructureSelectionStateEffect(
-  { get, set }: TransactionInterface_UNSTABLE,
+  { get, set }: StateEffectInterface,
   layers: string[],
 ) {
-  const currentSelection = get(networkTreeCheckboxState);
+  const currentSelection = get(networkTreeCheckboxAtom);
   const updatedTreeState = {
     checked: {
       ..._.mapValues(currentSelection.checked, () => false),
@@ -50,5 +43,5 @@ export function syncInfrastructureSelectionStateEffect(
   };
   const resolvedTreeState = recalculateCheckboxStates(updatedTreeState, networkTreeConfig);
 
-  set(networkTreeCheckboxState, resolvedTreeState);
+  set(networkTreeCheckboxAtom, resolvedTreeState);
 }

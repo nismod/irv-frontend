@@ -1,37 +1,20 @@
-import type { Atom, WritableAtom } from 'jotai';
+import type { Atom } from 'jotai';
 import { useAtomValue } from 'jotai';
-import { RESET, useAtomCallback } from 'jotai/utils';
+import { useAtomCallback } from 'jotai/utils';
 import { useCallback, useEffect, useLayoutEffect } from 'react';
 
 import { useConditionalHook } from '@/lib/hooks/use-conditional-hook';
 import { usePrevious } from '@/lib/hooks/use-previous';
 
-import type { EffectHookType, StateEffect, StateEffectAsync, StateEffectInterface } from './types';
+import type { EffectHookType, StateEffect, StateEffectAsync } from './types';
 
 type StateLogicCallback<T> = (newValue: T, previousValue: T) => void;
-
-/**
- * Build the {get, set, reset} interface passed to user-supplied effects.
- *
- * In Jotai, every `useAtomCallback` provides `(get, set)`. We synthesize the `reset`
- * helper as `set(atom, RESET)` for parity with the Recoil interface.
- */
-function makeInterface(
-  get: StateEffectInterface['get'],
-  set: StateEffectInterface['set'],
-): StateEffectInterface {
-  return {
-    get,
-    set,
-    reset: (atom) => set(atom as WritableAtom<unknown, [typeof RESET], unknown>, RESET),
-  };
-}
 
 function useStateLogicAtomicCallback<T>(effect: StateEffect<T>) {
   return useAtomCallback(
     useCallback(
       (get, set, newValue: T, previousValue: T) => {
-        effect(makeInterface(get, set), newValue, previousValue);
+        effect({ get, set }, newValue, previousValue);
       },
       [effect],
     ),
@@ -42,7 +25,7 @@ function useStateLogicAsyncCallback<T>(effect: StateEffectAsync<T>) {
   return useAtomCallback(
     useCallback(
       (get, set, newValue: T, previousValue: T) => {
-        effect(makeInterface(get, set), newValue, previousValue);
+        effect({ get, set }, newValue, previousValue);
       },
       [effect],
     ),
