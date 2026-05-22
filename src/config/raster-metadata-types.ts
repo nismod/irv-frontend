@@ -1,22 +1,6 @@
 import type { RdlsSource, RiskDataType } from '@/details/pixel-driller/download/metadata-types';
 
-export type RasterDataSourceSection = 'hazard' | 'exposure' | 'risk';
-
-export interface RasterDataSourceTableRow {
-  id: string;
-  section: RasterDataSourceSection;
-  dataset: string;
-  source: {
-    label: string;
-    url?: string;
-  };
-  citation: string[];
-  license: {
-    label: string;
-    url?: string;
-  };
-  notes: string[];
-}
+import type { DataSourceTableRow } from './data-source-metadata-types';
 
 export interface RasterDatasetMetadata {
   id: string;
@@ -32,7 +16,7 @@ export interface RasterDatasetMetadata {
     datasetDescription: string;
     datasetSources: string[];
   };
-  dataSourceTable?: RasterDataSourceTableRow;
+  dataSourceTable?: DataSourceTableRow;
 }
 
 export type RasterMetadataModule = readonly RasterDatasetMetadata[];

@@ -2,7 +2,7 @@ import { useRecoilState } from 'recoil';
 
 import { ParamChecklist } from '@/lib/controls/params/ParamChecklist';
 
-import { INDUSTRY_METADATA } from '@/config/industry/industry-view-layer';
+import { INDUSTRY_METADATA } from '@/config/industry/metadata';
 import { LayerLabel } from '@/sidebar/ui/LayerLabel';
 import { industrySelectionState, IndustryType } from '@/state/data-selection/industry';
 

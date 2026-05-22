@@ -3,6 +3,7 @@ import { makeConfig } from '@/lib/helpers';
 import { INFRASTRUCTURE_COLORS } from '@/config/networks/colors';
 
 import { AssetMetadata } from '../assets/metadata';
+import type { DataSourceMetadataModule } from '../data-source-metadata-types';
 
 export const NETWORK_LAYERS = [
   'power_transmission',
@@ -74,3 +75,40 @@ export const NETWORKS_METADATA = makeConfig<AssetMetadata, NetworkLayerType>([
     color: INFRASTRUCTURE_COLORS.roads_unknown.css,
   },
 ]);
+
+export const NETWORK_DATA_SOURCE_ROWS: DataSourceMetadataModule = [
+  {
+    id: 'osm-roads-rail',
+    section: 'exposure',
+    dataset: 'Roads and Rail',
+    source: {
+      label: 'OpenStreetMap',
+      url: 'https://planet.openstreetmap.org/',
+    },
+    citation: ['OpenStreetMap contributors https://www.openstreetmap.org/copyright.'],
+    license: {
+      label: 'ODbL',
+    },
+    notes: [
+      'Extract from OpenStreetMap October 2021. All roads tagged as trunk, motorway, primary, secondary or tertiary, all rail lines tagged as rail and railway stations.',
+    ],
+  },
+  {
+    id: 'gridfinder-power-transmission',
+    section: 'exposure',
+    dataset: 'Gridfinder Power Transmission lines',
+    source: {
+      label: 'Gridfinder Power Transmission lines',
+      url: 'https://doi.org/10.5281/zenodo.3628142',
+    },
+    citation: [
+      'Arderne, C., Zorn, C., Nicolas, C. et al. Predictive mapping of the global power system using open data. Sci Data 7, 19 (2020). https://doi.org/10.1038/s41597-019-0347-4.',
+    ],
+    license: {
+      label: 'CC BY 4.0',
+    },
+    notes: [
+      "Predicted distribution and transmission line network, with existing OpenStreetMap lines tagged in the 'source' column and OpenStreetMap contributors.",
+    ],
+  },
+];
