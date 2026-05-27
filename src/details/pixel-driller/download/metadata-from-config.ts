@@ -1,21 +1,46 @@
 import { getLayerMetadata } from '@/config/layer-metadata';
 
 import type { ReadmeContents } from './download-context';
-import type { RdlsDataset, RdlsLocation, RdlsResource } from './metadata-types';
-
-interface BuildPixelDrillerMetadataArgs {
-  spatial: RdlsLocation;
-  resources: RdlsResource[];
-}
+import { COMMON_DIALECT } from './metadata-common';
+import type {
+  DatapackageTableSchemaField,
+  RdlsDataset,
+  RdlsLocation,
+  RdlsResource,
+} from './metadata-types';
 
 export function buildPixelDrillerMetadata(
   metadataId: string,
-  { spatial, resources }: BuildPixelDrillerMetadataArgs,
+  spatial: RdlsLocation,
+  columns: DatapackageTableSchemaField[],
 ): RdlsDataset {
   const metadata = structuredClone(getLayerMetadata(metadataId));
 
+  // patch in description of spatial extract
+  const lineage = {
+    ...metadata.lineage,
+    description: `Data extracted at a single point location. ${metadata.lineage.description}`,
+  };
+
+  // patch in list of single CSV resource
+  const resources: RdlsResource[] = [
+    {
+      id: `${metadataId}.csv`,
+      title: metadata.resources[0].title,
+      description: metadata.resources[0].description,
+      format: 'csv',
+      schema: {
+        fields: columns,
+      },
+      dialect: COMMON_DIALECT,
+    },
+  ];
+
+  // patch in common metadata for spatial extract
   return {
     ...metadata,
+    license: metadata.license,
+    lineage,
     spatial,
     resources,
   };

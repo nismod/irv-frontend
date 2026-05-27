@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -68,22 +67,7 @@ const exportCoolingDegreeDays: ExportFunction = async (allRecords) => {
 };
 
 export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(cddBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${cddBaseName}.csv`,
-        title: 'Cooling Degree Days Data',
-        description:
-          'Cooling degree days change data for this site, including absolute and relative differences between 1.5C and 2C global warming scenarios.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(cddColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(cddBaseName, spatial, cddColumns);
 
 const coolingDegreeDaysExportConfig: ExportConfig = {
   exportFunction: exportCoolingDegreeDays,

@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -66,22 +65,7 @@ const exportLandslide: ExportFunction = async (allRecords) => {
 };
 
 export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(landslideBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${landslideBaseName}.csv`,
-        title: 'Landslide Data',
-        description:
-          'Landslide susceptibility and annual probabilities for earthquake and rainfall triggers at this site.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(landslideColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(landslideBaseName, spatial, landslideColumns);
 
 const landslideExportConfig: ExportConfig = {
   exportFunction: exportLandslide,

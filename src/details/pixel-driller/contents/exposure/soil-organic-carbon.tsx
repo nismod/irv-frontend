@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -54,22 +53,7 @@ const exportSoilOrganicCarbon: ExportFunction = async (allRecords) => {
 };
 
 const getSoilOrganicCarbonMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(socBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${socBaseName}.csv`,
-        title: 'Soil organic carbon',
-        description:
-          'Soil organic carbon in tonnes per hectare at this site, derived from SoilGrids 2.0 mean predictions resampled from 250m to 1000m cells.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(socColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(socBaseName, spatial, socColumns);
 
 const soilOrganicCarbonExportConfig: ExportConfig = {
   exportFunction: exportSoilOrganicCarbon,

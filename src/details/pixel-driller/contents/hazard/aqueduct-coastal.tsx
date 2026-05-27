@@ -9,7 +9,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -97,22 +96,7 @@ const exportAqueductCoastal: ExportFunction = async (allRecords) => {
 };
 
 export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(aqueductCoastalBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${aqueductCoastalBaseName}.csv`,
-        title: 'Aqueduct Coastal Flood Risk Data',
-        description:
-          'Coastal flood height data from the Aqueduct project, representing inundation depth in meters at this site across return periods, emissions scenarios, and current and future epochs.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(aqueductCoastalColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(aqueductCoastalBaseName, spatial, aqueductCoastalColumns);
 
 const aqueductCoastalExportConfig: ExportConfig = {
   exportFunction: exportAqueductCoastal,

@@ -9,7 +9,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -84,22 +83,7 @@ const exportExtremeHeat: ExportFunction = async (allRecords) => {
 };
 
 const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(extremeHeatBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${extremeHeatBaseName}.csv`,
-        title: 'Extreme Heat Occurrence Data (ISIMIP)',
-        description:
-          'Extreme heat occurrence probabilities from ISIMIP-derived event time series at this site, processed into annual probability values across emissions scenarios and epochs.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(extremeHeatColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(extremeHeatBaseName, spatial, extremeHeatColumns);
 
 const extremeHeatExportConfig: ExportConfig = {
   exportFunction: exportExtremeHeat,

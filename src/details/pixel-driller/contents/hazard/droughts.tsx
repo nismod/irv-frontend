@@ -9,7 +9,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -80,22 +79,7 @@ const exportDroughts: ExportFunction = async (allRecords) => {
 };
 
 const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(droughtBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${droughtBaseName}.csv`,
-        title: 'Drought Occurrence Data (ISIMIP)',
-        description:
-          'Drought occurrence probabilities from ISIMIP-derived event time series at this site, processed into annual probability values across emissions scenarios and epochs.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(droughtColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(droughtBaseName, spatial, droughtColumns);
 
 const droughtsExportConfig: ExportConfig = {
   exportFunction: exportDroughts,

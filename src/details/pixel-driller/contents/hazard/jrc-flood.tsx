@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -97,22 +96,7 @@ const exportJrcFlood: ExportFunction = async (allRecords) => {
 };
 
 export const getJrcFloodMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(jrcFloodBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${jrcFloodBaseName}.csv`,
-        title: 'River Flooding (JRC) Data',
-        description:
-          'River flood height data from the JRC global river flood hazard maps for this site across return periods, with cell values indicating water depth in meters.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(jrcFloodColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(jrcFloodBaseName, spatial, jrcFloodColumns);
 
 const jrcFloodExportConfig: ExportConfig = {
   exportFunction: exportJrcFlood,

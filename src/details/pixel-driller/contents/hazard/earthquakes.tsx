@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -58,22 +57,7 @@ const exportEarthquakes: ExportFunction = async (allRecords) => {
 };
 
 const getEarthquakesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(earthquakeBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${earthquakeBaseName}.csv`,
-        title: 'GEM Global Earthquake Hazard',
-        description:
-          'The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1) depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years, computed for reference rock conditions (shear wave velocity, VS30, of 760-800 m/s).',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(earthquakeColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(earthquakeBaseName, spatial, earthquakeColumns);
 
 const earthquakesExportConfig: ExportConfig = {
   exportFunction: exportEarthquakes,

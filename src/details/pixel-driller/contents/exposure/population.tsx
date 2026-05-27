@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -51,22 +50,7 @@ const exportPopulation: ExportFunction = async (allRecords) => {
 };
 
 const getPopulationMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(populationBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${populationBaseName}.csv`,
-        title: 'Population density',
-        description:
-          'Population density in people per km² at this site for the given epoch, derived from GHS-POP estimates and projections between 1975 and 2030.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(populationColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(populationBaseName, spatial, populationColumns);
 
 const populationExportConfig: ExportConfig = {
   exportFunction: exportPopulation,

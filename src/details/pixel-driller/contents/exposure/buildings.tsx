@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -59,22 +58,7 @@ const exportBuildings: ExportFunction = async (allRecords) => {
 };
 
 const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(buildingsBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${buildingsBaseName}.csv`,
-        title: 'Built-up surface',
-        description:
-          'Built-up surface area in m² at this site for all buildings and non-residential buildings, based on GHS-BUILT-S total and non-residential built-up surface components.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(buildingsColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(buildingsBaseName, spatial, buildingsColumns);
 
 const buildingsExportConfig: ExportConfig = {
   exportFunction: exportBuildings,

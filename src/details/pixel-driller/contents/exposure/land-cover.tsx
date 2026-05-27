@@ -12,7 +12,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -45,22 +44,7 @@ const exportLandCover: ExportFunction = async (allRecords) => {
 };
 
 const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(landCoverBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${landCoverBaseName}.csv`,
-        title: 'Land cover',
-        description:
-          'Land cover class code at this site, using the ESA CCI land cover classification values shown in the map legend.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(landCoverColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(landCoverBaseName, spatial, landCoverColumns);
 
 const landCoverExportConfig: ExportConfig = {
   exportFunction: exportLandCover,

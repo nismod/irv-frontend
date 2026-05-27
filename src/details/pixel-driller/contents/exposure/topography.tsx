@@ -10,7 +10,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -60,22 +59,7 @@ const exportDem: ExportFunction = async (allRecords) => {
 };
 
 const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(demBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${demBaseName}.csv`,
-        title: 'Topography',
-        description:
-          'DEM elevation and slope values at this site, based on MERIT DEM derivatives produced at 250m resolution.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(demColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(demBaseName, spatial, demColumns);
 
 const demExportConfig: ExportConfig = {
   exportFunction: exportDem,

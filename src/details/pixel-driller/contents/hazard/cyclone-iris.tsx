@@ -9,7 +9,6 @@ import {
   useRegisterExportConfig,
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
-import { COMMON_DIALECT } from '../../download/metadata-common';
 import {
   buildPixelDrillerMetadata,
   getPixelDrillerReadmeContents,
@@ -78,22 +77,7 @@ const exportCycloneIris: ExportFunction = async (allRecords) => {
 };
 
 export const getCycloneIrisMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
-  buildPixelDrillerMetadata(cycloneIrisBaseName, {
-    spatial,
-    resources: [
-      {
-        id: `${cycloneIrisBaseName}.csv`,
-        title: 'Tropical Cyclones (IRIS) Data',
-        description:
-          'Tropical cyclone wind speed data from the IRIS project for this site across return periods and scenarios.',
-        format: 'csv',
-        schema: {
-          fields: structuredClone(cycloneIrisColumns),
-        },
-        dialect: COMMON_DIALECT,
-      },
-    ],
-  });
+  buildPixelDrillerMetadata(cycloneIrisBaseName, spatial, cycloneIrisColumns);
 
 const cycloneIrisExportConfig: ExportConfig = {
   exportFunction: exportCycloneIris,
