@@ -1,6 +1,12 @@
 import { ValueLabel } from '@/lib/controls/params/value-label';
 
-import type { DataSourceMetadataModule } from '../data-source-metadata-types';
+import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
+
+import {
+  citationSources,
+  GLOBAL_SPATIAL,
+  SOURCE_DATASET_LINEAGE_DESCRIPTION,
+} from '../layer-metadata-helpers';
 
 export const REGIONAL_EXPOSURE_VARIABLES = [
   'pop_exposed_seismic_threshold0.1g',
@@ -30,18 +36,35 @@ export const REGIONAL_EXPOSURE_VARIABLE_LABELS: ValueLabel<RegionalExposureVaria
   },
 ];
 
-export const REGIONAL_RISK_DATA_SOURCE_ROWS: DataSourceMetadataModule = [
+export const REGIONAL_RISK_LAYER_METADATA = [
   {
     id: 'regional-summary',
-    section: 'risk',
-    dataset: 'Regional Summary',
-    source: {
-      label: 'Derived from exposure and hazard layers',
+    title: 'Regional Summary',
+    description: 'Population exposed to various hazards at return periods.',
+    risk_data_type: ['loss'],
+    spatial: GLOBAL_SPATIAL,
+    publisher: { name: 'Global Earthquake Model' },
+    contact_point: { name: 'Global Earthquake Model' },
+    creator: { name: 'Global Earthquake Model' },
+    license: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    resources: [
+      {
+        id: 'source_regional_summary',
+        title: 'Derived from exposure and hazard layers',
+        description: '',
+      },
+    ],
+    lineage: {
+      description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
+      sources: citationSources(
+        'source_regional_summary_citation',
+        ['GEM (2022) Analysis of earthquake and flooding population exposure.'],
+        {
+          type: 'dataset',
+          risk_data_type: 'loss',
+          license: 'https://creativecommons.org/licenses/by-sa/4.0/',
+        },
+      ),
     },
-    citation: ['GEM (2022) Analysis of earthquake and flooding population exposure.'],
-    license: {
-      label: 'CC-BY-SA',
-    },
-    notes: ['Population exposed to various hazards at return periods.'],
   },
-];
+] as const satisfies readonly RdlsDataset[];

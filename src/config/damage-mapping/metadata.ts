@@ -1,21 +1,43 @@
-import type { DataSourceMetadataModule } from '../data-source-metadata-types';
+import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-export const DAMAGE_MAPPING_DATA_SOURCE_ROWS: DataSourceMetadataModule = [
+import {
+  citationSources,
+  GLOBAL_SPATIAL,
+  SOURCE_DATASET_LINEAGE_DESCRIPTION,
+} from '../layer-metadata-helpers';
+
+export const DAMAGE_MAPPING_LAYER_METADATA = [
   {
     id: 'infrastructure-risk',
-    section: 'risk',
-    dataset: 'Infrastructure Risk',
-    source: {
-      label: 'Derived from exposure and hazard layers',
-    },
-    citation: [
-      'Russell T., Thomas F., nismod/open-gira contributors and OpenStreetMap contributors (2022) Global Infrastructure Damage Risk Estimates. [Dataset] Available at https://global.infrastructureresilience.org.',
-    ],
-    license: {
-      label: 'CC-BY-SA, ODbL',
-    },
-    notes: [
+    title: 'Infrastructure Risk',
+    description:
       'Infrastructure expected annual direct damages are calculated from OpenStreetMap and Gridfinder networks, STORM cyclones and Aqueduct floods.',
+    risk_data_type: ['loss'],
+    spatial: GLOBAL_SPATIAL,
+    publisher: { name: 'OPSIS, University of Oxford' },
+    contact_point: { name: 'Tom Russell' },
+    creator: { name: 'Tom Russell' },
+    license: 'https://global.infrastructureresilience.org/terms-of-use',
+    resources: [
+      {
+        id: 'source_infrastructure_risk',
+        title: 'Derived from exposure and hazard layers',
+        description: '',
+      },
     ],
+    lineage: {
+      description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
+      sources: citationSources(
+        'source_infrastructure_risk_citation',
+        [
+          'Russell T., Thomas F., nismod/open-gira contributors and OpenStreetMap contributors (2022) Global Infrastructure Damage Risk Estimates. [Dataset] Available at https://global.infrastructureresilience.org.',
+        ],
+        {
+          type: 'dataset',
+          risk_data_type: 'loss',
+          license: 'https://global.infrastructureresilience.org/terms-of-use',
+        },
+      ),
+    },
   },
-];
+] as const satisfies readonly RdlsDataset[];

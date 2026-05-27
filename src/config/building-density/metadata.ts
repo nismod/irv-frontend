@@ -1,10 +1,9 @@
 import { ValueLabel } from '@/lib/controls/params/value-label';
 import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
 
-import {
-  POINT_DATA_EXTRACT_LINEAGE_DESCRIPTION,
-  type RasterMetadataModule,
-} from '../raster-metadata-types';
+import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
+
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const BUILDING_DENSITY_TYPES = ['all', 'non_residential'] as const;
 
@@ -36,32 +35,38 @@ export const BUILDING_DENSITY_COLORMAPS: Record<BuildingDensityType, RasterConti
   },
 };
 
-export const BUILDING_DENSITY_RASTER_METADATA: RasterMetadataModule = [
+export const BUILDING_DENSITY_LAYER_METADATA = [
   {
     id: 'buildings',
     title: 'Built-up surface',
     description:
       'Built-up surface area at this site from GHS-BUILT-S R2023A, including total and non-residential built-up surface estimates derived from multitemporal satellite imagery.',
     risk_data_type: ['exposure'],
-    license: 'CC-BY-NC-SA',
+    spatial: GLOBAL_SPATIAL,
+    publisher: { name: 'European Commission Joint Research Centre' },
+    contact_point: { name: 'Martino Pesaresi' },
+    creator: { name: 'Martino Pesaresi' },
+    license: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+    resources: [
+      {
+        id: 'source_ghs_built',
+        title: 'JRC Global Human Settlement Layer',
+        description: '',
+        access_url: 'https://human-settlement.emergency.copernicus.eu/ghs_buS2023.php',
+      },
+    ],
     lineage: {
-      description: POINT_DATA_EXTRACT_LINEAGE_DESCRIPTION,
+      description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
       sources: [
         {
           id: 'source_ghs_built',
-          name: 'Pesaresi M., Politis P. (2023). European Commission Joint Research Centre. doi:10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA',
+          name: 'Pesaresi M., Politis P. (2023). GHS-BUILT-S R2023A - GHS built-up surface grid, derived from Sentinel2 composite and Landsat, multitemporal (1975-2030). European Commission Joint Research Centre. DOI: 10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA',
           url: 'https://human-settlement.emergency.copernicus.eu/ghs_buS2023.php',
           type: 'dataset',
           risk_data_type: 'exposure',
-          license: 'CC-BY-4.0',
+          license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
     },
-    readme: {
-      datasetDescription: 'built-up surface area by subtype (m2)',
-      datasetSources: [
-        'Pesaresi M., Politis P. (2023). GHS-BUILT-S R2023A - GHS built-up surface grid, derived from Sentinel2 composite and Landsat, multitemporal (1975-2030). European Commission Joint Research Centre. DOI: 10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA',
-      ],
-    },
   },
-];
+] as const satisfies readonly RdlsDataset[];

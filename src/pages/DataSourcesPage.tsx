@@ -7,8 +7,9 @@ import TableRow from '@mui/material/TableRow';
 
 import { ExtLink } from '@/lib/nav';
 
-import { getDataSourceRows } from '@/config/data-source-metadata';
-import type { DataSourceSection, DataSourceTableRow } from '@/config/data-source-metadata-types';
+import { getLayerMetadataBySection, type LayerMetadataSection } from '@/config/layer-metadata';
+import { getLicenseByUrl } from '@/config/licenses';
+import type { RdlsDataset, RdlsResource } from '@/details/pixel-driller/download/metadata-types';
 
 import {
   ArticleContainer,
@@ -44,20 +45,38 @@ const renderTextParagraphs = (paragraphs: string[]) => {
   );
 };
 
-const renderSourceLink = (source: DataSourceTableRow['source']) =>
-  source.url ? <ExtLink href={source.url}>{source.label}</ExtLink> : source.label;
+const renderSourceLink = (resource: RdlsResource | undefined) => {
+  if (!resource) return null;
+  const url = resource?.access_url ?? resource?.download_url;
+  return url ? <ExtLink href={url}>{resource.title}</ExtLink> : resource.title;
+};
 
-const renderLicenseLink = (license: DataSourceTableRow['license']) =>
-  license.url ? <ExtLink href={license.url}>{license.label}</ExtLink> : license.label;
+const renderLicenseLink = (url: string) => {
+  const license = getLicenseByUrl(url);
+  return <ExtLink href={url}>{license?.shortname ?? url}</ExtLink>;
+};
 
-const renderDataSourceRows = (section: DataSourceSection) =>
-  getDataSourceRows(section).map((row) => (
-    <TableRow key={row.id}>
-      <TableCell>{row.dataset}</TableCell>
-      <TableCell>{renderSourceLink(row.source)}</TableCell>
-      <TableCell>{renderTextParagraphs(row.citation)}</TableCell>
-      <TableCell>{renderLicenseLink(row.license)}</TableCell>
-      <TableCell>{renderTextParagraphs(row.notes)}</TableCell>
+const getDatasetCitations = (dataset: RdlsDataset): string[] =>
+  dataset.lineage?.sources
+    .map((source) => source.name)
+    .filter((name): name is string => Boolean(name?.trim())) ?? [];
+
+const renderDataSourceRows = (section: LayerMetadataSection) =>
+  getLayerMetadataBySection(section).map((dataset) => (
+    <TableRow key={dataset.id}>
+      <TableCell>{dataset.title}</TableCell>
+      <TableCell>
+        <TableCellStack>
+          {dataset.resources.map((resource, index) => (
+            <TableCellParagraph key={resource.id ?? index}>
+              {renderSourceLink(resource)}
+            </TableCellParagraph>
+          ))}
+        </TableCellStack>
+      </TableCell>
+      <TableCell>{renderTextParagraphs(getDatasetCitations(dataset))}</TableCell>
+      <TableCell>{renderLicenseLink(dataset.license)}</TableCell>
+      <TableCell>{renderTextParagraphs([dataset.description])}</TableCell>
     </TableRow>
   ));
 

@@ -39,10 +39,14 @@ export interface RdlsEntity {
   url?: string;
 }
 
-export interface RdlsLocation {
-  // [longitude, latitude]
-  centroid: [number, number];
-}
+export type RdlsLocation =
+  | {
+      // [longitude, latitude]
+      centroid: [number, number];
+    }
+  | {
+      scale: 'global';
+    };
 
 export interface RdlsResource {
   id: string;
