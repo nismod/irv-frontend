@@ -2,11 +2,7 @@ import { ValueLabel } from '@/lib/controls/params/value-label';
 
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const HDI_REGION_LEVELS = ['countries', 'regions'] as const;
 
@@ -82,17 +78,15 @@ export const HUMAN_DEVELOPMENT_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_subnational_human_development_citation',
-        [
-          'Global Data Lab (2019) Subnational Human Development Index (SHDI) Available online: https://globaldatalab.org/shdi/.',
-        ],
+      sources: [
         {
+          id: 'source_subnational_human_development_citation_1',
+          name: 'Global Data Lab (2019) Subnational Human Development Index (SHDI) Available online: https://globaldatalab.org/shdi/.',
           type: 'dataset',
           risk_data_type: 'vulnerability',
           license: 'https://globaldatalab.org/termsofuse',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

@@ -4,11 +4,7 @@ import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-type
 import { IndustryType } from '@/state/data-selection/industry';
 
 import { AssetMetadata } from '../assets/metadata';
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const INDUSTRY_COLORS = makeColorConfig<IndustryType>({
   cement: '#e4cda9',
@@ -54,18 +50,22 @@ export const INDUSTRY_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_cement_steel_assets_citation',
-        [
-          'McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C., Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and Yoken, D. 2021. Global Database of Cement Production Assets. Spatial Finance Initiative.',
-          'McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C., Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and Yoken, D., 2021. Global Database of Iron and Steel Production Assets. Spatial Finance Initiative.',
-        ],
+      sources: [
         {
+          id: 'source_cement_steel_assets_citation_1',
+          name: 'McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C., Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and Yoken, D. 2021. Global Database of Cement Production Assets. Spatial Finance Initiative.',
           type: 'dataset',
           risk_data_type: 'exposure',
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
-      ),
+        {
+          id: 'source_cement_steel_assets_citation_2',
+          name: 'McCarten, M., Bayaraa, M., Caldecott, B., Christiaen, C., Foster, P., Hickey, C., Kampmann, D., Layman, C., Rossi, C., Scott, K., Tang, K., Tkachenko, N., and Yoken, D., 2021. Global Database of Iron and Steel Production Assets. Spatial Finance Initiative.',
+          type: 'dataset',
+          risk_data_type: 'exposure',
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+        },
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

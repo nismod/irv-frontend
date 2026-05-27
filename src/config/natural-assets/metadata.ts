@@ -2,11 +2,7 @@ import { ValueLabel } from '@/lib/controls/params/value-label';
 
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const NATURE_RASTER_TYPES = [
   'biodiversity_intactness',
@@ -86,17 +82,15 @@ export const NATURAL_ASSETS_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_biodiversity_intactness_index_citation',
-        [
-          'Tim Newbold; Lawrence Hudson; Andy Arnell; Sara Contu et al. (2016). Map of Biodiversity Intactness Index (from Global map of the Biodiversity Intactness Index, from Newbold et al. (2016) Science) [Data set resource]. Natural History Museum. Available online at: https://data.nhm.ac.uk.',
-        ],
+      sources: [
         {
+          id: 'source_biodiversity_intactness_index_citation_1',
+          name: 'Tim Newbold; Lawrence Hudson; Andy Arnell; Sara Contu et al. (2016). Map of Biodiversity Intactness Index (from Global map of the Biodiversity Intactness Index, from Newbold et al. (2016) Science) [Data set resource]. Natural History Museum. Available online at: https://data.nhm.ac.uk.',
           type: 'dataset',
           risk_data_type: 'vulnerability',
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
-      ),
+      ],
     },
   },
   {
@@ -115,22 +109,20 @@ export const NATURAL_ASSETS_LAYER_METADATA = [
         id: 'source_forest_landscape_integrity_index',
         title: 'Forest Landscape Integrity Index',
         description: '',
-        access_url: 'https://www.nature.com/articles/s41467-020-19493-3',
+        access_url: 'https://www.forestlandscapeintegrity.com/download-data',
       },
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_forest_landscape_integrity_index_citation',
-        [
-          'Grantham, H.S., Duncan, A., Evans, T.D. et al. Anthropogenic modification of forests means only 40% of remaining forests have high ecosystem integrity. Nat Commun 11, 5978 (2020). DOI: 10.1038/s41467-020-19493-3.',
-        ],
+      sources: [
         {
+          id: 'source_forest_landscape_integrity_index_citation_1',
+          name: 'Grantham, H.S., Duncan, A., Evans, T.D. et al. Anthropogenic modification of forests means only 40% of remaining forests have high ecosystem integrity. Nat Commun 11, 5978 (2020). DOI: 10.1038/s41467-020-19493-3.',
           type: 'dataset',
           risk_data_type: 'vulnerability',
           license: 'https://www.forestlandscapeintegrity.com/download-data',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

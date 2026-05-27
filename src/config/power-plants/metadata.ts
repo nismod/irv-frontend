@@ -1,10 +1,6 @@
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const POWER_PLANTS_LAYER_METADATA = [
   {
@@ -28,17 +24,15 @@ export const POWER_PLANTS_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_wri_global_powerplants_citation',
-        [
-          'Global Energy Observatory, Google, KTH Royal Institute of Technology in Stockholm, Enipedia, World Resources Institute. 2018. Global Power Plant Database. Published on Resource Watch and Google Earth Engine; http://resourcewatch.org/ https://earthengine.google.com/.',
-        ],
+      sources: [
         {
+          id: 'source_wri_global_powerplants_citation_1',
+          name: 'Global Energy Observatory, Google, KTH Royal Institute of Technology in Stockholm, Enipedia, World Resources Institute. 2018. Global Power Plant Database. Published on Resource Watch and Google Earth Engine; http://resourcewatch.org/ https://earthengine.google.com/.',
           type: 'dataset',
           risk_data_type: 'exposure',
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

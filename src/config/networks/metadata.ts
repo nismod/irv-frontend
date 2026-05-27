@@ -4,11 +4,7 @@ import { INFRASTRUCTURE_COLORS } from '@/config/networks/colors';
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
 import { AssetMetadata } from '../assets/metadata';
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const NETWORK_LAYERS = [
   'power_transmission',
@@ -103,15 +99,15 @@ export const NETWORK_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_osm_roads_rail_citation',
-        ['OpenStreetMap contributors https://www.openstreetmap.org/copyright.'],
+      sources: [
         {
+          id: 'source_osm_roads_rail_citation_1',
+          name: 'OpenStreetMap contributors https://www.openstreetmap.org/copyright.',
           type: 'dataset',
           risk_data_type: 'exposure',
           license: 'https://opendatacommons.org/licenses/odbl/1-0/',
         },
-      ),
+      ],
     },
   },
   {
@@ -135,17 +131,15 @@ export const NETWORK_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_gridfinder_power_transmission_citation',
-        [
-          'Arderne, C., Zorn, C., Nicolas, C. et al. Predictive mapping of the global power system using open data. Sci Data 7, 19 (2020). https://doi.org/10.1038/s41597-019-0347-4.',
-        ],
+      sources: [
         {
+          id: 'source_gridfinder_power_transmission_citation_1',
+          name: 'Arderne, C., Zorn, C., Nicolas, C. et al. Predictive mapping of the global power system using open data. Sci Data 7, 19 (2020). https://doi.org/10.1038/s41597-019-0347-4.',
           type: 'dataset',
           risk_data_type: 'exposure',
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

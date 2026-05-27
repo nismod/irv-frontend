@@ -1,10 +1,6 @@
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const TRAVEL_TIME_LAYER_METADATA = [
   {
@@ -27,17 +23,15 @@ export const TRAVEL_TIME_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_travel_time_healthcare_citation',
-        [
-          'Weiss, D.J., Nelson, A., Vargas-Ruiz, C.A. et al. Global maps of travel time to healthcare facilities. Nat Med 26, 1835-1838 (2020). DOI: 10.1038/s41591-020-1059-1.',
-        ],
+      sources: [
         {
+          id: 'source_travel_time_healthcare_citation_1',
+          name: 'Weiss, D.J., Nelson, A., Vargas-Ruiz, C.A. et al. Global maps of travel time to healthcare facilities. Nat Med 26, 1835-1838 (2020). DOI: 10.1038/s41591-020-1059-1.',
           type: 'dataset',
           risk_data_type: 'vulnerability',
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

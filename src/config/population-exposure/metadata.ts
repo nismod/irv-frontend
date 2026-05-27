@@ -1,10 +1,6 @@
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const POPULATION_EXPOSURE_LAYER_METADATA = [
   {
@@ -27,17 +23,15 @@ export const POPULATION_EXPOSURE_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_population_exposure_citation',
-        [
-          'Russell, T., Nicholas, C., & Bernhofen, M. (2024). Annual probability of extreme heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo. 10.5281/zenodo.11582369. Derived using https://github.com/nismod/isimip-exposure.',
-        ],
+      sources: [
         {
+          id: 'source_population_exposure_citation_1',
+          name: 'Russell, T., Nicholas, C., & Bernhofen, M. (2024). Annual probability of extreme heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo. 10.5281/zenodo.11582369. Derived using https://github.com/nismod/isimip-exposure.',
           type: 'dataset',
           risk_data_type: 'loss',
           license: 'https://creativecommons.org/licenses/by-sa/4.0/',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

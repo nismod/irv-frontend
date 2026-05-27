@@ -3,11 +3,7 @@ import { makeColorConfig } from '@/lib/helpers';
 
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const PROTECTED_AREA_TYPES = ['land', 'marine'] as const;
 
@@ -50,17 +46,15 @@ export const PROTECTED_AREAS_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_protected_areas_citation',
-        [
-          'UNEP-WCMC and IUCN (2022), Protected Planet: The World Database on Protected Areas (WDPA) [On-line], [October 2022], Cambridge, UK: UNEP-WCMC and IUCN. Available online: https://www.protectedplanet.net.',
-        ],
+      sources: [
         {
+          id: 'source_protected_areas_citation_1',
+          name: 'UNEP-WCMC and IUCN (2022), Protected Planet: The World Database on Protected Areas (WDPA) [On-line], [October 2022], Cambridge, UK: UNEP-WCMC and IUCN. Available online: https://www.protectedplanet.net.',
           type: 'dataset',
           risk_data_type: 'vulnerability',
           license: 'https://www.protectedplanet.net/en/legal',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

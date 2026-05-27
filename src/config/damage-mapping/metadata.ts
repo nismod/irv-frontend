@@ -1,10 +1,6 @@
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const DAMAGE_MAPPING_LAYER_METADATA = [
   {
@@ -27,17 +23,15 @@ export const DAMAGE_MAPPING_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_infrastructure_risk_citation',
-        [
-          'Russell T., Thomas F., nismod/open-gira contributors and OpenStreetMap contributors (2022) Global Infrastructure Damage Risk Estimates. [Dataset] Available at https://global.infrastructureresilience.org.',
-        ],
+      sources: [
         {
+          id: 'source_infrastructure_risk_citation_1',
+          name: 'Russell T., Thomas F., nismod/open-gira contributors and OpenStreetMap contributors (2022) Global Infrastructure Damage Risk Estimates. [Dataset] Available at https://global.infrastructureresilience.org.',
           type: 'dataset',
           risk_data_type: 'loss',
           license: 'https://global.infrastructureresilience.org/terms-of-use',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

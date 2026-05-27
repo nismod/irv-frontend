@@ -3,11 +3,7 @@ import { makeColor } from '@/lib/colors';
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
 import { AssetMetadata } from '../assets/metadata';
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const HEALTHSITES_COLOR = makeColor('#72dfda');
 
@@ -38,17 +34,15 @@ export const HEALTHCARE_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_healthsites_citation',
-        [
-          'This data was generated as an extract from the OpenStreetMap global open database (http://openstreetmap.org) by the Healthsites.io (http://healthsites.io) project. Data: Open Database License http://opendatacommons.org/licenses/odbl/. Data credits: OpenStreetMap contributors http://www.openstreetmap.org/copyright.',
-        ],
+      sources: [
         {
+          id: 'source_healthsites_citation_1',
+          name: 'This data was generated as an extract from the OpenStreetMap global open database (http://openstreetmap.org) by the Healthsites.io (http://healthsites.io) project. Data: Open Database License http://opendatacommons.org/licenses/odbl/. Data credits: OpenStreetMap contributors http://www.openstreetmap.org/copyright.',
           type: 'dataset',
           risk_data_type: 'exposure',
           license: 'https://opendatacommons.org/licenses/odbl/1-0/',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

@@ -2,11 +2,7 @@ import { ValueLabel } from '@/lib/controls/params/value-label';
 
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const REGIONAL_EXPOSURE_VARIABLES = [
   'pop_exposed_seismic_threshold0.1g',
@@ -56,15 +52,15 @@ export const REGIONAL_RISK_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_regional_summary_citation',
-        ['GEM (2022) Analysis of earthquake and flooding population exposure.'],
+      sources: [
         {
+          id: 'source_regional_summary_citation_1',
+          name: 'GEM (2022) Analysis of earthquake and flooding population exposure.',
           type: 'dataset',
           risk_data_type: 'loss',
           license: 'https://creativecommons.org/licenses/by-sa/4.0/',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];

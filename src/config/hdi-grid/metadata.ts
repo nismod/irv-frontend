@@ -1,10 +1,6 @@
 import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
 
-import {
-  citationSources,
-  GLOBAL_SPATIAL,
-  SOURCE_DATASET_LINEAGE_DESCRIPTION,
-} from '../layer-metadata-helpers';
+import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
 export const HDI_GRID_LAYER_METADATA = [
   {
@@ -28,17 +24,15 @@ export const HDI_GRID_LAYER_METADATA = [
     ],
     lineage: {
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
-      sources: citationSources(
-        'source_hdi_grid_citation',
-        [
-          'Sherman, L., et al. 2023. Global High-Resolution Estimates of the United Nations Human Development Index Using Satellite Imagery and Machine-learning. Working Paper Series. 31044. National Bureau of Economic Research. DOI: 10.3386/w31044. Available online: http://www.nber.org/papers/w31044. Data available at: https://github.com/Global-Policy-Lab/hdi_downscaling_mosaiks.',
-        ],
+      sources: [
         {
+          id: 'source_hdi_grid_citation_1',
+          name: 'Sherman, L., et al. 2023. Global High-Resolution Estimates of the United Nations Human Development Index Using Satellite Imagery and Machine-learning. Working Paper Series. 31044. National Bureau of Economic Research. DOI: 10.3386/w31044. Available online: http://www.nber.org/papers/w31044. Data available at: https://github.com/Global-Policy-Lab/hdi_downscaling_mosaiks.',
           type: 'dataset',
           risk_data_type: 'vulnerability',
           license: 'https://spdx.org/licenses/MIT',
         },
-      ),
+      ],
     },
   },
 ] as const satisfies readonly RdlsDataset[];
