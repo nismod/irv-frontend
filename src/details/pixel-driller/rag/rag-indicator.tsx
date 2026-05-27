@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
@@ -30,16 +29,17 @@ export const RagIndicator: FC<RagIndicatorProps> = ({ status }) => {
   const tooltipText = titleMap[status];
   return (
     <Tooltip title={tooltipText} placement="top" arrow>
-      <IconButton
-        size="small"
+      <Box
+        component="span"
+        role="img"
         aria-label={tooltipText}
-        disableRipple
         sx={{
-          p: 0,
+          display: 'inline-flex',
           flexShrink: 0,
         }}
       >
         <Box
+          component="span"
           sx={{
             width: 16,
             height: 16,
@@ -48,7 +48,7 @@ export const RagIndicator: FC<RagIndicatorProps> = ({ status }) => {
             border: '1px solid rgba(0, 0, 0, 0.1)',
           }}
         />
-      </IconButton>
+      </Box>
     </Tooltip>
   );
 };
