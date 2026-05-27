@@ -1,12 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "allOf": [
-    {
-      "type": "object",
-      "properties": {
-        "datasets": {
-          "type": "array",
-          "items": {
+  "title": "Pixel Driller metadata package",
+  "type": "object",
+  "required": ["$schema", "datasets"],
+  "properties": {
+    "$schema": {
+      "const": "./metadata.schema.json"
+    },
+    "datasets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "allOf": [
+          {
+            "$ref": "./rdls-v1_0-dataset.schema.json"
+          },
+          {
             "type": "object",
             "properties": {
               "resources": {
@@ -27,8 +36,9 @@
               }
             }
           }
-        }
+        ]
       }
     }
-  ]
+  },
+  "additionalProperties": false
 }
