@@ -28,7 +28,7 @@ export const TRAVEL_TIME_LAYER_METADATA = [
           id: 'source_travel_time_healthcare_citation_1',
           name: 'Weiss, D.J., Nelson, A., Vargas-Ruiz, C.A. et al. Global maps of travel time to healthcare facilities. Nat Med 26, 1835-1838 (2020). DOI: 10.1038/s41591-020-1059-1.',
           type: 'dataset',
-          risk_data_type: 'vulnerability',
+          risk_data_type: ['vulnerability'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],

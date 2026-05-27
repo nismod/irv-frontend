@@ -47,7 +47,7 @@ export const TOPOGRAPHY_LAYER_METADATA = [
           name: 'Tomislav Hengl. (2018). Global DEM derivatives at 250m, 1 km and 2 km based on the MERIT DEM (1.0) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.1447210.',
           url: 'https://doi.org/10.5281/zenodo.1447210',
           type: 'dataset',
-          risk_data_type: 'exposure',
+          risk_data_type: ['exposure'],
           license: 'https://creativecommons.org/licenses/by-sa/4.0/',
         },
       ],

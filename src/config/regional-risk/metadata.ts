@@ -57,7 +57,7 @@ export const REGIONAL_RISK_LAYER_METADATA = [
           id: 'source_regional_summary_citation_1',
           name: 'GEM (2022) Analysis of earthquake and flooding population exposure.',
           type: 'dataset',
-          risk_data_type: 'loss',
+          risk_data_type: ['loss'],
           license: 'https://creativecommons.org/licenses/by-sa/4.0/',
         },
       ],

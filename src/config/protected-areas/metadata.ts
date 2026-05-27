@@ -51,7 +51,7 @@ export const PROTECTED_AREAS_LAYER_METADATA = [
           id: 'source_protected_areas_citation_1',
           name: 'UNEP-WCMC and IUCN (2022), Protected Planet: The World Database on Protected Areas (WDPA) [On-line], [October 2022], Cambridge, UK: UNEP-WCMC and IUCN. Available online: https://www.protectedplanet.net.',
           type: 'dataset',
-          risk_data_type: 'vulnerability',
+          risk_data_type: ['vulnerability'],
           license: 'https://www.protectedplanet.net/en/legal',
         },
       ],

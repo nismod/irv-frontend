@@ -28,7 +28,7 @@ export const DAMAGE_MAPPING_LAYER_METADATA = [
           id: 'source_infrastructure_risk_citation_1',
           name: 'Russell T., Thomas F., nismod/open-gira contributors and OpenStreetMap contributors (2022) Global Infrastructure Damage Risk Estimates. [Dataset] Available at https://global.infrastructureresilience.org.',
           type: 'dataset',
-          risk_data_type: 'loss',
+          risk_data_type: ['loss'],
           license: 'https://global.infrastructureresilience.org/terms-of-use',
         },
       ],

@@ -31,7 +31,7 @@ export const LAND_COVER_LAYER_METADATA = [
           name: 'European Space Agency Climate Change Initiative Land Cover project (2021) Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. https://doi.org/10.24381/cds.006f2c9a.',
           url: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview',
           type: 'dataset',
-          risk_data_type: 'exposure',
+          risk_data_type: ['exposure'],
           license: 'https://cds.climate.copernicus.eu/licences/satellite-land-cover',
         },
       ],

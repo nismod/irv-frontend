@@ -83,7 +83,7 @@ export const HUMAN_DEVELOPMENT_LAYER_METADATA = [
           id: 'source_subnational_human_development_citation_1',
           name: 'Global Data Lab (2019) Subnational Human Development Index (SHDI) Available online: https://globaldatalab.org/shdi/.',
           type: 'dataset',
-          risk_data_type: 'vulnerability',
+          risk_data_type: ['vulnerability'],
           license: 'https://globaldatalab.org/termsofuse',
         },
       ],

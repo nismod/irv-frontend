@@ -63,7 +63,7 @@ export const BUILDING_DENSITY_LAYER_METADATA = [
           name: 'Pesaresi M., Politis P. (2023). GHS-BUILT-S R2023A - GHS built-up surface grid, derived from Sentinel2 composite and Landsat, multitemporal (1975-2030). European Commission Joint Research Centre. DOI: 10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA',
           url: 'https://human-settlement.emergency.copernicus.eu/ghs_buS2023.php',
           type: 'dataset',
-          risk_data_type: 'exposure',
+          risk_data_type: ['exposure'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],

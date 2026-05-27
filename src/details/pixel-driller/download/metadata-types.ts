@@ -78,7 +78,7 @@ export interface RdlsSource {
   name?: string;
   url?: string;
   type?: string;
-  risk_data_type?: string;
+  risk_data_type?: RiskDataType[];
   used_in?: string;
   license?: string;
 }

@@ -5,7 +5,7 @@ import { registerCategoricalColorScheme } from '@/lib/data-map/legend/use-raster
 import { FormatFunction, makeValueFormat } from '@/lib/formats';
 import { makeOrderingCheck } from '@/lib/helpers';
 
-import type { RdlsDataset } from '@/details/pixel-driller/download/metadata-types';
+import type { RdlsDataset, RdlsSource } from '@/details/pixel-driller/download/metadata-types';
 
 import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-metadata-helpers';
 
@@ -322,21 +322,21 @@ registerCategoricalColorScheme('landslide_susceptibility', [
   },
 ]);
 
-const aqueductFloodsSource = {
+const aqueductFloodsSource: RdlsSource = {
   id: 'source_aqueduct_floods',
   name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute.',
   url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
   type: 'dataset',
-  risk_data_type: 'hazard',
+  risk_data_type: ['hazard'],
   license: 'https://creativecommons.org/licenses/by/4.0/',
 };
 
-const extremeHeatDroughtSource = {
+const extremeHeatDroughtSource: RdlsSource = {
   id: 'source_extreme_heat_drought',
   name: "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
   url: 'https://doi.org/10.5281/zenodo.8147088',
   type: 'dataset',
-  risk_data_type: 'hazard',
+  risk_data_type: ['hazard'],
   license: 'https://creativecommons.org/licenses/by/4.0/',
 };
 
@@ -426,7 +426,7 @@ export const HAZARD_LAYER_METADATA = [
           name: "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset] Available online at: http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif.",
           url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',
           type: 'dataset',
-          risk_data_type: 'hazard',
+          risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
@@ -518,7 +518,7 @@ export const HAZARD_LAYER_METADATA = [
           name: 'Bloemendaal, Nadia; de Moel, H. (Hans); Muis, S; Haigh, I.D. (Ivan); Aerts, J.C.J.H. (Jeroen) (2020): STORM tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. DOI 10.4121/12705164.v3 and Bloemendaal, Nadia; de Moel, Hans; Dullaart, Job; Haarsma, R.J. (Reindert); Haigh, I.D. (Ivan); Martinez, Andrew B.; et al. (2022): STORM climate change tropical cyclone wind speed return periods. 4TU.ResearchData. Dataset. DOI 10.4121/14510817.v3, aggregated as Russell, Tom. (2022). STORM tropical cyclone wind speed return periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo. DOI 10.5281/zenodo.7438145.',
           url: 'https://doi.org/10.4121/12705164.v3',
           type: 'dataset',
-          risk_data_type: 'hazard',
+          risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
@@ -552,7 +552,7 @@ export const HAZARD_LAYER_METADATA = [
           name: 'Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset. Scientific Data 11, 424 DOI 10.1038/s41597-024-03250-y and Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model. Figshare. Collection. DOI 10.6084/m9.figshare.c.6724251.v1.',
           url: 'https://doi.org/10.1038/s41597-024-03250-y',
           type: 'dataset',
-          risk_data_type: 'hazard',
+          risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
@@ -585,7 +585,7 @@ export const HAZARD_LAYER_METADATA = [
           name: 'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1), DOI: 10.1177/8755293020931866. Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S., Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A., Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data set]. Zenodo. DOI 10.5281/zenodo.8409647.',
           url: 'https://doi.org/10.5281/zenodo.8409647',
           type: 'dataset',
-          risk_data_type: 'hazard',
+          risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
         },
       ],
@@ -619,7 +619,7 @@ export const HAZARD_LAYER_METADATA = [
           name: 'Arup (2021) Global Landslide Hazard Map, prepared for The World Bank and Global Facility for Disaster Risk Reduction.',
           url: 'https://datacatalog.worldbank.org/search/dataset/0037584/Global-landslide-hazard-map',
           type: 'dataset',
-          risk_data_type: 'hazard',
+          risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/licenses/by-nc/4.0/',
         },
       ],

@@ -29,7 +29,7 @@ export const RWI_LAYER_METADATA = [
           id: 'source_relative_wealth_index_citation_1',
           name: 'Chi, G., et al. 2022. Microestimates of wealth for all low- and middle-income countries. Proceedings of the National Academy of Sciences Jan 2022, 119 (3) e2113658119; DOI: 10.1073/pnas.2113658119. Data available at: https://data.humdata.org/dataset/relative-wealth-index.',
           type: 'dataset',
-          risk_data_type: 'vulnerability',
+          risk_data_type: ['vulnerability'],
           license: 'https://creativecommons.org/licenses/by-nc/4.0/',
         },
       ],

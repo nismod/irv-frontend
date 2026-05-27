@@ -39,7 +39,7 @@ export const HEALTHCARE_LAYER_METADATA = [
           id: 'source_healthsites_citation_1',
           name: 'This data was generated as an extract from the OpenStreetMap global open database (http://openstreetmap.org) by the Healthsites.io (http://healthsites.io) project. Data: Open Database License http://opendatacommons.org/licenses/odbl/. Data credits: OpenStreetMap contributors http://www.openstreetmap.org/copyright.',
           type: 'dataset',
-          risk_data_type: 'exposure',
+          risk_data_type: ['exposure'],
           license: 'https://opendatacommons.org/licenses/odbl/1-0/',
         },
       ],
