@@ -525,8 +525,8 @@ export const HAZARD_LAYER_METADATA = [
         },
         {
           id: 'source_storm_cyclone_agg',
-          name: 'Russell, Tom. (2022). STORM tropical cyclone wind speed return periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo. DOI https://doi.org/10.5281/zenodo.7438145',
-          url: 'https://doi.org/10.5281/zenodo.7438145',
+          name: 'Russell, Tom. (2022). STORM tropical cyclone wind speed return periods as global GeoTIFFs (1.0.0) [Data set]. Zenodo. DOI https://doi.org/10.5281/zenodo.7438144',
+          url: 'https://doi.org/10.5281/zenodo.7438144',
           type: 'dataset',
           risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/publicdomain/zero/1.0/',
