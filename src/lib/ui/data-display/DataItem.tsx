@@ -18,7 +18,7 @@ export const DataItem: FC<DataItemProps> = ({ label, value, maximumSignificantDi
     <ListItem disableGutters disablePadding>
       <ListItemText
         primary={label}
-        primaryTypographyProps={{ variant: 'caption' }}
+        slotProps={{ primary: { variant: 'caption' } }}
         secondary={value === ' ' ? '-' : value || '-'}
       />
     </ListItem>
