@@ -31,15 +31,29 @@ import {
   TableSectionContainer,
 } from './ui/TableContainer';
 
-const renderTextParagraphs = (paragraphs: string[]) => {
-  if (paragraphs.length <= 1) {
-    return paragraphs[0] ?? null;
-  }
+const renderTextWithLinks = (text: string) => {
+  const parts = text.split(/(https?:\/\/\S+)/g);
+  if (parts.length === 1) return text;
+  return (
+    <>
+      {parts.map((part, i) =>
+        /^https?:\/\//.test(part) ? (
+          <ExtLink key={i} href={part}>
+            {part}
+          </ExtLink>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+};
 
+const renderTextParagraphs = (paragraphs: string[]) => {
   return (
     <TableCellStack>
       {paragraphs.map((paragraph, index) => (
-        <TableCellParagraph key={index}>{paragraph}</TableCellParagraph>
+        <TableCellParagraph key={index}>{renderTextWithLinks(paragraph)}</TableCellParagraph>
       ))}
     </TableCellStack>
   );
@@ -76,7 +90,7 @@ const renderDataSourceRows = (section: LayerMetadataSection) =>
       </TableCell>
       <TableCell>{renderTextParagraphs(getDatasetCitations(dataset))}</TableCell>
       <TableCell>{renderLicenseLink(dataset.license)}</TableCell>
-      <TableCell>{renderTextParagraphs([dataset.description])}</TableCell>
+      <TableCell>{renderTextParagraphs(dataset.description.split('\n\n'))}</TableCell>
     </TableRow>
   ));
 
