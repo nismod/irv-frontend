@@ -54,25 +54,25 @@ const extremeHeatColumns: DatapackageTableSchemaField[] = [
     name: 'rcp',
     type: 'string',
     title: 'RCP',
-    description: 'Representative Concentration Pathway (emissions scenario).',
+    description: 'Representative Concentration Pathway (Climate Scenario).',
   },
   {
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Time period or epoch of the simulation.',
+    description: 'Time period or epoch.',
   },
   {
     name: 'gcm',
     type: 'string',
     title: 'GCM',
-    description: 'Global Climate Model identifier.',
+    description: 'Global Climate Model.',
   },
   {
     name: 'value',
     type: 'number',
     title: 'Probability',
-    description: 'Event probability (0–1) for extreme heat occurrence.',
+    description: 'Probability of extreme heat occurrence.',
   },
 ];
 

@@ -66,7 +66,7 @@ const aqueductCoastalColumns: DatapackageTableSchemaField[] = [
     name: 'rcp',
     type: 'string',
     title: 'RCP',
-    description: 'Representative Concentration Pathway scenario.',
+    description: 'Representative Concentration Pathway (Climate Scenario).',
   },
   {
     name: 'epoch',

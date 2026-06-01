@@ -65,7 +65,7 @@ const cycloneStormColumns: DatapackageTableSchemaField[] = [
     name: 'rcp',
     type: 'string',
     title: 'RCP',
-    description: 'Representative Concentration Pathway.',
+    description: 'Representative Concentration Pathway (Climate Scenario).',
   },
   { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model.' },
   { name: 'value', type: 'number', title: 'Wind speed', description: 'Wind speed (m/s).' },

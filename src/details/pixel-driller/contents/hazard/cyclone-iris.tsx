@@ -64,7 +64,7 @@ const cycloneIrisColumns: DatapackageTableSchemaField[] = [
     name: 'ssp',
     type: 'string',
     title: 'SSP',
-    description: 'Shared Socioeconomic Pathway scenario.',
+    description: 'Shared Socioeconomic Pathway (Climate Scenario).',
   },
   { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model.' },
   { name: 'value', type: 'number', title: 'Wind speed', description: 'Wind speed (m/s).' },
