@@ -19,22 +19,14 @@ export const StyledTableContainer = ({ children }) => {
   return <TableContainer component={Paper}>{children}</TableContainer>;
 };
 
-export const TableCellStack = ({ children }) => {
+export const SpacedStack = ({ children }) => {
   return <Stack spacing={2.5}>{children}</Stack>;
 };
 
-export const TableHeader = ({ children }) => {
-  return (
-    <Typography variant="h2" marginLeft={1}>
-      {children}
-    </Typography>
-  );
-};
-
-export const TableCellParagraph = ({ children }) => {
+export const Paragraph = ({ children }) => {
   return (
     // let parent container handle gap spacing
-    <Typography paragraph={true} variant="body2">
+    <Typography component="p" variant="body2">
       {children}
     </Typography>
   );

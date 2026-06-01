@@ -1,3 +1,5 @@
+import { Card, Paper, Typography, useMediaQuery } from '@mui/material';
+import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -6,6 +8,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
 import { ExtLink } from '@/lib/nav';
+import { DataItem } from '@/lib/ui/data-display/DataItem';
+import { H2 } from '@/lib/ui/mui/typography';
 
 import { getLayerMetadataBySection, type LayerMetadataSection } from '@/config/layer-metadata';
 import { getLicenseByUrl } from '@/config/licenses';
@@ -24,10 +28,9 @@ import {
 import { BackToTop } from './ui/BackToTop';
 import { HeadingBox, HeadingBoxText } from './ui/HeadingBox';
 import {
+  Paragraph,
+  SpacedStack,
   StyledTableContainer,
-  TableCellParagraph,
-  TableCellStack,
-  TableHeader,
   TableSectionContainer,
 } from './ui/TableContainer';
 
@@ -51,11 +54,11 @@ const renderTextWithLinks = (text: string) => {
 
 const renderTextParagraphs = (paragraphs: string[]) => {
   return (
-    <TableCellStack>
+    <SpacedStack>
       {paragraphs.map((paragraph, index) => (
-        <TableCellParagraph key={index}>{renderTextWithLinks(paragraph)}</TableCellParagraph>
+        <Paragraph key={index}>{renderTextWithLinks(paragraph)}</Paragraph>
       ))}
-    </TableCellStack>
+    </SpacedStack>
   );
 };
 
@@ -80,13 +83,11 @@ const renderDataSourceRows = (section: LayerMetadataSection) =>
     <TableRow key={dataset.id}>
       <TableCell>{dataset.title}</TableCell>
       <TableCell>
-        <TableCellStack>
+        <SpacedStack>
           {dataset.resources.map((resource, index) => (
-            <TableCellParagraph key={resource.id ?? index}>
-              {renderSourceLink(resource)}
-            </TableCellParagraph>
+            <Paragraph key={resource.id ?? index}>{renderSourceLink(resource)}</Paragraph>
           ))}
-        </TableCellStack>
+        </SpacedStack>
       </TableCell>
       <TableCell>{renderTextParagraphs(getDatasetCitations(dataset))}</TableCell>
       <TableCell>{renderLicenseLink(dataset.license)}</TableCell>
@@ -94,144 +95,181 @@ const renderDataSourceRows = (section: LayerMetadataSection) =>
     </TableRow>
   ));
 
-export const DataSourcesPage = () => (
-  <ArticleContainer>
-    <HeadingBox>
-      <HeadingBoxText>Data Sources</HeadingBoxText>
-    </HeadingBox>
-    <ArticleContentContainer>
-      <ArticleSection>
-        <EmphasisTextContainer>
-          <MiniBar />
-          <EmphasisTextParagraph>
-            The GRI Risk Viewer draws on open data sources which are displayed in the maps and
-            available for download.
-          </EmphasisTextParagraph>
-        </EmphasisTextContainer>
-        <ArticleParagraph>
-          <Link id="contents" href="#contents">
-            Contents
-          </Link>
-        </ArticleParagraph>
-        <ArticleParagraph>
-          Scroll down the page for details of data sources under each category:
-          <ul>
-            <li>
-              <Link href="#context">Contextual map data</Link>
-            </li>
-            <li>
-              <Link href="#hazard">Hazard</Link>
-            </li>
-            <li>
-              <Link href="#exposure">Exposure</Link>
-            </li>
-            <li>
-              <Link href="#vulnerability">Vulnerability</Link>
-            </li>
-            <li>
-              <Link href="#risk">Risk</Link>
-            </li>
-          </ul>
-        </ArticleParagraph>
-      </ArticleSection>
+const renderDataSourceCards = (section: LayerMetadataSection) =>
+  getLayerMetadataBySection(section).map((dataset) => (
+    <Card key={dataset.id} sx={{ my: 4, p: 2 }}>
+      <Typography variant="h3">{dataset.title}</Typography>
+      <DataItem
+        label="Source"
+        value={
+          <SpacedStack>
+            {dataset.resources.map((resource, index) => (
+              <Paragraph key={resource.id ?? index}>{renderSourceLink(resource)}</Paragraph>
+            ))}
+          </SpacedStack>
+        }
+      />
+      <DataItem label="Citation" value={renderTextParagraphs(getDatasetCitations(dataset))} />
+      <DataItem label="License" value={renderLicenseLink(dataset.license)} />
+      <DataItem label="Notes" value={renderTextParagraphs(dataset.description.split('\n\n'))} />
+    </Card>
+  ));
 
-      <BackToTop id="context" />
-      <ArticleSection>
-        <ArticleSectionHeader>Contextual Map Data</ArticleSectionHeader>
+export const DataSourcesPage = () => {
+  const isMediumOrUp = useMediaQuery((theme: any) => theme.breakpoints.up('md'));
 
-        <ArticleParagraph>
-          Background map data is &copy;{' '}
-          <ExtLink href="https://www.openstreetmap.org/copyright">OpenStreetMap</ExtLink>{' '}
-          contributors, style &copy; <ExtLink href="https://carto.com/attributions">CARTO</ExtLink>.
-        </ArticleParagraph>
+  return (
+    <ArticleContainer>
+      <HeadingBox>
+        <HeadingBoxText>Data Sources</HeadingBoxText>
+      </HeadingBox>
+      <ArticleContentContainer>
+        <ArticleSection>
+          <EmphasisTextContainer>
+            <MiniBar />
+            <EmphasisTextParagraph>
+              The GRI Risk Viewer draws on open data sources which are displayed in the maps and
+              available for download.
+            </EmphasisTextParagraph>
+          </EmphasisTextContainer>
+          <ArticleParagraph>
+            <Link id="contents" href="#contents">
+              Contents
+            </Link>
+          </ArticleParagraph>
+          <ArticleParagraph>
+            Scroll down the page for details of data sources under each category:
+            <ul>
+              <li>
+                <Link href="#context">Contextual map data</Link>
+              </li>
+              <li>
+                <Link href="#hazard">Hazard</Link>
+              </li>
+              <li>
+                <Link href="#exposure">Exposure</Link>
+              </li>
+              <li>
+                <Link href="#vulnerability">Vulnerability</Link>
+              </li>
+              <li>
+                <Link href="#risk">Risk</Link>
+              </li>
+            </ul>
+          </ArticleParagraph>
+        </ArticleSection>
 
-        <ArticleParagraph>
-          Satellite imagery background is derived from{' '}
-          <ExtLink href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</ExtLink> by{' '}
-          <ExtLink href="https://eox.at">EOX IT Services GmbH</ExtLink> (Contains modified
-          Copernicus Sentinel data 2020).
-        </ArticleParagraph>
-      </ArticleSection>
+        <BackToTop id="context" />
+        <ArticleSection>
+          <ArticleSectionHeader>Contextual Map Data</ArticleSectionHeader>
 
-      <BackToTop id="hazard" />
-      <TableSectionContainer>
-        <TableHeader>Hazard Data</TableHeader>
+          <ArticleParagraph>
+            Background map data is &copy;{' '}
+            <ExtLink href="https://www.openstreetmap.org/copyright">OpenStreetMap</ExtLink>{' '}
+            contributors, style &copy;{' '}
+            <ExtLink href="https://carto.com/attributions">CARTO</ExtLink>.
+          </ArticleParagraph>
 
-        <StyledTableContainer>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Dataset</TableCell>
-                <TableCell>Source</TableCell>
-                <TableCell>Citation</TableCell>
-                <TableCell>License</TableCell>
-                <TableCell>Notes</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>{renderDataSourceRows('hazard')}</TableBody>
-          </Table>
-        </StyledTableContainer>
-      </TableSectionContainer>
+          <ArticleParagraph>
+            Satellite imagery background is derived from{' '}
+            <ExtLink href="https://s2maps.eu">Sentinel-2 cloudless - https://s2maps.eu</ExtLink> by{' '}
+            <ExtLink href="https://eox.at">EOX IT Services GmbH</ExtLink> (Contains modified
+            Copernicus Sentinel data 2020).
+          </ArticleParagraph>
+        </ArticleSection>
 
-      <BackToTop id="exposure" />
-      <TableSectionContainer>
-        <TableHeader>Exposure Data</TableHeader>
+        <BackToTop id="hazard" />
+        <TableSectionContainer>
+          <H2>Hazard Data</H2>
+          {isMediumOrUp ? (
+            <StyledTableContainer>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Dataset</TableCell>
+                    <TableCell>Source</TableCell>
+                    <TableCell>Citation</TableCell>
+                    <TableCell>License</TableCell>
+                    <TableCell>Notes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>{renderDataSourceRows('hazard')}</TableBody>
+              </Table>
+            </StyledTableContainer>
+          ) : (
+            renderDataSourceCards('hazard')
+          )}
+        </TableSectionContainer>
 
-        <StyledTableContainer>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Dataset</TableCell>
-                <TableCell>Source</TableCell>
-                <TableCell>Citation</TableCell>
-                <TableCell>License</TableCell>
-                <TableCell>Notes</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>{renderDataSourceRows('exposure')}</TableBody>
-          </Table>
-        </StyledTableContainer>
-      </TableSectionContainer>
+        <BackToTop id="exposure" />
+        <TableSectionContainer>
+          <H2>Exposure Data</H2>
+          {isMediumOrUp ? (
+            <StyledTableContainer>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Dataset</TableCell>
+                    <TableCell>Source</TableCell>
+                    <TableCell>Citation</TableCell>
+                    <TableCell>License</TableCell>
+                    <TableCell>Notes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>{renderDataSourceRows('exposure')}</TableBody>
+              </Table>
+            </StyledTableContainer>
+          ) : (
+            renderDataSourceCards('exposure')
+          )}
+        </TableSectionContainer>
 
-      <BackToTop id="vulnerability" />
-      <TableSectionContainer>
-        <TableHeader>Vulnerability Data</TableHeader>
+        <BackToTop id="vulnerability" />
+        <TableSectionContainer>
+          <H2>Vulnerability Data</H2>
+          {isMediumOrUp ? (
+            <StyledTableContainer>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Dataset</TableCell>
+                    <TableCell>Source</TableCell>
+                    <TableCell>Citation</TableCell>
+                    <TableCell>License</TableCell>
+                    <TableCell>Notes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>{renderDataSourceRows('vulnerability')}</TableBody>
+              </Table>
+            </StyledTableContainer>
+          ) : (
+            renderDataSourceCards('vulnerability')
+          )}
+        </TableSectionContainer>
 
-        <StyledTableContainer>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Dataset</TableCell>
-                <TableCell>Source</TableCell>
-                <TableCell>Citation</TableCell>
-                <TableCell>License</TableCell>
-                <TableCell>Notes</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>{renderDataSourceRows('vulnerability')}</TableBody>
-          </Table>
-        </StyledTableContainer>
-      </TableSectionContainer>
-
-      <BackToTop id="risk" />
-      <TableSectionContainer>
-        <TableHeader>Risk Data</TableHeader>
-
-        <StyledTableContainer>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Dataset</TableCell>
-                <TableCell>Source</TableCell>
-                <TableCell>Citation</TableCell>
-                <TableCell>License</TableCell>
-                <TableCell>Notes</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>{renderDataSourceRows('risk')}</TableBody>
-          </Table>
-        </StyledTableContainer>
-      </TableSectionContainer>
-    </ArticleContentContainer>
-  </ArticleContainer>
-);
+        <BackToTop id="risk" />
+        <TableSectionContainer>
+          <H2>Risk Data</H2>
+          {isMediumOrUp ? (
+            <StyledTableContainer>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Dataset</TableCell>
+                    <TableCell>Source</TableCell>
+                    <TableCell>Citation</TableCell>
+                    <TableCell>License</TableCell>
+                    <TableCell>Notes</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>{renderDataSourceRows('risk')}</TableBody>
+              </Table>
+            </StyledTableContainer>
+          ) : (
+            renderDataSourceCards('risk')
+          )}
+        </TableSectionContainer>
+      </ArticleContentContainer>
+    </ArticleContainer>
+  );
+};
