@@ -317,15 +317,6 @@ registerCategoricalColorScheme('landslide_susceptibility', [
   },
 ]);
 
-const extremeHeatDroughtSource: RdlsSource = {
-  id: 'source_extreme_heat_drought',
-  name: "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
-  url: 'https://doi.org/10.5281/zenodo.8147088',
-  type: 'dataset',
-  risk_data_type: ['hazard'],
-  license: 'https://creativecommons.org/licenses/by/4.0/',
-};
-
 export const HAZARD_LAYER_METADATA = [
   {
     id: 'aqueduct__coastal',
@@ -429,8 +420,9 @@ export const HAZARD_LAYER_METADATA = [
   {
     id: 'isimip__extreme_heat__occurrence',
     title: 'Extreme Heat Occurrence (ISIMIP)',
-    description:
-      'Annual probability of extreme heat events on a 0.5 degree grid. 8 hydrological models forced by 4 GCMs under baseline, RCP 2.6 and 6.0 emission scenarios. Current and future maps in 2030, 2050 and 2080.',
+    description: `Annual probability of extreme heat events on a 0.5 degree grid. 8 hydrological models forced by 4 GCMs under baseline, RCP 2.6 and 6.0 emission scenarios. Current and future maps in 2030, 2050 and 2080.
+
+Maps show the annual probability of an "extreme heat event" in each grid cell. Extreme heat events are defined by Lange et al (2020) as occurring when two indicators both exceed a threshold: a relative indicator based on temperature (Russo et al 2015, 2017) and an absolute indicator based on temperature and relative humidity (Masterton & Richardson, 1979).`,
     risk_data_type: ['hazard'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'OPSIS, University of Oxford' },
@@ -449,8 +441,20 @@ export const HAZARD_LAYER_METADATA = [
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
       sources: [
         {
-          ...extremeHeatDroughtSource,
-          name: "Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al. (2020). Projecting exposure to extreme climate impact events across six event categories and three spatial scales. Earth's Future, 8, e2020EF001616. DOI 10.1029/2020EF001616.",
+          id: 'source_extreme_heat_drought',
+          name: "Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al. (2020). Projecting exposure to extreme climate impact events across six event categories and three spatial scales. Earth's Future, 8, e2020EF001616. DOI https://doi.org/10.1029/2020EF001616",
+          url: 'https://doi.org/10.1029/2020EF001616',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+        },
+        {
+          id: 'source_extreme_heat_drought',
+          name: 'Russell, T., Nicholas, C., & Bernhofen, M. (2023) Annual probability of extreme heat and drought events, derived from Lange et al. climate impact event projections. https://doi.org/10.5281/zenodo.7732392',
+          url: 'https://doi.org/10.5281/zenodo.7732392',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
     },
@@ -458,8 +462,9 @@ export const HAZARD_LAYER_METADATA = [
   {
     id: 'isimip__drought__occurrence',
     title: 'Drought Occurrence (ISIMIP)',
-    description:
-      'Annual probability of drought events on a 0.5 degree grid. 8 hydrological models forced by 4 GCMs under baseline, RCP 2.6 and 6.0 emission scenarios. Current and future maps in 2030, 2050 and 2080.',
+    description: `Annual probability of drought events on a 0.5 degree grid. 8 hydrological models forced by 4 GCMs under baseline, RCP 2.6 and 6.0 emission scenarios. Current and future maps in 2030, 2050 and 2080.
+
+Maps show annual probability of a "drought event", defined by Lange et al (2020) as monthly soil moisture falling below the 2.5th percentile of the preindustrial baseline distribution for at least seven consecutive months. Multiple impact models are available, currently showing "WaterGAP2"`,
     risk_data_type: ['hazard'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'OPSIS, University of Oxford' },
@@ -478,8 +483,20 @@ export const HAZARD_LAYER_METADATA = [
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
       sources: [
         {
-          ...extremeHeatDroughtSource,
-          name: "Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al. (2020). Projecting exposure to extreme climate impact events across six event categories and three spatial scales. Earth's Future, 8, e2020EF001616. DOI 10.1029/2020EF001616.",
+          id: 'source_extreme_heat_drought',
+          name: "Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al. (2020). Projecting exposure to extreme climate impact events across six event categories and three spatial scales. Earth's Future, 8, e2020EF001616. DOI https://doi.org/10.1029/2020EF001616",
+          url: 'https://doi.org/10.1029/2020EF001616',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+        },
+        {
+          id: 'source_extreme_heat_drought',
+          name: 'Russell, T., Nicholas, C., & Bernhofen, M. (2023) Annual probability of extreme heat and drought events, derived from Lange et al. climate impact event projections. https://doi.org/10.5281/zenodo.7732392',
+          url: 'https://doi.org/10.5281/zenodo.7732392',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
     },

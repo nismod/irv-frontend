@@ -68,7 +68,7 @@ const droughtColumns: DatapackageTableSchemaField[] = [
     name: 'value',
     type: 'number',
     title: 'Probability',
-    description: 'Probability of drought occurrence.',
+    description: 'Annual probability of drought occurrence.',
   },
 ];
 
