@@ -97,7 +97,7 @@ function registerHazardMetadata(
   HAZARDS_METADATA[hazardType] = typeof metadata === 'function' ? metadata() : metadata;
 }
 
-// === Cyclones  ==============================================================
+// Cyclones
 
 const cyclonesFormat = makeValueFormat('_m/s', { maximumFractionDigits: 1 });
 const cyclonesColorMap: RasterColorMap = {
@@ -128,8 +128,7 @@ registerHazardMetadata('cyclone_iris', {
   },
 });
 
-// === River Flooding =========================================================
-
+// River Flooding
 const riverFloodingFormat = makeValueFormat('_m', { maximumFractionDigits: 1 });
 const riverFloodingColorMap: RasterColorMap = {
   type: 'continuous',
@@ -171,8 +170,7 @@ registerHazardMetadata('jrc_flood', {
 //   },
 // });
 
-// === Coastal Flooding ======================================================
-
+// Coastal Flooding
 registerHazardMetadata('coastal', () => {
   const format = makeValueFormat('_m', { maximumFractionDigits: 1 });
   const colorMap: RasterColorMap = {
@@ -193,8 +191,7 @@ registerHazardMetadata('coastal', () => {
   };
 });
 
-// === Extreme Heat ===========================================================
-
+// Extreme Heat
 registerHazardMetadata('extreme_heat', () => {
   const format = makeValueFormat('_', { maximumFractionDigits: 1, style: 'percent' });
   const colorMap: RasterColorMap = {
@@ -215,8 +212,7 @@ registerHazardMetadata('extreme_heat', () => {
   };
 });
 
-// === Earthquake =============================================================
-
+// Earthquake
 registerHazardMetadata('earthquake', () => {
   const format = makeValueFormat('_g', { maximumFractionDigits: 3 });
   const colorMap: RasterColorMap = {
@@ -240,7 +236,7 @@ registerHazardMetadata('earthquake', () => {
   };
 });
 
-// === Drought ================================================================
+// Drought
 registerHazardMetadata('drought', () => {
   const format = makeValueFormat('_', { maximumFractionDigits: 1, style: 'percent' });
   const colorMap: RasterColorMap = {
@@ -261,7 +257,7 @@ registerHazardMetadata('drought', () => {
   };
 });
 
-// === Landslide ==============================================================
+// Landslide
 registerHazardMetadata('landslide', () => {
   const format = makeValueFormat('_', { maximumFractionDigits: 1, style: 'percent' });
   const colorMap: RasterColorMap = {
@@ -271,7 +267,6 @@ registerHazardMetadata('landslide', () => {
     rangeTruncated: [false, true],
   };
 
-  // TODO - actual labels
   const LANDSLIDE_SUSCEPTIBILITY_VALUE_LABELS = {
     '1': 'Very Low',
     '2': 'Low',
