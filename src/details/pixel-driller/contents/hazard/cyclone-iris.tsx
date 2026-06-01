@@ -29,7 +29,7 @@ export interface CycloneIrisKeys extends PixelRecordKeys {
 // Chart config
 const irisCycloneChartConfig: ChartConfig = {
   id: 'cyclone-iris',
-  title: 'Tropical cyclones – IRIS',
+  title: 'Tropical cyclones (IRIS)',
   xLabel: 'Return period (years)',
   yLabel: 'Wind speed (m/s)',
   // IRIS cyclones: scenario = epoch + ssp, colour by ssp
@@ -58,7 +58,7 @@ const cycloneIrisColumns: DatapackageTableSchemaField[] = [
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Time period or epoch of the simulation.',
+    description: 'Time period or epoch.',
   },
   {
     name: 'ssp',
@@ -66,7 +66,7 @@ const cycloneIrisColumns: DatapackageTableSchemaField[] = [
     title: 'SSP',
     description: 'Shared Socioeconomic Pathway scenario.',
   },
-  { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model identifier.' },
+  { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model.' },
   { name: 'value', type: 'number', title: 'Wind speed', description: 'Wind speed (m/s).' },
 ];
 

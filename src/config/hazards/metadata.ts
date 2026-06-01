@@ -543,8 +543,24 @@ export const HAZARD_LAYER_METADATA = [
       sources: [
         {
           id: 'source_cyclone_iris',
-          name: 'Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset. Scientific Data 11, 424 DOI 10.1038/s41597-024-03250-y and Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model. Figshare. Collection. DOI 10.6084/m9.figshare.c.6724251.v1.',
+          name: 'Sparks, N., Toumi, R. (2024) The Imperial College Storm Model (IRIS) Dataset. Scientific Data 11, 424 DOI 10.1038/s41597-024-03250-y',
           url: 'https://doi.org/10.1038/s41597-024-03250-y',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+        },
+        {
+          id: 'source_cyclone_iris_dataset',
+          name: 'Sparks, N., Toumi, R. (2024). IRIS: The Imperial College Storm Model. Figshare. Collection. DOI https://doi.org/10.6084/m9.figshare.c.6724251.v1',
+          url: 'https://doi.org/10.1038/s41597-024-03250-y',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+        },
+        {
+          id: 'source_cyclone_iris_osc',
+          name: "Sparks, N., Toumi, R. (2024). 'IRIS v1 historical and future hazard maps' in OS-Climate Physrisk. https://registry.opendata.aws/os-climate-physrisk/",
+          url: 's3://os-climate-physical-risk/hazard-indicators/hazard.zarr/wind/iris/v1',
           type: 'dataset',
           risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
