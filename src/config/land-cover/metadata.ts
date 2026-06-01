@@ -5,7 +5,7 @@ import { GLOBAL_SPATIAL, SOURCE_DATASET_LINEAGE_DESCRIPTION } from '../layer-met
 export const LAND_COVER_LAYER_METADATA = [
   {
     id: 'land_cover',
-    title: 'Land Cover',
+    title: 'Land Cover (ESA CCI)',
     description:
       'The source of these data are the ESA Climate Change Initiative and in particular its Land Cover project, ESA Climate Change Initiative Land Cover led by UCLouvain (2017), ESA Climate Change Initiative - Land Cover project 2020, and EC C3S Land Cover.',
     risk_data_type: ['exposure'],
@@ -28,7 +28,7 @@ export const LAND_COVER_LAYER_METADATA = [
       sources: [
         {
           id: 'source_esa_cci_land_cover',
-          name: 'European Space Agency Climate Change Initiative Land Cover project (2021) Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. https://doi.org/10.24381/cds.006f2c9a.',
+          name: 'European Space Agency Climate Change Initiative Land Cover project (2021) Land cover classification gridded maps from 1992 to present derived from satellite observations, v2.1.1. https://doi.org/10.24381/cds.006f2c9a',
           url: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-land-cover?tab=overview',
           type: 'dataset',
           risk_data_type: ['exposure'],

@@ -38,7 +38,7 @@ export const BUILDING_DENSITY_COLORMAPS: Record<BuildingDensityType, RasterConti
 export const BUILDING_DENSITY_LAYER_METADATA = [
   {
     id: 'buildings',
-    title: 'Built-up surface',
+    title: 'Built-up surface (JRC GHSL)',
     description: `GHS-BUILT-S R2023A - The spatial raster dataset depicts the distribution of the built-up (BU) surfaces estimates between 1975 and 2030 in 5 years intervals and two functional use components a) the total BU surface and b) the non-residential (NRES) BU surface. The data is made by spatial-temporal interpolation of five observed collections of multiple-sensor, multiple-platform satellite imageries. Landsat (MSS, TM, ETM sensor) supports the 1975, 1990, 2000, and 2014 epochs. Sentinel2 (S2) composite (GHS-composite-S2 R2020A) supports the 2018 epoch.
 
 The built-up surface fraction (BUFRAC) is estimated at 10m of spatial resolution from the S2 image data, using as learning set a composite of data from GHS-BUILT-S2 R2020A, Facebook, Microsoft, and Open Street Map (OSM) building delineation. The BUFRAC inference is made from the combination of quantized image features (reflectance, derivative of morphological profile DMP) through associative rule learning applied to spatial data analytics, which was introduced as symbolic machine learning (SML).
