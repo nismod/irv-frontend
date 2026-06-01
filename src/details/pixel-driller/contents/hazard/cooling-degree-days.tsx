@@ -50,13 +50,13 @@ const cddColumns: DatapackageTableSchemaField[] = [
     name: 'metric',
     type: 'string',
     title: 'Metric',
-    description: 'Type of cooling degree days change (absolute or relative).',
+    description: 'Metric of change (absolute or relative).',
   },
   {
     name: 'value',
     type: 'number',
     title: 'Value',
-    description: 'Change in cooling degree days (absolute) or fraction (relative).',
+    description: 'Change in annual cooling degree days in days (absolute) or fraction (relative).',
   },
 ];
 
