@@ -34,7 +34,7 @@ const populationColumns: DatapackageTableSchemaField[] = [
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Reference year or epoch for the population density estimate.',
+    description: 'Reference year for the population density estimate.',
   },
   {
     name: 'value',
