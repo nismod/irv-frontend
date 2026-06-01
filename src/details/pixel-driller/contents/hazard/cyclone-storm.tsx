@@ -30,7 +30,7 @@ export interface CycloneStormKeys extends PixelRecordKeys {
 // Chart config
 const stormCycloneChartConfig: ChartConfig = {
   id: 'cyclone-storm',
-  title: 'Tropical cyclones – STORM',
+  title: 'Tropical cyclones (STORM)',
   xLabel: 'Return period (years)',
   yLabel: 'Wind speed (m/s)',
   // STORM cyclones: scenario = epoch + rcp + gcm, colour by rcp
@@ -59,15 +59,15 @@ const cycloneStormColumns: DatapackageTableSchemaField[] = [
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Time period or epoch of the simulation.',
+    description: 'Time period or epoch.',
   },
   {
     name: 'rcp',
     type: 'string',
     title: 'RCP',
-    description: 'Representative Concentration Pathway scenario.',
+    description: 'Representative Concentration Pathway.',
   },
-  { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model identifier.' },
+  { name: 'gcm', type: 'string', title: 'GCM', description: 'Global Climate Model.' },
   { name: 'value', type: 'number', title: 'Wind speed', description: 'Wind speed (m/s).' },
 ];
 
