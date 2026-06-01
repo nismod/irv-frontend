@@ -34,7 +34,7 @@ const landCoverColumns: DatapackageTableSchemaField[] = [
     name: 'value',
     type: 'number',
     title: 'Land cover class',
-    description: 'Categorical land cover class code (ESA CCI–style; see project legend).',
+    description: 'Categorical land cover class code (ESA CCI; see project legend).',
   },
 ];
 
