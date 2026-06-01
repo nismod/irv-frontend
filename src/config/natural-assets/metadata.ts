@@ -30,7 +30,7 @@ export const NATURE_RASTER_VALUE_LABELS: ValueLabel<NatureRasterType>[] = [
 export const NATURAL_ASSETS_LAYER_METADATA = [
   {
     id: 'soil_organic_carbon',
-    title: 'Soil Organic Carbon stock',
+    title: 'Soil Organic Carbon (SoilGrids)',
     description:
       'Soil organic carbon content at 0-30cm, in tonnes/hectare, aggregated to 1000m grid. Soil organic carbon content (fine earth fraction) in dg/kg at 6 standard depths. Predictions were derived using a digital soil mapping approach based on Quantile Random Forest, drawing on a global compilation of soil profile data and environmental layers. This map is the result of resampling the mean SoilGrids 250 m predictions (Poggio et al. 2021) for each 1000 m cell.',
     risk_data_type: ['exposure'],

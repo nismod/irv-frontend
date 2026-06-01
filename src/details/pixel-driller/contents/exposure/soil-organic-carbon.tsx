@@ -37,7 +37,7 @@ const socColumns: DatapackageTableSchemaField[] = [
     name: 'subtype',
     type: 'string',
     title: 'Subtype',
-    description: 'Nature layer subtype (organic carbon).',
+    description: 'Nature layer subtype (soil organic carbon).',
   },
   {
     name: 'value',
