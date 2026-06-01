@@ -317,15 +317,6 @@ registerCategoricalColorScheme('landslide_susceptibility', [
   },
 ]);
 
-const aqueductFloodsSource: RdlsSource = {
-  id: 'source_aqueduct_floods',
-  name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute.',
-  url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
-  type: 'dataset',
-  risk_data_type: ['hazard'],
-  license: 'https://creativecommons.org/licenses/by/4.0/',
-};
-
 const extremeHeatDroughtSource: RdlsSource = {
   id: 'source_extreme_heat_drought',
   name: "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
@@ -338,9 +329,9 @@ const extremeHeatDroughtSource: RdlsSource = {
 export const HAZARD_LAYER_METADATA = [
   {
     id: 'aqueduct__coastal',
-    title: 'Aqueduct Coastal Flood Risk',
+    title: 'Coastal Flooding (Aqueduct)',
     description:
-      'Inundation depth in meters for coastal floods over 1km grid squares. 1 in 2 to 1 in 1000 year return periods. Baseline, RCP 4.5 and 8.5 emission scenarios. Current and future maps in 2030, 2050 and 2080.',
+      'Inundation depth in metres for coastal floods over 1km grid squares. 1-in-2- to 1-in-1000-year return periods. Baseline, RCP 4.5 and 8.5 emission scenarios. Current and future maps in 2030, 2050 and 2080.',
     risk_data_type: ['hazard'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'World Resources Institute' },
@@ -359,17 +350,21 @@ export const HAZARD_LAYER_METADATA = [
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
       sources: [
         {
-          ...aqueductFloodsSource,
-          name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. 2020. Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-floods-methodology.',
+          id: 'source_aqueduct_floods',
+          name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. https://www.wri.org/publication/aqueduct-floods-methodology',
+          url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
     },
   },
   {
     id: 'aqueduct__fluvial',
-    title: 'Aqueduct River Flood Risk',
+    title: 'River Flooding (Aqueduct)',
     description:
-      'Inundation depth in meters for riverine floods over 1km grid squares. 1 in 2 to 1 in 1000 year return periods. Baseline, RCP 4.5 and 8.5 emission scenarios. Current and future maps in 2030, 2050 and 2080.',
+      'Inundation depth in metres for riverine floods over 1km grid squares. 1-in-2- to 1-in-1000-year return periods. Baseline, RCP 4.5 and 8.5 emission scenarios. Current and future maps in 2030, 2050 and 2080.',
     risk_data_type: ['hazard'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'World Resources Institute' },
@@ -388,8 +383,12 @@ export const HAZARD_LAYER_METADATA = [
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
       sources: [
         {
-          ...aqueductFloodsSource,
-          name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. 2020. Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-floods-methodology.',
+          id: 'source_aqueduct_floods',
+          name: 'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020). Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. https://www.wri.org/publication/aqueduct-floods-methodology',
+          url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
         },
       ],
     },

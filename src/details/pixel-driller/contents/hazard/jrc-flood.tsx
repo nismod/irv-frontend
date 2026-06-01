@@ -35,13 +35,12 @@ const jrcFloodConfig: ChartConfig = {
   id: 'river-jrc',
   title: 'River flooding – JRC',
   xLabel: 'return period (years)',
-  yLabel: 'Flood height (m)',
+  yLabel: 'Flood depth (m)',
   // JRC flood only has rp in the mock data, so just plot a single line
   seriesFields: [],
 };
 
-// Thresholds
-// Flood height above which damages are substantial (in meters)
+// Threshold above which damages are substantial (in meters)
 const FLOOD_HEIGHT_THRESHOLD = 0.3;
 // based on UK note - flood waters at any velocity with depth >= 0.3m pose risks to some
 // https://assets.publishing.service.gov.uk/media/602d04a98fa8f5037d371a08/FLOOD_HAZARD_RATINGS_AND_THRESHOLDS_explanatory_note.pdf
@@ -86,7 +85,7 @@ const filterJrcFloodRecords = (records: PixelRecord[]): PixelRecord<JrcFloodKeys
 const jrcFloodBaseName = 'jrc_flood';
 const jrcFloodColumns: DatapackageTableSchemaField[] = [
   { name: 'rp', type: 'number', title: 'Return period', description: 'Return period (years).' },
-  { name: 'value', type: 'number', title: 'Flood height', description: 'Flood height (m).' },
+  { name: 'value', type: 'number', title: 'Flood depth', description: 'Flood depth (m).' },
 ];
 
 // Export function for JRC Flood

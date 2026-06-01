@@ -32,14 +32,13 @@ const aqueductRiverChartConfig: ChartConfig = {
   id: 'river-aqueduct',
   title: 'River flooding – Aqueduct',
   xLabel: 'Return period (years)',
-  yLabel: 'Flood height (m)',
+  yLabel: 'Flood depth (m)',
   // Aqueduct river flooding: scenario = epoch + rcp + gcm, colour by rcp
   seriesFields: ['epoch', 'rcp', 'gcm'],
   colorField: 'rcp',
 };
 
-// Thresholds
-// Flood height above which damages are substantial (in meters)
+// Threshold above which damages are substantial (in meters)
 const FLOOD_HEIGHT_THRESHOLD = 0.3;
 // based on UK note - flood waters at any velocity with depth >= 0.3m pose risks to some
 // https://assets.publishing.service.gov.uk/media/602d04a98fa8f5037d371a08/FLOOD_HAZARD_RATINGS_AND_THRESHOLDS_explanatory_note.pdf
@@ -73,19 +72,19 @@ const aqueductRiverColumns: DatapackageTableSchemaField[] = [
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Time period or epoch of the simulation.',
+    description: 'Time period or epoch.',
   },
   {
     name: 'gcm',
     type: 'string',
     title: 'GCM',
-    description: 'Global Climate Model identifier.',
+    description: 'Global Climate Model.',
   },
   {
     name: 'value',
     type: 'number',
-    title: 'Flood height',
-    description: 'Flood height (m).',
+    title: 'Flood depth',
+    description: 'Flood depth (m).',
   },
 ];
 
