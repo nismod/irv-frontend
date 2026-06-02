@@ -250,21 +250,3 @@ export function makeUrlNumberCodec(maximumFractionDigits: number): {
     },
   };
 }
-
-/**
- * Helper for sync-ing a plain string. Skips the JSON quoting of `defaultSerialize`,
- * making `?site=lat,lng` instead of `?site=%22lat%2Clng%22`.
- *
- * NOTE: this is *not* wire-compatible with the existing pixel-driller URL state. Adopt
- * it only when also changing how the URL is read elsewhere. Documented here so callers
- * have an obvious "I want a friendlier URL" path.
- */
-export function makeUrlStringCodec(): {
-  serialize: UrlSyncSerializer<string | null>;
-  deserialize: UrlSyncDeserializer<string | null>;
-} {
-  return {
-    serialize: (value) => (value == null || value === '' ? null : value),
-    deserialize: (raw) => raw,
-  };
-}

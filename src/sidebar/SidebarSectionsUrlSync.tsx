@@ -1,7 +1,7 @@
 import { useAtomCallback } from 'jotai/utils';
 import { useCallback, useLayoutEffect } from 'react';
 
-import { StateSyncRoot } from '@/lib/jotai/state-sync/StateSyncRoot';
+import { useSyncState } from '@/lib/jotai/state-sync/use-sync-state';
 import { usePathChildrenLoading } from '@/lib/paths/context';
 
 import { hydratePreferencesFromUrlTree } from './sidebar-sections-url';
@@ -31,11 +31,7 @@ export function SidebarSectionsUrlSync() {
     hydrateFromUrl();
   }, [hydrateFromUrl]);
 
-  return (
-    <StateSyncRoot
-      state={sidebarSectionsUrlOutwardAtom}
-      replicaState={sidebarSectionsUrlAtom}
-      doSync={!sidebarRootLoading}
-    />
-  );
+  useSyncState(sidebarSectionsUrlOutwardAtom, sidebarSectionsUrlAtom, !sidebarRootLoading);
+
+  return null;
 }

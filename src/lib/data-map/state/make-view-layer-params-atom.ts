@@ -3,8 +3,6 @@ import { atom } from 'jotai';
 import { atomFamily } from 'jotai-family';
 import _ from 'lodash';
 
-import type { ReadAtomGetter } from '@/lib/jotai/types';
-
 import { ViewLayer } from '../view-layers';
 
 /** State factory function to create compound Jotai state for view layer params.
@@ -26,7 +24,7 @@ export function makeViewLayerParamsAtom<ViewLayerParamsT extends object>({
    *
    * Because it accepts Jotai's `get`, it can read from other atoms to build the view layer params object.
    **/
-  getParamsForViewLayer: (viewLayer: ViewLayer) => ReadAtomGetter<ViewLayerParamsT>;
+  getParamsForViewLayer: (viewLayer: ViewLayer) => (get: Getter) => ViewLayerParamsT;
 }) {
   const singleViewLayerAtomFamily = atomFamily((viewLayerId: string) =>
     atom((get) => get(viewLayersAtom).find((x) => x.id === viewLayerId)),

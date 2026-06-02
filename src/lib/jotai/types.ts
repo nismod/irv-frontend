@@ -1,4 +1,4 @@
-import type { Atom, Getter, WritableAtom } from 'jotai';
+import type { Atom, WritableAtom } from 'jotai';
 import type { AtomFamily } from 'jotai-family';
 
 /**
@@ -22,11 +22,3 @@ export type JotaiStateFamily<DataType, ParamType> = AtomFamily<
  * because every writable atom is also a readable atom.
  */
 export type JotaiReadableStateFamily<DataType, ParamType> = AtomFamily<ParamType, Atom<DataType>>;
-
-/**
- * Type for the `read` function of a jotai derived/read-only atom (the function passed
- * as the first argument to `atom()`).
- *
- * This mirrors the previous `ReadSelectorGetDefinition<T>` Recoil helper type.
- */
-export type ReadAtomGetter<T> = (get: Getter) => T;
