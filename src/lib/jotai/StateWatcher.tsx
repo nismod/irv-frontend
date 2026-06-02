@@ -5,10 +5,8 @@ import { useEffect } from 'react';
 /**
  * A component that watches a Jotai atom and calls a callback with the current value.
  *
- * Simpler alternative to `StateEffectRoot` when you only need to observe a single atom
- * and do not need access to a transaction-style get/set context.
- *
- * Direct port of the equivalent Recoil helper.
+ * Observes a single atom and runs a callback when its value changes.
+ * Use when you do not need a `{ get, set }` store handle (see `AtomEffectRoot` / `jotai-effect`).
  */
 export function StateWatcher<T>({
   state,
