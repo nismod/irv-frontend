@@ -1,37 +1,39 @@
+import { useAtomValue } from 'jotai';
+import type { Atom } from 'jotai';
 import { createContext, ReactNode, useContext } from 'react';
-import { useRecoilValue } from 'recoil';
 
 import { ColorValue } from '@/lib/data-map/legend/GradientLegend';
-import { RecoilReadableStateFamily } from '@/lib/recoil/types';
 
-type ColorMapValuesSourceState = RecoilReadableStateFamily<
-  ColorValue[],
-  { scheme: string; range: [number, number] }
->;
+type ColorMapValuesAtomFamily = (param: {
+  scheme: string;
+  range: [number, number];
+}) => Atom<ColorValue[] | Promise<ColorValue[]>>;
 
-const ColorMapSourceContext = createContext<ColorMapValuesSourceState>(null);
+const ColorMapSourceContext = createContext<ColorMapValuesAtomFamily>(null);
 
 /**
  * Context provider for a source of raster color maps
  */
 export function RasterColorMapSourceProvider({
-  state,
+  atomFamily,
   children,
 }: {
-  /** Recoil state family that accepts color map details as param and returns an array of ColorValue */
-  state: ColorMapValuesSourceState;
+  /** Atom family that accepts color map details as param and returns ColorValue[] */
+  atomFamily: ColorMapValuesAtomFamily;
   children?: ReactNode;
 }) {
-  return <ColorMapSourceContext.Provider value={state}>{children}</ColorMapSourceContext.Provider>;
+  return (
+    <ColorMapSourceContext.Provider value={atomFamily}>{children}</ColorMapSourceContext.Provider>
+  );
 }
 
 export function useRasterContinuousColorMapValues(
   colorScheme: string,
   stretchRange: [number, number],
 ): ColorValue[] {
-  const colorMapValuesState = useContext(ColorMapSourceContext);
+  const colorMapValuesAtomFamily = useContext(ColorMapSourceContext);
 
-  return useRecoilValue(colorMapValuesState({ scheme: colorScheme, range: stretchRange }));
+  return useAtomValue(colorMapValuesAtomFamily({ scheme: colorScheme, range: stretchRange }));
 }
 
 // === Categorical schemes - temporary solution until backend is updated ===

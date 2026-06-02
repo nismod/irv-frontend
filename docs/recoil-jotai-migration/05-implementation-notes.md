@@ -126,7 +126,7 @@ The Recoil version used `RecoilLocalStorageSync`, `RecoilURLSyncJSON` and `MapVi
 
 These were intentionally deferred to the per-slice migration:
 
-- `App.tsx` still wires up `<RecoilRoot>` and `<RecoilURLSyncJSON>`. `<RecoilLocalStorageSync>` was removed in the Downloads decommission (2026-06-02) — no Recoil atoms use `syncEffect` anymore. `<RecoilURLSyncJSON>` is likewise a no-op (all URL-synced state is on Jotai `atomWithUrlSync`); both wrappers come out in Slice 16.
+- `App.tsx` no longer mounts any Recoil providers (Slice 16, 2026-06-02). The Jotai sync helpers under `lib/jotai/` are the only persistence layer.
 - **Slice 4a (coexistence smoke test):** Jotai `<Provider store={createStore()}>` is mounted inside `ArticleMap`'s nested `<RecoilRoot>`. No Jotai atoms are consumed yet; behaviour is unchanged. The per-instance store is ready for slice 9b.
 - No existing atom definitions have been migrated to Jotai yet — only infrastructure helpers under `src/lib/jotai/` exist without consumers outside that folder.
 - Tests for the new sync helpers are not yet written. The recommended additions, when slice 0 begins consuming them, are:
@@ -166,7 +166,7 @@ The build is **not** expected to behave differently at runtime; this is a purely
 | **15a — Sidebar + view**                | **Done**    | Sidebar hub + URL sections + view transitions on Jotai; temporary J→R bridge for 7 unmigrated layer paths (removed in 15b); risk sync refactored (`risk-sidebar-sync`, atom effects).                   |
 | **15b — View-layers hub**               | **Done**    | `viewLayersAtom` hub; all layer selectors on Jotai; bridges removed (`ViewLayersBridgeSync`, `SidebarPathVisibilityRecoilBridge`, `viewLayersReplicaAtom`).                                             |
 | **5 — Downloads jobs**                  | **Dropped** | Job-tracking Recoil decommissioned instead of migrated; `<RecoilLocalStorageSync>` removed from `App.tsx`. Accordion state inline Jotai in `ProcessorVersionListItem.tsx`.                              |
-| 16                                      | Pending     | See `04-migration-slices.md`                                                                                                                                                                            |
+| **16 — Cleanup**                        | **Done**    | Last Recoil nodes migrated; `RecoilRoot` / `recoil-sync` removed; `lib/recoil/` deleted; packages dropped.                                                                                              |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -606,9 +606,7 @@ Replaces [`exposure-sidebar-sync.ts`](../../../src/sidebar/sections/risk/exposur
 
 **Bridges removed:** [`view-layers-bridge-sync.tsx`](../../../src/state/layers/view-layers-bridge-sync.tsx) (deleted), [`SidebarPathVisibilityRecoilBridge.tsx`](../../../src/sidebar/SidebarPathVisibilityRecoilBridge.tsx) (deleted), [`sidebar-recoil-bridge.ts`](../../../src/sidebar/sidebar-recoil-bridge.ts) (deleted); `SidebarContent` no longer re-exports Recoil `sidebarPathVisibilityState`.
 
-**Cross-cutting check:** `rg "viewLayersState|viewLayersReplicaAtom|ViewLayersBridgeSync|SidebarPathVisibilityRecoilBridge|sidebar-recoil-bridge|from '@/sidebar/SidebarContent'" src/` → zero hits (except dead Recoil factory `make-view-layers-state.ts` until Slice 16).
-
-**Still on Recoil (Slice 16):** `interactionGroupsState` in [`MapView.tsx`](../../../src/map/MapView.tsx); async query selectors (`terracottaColorMapValuesQuery`, `apiFeatureQuery`); app-level `RecoilRoot` / `RecoilURLSyncJSON` (both orphaned — no sync-effect Recoil atoms remain).
+**Cross-cutting check:** `rg "viewLayersState|viewLayersReplicaAtom|ViewLayersBridgeSync|SidebarPathVisibilityRecoilBridge|sidebar-recoil-bridge|from '@/sidebar/SidebarContent'" src/` → zero hits.
 
 ### Decisions taken during Step 15b
 
@@ -640,3 +638,27 @@ The planned Slice 5 migration (`submittedJobs` / `completedJobs` → `atomWithLo
 **Sync impact:** `atomWithLocalStorage` and `date-reviver.ts` remain in `lib/jotai/` but have **no production consumers**. The helper was built for `SavedJob.inserted: Date` revival; that use case no longer exists. First real localStorage migration, if ever needed, will validate the helper then.
 
 **Verified:** `npm run test:type-check`; `dataset-status.spec.ts` (5 tests).
+
+### Step 16 — Final Recoil removal (2026-06-02)
+
+**Last Recoil nodes migrated:**
+
+| Recoil                          | Jotai                                     | File                                                                       |
+| ------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------- |
+| `interactionGroupsState`        | `interactionGroupsAtom`                   | [`interaction-groups.ts`](../../../src/state/layers/interaction-groups.ts) |
+| `terracottaColorMapValuesQuery` | `terracottaColorMapValuesQueryAtomFamily` | [`terracotta-color-map.ts`](../../../src/config/terracotta-color-map.ts)   |
+| `apiFeatureQuery`               | `apiFeatureQueryAtomFamily`               | [`queries.ts`](../../../src/state/queries.ts)                              |
+
+**Provider / consumer updates:** [`App.tsx`](../../../src/App.tsx) — no `RecoilRoot`; [`RasterColorMapSourceProvider`](../../../src/lib/data-map/legend/use-raster-color-map-values.tsx) takes `atomFamily` prop; [`MapView.tsx`](../../../src/map/MapView.tsx), [`asset-details.tsx`](../../../src/details/features/asset-details.tsx) use `useAtomValue`.
+
+**Bridges removed:** [`LinkViewLayerToPath.tsx`](../../../src/sidebar/LinkViewLayerToPath.tsx) — Recoil branch and `useSyncValueToRecoil` deleted (all callers already on Jotai atoms).
+
+**Deleted:** entire [`src/lib/recoil/`](../../../src/lib/recoil/); orphan [`natural-assets.ts`](../../../src/state/data-selection/natural-assets.ts); dead factory [`make-view-layers-state.ts`](../../../src/lib/data-map/state/make-view-layers-state.ts).
+
+**Packages removed:** `recoil`, `recoil-sync`, `@recoiljs/refine`.
+
+**ESLint:** `additionalHooks` updated from Recoil transaction hooks to `useAtomCallback`.
+
+**Cross-cutting check:** `rg "from 'recoil'|from 'recoil-sync'|@/lib/recoil/" src/` → zero hits.
+
+**Verified:** `npm run test:type-check` (clean).

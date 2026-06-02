@@ -2,7 +2,6 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useResetAtom } from 'jotai/utils';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import { MapMouseEvent } from 'react-map-gl/maplibre';
-import { useRecoilValue } from 'recoil';
 
 import { BaseMap } from '@/lib/data-map/BaseMap';
 import { DataMap } from '@/lib/data-map/DataMap';
@@ -11,7 +10,7 @@ import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
 import { LocationMarker } from '@/lib/map/pixel-driller/LocationMarker';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
-import { interactionGroupsState } from '@/state/layers/interaction-groups';
+import { interactionGroupsAtom } from '@/state/layers/interaction-groups';
 import { viewLayersAtom } from '@/state/layers/view-layers';
 import { viewLayersParamsAtom } from '@/state/layers/view-layers-params';
 import {
@@ -37,7 +36,7 @@ const MapViewContent = ({ children }) => {
   const viewLayers = useAtomValue(viewLayersAtom);
   const viewLayersParams = useAtomValue(viewLayersParamsAtom);
 
-  const interactionGroups = useRecoilValue(interactionGroupsState);
+  const interactionGroups = useAtomValue(interactionGroupsAtom);
   const [interactionMode, setInteractionMode] = useAtom(mapInteractionModeAtom);
   const [clickLocation, setClickLocation] = useAtom(pixelDrillerClickLocationAtom);
   const [siteParam, setSiteParam] = useAtom(pixelDrillerSiteUrlAtom);

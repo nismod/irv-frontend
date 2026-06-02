@@ -1,14 +1,15 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { FeatureOut } from '@nismod/irv-api-client';
+import type { Atom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { ComponentType, FC, ReactElement, ReactNode, Suspense } from 'react';
-import { RecoilValue, useRecoilValue } from 'recoil';
 
 import { d3 } from '@/lib/d3';
 import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 
-import { apiFeatureQuery } from '@/state/queries';
+import { apiFeatureQueryAtomFamily } from '@/state/queries';
 
 import { DetailsComponentType } from './detail-components';
 import { ButtonPlacement, DownloadButton } from './DownloadButton';
@@ -16,10 +17,10 @@ import { ButtonPlacement, DownloadButton } from './DownloadButton';
 type FeatureApiDetails = FeatureOut;
 
 const LoadDetails: FC<{
-  featureDetailsState: RecoilValue<FeatureApiDetails>;
+  featureDetailsAtom: Atom<FeatureApiDetails | Promise<FeatureApiDetails>>;
   children: (details: FeatureApiDetails) => ReactElement;
-}> = ({ featureDetailsState, children }) => {
-  const featureDetails = useRecoilValue(featureDetailsState);
+}> = ({ featureDetailsAtom, children }) => {
+  const featureDetails = useAtomValue(featureDetailsAtom);
 
   return children(featureDetails);
 };
@@ -123,14 +124,14 @@ export const ExtendedAssetDetails: FC<ExtendedAssetDetailsProps> = ({
   showRiskSection = true,
 }) => {
   const id = getFeatureId(feature);
-  const featureDetailsState = apiFeatureQuery(id);
+  const featureDetailsAtom = apiFeatureQueryAtomFamily(id);
 
   return (
     <AssetDetailsWrapper>
       <HiddenFeatureDebug feature={feature} />
       <AssetDetailsHeader label={label} color={color} />
       <Suspense fallback="Loading data...">
-        <LoadDetails featureDetailsState={featureDetailsState}>
+        <LoadDetails featureDetailsAtom={featureDetailsAtom}>
           {(featureDetails) => (
             <>
               <ButtonPlacement

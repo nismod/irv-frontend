@@ -491,12 +491,14 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 ### Slice 16 — Cleanup
 
-- Remove `<RecoilRoot>` and `<RecoilURLSyncJSON>` from [`src/App.tsx`](../../../src/App.tsx). (`<RecoilLocalStorageSync>` already removed — no `syncEffect` atoms remain.)
-- Remove all bridge components (`RecoilToJotaiBridge` etc.).
-- Drop `recoil`, `recoil-sync` from [`package.json`](../../../package.json). Keep `@recoiljs/refine` or replace independently.
-- Delete `src/lib/recoil/`.
-- Run `rg "from 'recoil'"`, `rg "from 'recoil-sync'"`, `rg "@/lib/recoil/"` to confirm no leftovers.
-- Run the full test plan from each prior slice once more.
+**Status**: done (2026-06-02).
+
+- Removed `<RecoilRoot>` and `<RecoilURLSyncJSON>` from [`src/App.tsx`](../../../src/App.tsx).
+- Migrated last Recoil nodes: `interactionGroupsState` → `interactionGroupsAtom`; `terracottaColorMapValuesQuery` → `terracottaColorMapValuesQueryAtomFamily`; `apiFeatureQuery` → `apiFeatureQueryAtomFamily`.
+- Simplified [`LinkViewLayerToPath.tsx`](../../../src/sidebar/LinkViewLayerToPath.tsx) — Jotai-only (Recoil branch removed).
+- Deleted orphans: [`natural-assets.ts`](../../../src/state/data-selection/natural-assets.ts), [`make-view-layers-state.ts`](../../../src/lib/data-map/state/make-view-layers-state.ts).
+- Dropped `recoil`, `recoil-sync`, `@recoiljs/refine` from [`package.json`](../../../package.json); deleted `src/lib/recoil/`.
+- Cross-cutting check: `rg "from 'recoil'|from 'recoil-sync'|@/lib/recoil/" src/` → zero hits.
 
 ---
 
