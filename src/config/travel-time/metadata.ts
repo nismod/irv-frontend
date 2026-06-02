@@ -6,7 +6,7 @@ export const TRAVEL_TIME_LAYER_METADATA = [
   {
     id: 'travel-time-healthcare',
     title: 'Access to Healthcare',
-    description: 'Motorised/non-motorised travel time on 30arcsec grid.',
+    description: 'Motorised/non-motorised travel time to healthcare facilities on 30 arc sec grid.',
     risk_data_type: ['vulnerability'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'D.J. Weiss' },
@@ -26,7 +26,7 @@ export const TRAVEL_TIME_LAYER_METADATA = [
       sources: [
         {
           id: 'source_travel_time_healthcare_citation_1',
-          name: 'Weiss, D.J., Nelson, A., Vargas-Ruiz, C.A. et al. Global maps of travel time to healthcare facilities. Nat Med 26, 1835-1838 (2020). DOI: 10.1038/s41591-020-1059-1.',
+          name: 'Weiss, D.J., Nelson, A., Vargas-Ruiz, C.A. et al. Global maps of travel time to healthcare facilities. Nat Med 26, 1835-1838 (2020). DOI: https://doi.org/10.1038/s41591-020-1059-1.',
           type: 'dataset',
           risk_data_type: ['vulnerability'],
           license: 'https://creativecommons.org/licenses/by/4.0/',

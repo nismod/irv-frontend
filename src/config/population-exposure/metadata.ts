@@ -26,7 +26,7 @@ export const POPULATION_EXPOSURE_LAYER_METADATA = [
       sources: [
         {
           id: 'source_population_exposure_citation_1',
-          name: 'Russell, T., Nicholas, C., & Bernhofen, M. (2024). Annual probability of extreme heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo. 10.5281/zenodo.11582369. Derived using https://github.com/nismod/isimip-exposure.',
+          name: 'Russell, T., Nicholas, C., & Bernhofen, M. (2024). Annual probability of extreme heat and drought events, derived from Lange et al 2020 [Data set]. Zenodo. https://doi.org/10.5281/zenodo.11582369 Derived using https://github.com/nismod/isimip-exposure',
           type: 'dataset',
           risk_data_type: ['loss'],
           license: 'https://creativecommons.org/licenses/by-sa/4.0/',

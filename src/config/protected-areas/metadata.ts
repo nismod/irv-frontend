@@ -29,7 +29,9 @@ export const PROTECTED_AREAS_LAYER_METADATA = [
   {
     id: 'protected-areas',
     title: 'Protected Areas',
-    description: 'Protected area locations as points/polygons.',
+    description: `Protected area locations as points/polygons. The World Database on Protected Areas (WDPA) is the most comprehensive global database of marine and terrestrial protected areas. It is a joint project between UN Environment Programme and the International Union for Conservation of Nature (IUCN), and is managed by UN Environment Programme World Conservation Monitoring Centre (UNEP-WCMC), in collaboration with governments, non-governmental organisations, academia and industry.
+
+The WDPA is updated on a monthly basis, and can be downloaded from https://www.protectedplanet.net/en/thematic-areas/wdpa?tab=WDPA`,
     risk_data_type: ['vulnerability'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'UNEP-WCMC and IUCN' },
@@ -49,7 +51,7 @@ export const PROTECTED_AREAS_LAYER_METADATA = [
       sources: [
         {
           id: 'source_protected_areas_citation_1',
-          name: 'UNEP-WCMC and IUCN (2022), Protected Planet: The World Database on Protected Areas (WDPA) [On-line], [October 2022], Cambridge, UK: UNEP-WCMC and IUCN. Available online: https://www.protectedplanet.net.',
+          name: 'UNEP-WCMC and IUCN (2022), Protected Planet: The World Database on Protected Areas (WDPA) [On-line], [October 2022], Cambridge, UK: UNEP-WCMC and IUCN. Available online: https://www.protectedplanet.net',
           type: 'dataset',
           risk_data_type: ['vulnerability'],
           license: 'https://www.protectedplanet.net/en/legal',

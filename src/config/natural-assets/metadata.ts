@@ -64,7 +64,8 @@ export const NATURAL_ASSETS_LAYER_METADATA = [
   {
     id: 'biodiversity-intactness-index',
     title: 'Biodiversity',
-    description: '3 arcsec grid.',
+    description:
+      'Biodiversity Intactness Index (BII) is the average abundance of originally present species across a broad range of species, relative to abundance in an undisturbed habitat. This dataset is a map of terrestrial BII estimated globally on a 3 arc sec grid.',
     risk_data_type: ['vulnerability'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'Natural History Museum' },
@@ -84,11 +85,15 @@ export const NATURAL_ASSETS_LAYER_METADATA = [
       description: SOURCE_DATASET_LINEAGE_DESCRIPTION,
       sources: [
         {
-          id: 'source_biodiversity_intactness_index_citation_1',
+          id: 'source_biodiversity_intactness_index_data',
           name: 'Tim Newbold; Lawrence Hudson; Andy Arnell; Sara Contu et al. (2016). Map of Biodiversity Intactness Index (from Global map of the Biodiversity Intactness Index, from Newbold et al. (2016) Science) [Data set resource]. Natural History Museum. Available online at: https://data.nhm.ac.uk.',
           type: 'dataset',
           risk_data_type: ['vulnerability'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
+        },
+        {
+          id: 'source_biodiversity_intactness_index_paper',
+          name: 'Tim Newbold et al. (2016) Has land use pushed terrestrial biodiversity beyond the planetary boundary? A global assessment. Science 353, 288-291. DOI: https://doi.org/10.1126/science.aaf2201',
         },
       ],
     },
@@ -96,8 +101,9 @@ export const NATURAL_ASSETS_LAYER_METADATA = [
   {
     id: 'forest-landscape-integrity-index',
     title: 'Forest Integrity',
-    description:
-      '10 arcsec grid. Data are available at www.forestlandscapeintegrity.com. The datasets used to develop the Forest Landscape Integrity Index can be found at the following websites: tree cover and loss http://earthenginepartners.appspot.com/science-2013-global-forest, tree cover loss driver https://data.globalforestwatch.org/datasets/f2b7de1bdde04f7a9034ecb363d71f0e, potential forest cover https://data.globalforestwatch.org/datasets/potential-forest-coverage, ESA-CCI Land Cover https://maps.elie.ucl.ac.be/CCI/viewer/index.php, Open Street Maps https://www.openstreetmap.org, croplands https://lpdaac.usgs.gov/news/release-of-gfsad-30-meter-cropland-extent-products/, surface water https://global-surface-water.appspot.com/, protected areas https://www.protectedplanet.net/en.',
+    description: `The Forest Landscape Integrity Index (FLII) was constructed based on three main data inputs: (1) observed pressures (infrastructure, agriculture, tree cover loss), (2) inferred pressure modeled based on proximity to the observed pressures, and (3) change in forest connectivity, resulting in an index estimated globally on a 10 arc sec grid.
+
+FLII scores range from 0 (lowest integrity) to 10 (highest). The authors discretized this range to define three broad illustrative categories: low (≤6.0); medium (>6.0 and <9.6); and high integrity (≥9.6) by benchmarking against reference locations worldwide.`,
     risk_data_type: ['vulnerability'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'H.S. Grantham' },
@@ -117,7 +123,7 @@ export const NATURAL_ASSETS_LAYER_METADATA = [
       sources: [
         {
           id: 'source_forest_landscape_integrity_index_citation_1',
-          name: 'Grantham, H.S., Duncan, A., Evans, T.D. et al. Anthropogenic modification of forests means only 40% of remaining forests have high ecosystem integrity. Nat Commun 11, 5978 (2020). DOI: 10.1038/s41467-020-19493-3.',
+          name: 'Grantham, H.S., Duncan, A., Evans, T.D. et al. Anthropogenic modification of forests means only 40% of remaining forests have high ecosystem integrity. Nat Commun 11, 5978 (2020). DOI: https://doi.org/10.1038/s41467-020-19493-3',
           type: 'dataset',
           risk_data_type: ['vulnerability'],
           license: 'https://www.forestlandscapeintegrity.com/download-data',
