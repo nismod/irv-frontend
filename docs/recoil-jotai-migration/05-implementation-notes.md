@@ -163,7 +163,8 @@ The build is **not** expected to behave differently at runtime; this is a purely
 | **12 — Population & regional exposure** | **Done** | Population/regional data + layers on Jotai; param replica removed in Slice 14.                                                                                                                          |
 | **13 — Hazards selection**              | **Done** | Hazard selection/visibility/layers on Jotai; param replica removed in Slice 14.                                                                                                                         |
 | **14 — Data-params value half**         | **Done** | Full data-params spine on Jotai; removed param replica bridges from Slices 11–13; `useUpdateDataParam` → `useAtomCallback`.                                                                             |
-| 5, 15–16                                | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| **15a — Sidebar + view**                | **Done** | Sidebar hub + URL sections + view transitions on Jotai; J→R bridge for 7 unmigrated layer paths; risk sync refactored (`risk-sidebar-sync`, atom effects).                                              |
+| 5, 15b–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -525,6 +526,57 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 
 ### Things explicitly **not** done in Step 14
 
-- `sidebarVisibilityToggleState` hub — Slice 15.
-- Layer hub replicas (`hazardLayerState`, `populationExposureLayerState`, etc.) — Slice 15.
-- Risk view round-trip layer restore bug — deferred to Slice 15.
+- `sidebarVisibilityToggleState` hub — Slice 15a (now done).
+- Layer hub replicas (`hazardLayerState`, `populationExposureLayerState`, etc.) — Slice 15b.
+- Risk view round-trip layer restore bug — may improve with 15a view transitions; full fix TBD after 15b.
+
+### Step 15a — Sidebar hub + view state (2026-05-20)
+
+**Jotai source of truth:** `sidebar-state.ts` — `sidebarSectionsUrlAtom` (URL), derived visibility toggles, `atomWithDefault` expanded state, path-children families, hierarchical visibility via `makeHierarchicalVisibilityAtomFamily`.
+
+**View:** `viewAtom` in `state/view.ts`; `RouteParamSync` in `MapPage` replaces `MapViewRouteSync`.
+
+**UI stack:** `sidebar/context.ts`, `paths/context.ts`, `SidebarRoot`, `SubSectionToggle`, `EnforceSingleChild` — all Jotai.
+
+**J→R bridge:** `SidebarPathVisibilityRecoilBridge` syncs hierarchical visibility to Recoil `sidebarPathVisibilityState` replica for unmigrated layer selector paths.
+
+**Removed:** `url-state.tsx`, `SidebarPathVisibilityBridgeSync`, four Jotai sidebar visibility replica atoms.
+
+**Exposure/hazard sync:** `syncExposure`/`hideExposure`/`syncHazardSidebar` in `risk-sidebar-sync.ts` (Jotai `{ get, set }` via `setOnlyVisiblePathUnder`). Exposure init stays `useEffect` in `InitPopulationView` / `InitInfrastructureView`. Hazard/sector/damage sync in risk sections uses `atomEffect` + `AtomEffectRoot`.
+
+### Step 15a follow-up — Risk sidebar sync cleanup (2026-05-20)
+
+**Shared visibility helper:**
+
+- [`sidebar-path-visibility.ts`](../../../src/sidebar/sidebar-path-visibility.ts) — `setOnlyVisiblePathUnder({ get, set }, root, visiblePath)` hides all paths under `root` via `sidebarPathChildrenAtomFamily`, then enables `visiblePath` and ancestors on `sidebarVisibilityToggleAtomFamily`.
+
+**Risk-scoped sync** ([`risk-sidebar-sync.ts`](../../../src/sidebar/sections/risk/risk-sidebar-sync.ts)):
+
+| Function            | When                                                      |
+| ------------------- | --------------------------------------------------------- |
+| `syncExposure`      | Active risk sub-section → show matching `exposure/*` leaf |
+| `hideExposure`      | Section unmount → hide one exposure leaf                  |
+| `syncHazardSidebar` | Single hazard active under `hazards/*`                    |
+
+Replaces [`exposure-sidebar-sync.ts`](../../../src/sidebar/sections/risk/exposure-sidebar-sync.ts) (deleted) and `showOneHazardStateEffect` (removed from [`hazards.ts`](../../../src/state/data-selection/hazards.ts) — that file now holds hazard _selection_ atoms only).
+
+**Atom effects** (colocated in section files, mounted with `AtomEffectRoot`):
+
+| Effect atom                                   | File                      | Watches                                                   |
+| --------------------------------------------- | ------------------------- | --------------------------------------------------------- |
+| `syncPopulationHazardToSidebarEffectAtom`     | `population-exposure.tsx` | `populationExposureHazardAtom`                            |
+| `syncSectorToNetworkTreeEffectAtom`           | `infrastructure-risk.tsx` | infrastructure-risk `sector` param                        |
+| `syncHazardToDamageSourceEffectAtom`          | `infrastructure-risk.tsx` | infrastructure-risk `hazard` param → `damageSourceAtom`   |
+| `syncInfrastructureHazardToSidebarEffectAtom` | `infrastructure-risk.tsx` | infrastructure-risk `hazard` param → hazard sidebar paths |
+
+**Deliberately not migrated to atom effects:** `InitPopulationView` / `InitInfrastructureView` — pure mount/unmount lifecycle for exposure sync; `useEffect` + `useAtomCallback` retained.
+
+**Bridge scope after 15a:** `SidebarPathVisibilityRecoilBridge` feeds **7** paths (`SIDEBAR_PATHS_FOR_RECOIL_LAYERS`); all other Jotai layer atoms read `sidebarPathVisibilityAtomFamily` directly.
+
+### Things explicitly **not** done in Step 15a
+
+- `viewLayersState` hub — Slice 15b.
+- Seven Recoil layer selectors still on `SidebarPathVisibilityRecoilBridge` — Slice 15b-a (incremental, one layer + control at a time).
+- J→R layer replicas — Slice 15b teardown.
+- Full `SidebarPathVisibilityRecoilBridge` removal — Slice 15b (after last path migrated).
+- Risk view round-trip layer restore — may need visibility-gated exposure sync; deferred.

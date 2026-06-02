@@ -1,18 +1,21 @@
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { FC, ReactElement } from 'react';
-import { atomFamily, useRecoilValue } from 'recoil';
 
-import { makeHierarchicalVisibilityState } from '@/lib/data-selection/make-hierarchical-visibility-state';
 import { Layer } from '@/lib/data-selection/sidebar/Layer';
+import {
+  makeSectionViewTransitionEffect,
+  type SectionViewTransitionConfig,
+} from '@/lib/data-selection/sidebar/make-section-view-transition-effect';
 import { SidebarRoot } from '@/lib/data-selection/sidebar/root';
 import { Section } from '@/lib/data-selection/sidebar/Section';
 import { EnforceSingleChildVisible } from '@/lib/data-selection/sidebar/single-child';
-import { StateEffectRootAsync } from '@/lib/recoil/state-effects/StateEffectRoot';
-import { RecoilStateFamily } from '@/lib/recoil/types';
+import { atomEffectWithPrevious } from '@/lib/jotai/effects/atom-effect-with-previous';
+import { AtomEffectRoot } from '@/lib/jotai/effects/AtomEffectRoot';
 
-import { viewState, ViewType } from '@/state/view';
+import { viewAtom, ViewType } from '@/state/view';
 
 import { NbsAdaptationSection } from './sections/adaptation/NbsAdaptationSection';
 import { BuildingDensityControl } from './sections/buildings/BuildingDensityControl';
@@ -35,8 +38,19 @@ import { TopographyControl } from './sections/topography/TopographyControl';
 import { HdiControl } from './sections/vulnerability/HdiControl';
 import { TravelTimeControl } from './sections/vulnerability/TravelTimeControl';
 import { WdpaControls } from './sections/vulnerability/WdpaControl';
+import {
+  sidebarExpandedAtomFamily,
+  sidebarPathChildrenAtomFamily,
+  sidebarPathChildrenLoadingAtomFamily,
+  sidebarPathVisibilityAtomFamily,
+  sidebarVisibilityToggleAtomFamily,
+} from './sidebar-state';
+import { SidebarPathVisibilityRecoilBridge } from './SidebarPathVisibilityRecoilBridge';
+import { SidebarSectionsUrlSync } from './SidebarSectionsUrlSync';
 import { DataNotice, DataNoticeTextBlock } from './ui/DataNotice';
-import { defaultSectionVisibilitySyncEffect, SidebarUrlStateSyncRoot } from './url-state';
+
+/** Re-export for Recoil layer selectors bridged in Slice 15a. */
+export { sidebarPathVisibilityState } from './sidebar-recoil-bridge';
 
 const viewLabels = {
   hazard: 'Hazard',
@@ -45,29 +59,6 @@ const viewLabels = {
   risk: 'Risk',
   adaptation: 'Adaptation Options',
 };
-
-export const sidebarVisibilityToggleState = atomFamily({
-  key: 'sidebarVisibilityToggleState',
-  effects: (path: string) => [defaultSectionVisibilitySyncEffect(path)],
-});
-
-export const sidebarExpandedState = atomFamily({
-  key: 'sidebarExpandedState',
-  default: sidebarVisibilityToggleState,
-});
-
-export const sidebarPathChildrenState = atomFamily<string[], string>({
-  key: 'sidebarPathChildrenState',
-  default: () => [],
-});
-
-export const sidebarPathChildrenLoadingState = atomFamily<boolean, string>({
-  key: 'sidebarPathChildrenLoadingState',
-  default: true,
-});
-
-export const sidebarPathVisibilityState: RecoilStateFamily<boolean, string> =
-  makeHierarchicalVisibilityState(sidebarVisibilityToggleState);
 
 const HazardsSection = () => (
   <Section path="hazards" title="Hazards">
@@ -249,13 +240,14 @@ const AdaptationSection = () => (
   </Section>
 );
 
-const TOP_LEVEL_SECTIONS = ['hazards', 'exposure', 'vulnerability', 'risk', 'adaptation'];
+/** Top-level section paths — must match `<Section path="…">` roots below. */
+const TOP_LEVEL_SECTIONS = ['hazards', 'exposure', 'vulnerability', 'risk', 'adaptation'] as const;
 
-const VIEW_TRANSITIONS: Record<ViewType, any> = {
+const VIEW_TRANSITIONS = {
   hazard: {
     enter: {
       showPaths: ['hazards'],
-      hideRest: true,
+      hideOtherTopLevel: true,
     },
     exit: {
       hidePaths: ['hazards'],
@@ -264,7 +256,7 @@ const VIEW_TRANSITIONS: Record<ViewType, any> = {
   exposure: {
     enter: {
       showPaths: ['exposure'],
-      hideRest: true,
+      hideOtherTopLevel: true,
     },
     exit: {
       hidePaths: ['exposure'],
@@ -273,7 +265,7 @@ const VIEW_TRANSITIONS: Record<ViewType, any> = {
   vulnerability: {
     enter: {
       showPaths: ['vulnerability', 'vulnerability/human', 'vulnerability/nature'],
-      hideRest: true,
+      hideOtherTopLevel: true,
     },
     exit: {
       hidePaths: ['vulnerability'],
@@ -282,7 +274,7 @@ const VIEW_TRANSITIONS: Record<ViewType, any> = {
   risk: {
     enter: {
       showPaths: ['risk'],
-      hideRest: true,
+      hideOtherTopLevel: true,
     },
     exit: {
       hidePaths: ['risk'],
@@ -291,37 +283,26 @@ const VIEW_TRANSITIONS: Record<ViewType, any> = {
   adaptation: {
     enter: {
       showPaths: ['adaptation', 'adaptation/nbs'],
-      hideRest: true,
+      hideOtherTopLevel: true,
     },
     exit: {
       hidePaths: ['adaptation'],
     },
   },
-};
+} satisfies SectionViewTransitionConfig<ViewType>;
 
-const viewTransitionEffect = ({ set }, newView, previousView) => {
-  if (newView === previousView) return;
-
-  const { showPaths = [], hideRest = false } = VIEW_TRANSITIONS[newView].enter;
-
-  for (const path of showPaths) {
-    set(sidebarExpandedState(path), true);
-    set(sidebarVisibilityToggleState(path), true);
-  }
-
-  // hide other sections, but only if we're transitioning from a previous view
-  if (previousView != null && hideRest) {
-    const hidePaths = _.difference(TOP_LEVEL_SECTIONS, showPaths);
-
-    for (const path of hidePaths) {
-      set(sidebarExpandedState(path), false);
-      set(sidebarVisibilityToggleState(path), false);
-    }
-  }
-};
+const viewTransitionEffectAtom = atomEffectWithPrevious(
+  viewAtom,
+  makeSectionViewTransitionEffect(
+    VIEW_TRANSITIONS,
+    TOP_LEVEL_SECTIONS,
+    sidebarExpandedAtomFamily,
+    sidebarVisibilityToggleAtomFamily,
+  ),
+);
 
 export const SidebarContent: FC<{}> = () => {
-  const view = useRecoilValue(viewState);
+  const view = useAtomValue(viewAtom);
 
   const knownViews = Object.keys(viewLabels);
   if (!knownViews.includes(view)) {
@@ -346,14 +327,15 @@ export const SidebarContent: FC<{}> = () => {
 
   return (
     <SidebarRoot
-      visibilityState={sidebarVisibilityToggleState}
-      hierarchicalVisibilityState={sidebarPathVisibilityState}
-      expandedState={sidebarExpandedState}
-      pathChildrenState={sidebarPathChildrenState}
-      pathChildrenLoadingState={sidebarPathChildrenLoadingState}
+      visibilityAtomFamily={sidebarVisibilityToggleAtomFamily}
+      hierarchicalVisibilityAtomFamily={sidebarPathVisibilityAtomFamily}
+      expandedAtomFamily={sidebarExpandedAtomFamily}
+      pathChildrenAtomFamily={sidebarPathChildrenAtomFamily}
+      pathChildrenLoadingAtomFamily={sidebarPathChildrenLoadingAtomFamily}
     >
-      <SidebarUrlStateSyncRoot />
-      <StateEffectRootAsync state={viewState} effect={viewTransitionEffect} hookType="effect" />
+      <SidebarPathVisibilityRecoilBridge />
+      <SidebarSectionsUrlSync />
+      <AtomEffectRoot effectAtom={viewTransitionEffectAtom} />
       <Stack
         sx={{
           '& > :first-of-type': {

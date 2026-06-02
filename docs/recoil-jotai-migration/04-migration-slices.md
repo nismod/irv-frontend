@@ -465,50 +465,43 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **Known issues deferred:** Risk view round-trip sidebar/layer restore — still pre-existing; fix in Slice 15.
 
-### Slice 15 — Sidebar visibility hub + view-layers aggregator
+### Slice 15a — Sidebar visibility hub + view state
 
-**Nodes**: `sidebarVisibilityToggleState`, `sidebarExpandedState`, `sidebarPathChildrenState`, `sidebarPathChildrenLoadingState`, `sidebarPathVisibilityState`, `sidebarSectionsUrlOutwardState`, `sidebarSectionsUrlParamsState`, `defaultSectionVisibilitySyncEffect`, `viewTransitionEffect`; plus `viewLayersState` and all `state/layers/data-layers/*.ts` selectors (all 19), `featureBoundingBoxLayerState`; plus `viewState`.
+**Status**: done (2026-05-20).
 
-**Bridge nodes touched**: pretty much everything else by now, but most slices have been migrated by this point, so all reads are Jotai-native and no more bridges should be required.
+**What shipped:** full sidebar hub on Jotai — `sidebarSectionsUrlAtom`, visibility/expanded/path-children atom families, hierarchical visibility, `viewAtom` + `RouteParamSync`, `viewTransitionEffect` on Jotai. Sidebar UI stack (`SidebarRoot`, path context, `SubSectionToggle`, `EnforceSingleChild`) on Jotai. Removed R→J `SidebarPathVisibilityBridgeSync`; Jotai layer atoms read `sidebarPathVisibilityAtomFamily` directly. J→R `SidebarPathVisibilityRecoilBridge` feeds unmigrated Recoil layer selectors.
 
-**Files**: [`src/sidebar/SidebarContent.tsx`](../../../src/sidebar/SidebarContent.tsx), [`src/sidebar/url-state.tsx`](../../../src/sidebar/url-state.tsx), [`src/lib/data-selection/make-hierarchical-visibility-state.ts`](../../../src/lib/data-selection/make-hierarchical-visibility-state.ts), [`src/state/layers/view-layers.ts`](../../../src/state/layers/view-layers.ts), [`src/state/layers/view-layers-params.ts`](../../../src/state/layers/view-layers-params.ts), [`src/lib/data-map/state/make-view-layers-state.ts`](../../../src/lib/data-map/state/make-view-layers-state.ts), [`src/lib/data-map/state/make-view-layer-params-state.ts`](../../../src/lib/data-map/state/make-view-layer-params-state.ts), [`src/state/view.ts`](../../../src/state/view.ts), [`src/pages/map/MapViewRouteSync.tsx`](../../../src/pages/map/MapViewRouteSync.tsx), all 19 of [`src/state/layers/data-layers/*.ts`](../../../src/state/layers/data-layers/), [`src/lib/paths/EnforceSingleChild.tsx`](../../../src/lib/paths/EnforceSingleChild.tsx), [`src/lib/paths/context.ts`](../../../src/lib/paths/context.ts), [`src/lib/data-selection/sidebar/root.tsx`](../../../src/lib/data-selection/sidebar/root.tsx), [`src/lib/data-selection/sidebar/context.ts`](../../../src/lib/data-selection/sidebar/context.ts), [`src/lib/data-selection/sidebar/SubSectionToggle.tsx`](../../../src/lib/data-selection/sidebar/SubSectionToggle.tsx).
+**Nodes migrated to Jotai:** `sidebarVisibilityToggleState`, `sidebarExpandedState`, `sidebarPathChildrenState`, `sidebarPathChildrenLoadingState`, `sidebarPathVisibilityState` (Jotai source), `sidebarSectionsUrlParamsState`, `viewState`, `viewTransitionEffect`, `defaultSectionVisibilitySyncEffect` / outward URL sync (replaced by unified `sidebarSectionsUrlAtom`).
 
-**Helpers needed**: a port of `makeHierarchicalVisibilityState`, plus the URL-sync layer (for `sidebarSectionsUrlParamsState`) and the in-component route sync (replacement for `MapViewRouteSync`).
+**Bridge nodes:** `sidebarPathVisibilityState` (Recoil replica atomFamily) for **7** unmigrated layer selector paths — see `SIDEBAR_PATHS_FOR_RECOIL_LAYERS` in [`sidebar-recoil-bridge.ts`](../../../src/sidebar/sidebar-recoil-bridge.ts). Remaining Jotai layer atoms read `sidebarPathVisibilityAtomFamily` directly (no bridge entry).
 
-**Risk**: high — biggest slice by file count, multiple custom helpers, and the `sidebarExpandedState.default = sidebarVisibilityToggleState` cross-family default needs a small redesign:
+**Files touched:** [`sidebar-state.ts`](../../../src/sidebar/sidebar-state.ts), [`sidebar-sections-url.ts`](../../../src/sidebar/sidebar-sections-url.ts), [`sidebar-path-visibility.ts`](../../../src/sidebar/sidebar-path-visibility.ts), [`risk-sidebar-sync.ts`](../../../src/sidebar/sections/risk/risk-sidebar-sync.ts), [`SidebarContent.tsx`](../../../src/sidebar/SidebarContent.tsx), [`sidebar-recoil-bridge.ts`](../../../src/sidebar/sidebar-recoil-bridge.ts), [`SidebarPathVisibilityRecoilBridge.tsx`](../../../src/sidebar/SidebarPathVisibilityRecoilBridge.tsx), [`SidebarSectionsUrlSync.tsx`](../../../src/sidebar/SidebarSectionsUrlSync.tsx), [`state/view.ts`](../../../src/state/view.ts), [`MapPage.tsx`](../../../src/pages/map/MapPage.tsx), sidebar/path context files, risk section files, Jotai layer files (direct sidebar reads).
 
-```ts
-// Jotai
-import { atomWithDefault } from 'jotai/utils';
+**Cross-cutting check:** `rg "sidebarVisibilityToggleState|sidebarExpandedState|sidebarPathChildrenState|viewState\\b" src/` → zero Recoil hub hits (Recoil replica + layer selectors remain).
 
-// Recoil
-export const sidebarExpandedState = atomFamily({
-  key: 'sidebarExpandedState',
-  default: sidebarVisibilityToggleState,
-});
+**Test plan:** every sidebar section toggle; URL round-trip with `?sections=...`; switch views (hazard/exposure/risk/adaptation) and confirm section expand/visibility; deep-link URL rehydrates; Risk sub-sections (population/infrastructure/regional) exposure sync.
 
-export const sidebarExpandedAtoms = atomFamily((path: string) =>
-  atomWithDefault((get) => get(sidebarVisibilityToggleAtoms(path))),
-);
-```
+**15a follow-up — risk sidebar sync cleanup (same slice):**
 
-**Playbook (high-level)**
+- **`setOnlyVisiblePathUnder`** in [`sidebar-path-visibility.ts`](../../../src/sidebar/sidebar-path-visibility.ts) — generic “hide siblings under root, show path + ancestors” helper; writes `sidebarVisibilityToggleAtomFamily` directly via `{ get, set }`.
+- **Risk-scoped sync** in [`risk-sidebar-sync.ts`](../../../src/sidebar/sections/risk/risk-sidebar-sync.ts) — `syncExposure` / `hideExposure` / `syncHazardSidebar` (replaces deleted `exposure-sidebar-sync.ts` and removed `showOneHazardStateEffect` from [`hazards.ts`](../../../src/state/data-selection/hazards.ts)).
+- **Atom effects** (via `AtomEffectRoot` + `jotai-effect`) colocated in risk section files:
+  - Population: `syncPopulationHazardToSidebarEffectAtom`
+  - Infrastructure: `syncSectorToNetworkTreeEffectAtom`, `syncHazardToDamageSourceEffectAtom`, `syncInfrastructureHazardToSidebarEffectAtom`
+- **Left as `useEffect` + `useAtomCallback`:** `InitPopulationView` / `InitInfrastructureView` — mount/unmount exposure sync only; deliberately not converted to atom effects (lifecycle-only, no store dependency to watch).
+- **Deferred:** visibility-gated exposure sync (`atomEffectWithPrevious` on `sidebarPathVisibilityAtomFamily('risk/…')`) for Risk view round-trip bug; incremental 15b-a layer+control migrations (user reverted a larger batch).
 
-1. Port `sidebarVisibilityToggleState` as `atomFamily(path => atomWithUrlSync(...))` where the URL-sync key is the original path (today encoded via the `sections` query param structure). **Important:** the original Recoil setup keys _all_ atomFamily members against the same `url-json` store and treats the URL as a tree (`sections={hazards:true, exposure:{population:true}}`). The simplest Jotai port keeps the **single** `sectionsAtom` (a `Record<string, true|object>`) and derives the per-path atom family from it:
+### Slice 15b — View-layers hub + remaining layer selectors
 
-```ts
-export const sectionsAtom = atomWithUrlSync<SectionsTree>('sections', {});
-export const sidebarVisibilityToggleAtoms = atomFamily((path: string) =>
-  atom(
-    (get) => readPath(get(sectionsAtom), path),
-    (get, set, value: boolean) => set(sectionsAtom, writePath(get(sectionsAtom), path, value)),
-  ),
-);
-```
+**Status**: pending.
 
-`readPath` and `writePath` reuse today's `pathToVisibility` and the inverse of `constructObject`. This is a cleaner data flow than today's "every leaf is its own URL-synced atom plus a parallel `sectionsAtom`". 2. Port `sidebarExpandedState` via `atomWithDefault` (snippet above). 3. Port `sidebarPathChildrenState`, `sidebarPathChildrenLoadingState`. 4. Port `makeHierarchicalVisibilityState` — the read/write logic is identical, just over Jotai atoms. 5. Port `viewTransitionEffect` to use the new unified `StateEffectRoot` (or just inline it as a `useEffect` in `SidebarContent.tsx`). 6. Port `makeViewLayersState` and `makeViewLayerParamsState` to produce Jotai atoms. `waitForAll(...)` in `viewLayersState` becomes `atom(get => [get(a), get(b), ...])`. 7. Migrate all 19 `state/layers/data-layers/*.ts` selectors — each is mechanical, just `selector → atom`. 8. Replace `MapViewRouteSync` with the simpler `useParams`/`useSetAtom` component from §2.2. 9. Replace `viewState` with a plain Jotai atom (the route sync component handles the URL side).
+**Nodes**: `viewLayersState`, remaining Recoil layer selectors under `state/layers/data-layers/` (7 paths still on `SidebarPathVisibilityRecoilBridge`), remove J→R layer replicas and `SidebarPathVisibilityRecoilBridge`.
 
-**Test plan**: full app smoke — every sidebar section, every section toggle, every URL round-trip. Open a deep-linked URL (e.g. `?sections={...}&view=adaptation&x=...&y=...&z=...&site=...`) and confirm the app rehydrates correctly.
+**Remaining bridge paths** (Recoil layer selectors → Jotai via `SidebarPathVisibilityRecoilBridge`): `exposure/buildings`, `exposure/topography`, `exposure/industry`, `vulnerability/human/travel-time`, `vulnerability/human/human-development`, `vulnerability/nature/protected-areas`, `hazards/cdd`. Each pairs with a small Recoil selection atom in its sidebar control — migrate layer + control together.
+
+**Files**: [`view-layers.ts`](../../../src/state/layers/view-layers.ts), remaining `data-layers/*.ts`, [`view-layers-bridge-sync.tsx`](../../../src/state/layers/view-layers-bridge-sync.tsx), [`MapView.tsx`](../../../src/map/MapView.tsx).
+
+**Test plan**: full map layer smoke — every sidebar layer toggles map layer; draw order preserved.
 
 ### Slice 16 — Cleanup
 

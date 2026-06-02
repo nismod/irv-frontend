@@ -1,32 +1,33 @@
+import { useAtomCallback } from 'jotai/utils';
 import { FC, useCallback } from 'react';
-import { useRecoilCallback } from 'recoil';
 
-import { RecoilStateFamily } from '@/lib/recoil/types';
+import { StateWatcher } from '@/lib/jotai/StateWatcher';
+import type { JotaiStateFamily } from '@/lib/jotai/types';
 
-import { StateWatcher } from '../recoil/StateWatcher';
 import { usePath, usePathChildren } from './context';
 import { makeChildPath } from './utils';
 
-export const EnforceSingleChild: FC<{ attributeState: RecoilStateFamily<boolean, string> }> = ({
-  attributeState,
-}) => {
+export const EnforceSingleChild: FC<{
+  attributeAtomFamily: JotaiStateFamily<boolean, string>;
+}> = ({ attributeAtomFamily }) => {
   const path = usePath();
   const subPaths = usePathChildren(path);
 
-  const enforceLimit = useRecoilCallback(
-    ({ set }) =>
-      (newShown: string) => {
+  const enforceLimit = useAtomCallback(
+    useCallback(
+      (get, set, newShown: string) => {
         for (const sp of subPaths) {
           if (sp !== newShown) {
-            set(attributeState(makeChildPath(path, sp)), false);
+            set(attributeAtomFamily(makeChildPath(path, sp)), false);
           }
         }
       },
-    [path, subPaths, attributeState],
+      [path, subPaths, attributeAtomFamily],
+    ),
   );
 
   const handleChange = useCallback(
-    (subPath, attributeValue) => {
+    (subPath: string, attributeValue: boolean) => {
       if (attributeValue) {
         enforceLimit(subPath);
       }
@@ -39,7 +40,7 @@ export const EnforceSingleChild: FC<{ attributeState: RecoilStateFamily<boolean,
       {subPaths.map((sp) => (
         <StateWatcher
           key={sp}
-          state={attributeState(makeChildPath(path, sp))}
+          state={attributeAtomFamily(makeChildPath(path, sp))}
           onValue={(v) => handleChange(sp, v)}
         />
       ))}

@@ -1,12 +1,17 @@
-import { selector } from 'recoil';
+import { atom as jotaiAtom } from 'jotai';
+import { atom } from 'recoil';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { hdiGridViewLayer } from '@/config/hdi-grid/hdi-grid-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 
-export const hdiGridLayerState = selector<ViewLayer>({
+export const hdiGridLayerAtom = jotaiAtom((get) =>
+  get(sidebarPathVisibilityAtomFamily('vulnerability/human/hdi-grid')) ? hdiGridViewLayer() : false,
+);
+
+/** Recoil passthrough for `viewLayersState`; fed by `ViewLayersBridgeSync` from `hdiGridLayerAtom`. */
+export const hdiGridLayerState = atom<ViewLayer | false>({
   key: 'hdiGridLayerState',
-  get: ({ get }) =>
-    get(sidebarPathVisibilityState('vulnerability/human/hdi-grid')) && hdiGridViewLayer(),
+  default: false,
 });

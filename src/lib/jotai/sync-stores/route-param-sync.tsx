@@ -1,49 +1,44 @@
-import type { WritableAtom } from 'jotai';
-import { useSetAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useStore } from 'jotai';
+import type { SetStateAction, WritableAtom } from 'jotai/vanilla';
+import type { ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
+
+/** Atoms whose write accepts a route param value (includes primitive atoms). */
+type RouteParamAtom<T extends string | undefined> = WritableAtom<T, [SetStateAction<T>], void>;
 
 /**
  * Sync a single route param (from `react-router-dom`'s `useParams`) into a Jotai atom.
  *
- * Replacement for the `MapViewRouteSync` Recoil-sync provider that previously bridged the
- * `:view` route segment into `viewState`. Unlike that provider, this helper is a tiny
- * mount-only component plus a hook — there is no `RecoilSync` wrapper involved.
- *
- * Caveats
- * -------
- * - The atom is only written to from the route; **changing the atom does NOT push back
- *   into the URL/route**. This matches the legacy behaviour of `MapViewRouteSync` whose
- *   `RecoilSync` config defined `read` and `listen` but not `write`.
- * - The atom must be writable with a value of the same type as the (string) route param.
- *   For optional segments, the route value can be `undefined`, so the atom should accept it.
+ * Writes synchronously during render so child components and Jotai effects see the route
+ * value before they mount. One-way only: navigate to change the param, not `set(atom)`.
  */
 export function useRouteParamSync<T extends string | undefined>(
   paramName: string,
-  atom: WritableAtom<unknown, [T], unknown>,
+  atom: RouteParamAtom<T>,
 ) {
   const params = useParams();
   const value = params[paramName] as T;
-  const setAtom = useSetAtom(atom);
+  const store = useStore();
 
-  useEffect(() => {
-    setAtom(value);
-  }, [setAtom, value]);
+  if (!Object.is(store.get(atom), value)) {
+    store.set(atom, value);
+  }
 }
 
 /**
- * Mount-only component variant of `useRouteParamSync`.
+ * Wraps children and keeps `atom` in sync with a route param before rendering them.
  *
- * Drop-in replacement for `<MapViewRouteSync>`: place it inside a `<Route>` whose path
- * includes the named segment, and the named atom will follow that segment.
+ * Place inside a `<Route>` whose path includes the named segment.
  */
 export function RouteParamSync<T extends string | undefined>({
-  paramName,
   atom,
+  paramName,
+  children,
 }: {
+  atom: RouteParamAtom<T>;
   paramName: string;
-  atom: WritableAtom<unknown, [T], unknown>;
+  children?: ReactNode;
 }) {
   useRouteParamSync(paramName, atom);
-  return null;
+  return children;
 }

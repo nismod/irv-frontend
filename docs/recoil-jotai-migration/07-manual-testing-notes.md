@@ -68,9 +68,9 @@
 - confirm the map is still displayed at the same location as before the refresh
 - confirm the URL includes the `x`, `y`, and `z` parameters for the Exposure view
 
-## Damages / data-params config (Slice 8)
+## Damages and hazard parameters
 
-Param **values** migrated in Slice 14 — the tests below cover both config loading (Slice 8) and value updates (Slice 14).
+The tests below cover loading parameter options and changing values in the sidebar.
 
 ### Hazards section param dropdowns
 
@@ -166,56 +166,64 @@ Param **values** migrated in Slice 14 — the tests below cover both config load
 
 - with a country selected and scope regions visible, switch basemap Map ↔ Satellite and toggle labels — confirm scope-region layer outline and label colours remain legible
 
-## Networks / damages styling (Slice 11)
+## Networks and damage map styling
 
 ### Infrastructure risk (damage map styling)
 
-- go to `/view/risk`, expand Infrastructure Risk
+- go to Risk view, expand Infrastructure Risk
 - toggle sector (Roads / Rail / Power) — confirm network layers on the map update to match sector defaults
 - toggle hazard — confirm damage choropleth / styling updates and hazard sidebar visibility toggles follow
 - change epoch and RCP — confirm damage layer colours update
 
 ### Exposure infrastructure (network tree)
 
-- go to `/view/exposure`, expand Infrastructure
+- go to Exposure view, expand Infrastructure
 - toggle individual network layers in the tree — confirm matching infrastructure layers appear/disappear on the map
 - collapse/expand tree nodes — confirm UI state persists while toggling
 - navigate away from Exposure and back — confirm layer visibility gating still correct
 
-### Cross-view styling (Slice 11 fix)
+### Cross-view styling
 
-- on `/view/risk`, enable Infrastructure Risk — confirm damage choropleth styling
-- switch to `/view/exposure`, enable Infrastructure — confirm **standard type colours**, not damage styling
+- on Risk view, enable Infrastructure Risk — confirm damage choropleth styling
+- switch to Exposure view, enable Infrastructure — confirm **standard type colours**, not damage styling
 
-### Known bug (pre-existing — do not regress, not fixed in Slice 11)
+### Risk view navigation round-trip
 
-- enable Infrastructure Risk on `/view/risk`, switch to another view, return to `/view/risk` — sidebar may show Infrastructure Risk visible but map layers absent until toggled off/on. Defer to Slice 15 (`syncExposure` remount vs `viewTransitionEffect` timing).
+- on Risk view, enable Infrastructure Risk — confirm damage layers appear on the map
+- switch to another view (e.g. Hazard or Exposure), then return to Risk view
+- confirm Infrastructure Risk is still selected in the sidebar **and** the map layers are still visible (no need to toggle the section off and on)
+- repeat with Population Exposure and Regional Summary: leave Risk, come back, confirm the last active risk section still shows its map layers
 
-## Population & regional exposure (Slice 12)
+## Population & regional exposure
 
-### Population exposure (`/view/risk` → Population Exposure)
+### Population exposure (Risk view → Population Exposure)
 
-- switch hazard radio (Extreme Heat / Droughts) — confirm map layer updates and matching hazard sidebar visibility toggles follow
-- change epoch and RCP — confirm population exposure choropleth updates (`populationExposureGroupParamsReplicaAtom` bridge)
-- toggle Population layer and Hazard layer switches — confirm map gating
+- switch hazard radio (Extreme Heat / Droughts) — confirm the map layer updates and the matching hazard toggles in the sidebar follow
+- change epoch and RCP — confirm the population exposure map updates
+- toggle the Population layer and Hazard layer switches — confirm map visibility matches the switches
 
-### Regional summary (`/view/risk` → Regional Summary)
+### Regional summary (Risk view → Regional Summary)
 
-- change "Population exposed to" dropdown — confirm regional choropleth updates on map
+- change the "Population exposed to" dropdown — confirm the regional map updates
 
-### Risk sub-section switching
+### Switching between risk sections
 
-- switch between Population Exposure, Infrastructure Risk, and Regional Summary — confirm only the active section's exposure sidebar leaf and map layer show (exercises `syncExposure` via `useRecoilCallback`)
+- switch between Population Exposure, Infrastructure Risk, and Regional Summary — confirm only the active section's map layer is shown and the exposure sidebar reflects the active choice
 
-## Hazards selection (Slice 13)
+### Infrastructure risk controls (Risk view → Infrastructure Risk)
 
-### Hazard view (`/view/hazard`)
+- change the sector dropdown — confirm the network layers on the map reset to that sector's defaults
+- change the hazard dropdown — confirm the hazard layer in the sidebar and the damage styling on the map both update
 
-- enable several hazard layers (e.g. Extreme Heat, Drought, River Flooding → Aqueduct) — confirm map raster layers appear
-- change epoch and RCP on one hazard — confirm map layer updates (`hazardGroupParamsReplicaAtomFamily` bridge)
+## Hazards selection
+
+### Hazard view
+
+- enable several hazard layers (e.g. Extreme Heat, Drought, River Flooding) — confirm matching map layers appear
+- change epoch and RCP on one hazard — confirm that hazard's map layer updates
 - disable a hazard — confirm its map layer disappears
 
-### Cross-view hazard sync (Population / Infrastructure Risk)
+### Hazard sync from Risk view
 
-- on `/view/risk` → Population Exposure, switch hazard radio — confirm matching hazard sidebar path toggles follow
-- on `/view/risk` → Infrastructure Risk, switch hazard dropdown — confirm matching hazard sidebar path toggles follow
+- on Risk view → Population Exposure, switch the hazard radio — confirm the matching hazard toggle in the Hazards section of the sidebar updates
+- on Risk view → Infrastructure Risk, switch the hazard dropdown — confirm the matching hazard toggle in the sidebar updates

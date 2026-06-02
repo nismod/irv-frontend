@@ -11,6 +11,7 @@ import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { NBS_ADAPTATION_TYPE_LABEL_LOOKUP } from '@/config/nbs/metadata';
 import { SidePanel } from '@/details/ui/SidePanel';
 import { useMapFitBounds } from '@/map/use-map-fit-bounds';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 import {
   nbsAdaptationTypeAtom,
   nbsIsDataVariableContinuousAtom,
@@ -18,13 +19,12 @@ import {
   nbsSelectedScopeRegionIdAtom,
   nbsSelectedScopeRegionNameAtom,
 } from '@/state/data-selection/nbs';
-import { adaptationNbsVisibleReplicaAtom } from '@/state/layers/data-layers/nbs';
 
 import { FeatureAdaptationsTable } from './FeatureAdaptationsTable';
 
 export const NbsPrioritisationPanel: FC = () => {
   const adaptationType = useAtomValue(nbsAdaptationTypeAtom);
-  const sidebarVisible = useAtomValue(adaptationNbsVisibleReplicaAtom);
+  const sidebarVisible = useAtomValue(sidebarPathVisibilityAtomFamily('adaptation/nbs'));
   const selectedRegionId = useAtomValue(nbsSelectedScopeRegionIdAtom);
   const isContinuous = useAtomValue(nbsIsDataVariableContinuousAtom);
   const showPrioritisation = sidebarVisible && selectedRegionId != null && isContinuous;

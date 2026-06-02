@@ -1,6 +1,7 @@
-import { FC, ReactNode, useEffect } from 'react';
+import { useAtomCallback } from 'jotai/utils';
+import { FC, ReactNode, useCallback, useContext, useLayoutEffect } from 'react';
 
-import { usePath, useSetPathChildren } from './context';
+import { PathChildrenStateContext, usePath } from './context';
 import { PathNode } from './PathNode';
 import { makeChildPath } from './utils';
 
@@ -12,15 +13,28 @@ function removeValueFromArray(val: string) {
 }
 
 function useRegisterChild(parentPath: string, subPath: string) {
-  const setPathChildren = useSetPathChildren(parentPath);
+  const pathChildrenAtomFamily = useContext(PathChildrenStateContext)!;
 
-  useEffect(() => {
-    setPathChildren(addValueToArray(subPath));
+  const register = useAtomCallback(
+    useCallback(
+      (get, set, shouldAdd: boolean) => {
+        const current = get(pathChildrenAtomFamily(parentPath));
+        set(
+          pathChildrenAtomFamily(parentPath),
+          shouldAdd ? addValueToArray(subPath)(current) : removeValueFromArray(subPath)(current),
+        );
+      },
+      [parentPath, subPath, pathChildrenAtomFamily],
+    ),
+  );
+
+  useLayoutEffect(() => {
+    register(true);
 
     return () => {
-      setPathChildren(removeValueFromArray(subPath));
+      register(false);
     };
-  }, [subPath, setPathChildren, parentPath]);
+  }, [register]);
 }
 
 export const SubPath: FC<{ path: string; children?: ReactNode }> = ({ path, children }) => {

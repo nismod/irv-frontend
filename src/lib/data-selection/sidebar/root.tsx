@@ -1,7 +1,8 @@
 import { FC, ReactNode } from 'react';
 
+import type { HierarchicalVisibilityAtomFamily } from '@/lib/data-selection/make-hierarchical-visibility-state';
+import type { JotaiStateFamily } from '@/lib/jotai/types';
 import { PathRoot } from '@/lib/paths/PathRoot';
-import { RecoilStateFamily } from '@/lib/recoil/types';
 
 import {
   ExpandedStateContext,
@@ -10,27 +11,27 @@ import {
 } from './context';
 
 export const SidebarRoot: FC<{
-  visibilityState: RecoilStateFamily<boolean, string>;
-  hierarchicalVisibilityState: RecoilStateFamily<boolean, string>;
-  expandedState: RecoilStateFamily<boolean, string>;
-  pathChildrenState: RecoilStateFamily<string[], string>;
-  pathChildrenLoadingState: RecoilStateFamily<boolean, string>;
+  visibilityAtomFamily: JotaiStateFamily<boolean, string>;
+  hierarchicalVisibilityAtomFamily: HierarchicalVisibilityAtomFamily;
+  expandedAtomFamily: JotaiStateFamily<boolean, string>;
+  pathChildrenAtomFamily: JotaiStateFamily<string[], string>;
+  pathChildrenLoadingAtomFamily: JotaiStateFamily<boolean, string>;
   children?: ReactNode;
 }> = ({
-  visibilityState,
-  hierarchicalVisibilityState,
-  expandedState,
-  pathChildrenState,
-  pathChildrenLoadingState,
+  visibilityAtomFamily,
+  hierarchicalVisibilityAtomFamily,
+  expandedAtomFamily,
+  pathChildrenAtomFamily,
+  pathChildrenLoadingAtomFamily,
   children,
 }) => {
   return (
-    <VisibilityStateContext.Provider value={visibilityState}>
-      <HierarchicalVisibilityStateContext.Provider value={hierarchicalVisibilityState}>
-        <ExpandedStateContext.Provider value={expandedState}>
+    <VisibilityStateContext.Provider value={visibilityAtomFamily}>
+      <HierarchicalVisibilityStateContext.Provider value={hierarchicalVisibilityAtomFamily}>
+        <ExpandedStateContext.Provider value={expandedAtomFamily}>
           <PathRoot
-            pathChildrenState={pathChildrenState}
-            pathChildrenLoadingState={pathChildrenLoadingState}
+            pathChildrenAtomFamily={pathChildrenAtomFamily}
+            pathChildrenLoadingAtomFamily={pathChildrenLoadingAtomFamily}
           >
             {children}
           </PathRoot>

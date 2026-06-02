@@ -1,11 +1,17 @@
-import { selector } from 'recoil';
+import { atom as jotaiAtom } from 'jotai';
+import { atom } from 'recoil';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { landCoverViewLayer } from '@/config/land-cover/land-cover-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 
-export const landCoverLayerState = selector<ViewLayer>({
+export const landCoverLayerAtom = jotaiAtom((get) =>
+  get(sidebarPathVisibilityAtomFamily('exposure/land-cover')) ? landCoverViewLayer() : false,
+);
+
+/** Recoil passthrough for `viewLayersState`; fed by `ViewLayersBridgeSync` from `landCoverLayerAtom`. */
+export const landCoverLayerState = atom<ViewLayer | false>({
   key: 'landCoverLayerState',
-  get: ({ get }) => get(sidebarPathVisibilityState('exposure/land-cover')) && landCoverViewLayer(),
+  default: false,
 });

@@ -4,80 +4,64 @@ import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Switch from '@mui/material/Switch';
-import { atom, useAtom, useAtomValue } from 'jotai';
-import { useEffect } from 'react';
-import { useRecoilState, useRecoilTransaction_UNSTABLE } from 'recoil';
+import { atom, useAtom } from 'jotai';
+import { atomEffect } from 'jotai-effect';
+import { useAtomCallback } from 'jotai/utils';
+import { useCallback, useEffect } from 'react';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
+import { AtomEffectRoot } from '@/lib/jotai/effects/AtomEffectRoot';
 
 import { ExposureSource } from '@/config/hazards/exposure/exposure-view-layer';
 import { getHazardSidebarPath } from '@/config/hazards/metadata';
-import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
-import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 
-import { hideExposure, syncExposure } from './exposure-sidebar-sync';
+import { hideExposure, syncExposure, syncHazardSidebar } from './risk-sidebar-sync';
 
 export const populationExposureHazardAtom = atom<ExposureSource>('extreme_heat');
 
+const syncPopulationHazardToSidebarEffectAtom = atomEffect((get, set) => {
+  syncHazardSidebar({ get, set }, getHazardSidebarPath(get(populationExposureHazardAtom)));
+});
+
 const InitPopulationView = () => {
-  const updateExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => syncExposure(iface, 'population'),
-    [],
+  const updateExposure = useAtomCallback(
+    useCallback((get, set) => syncExposure({ get, set }, 'population'), []),
   );
-  const hideExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => hideExposure(iface, 'population'),
-    [],
+  const hideExposureFn = useAtomCallback(
+    useCallback((get, set) => hideExposure({ get, set }, 'population'), []),
   );
 
   useEffect(() => {
-    updateExposureTx();
+    updateExposure();
 
     return () => {
-      hideExposureTx();
+      hideExposureFn();
     };
-  }, [updateExposureTx, hideExposureTx]);
+  }, [updateExposure, hideExposureFn]);
 
   return null;
 };
 
-/** Keep hazards sidebar toggles aligned with the selected exposure hazard. */
-function SyncPopulationHazardToSidebar() {
-  const hazard = useAtomValue(populationExposureHazardAtom);
-  const applyHazardEffect = useRecoilTransaction_UNSTABLE(
-    (iface) => (newHazard: ExposureSource) =>
-      showOneHazardStateEffect(
-        (path, visible) => iface.set(sidebarVisibilityToggleState(path), visible),
-        newHazard,
-      ),
-    [],
-  );
-
-  useEffect(() => {
-    applyHazardEffect(hazard);
-  }, [hazard, applyHazardEffect]);
-
-  return null;
-}
-
 export const PopulationExposureSection = () => {
   const [hazard, setHazard] = useAtom(populationExposureHazardAtom);
 
-  const [showHazards, setShowHazards] = useRecoilState(
-    sidebarPathVisibilityState(getHazardSidebarPath(hazard)),
-  );
-  const [showPopulation, setShowPopulation] = useRecoilState(
-    sidebarPathVisibilityState('exposure/population'),
-  );
+  const [showHazards, setShowHazards] = useAtom(
+    sidebarPathVisibilityAtomFamily(getHazardSidebarPath(hazard)),
+  ) as [boolean, (value: boolean) => void];
+  const [showPopulation, setShowPopulation] = useAtom(
+    sidebarPathVisibilityAtomFamily('exposure/population'),
+  ) as [boolean, (value: boolean) => void];
 
   return (
     <>
       <InitPopulationView />
-      <SyncPopulationHazardToSidebar />
+      <AtomEffectRoot effectAtom={syncPopulationHazardToSidebarEffectAtom} />
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows expected annual population exposed to extreme events, based on the annual

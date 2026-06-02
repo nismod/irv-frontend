@@ -1,19 +1,20 @@
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { atom, useAtom, useAtomValue } from 'jotai';
+import { atomEffect } from 'jotai-effect';
 import { useAtomCallback } from 'jotai/utils';
 import _ from 'lodash';
 import { Suspense, useCallback, useEffect } from 'react';
-import { useRecoilState, useRecoilTransaction_UNSTABLE } from 'recoil';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { makeOptions } from '@/lib/helpers';
+import { AtomEffectRoot } from '@/lib/jotai/effects/AtomEffectRoot';
 
 import { getHazardSidebarPath, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
 import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
-import { sidebarPathVisibilityState, sidebarVisibilityToggleState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { DataParam } from '@/sidebar/ui/DataParam';
 import { InputRow } from '@/sidebar/ui/InputRow';
@@ -25,10 +26,9 @@ import {
   damageSourceAtom,
   showInfrastructureRiskAtom,
 } from '@/state/data-selection/damage-mapping/damage-map';
-import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
-import { hideExposure, syncExposure } from './exposure-sidebar-sync';
+import { hideExposure, syncExposure, syncHazardSidebar } from './risk-sidebar-sync';
 
 type SectorType = 'roads' | 'rail' | 'power';
 
@@ -62,79 +62,41 @@ const SECTOR_LAYERS: Record<SectorType, NetworkLayerType[]> = {
   power: ['power_distribution', 'power_transmission'],
 };
 
-function SyncInfrastructureHazardToSidebar() {
-  const hazard = useAtomValue(
-    paramValueAtomFamily({ group: 'infrastructure-risk', param: 'hazard' }),
-  ) as HazardType;
-  const applyHazardEffect = useRecoilTransaction_UNSTABLE(
-    (iface) => (newHazard: HazardType) =>
-      showOneHazardStateEffect(
-        (path, visible) => iface.set(sidebarVisibilityToggleState(path), visible),
-        newHazard,
-      ),
-    [],
-  );
+const infrastructureSectorParam = { group: 'infrastructure-risk', param: 'sector' } as const;
+const infrastructureHazardParam = { group: 'infrastructure-risk', param: 'hazard' } as const;
 
-  useEffect(() => {
-    applyHazardEffect(hazard);
-  }, [hazard, applyHazardEffect]);
+const syncSectorToNetworkTreeEffectAtom = atomEffect((get, set) => {
+  const sector = get(paramValueAtomFamily(infrastructureSectorParam)) as SectorType;
+  syncInfrastructureSelectionStateEffect({ get, set }, SECTOR_LAYERS[sector]);
+});
 
-  return null;
-}
+const syncInfrastructureHazardToSidebarEffectAtom = atomEffect((get, set) => {
+  const hazard = get(paramValueAtomFamily(infrastructureHazardParam)) as HazardType;
+  syncHazardSidebar({ get, set }, getHazardSidebarPath(hazard));
+});
+
+const syncHazardToDamageSourceEffectAtom = atomEffect((get, set) => {
+  set(damageSourceAtom, get(paramValueAtomFamily(infrastructureHazardParam)) as HazardType);
+});
 
 const InitInfrastructureView = () => {
-  const updateExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => syncExposure(iface, 'infrastructure'),
-    [],
+  const updateExposureFn = useAtomCallback(
+    useCallback((get, set) => syncExposure({ get, set }, 'infrastructure'), []),
   );
-  const hideExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => hideExposure(iface, 'infrastructure'),
-    [],
+  const hideExposureFn = useAtomCallback(
+    useCallback((get, set) => hideExposure({ get, set }, 'infrastructure'), []),
   );
 
   useEffect(() => {
-    updateExposureTx();
+    updateExposureFn();
 
     return () => {
-      hideExposureTx();
+      hideExposureFn();
     };
-  }, [updateExposureTx, hideExposureTx]);
+  }, [updateExposureFn, hideExposureFn]);
 
   return null;
 };
-
-/** When sector changes, reset the network tree to that sector's default layers. */
-function SyncSectorToNetworkTree() {
-  const sector = useAtomValue(
-    paramValueAtomFamily({ group: 'infrastructure-risk', param: 'sector' }),
-  ) as SectorType;
-
-  const syncSector = useAtomCallback(
-    useCallback((get, set, layers: NetworkLayerType[]) => {
-      syncInfrastructureSelectionStateEffect({ get, set }, layers);
-    }, []),
-  );
-
-  useEffect(() => {
-    syncSector(SECTOR_LAYERS[sector]);
-  }, [sector, syncSector]);
-
-  return null;
-}
-
-/** Keep damageSourceAtom aligned with the hazard param (epoch/RCP group + damage styling). */
-function SyncHazardToDamageSource() {
-  const hazard = useAtomValue(
-    paramValueAtomFamily({ group: 'infrastructure-risk', param: 'hazard' }),
-  ) as HazardType;
-  const setDamageSource = useSetAtom(damageSourceAtom);
-
-  useEffect(() => {
-    setDamageSource(hazard);
-  }, [hazard, setDamageSource]);
-
-  return null;
-}
 
 function labelHazard(x) {
   return HAZARDS_METADATA[x].label;
@@ -144,8 +106,8 @@ export const InfrastructureRiskSection = () => {
   useLoadParamsConfig(infrastructureRiskConfigAtom, 'infrastructure-risk');
   const damageSource = useAtomValue(damageSourceAtom);
 
-  const [showHazard, setShowHazard] = useRecoilState(
-    sidebarPathVisibilityState(getHazardSidebarPath(damageSource)),
+  const [showHazard, setShowHazard] = useAtom(
+    sidebarPathVisibilityAtomFamily(getHazardSidebarPath(damageSource)),
   );
 
   return (
@@ -154,9 +116,9 @@ export const InfrastructureRiskSection = () => {
     <Suspense fallback="Loading data...">
       <LinkViewLayerToPath atom={showInfrastructureRiskAtom} resetOnUnmount />
       <InitInfrastructureView />
-      <SyncSectorToNetworkTree />
-      <SyncHazardToDamageSource />
-      <SyncInfrastructureHazardToSidebar />
+      <AtomEffectRoot effectAtom={syncSectorToNetworkTreeEffectAtom} />
+      <AtomEffectRoot effectAtom={syncHazardToDamageSourceEffectAtom} />
+      <AtomEffectRoot effectAtom={syncInfrastructureHazardToSidebarEffectAtom} />
       <InputSection>
         <DataNotice>
           <DataNoticeTextBlock>

@@ -1,11 +1,17 @@
-import { selector } from 'recoil';
+import { atom as jotaiAtom } from 'jotai';
+import { atom } from 'recoil';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { rwiViewLayer } from '@/config/rwi/rwi-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 
-export const rwiLayerState = selector<ViewLayer>({
+export const rwiLayerAtom = jotaiAtom((get) =>
+  get(sidebarPathVisibilityAtomFamily('vulnerability/human/rwi')) ? rwiViewLayer() : false,
+);
+
+/** Recoil passthrough for `viewLayersState`; fed by `ViewLayersBridgeSync` from `rwiLayerAtom`. */
+export const rwiLayerState = atom<ViewLayer | false>({
   key: 'rwiLayerState',
-  get: ({ get }) => get(sidebarPathVisibilityState('vulnerability/human/rwi')) && rwiViewLayer(),
+  default: false,
 });
