@@ -227,3 +227,17 @@ The tests below cover loading parameter options and changing values in the sideb
 
 - on Risk view → Population Exposure, switch the hazard radio — confirm the matching hazard toggle in the Hazards section of the sidebar updates
 - on Risk view → Infrastructure Risk, switch the hazard dropdown — confirm the matching hazard toggle in the sidebar updates
+
+## Topography and CDD controls
+
+### Topography (Exposure view)
+
+- go to map page - Exposure view
+- enable Topography in the sidebar
+- switch between Elevation and Slope — confirm the map layer updates
+
+### CDD (Risk view)
+
+- go to map page - Risk view
+- enable CDD in the sidebar
+- switch between Absolute and Relative — confirm the map layer updates

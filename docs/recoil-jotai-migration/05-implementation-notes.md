@@ -163,8 +163,9 @@ The build is **not** expected to behave differently at runtime; this is a purely
 | **12 — Population & regional exposure** | **Done** | Population/regional data + layers on Jotai; param replica removed in Slice 14.                                                                                                                          |
 | **13 — Hazards selection**              | **Done** | Hazard selection/visibility/layers on Jotai; param replica removed in Slice 14.                                                                                                                         |
 | **14 — Data-params value half**         | **Done** | Full data-params spine on Jotai; removed param replica bridges from Slices 11–13; `useUpdateDataParam` → `useAtomCallback`.                                                                             |
-| **15a — Sidebar + view**                | **Done** | Sidebar hub + URL sections + view transitions on Jotai; J→R bridge for 7 unmigrated layer paths; risk sync refactored (`risk-sidebar-sync`, atom effects).                                              |
-| 5, 15b–16                               | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| **15a — Sidebar + view**                | **Done** | Sidebar hub + URL sections + view transitions on Jotai; temporary J→R bridge for 7 unmigrated layer paths (removed in 15b); risk sync refactored (`risk-sidebar-sync`, atom effects).                   |
+| **15b — View-layers hub**               | **Done** | `viewLayersAtom` hub; all layer selectors on Jotai; bridges removed (`ViewLayersBridgeSync`, `SidebarPathVisibilityRecoilBridge`, `viewLayersReplicaAtom`).                                             |
+| 5, 16                                   | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -527,8 +528,8 @@ Jotai: viewLayersReplicaAtom → viewLayersParamsAtom
 ### Things explicitly **not** done in Step 14
 
 - `sidebarVisibilityToggleState` hub — Slice 15a (now done).
-- Layer hub replicas (`hazardLayerState`, `populationExposureLayerState`, etc.) — Slice 15b.
-- Risk view round-trip layer restore bug — may improve with 15a view transitions; full fix TBD after 15b.
+- Layer hub replicas (`hazardLayerState`, `populationExposureLayerState`, etc.) — Slice 15b (now done).
+- Risk view round-trip layer restore bug — may improve with 15a view transitions; full fix still deferred.
 
 ### Step 15a — Sidebar hub + view state (2026-05-20)
 
@@ -575,8 +576,41 @@ Replaces [`exposure-sidebar-sync.ts`](../../../src/sidebar/sections/risk/exposur
 
 ### Things explicitly **not** done in Step 15a
 
-- `viewLayersState` hub — Slice 15b.
-- Seven Recoil layer selectors still on `SidebarPathVisibilityRecoilBridge` — Slice 15b-a (incremental, one layer + control at a time).
-- J→R layer replicas — Slice 15b teardown.
-- Full `SidebarPathVisibilityRecoilBridge` removal — Slice 15b (after last path migrated).
+- `viewLayersState` hub — **done in Step 15b**.
+- Seven Recoil layer selectors on `SidebarPathVisibilityRecoilBridge` — **done in Step 15b**.
+- J→R layer replicas and `SidebarPathVisibilityRecoilBridge` — **removed in Step 15b**.
 - Risk view round-trip layer restore — may need visibility-gated exposure sync; deferred.
+
+### Step 15b — View-layers hub + remaining layer selectors (2026-06-02)
+
+**Hub:** [`view-layers.ts`](../../../src/state/layers/view-layers.ts) — `viewLayersAtom = makeViewLayersAtom([...])` preserves draw order via [`make-view-layers-atom.ts`](../../../src/lib/data-map/state/make-view-layers-atom.ts) (`layerAtoms.map(get)` → `flattenConfig`). Replaces Recoil `viewLayersState` + `waitForAll`.
+
+**Layer graph:** every slot under [`state/layers/data-layers/`](../../../src/state/layers/data-layers/) and [`ui-layers/feature-bbox.ts`](../../../src/state/layers/ui-layers/feature-bbox.ts) is a Jotai derived atom reading `sidebarPathVisibilityAtomFamily` (and selection atoms where applicable). Recoil passthrough `*LayerState` replica atoms deleted.
+
+**Last seven selectors + controls** (were fed by `SidebarPathVisibilityRecoilBridge` in 15a):
+
+| Sidebar path                            | Layer atom(s)                                                    | Selection atom(s)                       | Control                  |
+| --------------------------------------- | ---------------------------------------------------------------- | --------------------------------------- | ------------------------ |
+| `exposure/buildings`                    | `buildingDensityLayerAtom`                                       | `buildingDensityTypeAtom`               | `BuildingDensityControl` |
+| `exposure/topography`                   | `topographyLayersAtom`                                           | `topographySelectionAtom`               | `TopographyControl`      |
+| `exposure/industry`                     | `industryLayersAtom`                                             | `industrySelectionAtom`                 | `IndustryControl`        |
+| `vulnerability/human/travel-time`       | `travelTimeLayerAtom`                                            | `travelTimeTypeAtom`                    | `TravelTimeControl`      |
+| `vulnerability/human/human-development` | `humanDevelopmentLayerAtom`                                      | `hdiVariableAtom`, `hdiRegionLevelAtom` | `HdiControl`             |
+| `vulnerability/nature/protected-areas`  | `protectedAreasPointLayerAtom`, `protectedAreasPolygonLayerAtom` | `protectedAreaTypeSelectionAtom`        | `WdpaControls`           |
+| `hazards/cdd`                           | `cddLayersAtom`                                                  | `cddSelectionAtom`                      | `CDDControl`             |
+
+**View-layer params:** [`view-layers-params.ts`](../../../src/state/layers/view-layers-params.ts) — `viewLayersParamsAtom` reads `viewLayersAtom` directly; `viewLayersReplicaAtom` and MapView `useSyncValueToAtom` bridge removed.
+
+**Consumers:** [`MapView.tsx`](../../../src/map/MapView.tsx), [`MapLegend.tsx`](../../../src/map/legend/MapLegend.tsx) — `useAtomValue(viewLayersAtom)` / `viewLayersParamsAtom`. `ViewLayersBridgeSync` unmounted.
+
+**Bridges removed:** [`view-layers-bridge-sync.tsx`](../../../src/state/layers/view-layers-bridge-sync.tsx) (deleted), [`SidebarPathVisibilityRecoilBridge.tsx`](../../../src/sidebar/SidebarPathVisibilityRecoilBridge.tsx) (deleted), [`sidebar-recoil-bridge.ts`](../../../src/sidebar/sidebar-recoil-bridge.ts) (deleted); `SidebarContent` no longer re-exports Recoil `sidebarPathVisibilityState`.
+
+**Cross-cutting check:** `rg "viewLayersState|viewLayersReplicaAtom|ViewLayersBridgeSync|SidebarPathVisibilityRecoilBridge|sidebar-recoil-bridge|from '@/sidebar/SidebarContent'" src/` → zero hits (except dead Recoil factory `make-view-layers-state.ts` until Slice 16).
+
+**Still on Recoil (Slice 16):** `interactionGroupsState` in [`MapView.tsx`](../../../src/map/MapView.tsx); async query selectors (`terracottaColorMapValuesQuery`, `apiFeatureQuery`); Downloads jobs (Slice 5 or decommission — see team discussion); app-level `RecoilRoot` / sync wrappers.
+
+### Decisions taken during Step 15b
+
+- **`makeViewLayersAtom(layerAtoms)`** — ordered atom list resolved inside the factory (Option B), mirroring the old `waitForAll([...])` array without per-slot `get()` repetition at the call site.
+- **Explicit `atom<T>` generics** on layer atoms (`ViewLayer | null`, `ViewLayer[]`, etc.) for readable slot types; prefer `null` / `[]` as “hidden” sentinels for singles vs lists respectively.
+- **No exhaustive per-layer manual checklist** — Topography and CDD controls documented in `07-manual-testing-notes.md`; other layers already covered by earlier test sections.

@@ -1,13 +1,13 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { cddViewLayer } from '@/config/cdd/cdd-view-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { cddSelectionState } from '@/state/data-selection/cdd';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
+import { cddSelectionAtom } from '@/state/data-selection/cdd';
 
-export const cddLayersState = selector<ViewLayer[]>({
-  key: 'cddLayerState',
-  get: ({ get }) =>
-    get(sidebarPathVisibilityState('hazards/cdd')) ? [cddViewLayer(get(cddSelectionState))] : [],
-});
+export const cddLayersAtom = atom<ViewLayer[] | null>((get) =>
+  get(sidebarPathVisibilityAtomFamily('hazards/cdd'))
+    ? [cddViewLayer(get(cddSelectionAtom))]
+    : null,
+);

@@ -1,13 +1,13 @@
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
+import { useAtom } from 'jotai';
 import React from 'react';
-import { useRecoilState } from 'recoil';
 
-import { cddSelectionState } from '@/state/data-selection/cdd';
+import { cddSelectionAtom } from '@/state/data-selection/cdd';
 
 export const CDDControl = () => {
-  const [radioState, setRadioState] = useRecoilState(cddSelectionState);
+  const [radioState, setRadioState] = useAtom(cddSelectionAtom);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const radioValue = (event.target as HTMLInputElement).value;

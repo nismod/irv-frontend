@@ -1,8 +1,5 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 import { TraveltimeType } from '@/config/travel-time/travel-time-layer';
 
-export const travelTimeTypeState = atom<TraveltimeType>({
-  key: 'travelTimeTypeState',
-  default: 'motorized',
-});
+export const travelTimeTypeAtom = atom<TraveltimeType>('motorized');

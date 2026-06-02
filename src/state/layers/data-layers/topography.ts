@@ -1,15 +1,13 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { topographyViewLayer } from '@/config/topography/topography-view-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { topographySelectionState } from '@/state/data-selection/topography';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
+import { topographySelectionAtom } from '@/state/data-selection/topography';
 
-export const topographyLayersState = selector<ViewLayer[]>({
-  key: 'topographyLayerState',
-  get: ({ get }) =>
-    get(sidebarPathVisibilityState('exposure/topography'))
-      ? [topographyViewLayer(get(topographySelectionState))]
-      : [],
-});
+export const topographyLayersAtom = atom<ViewLayer[]>((get) =>
+  get(sidebarPathVisibilityAtomFamily('exposure/topography'))
+    ? [topographyViewLayer(get(topographySelectionAtom))]
+    : [],
+);

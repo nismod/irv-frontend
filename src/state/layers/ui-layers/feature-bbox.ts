@@ -1,6 +1,5 @@
 import bboxPolygon from '@turf/bbox-polygon';
-import { atom as jotaiAtom } from 'jotai';
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 import { BoundingBox, extendBbox } from '@/lib/bounding-box';
 import { ViewLayer } from '@/lib/data-map/view-layers';
@@ -12,14 +11,14 @@ export interface FeatureWithBbox {
 }
 
 const INITIAL_BOUNDED_FEATURE: FeatureWithBbox | null = null;
-export const boundedFeatureAtom = jotaiAtom(INITIAL_BOUNDED_FEATURE);
+export const boundedFeatureAtom = atom<FeatureWithBbox | null>(INITIAL_BOUNDED_FEATURE);
 
 /** Returns buffer in kilometers for the feature bounding box, based on current zoom level */
 function calculateZoomBasedBuffer(zoom: number): number {
   return Math.max(0.5, 1000 / Math.pow(2, zoom));
 }
 
-export const featureBoundingBoxLayerAtom = jotaiAtom((get): ViewLayer | null => {
+export const featureBoundingBoxLayerAtom = atom<ViewLayer | null>((get) => {
   const { id, bbox } = get(boundedFeatureAtom) ?? {};
 
   if (!bbox) return null;
@@ -32,13 +31,4 @@ export const featureBoundingBoxLayerAtom = jotaiAtom((get): ViewLayer | null => 
       return boundingBoxLayer({ bboxGeom: geom }, deckProps);
     },
   };
-});
-
-/**
- * Recoil↔Jotai migration: feature bbox layer is computed in Jotai (`featureBoundingBoxLayerAtom`).
- * `ViewLayersBridgeSync` writes into this replica atom so `viewLayersState` keeps its ordering.
- */
-export const featureBoundingBoxLayerState = atom<ViewLayer | null>({
-  key: 'featureBoundingBoxLayerState',
-  default: null,
 });

@@ -1,13 +1,13 @@
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 
 import { ParamChecklist } from '@/lib/controls/params/ParamChecklist';
 
 import { INDUSTRY_METADATA } from '@/config/industry/industry-view-layer';
 import { LayerLabel } from '@/sidebar/ui/LayerLabel';
-import { industrySelectionState, IndustryType } from '@/state/data-selection/industry';
+import { industrySelectionAtom, IndustryType } from '@/state/data-selection/industry';
 
 export const IndustryControl = () => {
-  const [checkboxState, setCheckboxState] = useRecoilState(industrySelectionState);
+  const [checkboxState, setCheckboxState] = useAtom(industrySelectionAtom);
 
   return (
     <ParamChecklist<IndustryType>

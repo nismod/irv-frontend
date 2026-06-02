@@ -1,13 +1,7 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 import { HdiRegionLevel, HdiVariableType } from '@/config/human-development/metadata';
 
-export const hdiVariableState = atom<HdiVariableType>({
-  key: 'hdiVariableState',
-  default: 'subnational_hdi',
-});
+export const hdiVariableAtom = atom<HdiVariableType>('subnational_hdi');
 
-export const hdiRegionLevelState = atom<HdiRegionLevel>({
-  key: 'hdiRegionLevelState',
-  default: 'countries',
-});
+export const hdiRegionLevelAtom = atom<HdiRegionLevel>('countries');

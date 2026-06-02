@@ -473,7 +473,7 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 **Nodes migrated to Jotai:** `sidebarVisibilityToggleState`, `sidebarExpandedState`, `sidebarPathChildrenState`, `sidebarPathChildrenLoadingState`, `sidebarPathVisibilityState` (Jotai source), `sidebarSectionsUrlParamsState`, `viewState`, `viewTransitionEffect`, `defaultSectionVisibilitySyncEffect` / outward URL sync (replaced by unified `sidebarSectionsUrlAtom`).
 
-**Bridge nodes:** `sidebarPathVisibilityState` (Recoil replica atomFamily) for **7** unmigrated layer selector paths — see `SIDEBAR_PATHS_FOR_RECOIL_LAYERS` in [`sidebar-recoil-bridge.ts`](../../../src/sidebar/sidebar-recoil-bridge.ts). Remaining Jotai layer atoms read `sidebarPathVisibilityAtomFamily` directly (no bridge entry).
+**Bridge nodes (removed in 15b):** temporary Recoil `sidebarPathVisibilityState` replica atomFamily for **7** unmigrated layer selector paths — formerly in `sidebar-recoil-bridge.ts` / `SidebarPathVisibilityRecoilBridge`. Remaining Jotai layer atoms read `sidebarPathVisibilityAtomFamily` directly.
 
 **Files touched:** [`sidebar-state.ts`](../../../src/sidebar/sidebar-state.ts), [`sidebar-sections-url.ts`](../../../src/sidebar/sidebar-sections-url.ts), [`sidebar-path-visibility.ts`](../../../src/sidebar/sidebar-path-visibility.ts), [`risk-sidebar-sync.ts`](../../../src/sidebar/sections/risk/risk-sidebar-sync.ts), [`SidebarContent.tsx`](../../../src/sidebar/SidebarContent.tsx), [`sidebar-recoil-bridge.ts`](../../../src/sidebar/sidebar-recoil-bridge.ts), [`SidebarPathVisibilityRecoilBridge.tsx`](../../../src/sidebar/SidebarPathVisibilityRecoilBridge.tsx), [`SidebarSectionsUrlSync.tsx`](../../../src/sidebar/SidebarSectionsUrlSync.tsx), [`state/view.ts`](../../../src/state/view.ts), [`MapPage.tsx`](../../../src/pages/map/MapPage.tsx), sidebar/path context files, risk section files, Jotai layer files (direct sidebar reads).
 
@@ -489,19 +489,23 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
   - Population: `syncPopulationHazardToSidebarEffectAtom`
   - Infrastructure: `syncSectorToNetworkTreeEffectAtom`, `syncHazardToDamageSourceEffectAtom`, `syncInfrastructureHazardToSidebarEffectAtom`
 - **Left as `useEffect` + `useAtomCallback`:** `InitPopulationView` / `InitInfrastructureView` — mount/unmount exposure sync only; deliberately not converted to atom effects (lifecycle-only, no store dependency to watch).
-- **Deferred:** visibility-gated exposure sync (`atomEffectWithPrevious` on `sidebarPathVisibilityAtomFamily('risk/…')`) for Risk view round-trip bug; incremental 15b-a layer+control migrations (user reverted a larger batch).
+- **Deferred:** visibility-gated exposure sync (`atomEffectWithPrevious` on `sidebarPathVisibilityAtomFamily('risk/…')`) for Risk view round-trip bug. Remaining layer + bridge work completed in Slice 15b.
 
 ### Slice 15b — View-layers hub + remaining layer selectors
 
-**Status**: pending.
+**Status**: done (2026-06-02).
 
-**Nodes**: `viewLayersState`, remaining Recoil layer selectors under `state/layers/data-layers/` (7 paths still on `SidebarPathVisibilityRecoilBridge`), remove J→R layer replicas and `SidebarPathVisibilityRecoilBridge`.
+**What shipped:** `viewLayersAtom` hub on Jotai via [`makeViewLayersAtom`](../../../src/lib/data-map/state/make-view-layers-atom.ts) (ordered atom list → `flattenConfig`). All layer slots in [`data-layers/*.ts`](../../../src/state/layers/data-layers/) and [`feature-bbox.ts`](../../../src/state/layers/ui-layers/feature-bbox.ts) are pure Jotai — Recoil replica atoms and `ViewLayersBridgeSync` removed. Last seven layer selectors migrated with their data-selection atoms and sidebar controls (`exposure/buildings`, `exposure/topography`, `exposure/industry`, `vulnerability/human/travel-time`, `vulnerability/human/human-development`, `vulnerability/nature/protected-areas`, `hazards/cdd`). `SidebarPathVisibilityRecoilBridge`, [`sidebar-recoil-bridge.ts`](../../../src/sidebar/sidebar-recoil-bridge.ts), and `viewLayersReplicaAtom` removed. `MapView` and `MapLegend` read `viewLayersAtom` / `viewLayersParamsAtom` directly (no Recoil hub or R→J replica sync).
 
-**Remaining bridge paths** (Recoil layer selectors → Jotai via `SidebarPathVisibilityRecoilBridge`): `exposure/buildings`, `exposure/topography`, `exposure/industry`, `vulnerability/human/travel-time`, `vulnerability/human/human-development`, `vulnerability/nature/protected-areas`, `hazards/cdd`. Each pairs with a small Recoil selection atom in its sidebar control — migrate layer + control together.
+**Nodes migrated to Jotai:** `viewLayersState` → `viewLayersAtom`; remaining Recoil layer selectors and selection atoms listed above; `viewLayersParamsAtom` now reads the hub atom directly.
 
-**Files**: [`view-layers.ts`](../../../src/state/layers/view-layers.ts), remaining `data-layers/*.ts`, [`view-layers-bridge-sync.tsx`](../../../src/state/layers/view-layers-bridge-sync.tsx), [`MapView.tsx`](../../../src/map/MapView.tsx).
+**Bridge nodes removed:** J→R `ViewLayersBridgeSync`; J→R `SidebarPathVisibilityRecoilBridge` and Recoil `sidebarPathVisibilityState` replica family.
 
-**Test plan**: full map layer smoke — every sidebar layer toggles map layer; draw order preserved.
+**Files touched:** [`view-layers.ts`](../../../src/state/layers/view-layers.ts), [`view-layers-params.ts`](../../../src/state/layers/view-layers-params.ts), all [`data-layers/*.ts`](../../../src/state/layers/data-layers/), [`make-view-layers-atom.ts`](../../../src/lib/data-map/state/make-view-layers-atom.ts), [`MapView.tsx`](../../../src/map/MapView.tsx), [`MapLegend.tsx`](../../../src/map/legend/MapLegend.tsx), [`SidebarContent.tsx`](../../../src/sidebar/SidebarContent.tsx), seven data-selection + sidebar control files under Exposure / Vulnerability / Risk.
+
+**Cross-cutting check:** `rg "viewLayersState|viewLayersReplicaAtom|ViewLayersBridgeSync|SidebarPathVisibilityRecoilBridge|sidebar-recoil-bridge" src/` → zero hits.
+
+**Test plan:** spot-check Topography and CDD layer controls (see [`07-manual-testing-notes.md`](./07-manual-testing-notes.md)). Other layer behaviour is covered by earlier slice tests.
 
 ### Slice 16 — Cleanup
 

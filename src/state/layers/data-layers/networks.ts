@@ -1,5 +1,4 @@
-import { atom as jotaiAtom } from 'jotai';
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 
@@ -9,7 +8,7 @@ import { damageMapStyleParamsAtom } from '@/state/data-selection/damage-mapping/
 import { networkSelectionAtom } from '@/state/data-selection/networks/network-selection';
 import { networksStyleAtom } from '@/state/data-selection/networks/networks-style';
 
-export const networkStyleParamsAtom = jotaiAtom((get): StyleParams => {
+export const networkStyleParamsAtom = atom<StyleParams>((get) => {
   switch (get(networksStyleAtom)) {
     case 'damages':
       return get(damageMapStyleParamsAtom);
@@ -18,16 +17,10 @@ export const networkStyleParamsAtom = jotaiAtom((get): StyleParams => {
   }
 });
 
-export const networkLayersAtom = jotaiAtom((get): ViewLayer[] => {
-  return get(sidebarPathVisibilityAtomFamily('exposure/infrastructure'))
+export const networkLayersAtom = atom<ViewLayer[]>((get) =>
+  get(sidebarPathVisibilityAtomFamily('exposure/infrastructure'))
     ? get(networkSelectionAtom).map((network) =>
         infrastructureViewLayer(network, get(networkStyleParamsAtom)),
       )
-    : [];
-});
-
-/** Recoil passthrough for `viewLayersState`; fed by `ViewLayersBridgeSync` from `networkLayersAtom`. */
-export const networkLayersState = atom<ViewLayer[]>({
-  key: 'networkLayersState',
-  default: [],
-});
+    : [],
+);

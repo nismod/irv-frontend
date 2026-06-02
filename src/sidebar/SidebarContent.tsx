@@ -45,12 +45,8 @@ import {
   sidebarPathVisibilityAtomFamily,
   sidebarVisibilityToggleAtomFamily,
 } from './sidebar-state';
-import { SidebarPathVisibilityRecoilBridge } from './SidebarPathVisibilityRecoilBridge';
 import { SidebarSectionsUrlSync } from './SidebarSectionsUrlSync';
 import { DataNotice, DataNoticeTextBlock } from './ui/DataNotice';
-
-/** Re-export for Recoil layer selectors bridged in Slice 15a. */
-export { sidebarPathVisibilityState } from './sidebar-recoil-bridge';
 
 const viewLabels = {
   hazard: 'Hazard',
@@ -333,7 +329,6 @@ export const SidebarContent: FC<{}> = () => {
       pathChildrenAtomFamily={sidebarPathChildrenAtomFamily}
       pathChildrenLoadingAtomFamily={sidebarPathChildrenLoadingAtomFamily}
     >
-      <SidebarPathVisibilityRecoilBridge />
       <SidebarSectionsUrlSync />
       <AtomEffectRoot effectAtom={viewTransitionEffectAtom} />
       <Stack

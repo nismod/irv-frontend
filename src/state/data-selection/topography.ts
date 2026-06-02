@@ -1,8 +1,5 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 import { TopographyType } from '@/config/topography/metadata';
 
-export const topographySelectionState = atom<TopographyType>({
-  key: 'topographySelectionState',
-  default: 'elevation',
-});
+export const topographySelectionAtom = atom<TopographyType>('elevation');
