@@ -33,8 +33,8 @@ export interface JrcFloodKeys extends PixelRecordKeys {
 // Chart config
 const jrcFloodConfig: ChartConfig = {
   id: 'river-jrc',
-  title: 'River flooding – JRC',
-  xLabel: 'return period (years)',
+  title: 'River flooding (JRC)',
+  xLabel: 'Return period (years)',
   yLabel: 'Flood depth (m)',
   // JRC flood only has rp in the mock data, so just plot a single line
   seriesFields: [],

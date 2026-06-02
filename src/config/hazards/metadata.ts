@@ -387,8 +387,9 @@ export const HAZARD_LAYER_METADATA = [
   {
     id: 'jrc_flood',
     title: 'River Flooding (JRC)',
-    description:
-      'The global river flood hazard maps are a gridded data set representing inundation along the river network, for seven different flood return periods (from 1-in-10-years to 1-in-500-years). The input river flow data for the new maps are produced by means of the open-source hydrological model LISFLOOD, while inundation simulations are performed with the hydrodynamic model LISFLOOD-FP. The extent comprises the entire world with the exception of Greenland and Antarctica and small islands with river basins smaller than 500km2.',
+    description: `The global river flood hazard maps are a gridded data set representing inundation along the river network, for seven different flood return periods (from 1-in-10-years to 1-in-500-years). The input river flow data for the new maps are produced by means of the open-source hydrological model LISFLOOD, while inundation simulations are performed with the hydrodynamic model LISFLOOD-FP. The extent comprises the entire world with the exception of Greenland and Antarctica and small islands with river basins smaller than 500km².
+
+Cell values indicate water depth (in m). The maps can be used to assess the exposure of population and economic assets to river floods, and to perform flood risk assessments. The dataset is created as part of the Copernicus Emergency Management Service. NOTE: this dataset is not an official flood hazard map (for details and limitations please refer to related publications).`,
     risk_data_type: ['hazard'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'European Commission Joint Research Centre' },
@@ -410,6 +411,14 @@ export const HAZARD_LAYER_METADATA = [
           id: 'source_jrc_floods',
           name: "Baugh, Calum; Colonese, Juan; D'Angelo, Claudia; Dottori, Francesco; Neal, Jeffrey; Prudhomme, Christel; Salamon, Peter (2024): Global river flood hazard maps. European Commission, Joint Research Centre (JRC) [Dataset] Available online at: http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif.",
           url: 'http://data.europa.eu/89h/jrc-floods-floodmapgl_rp50y-tif',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+        },
+        {
+          id: 'source_jrc_floods_16',
+          name: 'Francesco Dottori, Peter Salamon, Alessandra Bianchi, Lorenzo Alfieri, Feyera Aga Hirpa, Luc Feyen, Development and evaluation of a framework for global flood hazard mapping, Advances in Water Resources, Volume 94, 2016, Pages 87-102, ISSN 0309-1708, https://doi.org/10.1016/j.advwatres.2016.05.002.',
+          url: 'https://doi.org/10.1016/j.advwatres.2016.05.002',
           type: 'dataset',
           risk_data_type: ['hazard'],
           license: 'https://creativecommons.org/licenses/by/4.0/',
