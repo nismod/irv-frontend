@@ -241,3 +241,11 @@ The tests below cover loading parameter options and changing values in the sideb
 - go to map page - Risk view
 - enable CDD in the sidebar
 - switch between Absolute and Relative — confirm the map layer updates
+
+## Downloads
+
+- go to `/downloads` and open a region
+- expand one dataset accordion — confirm its details panel opens
+- expand a different dataset in the same region — confirm the first accordion closes (one open per region)
+- confirm status chips show package availability from the API (Loading / Unavailable / Ready), not job progress
+- reload the page — confirm accordion state resets (session-only; not persisted to localStorage)

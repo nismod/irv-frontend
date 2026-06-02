@@ -82,7 +82,7 @@ The Recoil version used `RecoilLocalStorageSync`, `RecoilURLSyncJSON` and `MapVi
 ### `atomWithLocalStorage`
 
 - Wraps Jotai's built-in `atomWithStorage` + `createJSONStorage`, adding:
-  - Date revival on read (re-using the ISO-8601 regex from the legacy code so persisted timestamps deserialize back into `Date` instances — preserving the on-disk format of `submittedJobsState` / `completedJobsState`).
+  - Date revival on read (re-using the ISO-8601 regex from the legacy code so persisted timestamps deserialize back into `Date` instances — originally for `submittedJobsState` / `completedJobsState`, which were decommissioned in 2026-06-02).
   - A **single, shared `storage`-event listener** dispatched to per-key callback sets. This matches the legacy `listenLocalStorage` behaviour (one listener for the whole window) and removes the need for the `RecoilLocalStorageSync` provider component in `App.tsx`.
   - Optional `(value: unknown) => value is T` validator, threaded through Jotai's `unstable_withStorageValidator`.
 - Defaults `getOnInit: true` so the atom hydrates synchronously on first read (matching `RecoilLocalStorageSync` semantics).
@@ -126,7 +126,7 @@ The Recoil version used `RecoilLocalStorageSync`, `RecoilURLSyncJSON` and `MapVi
 
 These were intentionally deferred to the per-slice migration:
 
-- `App.tsx` still wires up `<RecoilRoot>`, `<RecoilLocalStorageSync>` and `<RecoilURLSyncJSON>`. None of those are removed yet.
+- `App.tsx` still wires up `<RecoilRoot>` and `<RecoilURLSyncJSON>`. `<RecoilLocalStorageSync>` was removed in the Downloads decommission (2026-06-02) — no Recoil atoms use `syncEffect` anymore. `<RecoilURLSyncJSON>` is likewise a no-op (all URL-synced state is on Jotai `atomWithUrlSync`); both wrappers come out in Slice 16.
 - **Slice 4a (coexistence smoke test):** Jotai `<Provider store={createStore()}>` is mounted inside `ArticleMap`'s nested `<RecoilRoot>`. No Jotai atoms are consumed yet; behaviour is unchanged. The per-instance store is ready for slice 9b.
 - No existing atom definitions have been migrated to Jotai yet — only infrastructure helpers under `src/lib/jotai/` exist without consumers outside that folder.
 - Tests for the new sync helpers are not yet written. The recommended additions, when slice 0 begins consuming them, are:
@@ -146,26 +146,27 @@ The build is **not** expected to behave differently at runtime; this is a purely
 
 ## 6. Slice progress
 
-| Step                                    | Status   | Notes                                                                                                                                                                                                   |
-| --------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1–3 (infra)                             | Done     | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
-| ~~"coexistence smoke test"~~            | Dropped  | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
-| **4a** (Place search)                   | **Done** | First atoms migrated.                                                                                                                                                                                   |
-| **4b — Mobile tabs** (§4.2 Slice 3)     | **Done** | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
-| **4b — Pixel driller** (§4.2 Slice 4)   | **Done** | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
-| ~~6 — Map basemap~~                     | **Done** | Shipped with Slice 10 (2026-05-20); NbS scope-regions layer needed Jotai basemap atoms.                                                                                                                 |
-| **7 — Map view + URL coords**           | **Done** | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
-| **8 — Damages + config half of 14**     | **Done** | Damages drill-down + data-domain query chain + `paramsConfigAtomFamily` + `useLoadParamsConfig` migrated together. Spine value half (`paramsState`, layer selectors) deferred to Slice 14.              |
-| **9 — Map interactions + view params**  | **Done** | `interaction-state.ts` on Jotai; Recoil→Jotai `viewLayersReplicaAtom` bridge for params.                                                                                                                |
-| **9b — ArticleMap provider flip**       | **Done** | Nested `RecoilRoot` → per-instance Jotai `<Provider store={createStore()}>`.                                                                                                                            |
-| **10 — NbS + basemap**                  | **Done** | Full NbS graph on Jotai; Jotai→Recoil layer replicas preserve `viewLayersState` ordering.                                                                                                               |
-| **11 — Networks / damages styling**     | **Done** | Damage/network graph on Jotai; param + visibility replicas (param replica removed in Slice 14); network layer J→R replica.                                                                              |
-| **12 — Population & regional exposure** | **Done** | Population/regional data + layers on Jotai; param replica removed in Slice 14.                                                                                                                          |
-| **13 — Hazards selection**              | **Done** | Hazard selection/visibility/layers on Jotai; param replica removed in Slice 14.                                                                                                                         |
-| **14 — Data-params value half**         | **Done** | Full data-params spine on Jotai; removed param replica bridges from Slices 11–13; `useUpdateDataParam` → `useAtomCallback`.                                                                             |
-| **15a — Sidebar + view**                | **Done** | Sidebar hub + URL sections + view transitions on Jotai; temporary J→R bridge for 7 unmigrated layer paths (removed in 15b); risk sync refactored (`risk-sidebar-sync`, atom effects).                   |
-| **15b — View-layers hub**               | **Done** | `viewLayersAtom` hub; all layer selectors on Jotai; bridges removed (`ViewLayersBridgeSync`, `SidebarPathVisibilityRecoilBridge`, `viewLayersReplicaAtom`).                                             |
-| 5, 16                                   | Pending  | See `04-migration-slices.md`                                                                                                                                                                            |
+| Step                                    | Status      | Notes                                                                                                                                                                                                   |
+| --------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–3 (infra)                             | Done        | Jotai deps, `lib/jotai/` helpers, sync layer                                                                                                                                                            |
+| ~~"coexistence smoke test"~~            | Dropped     | Briefly inserted as an extra step that would have nested an empty Jotai `<Provider>` inside `ArticleMap`. Reverted because it added no real verification and would have touched ArticleMap ahead of 9b. |
+| **4a** (Place search)                   | **Done**    | First atoms migrated.                                                                                                                                                                                   |
+| **4b — Mobile tabs** (§4.2 Slice 3)     | **Done**    | First atom family migrated; first time `JotaiReadableStateFamily` is used by a real consumer.                                                                                                           |
+| **4b — Pixel driller** (§4.2 Slice 4)   | **Done**    | Accordion atoms + interaction mode + click location + URL sync (`pixelDrillerSiteUrlAtom` — first production `atomWithUrlSync` consumer).                                                               |
+| ~~6 — Map basemap~~                     | **Done**    | Shipped with Slice 10 (2026-05-20); NbS scope-regions layer needed Jotai basemap atoms.                                                                                                                 |
+| **7 — Map view + URL coords**           | **Done**    | Writable derived `mapViewStateAtom`, URL coords via `makeUrlNumberCodec`, throttled sync, `mapFitBoundsAtom`.                                                                                           |
+| **8 — Damages + config half of 14**     | **Done**    | Damages drill-down + data-domain query chain + `paramsConfigAtomFamily` + `useLoadParamsConfig` migrated together. Spine value half (`paramsState`, layer selectors) deferred to Slice 14.              |
+| **9 — Map interactions + view params**  | **Done**    | `interaction-state.ts` on Jotai; Recoil→Jotai `viewLayersReplicaAtom` bridge for params.                                                                                                                |
+| **9b — ArticleMap provider flip**       | **Done**    | Nested `RecoilRoot` → per-instance Jotai `<Provider store={createStore()}>`.                                                                                                                            |
+| **10 — NbS + basemap**                  | **Done**    | Full NbS graph on Jotai; Jotai→Recoil layer replicas preserve `viewLayersState` ordering.                                                                                                               |
+| **11 — Networks / damages styling**     | **Done**    | Damage/network graph on Jotai; param + visibility replicas (param replica removed in Slice 14); network layer J→R replica.                                                                              |
+| **12 — Population & regional exposure** | **Done**    | Population/regional data + layers on Jotai; param replica removed in Slice 14.                                                                                                                          |
+| **13 — Hazards selection**              | **Done**    | Hazard selection/visibility/layers on Jotai; param replica removed in Slice 14.                                                                                                                         |
+| **14 — Data-params value half**         | **Done**    | Full data-params spine on Jotai; removed param replica bridges from Slices 11–13; `useUpdateDataParam` → `useAtomCallback`.                                                                             |
+| **15a — Sidebar + view**                | **Done**    | Sidebar hub + URL sections + view transitions on Jotai; temporary J→R bridge for 7 unmigrated layer paths (removed in 15b); risk sync refactored (`risk-sidebar-sync`, atom effects).                   |
+| **15b — View-layers hub**               | **Done**    | `viewLayersAtom` hub; all layer selectors on Jotai; bridges removed (`ViewLayersBridgeSync`, `SidebarPathVisibilityRecoilBridge`, `viewLayersReplicaAtom`).                                             |
+| **5 — Downloads jobs**                  | **Dropped** | Job-tracking Recoil decommissioned instead of migrated; `<RecoilLocalStorageSync>` removed from `App.tsx`. Accordion state inline Jotai in `ProcessorVersionListItem.tsx`.                              |
+| 16                                      | Pending     | See `04-migration-slices.md`                                                                                                                                                                            |
 
 > Numbering note: the §4.1 step list and the §4.2 slice list in `04-migration-slices.md` don't line up one-to-one (§4.1's Step 4b bundles §4.2's Slice 3 + Slice 4). We use the §4.1 step numbers (4a, 4b, …) in this progress log because they map cleanly to "what was done in one sitting"; the §4.2 slice IDs are still the place to look for per-feature playbooks.
 
@@ -607,10 +608,35 @@ Replaces [`exposure-sidebar-sync.ts`](../../../src/sidebar/sections/risk/exposur
 
 **Cross-cutting check:** `rg "viewLayersState|viewLayersReplicaAtom|ViewLayersBridgeSync|SidebarPathVisibilityRecoilBridge|sidebar-recoil-bridge|from '@/sidebar/SidebarContent'" src/` → zero hits (except dead Recoil factory `make-view-layers-state.ts` until Slice 16).
 
-**Still on Recoil (Slice 16):** `interactionGroupsState` in [`MapView.tsx`](../../../src/map/MapView.tsx); async query selectors (`terracottaColorMapValuesQuery`, `apiFeatureQuery`); Downloads jobs (Slice 5 or decommission — see team discussion); app-level `RecoilRoot` / sync wrappers.
+**Still on Recoil (Slice 16):** `interactionGroupsState` in [`MapView.tsx`](../../../src/map/MapView.tsx); async query selectors (`terracottaColorMapValuesQuery`, `apiFeatureQuery`); app-level `RecoilRoot` / `RecoilURLSyncJSON` (both orphaned — no sync-effect Recoil atoms remain).
 
 ### Decisions taken during Step 15b
 
 - **`makeViewLayersAtom(layerAtoms)`** — ordered atom list resolved inside the factory (Option B), mirroring the old `waitForAll([...])` array without per-slot `get()` repetition at the call site.
 - **Explicit `atom<T>` generics** on layer atoms (`ViewLayer | null`, `ViewLayer[]`, etc.) for readable slot types; prefer `null` / `[]` as “hidden” sentinels for singles vs lists respectively.
 - **No exhaustive per-layer manual checklist** — Topography and CDD controls documented in `07-manual-testing-notes.md`; other layers already covered by earlier test sections.
+
+### Downloads decommission — job pipeline removed (2026-06-02)
+
+The planned Slice 5 migration (`submittedJobs` / `completedJobs` → `atomWithLocalStorage`) was superseded by removing the job-tracking feature entirely.
+
+**Removed:**
+
+- [`src/modules/downloads/data/jobs.ts`](../../../src/modules/downloads/data/jobs.ts) — Recoil atoms with `syncEffect({ storeKey: 'local-storage' })`, selectorFamily, transaction, prune hooks
+- Job-status helpers/tests (`job-status.ts`, specs)
+- [`downloads-root.tsx`](../../../src/modules/downloads/downloads-root.tsx) — was only `<Outlet />`; routes use `<Outlet />` directly
+- `<RecoilLocalStorageSync storeKey="local-storage">` wrapper from [`App.tsx`](../../../src/App.tsx)
+
+**Simplified (no Recoil):**
+
+- [`DatasetStatusIndicator.tsx`](../../../src/modules/downloads/sections/datasets/dataset-indicator/DatasetStatusIndicator.tsx) — package status from `usePackageData` only
+- [`dataset-status.ts`](../../../src/modules/downloads/sections/datasets/dataset-indicator/status-logic/dataset-status.ts) — `Loading` / `Unknown` / `Unavailable` / `Ready`
+- Processing/success chips removed from [`dataset-chips.tsx`](../../../src/modules/downloads/sections/datasets/dataset-indicator/dataset-chips.tsx); [`RequestChip.tsx`](../../../src/modules/downloads/sections/datasets/dataset-indicator/RequestChip.tsx) is static
+
+**Kept (Jotai, minimal diff from old Recoil):**
+
+- [`ProcessorVersionListItem.tsx`](../../../src/modules/downloads/sections/datasets/ProcessorVersionListItem.tsx) — `expandedDatasetByRegionAtomFamily` + `useOpen(boundary.name, processorVersion.name)` inline (no prop drilling through list components)
+
+**Sync impact:** `atomWithLocalStorage` and `date-reviver.ts` remain in `lib/jotai/` but have **no production consumers**. The helper was built for `SavedJob.inserted: Date` revival; that use case no longer exists. First real localStorage migration, if ever needed, will validate the helper then.
+
+**Verified:** `npm run test:type-check`; `dataset-status.spec.ts` (5 tests).

@@ -2,7 +2,7 @@
 
 Snapshot taken: 2026-04-23. Versions pinned in [`package.json`](../../../package.json): `recoil@^0.7.7`, `recoil-sync@^0.2.0`, `@recoiljs/refine@^0.1.1`.
 
-Counts in this document refer only to files under [`src/`](../../../src/) (i.e. not generated bundles, not `node_modules/`, not the build artefacts under `build/`).
+> **Post-snapshot (2026-06-02):** Downloads job pipeline decommissioned — [`jobs.ts`](../../../src/modules/downloads/data/jobs.ts) deleted; `<RecoilLocalStorageSync>` removed from `App.tsx`. `ProcessorVersionListItem` accordion state is inline Jotai. Sections below that reference downloads jobs or `RecoilLocalStorageSync` consumers describe the **historical** snapshot unless noted otherwise. See [`05-implementation-notes.md`](./05-implementation-notes.md) § Downloads decommission.
 
 ---
 

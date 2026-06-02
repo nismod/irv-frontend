@@ -6,7 +6,6 @@ import { RecoilRoot } from 'recoil';
 import { RecoilURLSyncJSON } from 'recoil-sync';
 
 import { RasterColorMapSourceProvider } from '@/lib/data-map/legend/use-raster-color-map-values';
-import { RecoilLocalStorageSync } from '@/lib/recoil/sync-stores/RecoilLocalStorageSync';
 
 import { terracottaColorMapValuesQuery } from '@/config/terracotta-color-map';
 
@@ -20,20 +19,18 @@ import './index.css';
 export const App = () => {
   return (
     <RecoilRoot>
-      <RecoilLocalStorageSync storeKey="local-storage">
-        <RecoilURLSyncJSON storeKey="url-json" location={{ part: 'queryParams' }}>
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <QueryClientProvider client={queryClient}>
-                <RasterColorMapSourceProvider state={terracottaColorMapValuesQuery}>
-                  <RouterProvider router={router} />
-                </RasterColorMapSourceProvider>
-              </QueryClientProvider>
-            </ThemeProvider>
-          </StyledEngineProvider>
-        </RecoilURLSyncJSON>
-      </RecoilLocalStorageSync>
+      <RecoilURLSyncJSON storeKey="url-json" location={{ part: 'queryParams' }}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <QueryClientProvider client={queryClient}>
+              <RasterColorMapSourceProvider state={terracottaColorMapValuesQuery}>
+                <RouterProvider router={router} />
+              </RasterColorMapSourceProvider>
+            </QueryClientProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </RecoilURLSyncJSON>
     </RecoilRoot>
   );
 };

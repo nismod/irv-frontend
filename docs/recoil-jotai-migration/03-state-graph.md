@@ -609,6 +609,8 @@ Self-contained.
 
 ### 3.3.13 Downloads / jobs
 
+> **Decommissioned 2026-06-02.** Job-tracking Recoil (`jobs.ts`, localStorage sync) removed. Accordion state lives in inline Jotai in `ProcessorVersionListItem.tsx`; status chips use `usePackageData` only. Diagram below is the **April 2026 snapshot**.
+
 ```mermaid
 flowchart LR
     localStorageSync[/local-storage/]

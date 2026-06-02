@@ -17,7 +17,7 @@ flowchart TD
     Step3[3. Build replacement sync layer<br/>localStorage + URL + route]
     Step4a[4a. Migrate Place search slice<br/>real pilot: truly leaf, no bridges]
     Step4b[4b. Migrate Mobile tabs and Pixel driller leaves]
-    Step5[5. Migrate Downloads slice<br/>first real test of localStorage sync]
+    Step5[5. Downloads — decommissioned<br/>Recoil jobs removed; localStorage sync unused]
     Step6[6. Migrate Map basemap + interaction mode slice]
     Step7[7. Migrate Map view + URL coords slice<br/>first real test of URL sync]
     Step8[8. Migrate Damages drill-down details]
@@ -39,7 +39,7 @@ flowchart TD
 - **Infrastructure first (Steps 1-3).** Migrating any feature slice in isolation is painful as long as the sync helpers (`RecoilLocalStorageSync`, `RecoilURLSyncJSON`, `MapViewRouteSync`) still own the URL/storage protocol. Building Jotai-flavoured equivalents first means each feature slice has a deterministic landing pad.
 - **Pilot is Place search, NOT Articles map.** Earlier versions of this plan listed Articles map as Step 4 because of its nested `RecoilRoot`. That was wrong: `<RecoilRoot>` only isolates atom _values_ at runtime, not atom _definitions_ (atoms are module-level singletons). ArticleMap uses `hoverState` / `selectionState` from `lib/data-map/interactions/interaction-state.ts`, which is consumed by 8 other files in the main app — so migrating ArticleMap atomically means migrating all of them at once. See §4.3 for the full reasoning. **Place search** has no such cross-cutting dependency and is the right pilot.
 - **No separate "coexistence smoke test" step.** An earlier revision of this plan included one (mounting a Jotai `<Provider>` inside `ArticleMap` with no atoms attached). It was dropped: stacking two empty providers proves nothing the place-search migration doesn't already prove implicitly. The moment a real Jotai atom is consumed in the same app while Recoil is still mounted, coexistence is exercised end-to-end. ArticleMap also stays untouched until 9b per the original promise.
-- **Downloads (Step 5) proves localStorage sync** end-to-end before any bigger feature depends on it.
+- **Downloads (Step 5) was skipped by decommissioning** the job-tracking pipeline instead of migrating it (2026-06-02). That removed the only `local-storage` Recoil sync consumers and allowed unmounting `<RecoilLocalStorageSync>`. The Jotai `atomWithLocalStorage` helper remains for future use but has no production consumers yet.
 - **Map view + URL coords (Step 7) proves URL sync** before any larger feature depends on it.
 - **Step 9b is just a one-line flip.** Once Slice 9 has migrated `interaction-state.ts` to Jotai, ArticleMap's `<RecoilRoot>` becomes useless (its atoms are no longer Recoil) and can be swapped for `<Provider store={...}>` in one edit.
 - **Hub slices come last (Steps 14-15)** because every other slice has at least one inbound edge to the hubs (`paramsState`, `sidebarPathVisibilityState`, `viewLayersState`). Migrating a hub before its consumers means writing a temporary two-way bridge for each consumer.
@@ -50,16 +50,13 @@ flowchart TD
 While both libraries are mounted:
 
 ```tsx
-// src/App.tsx during migration
+// src/App.tsx during migration (current: RecoilLocalStorageSync already removed)
 <RecoilRoot>
-  <RecoilLocalStorageSync storeKey="local-storage">
-    <RecoilURLSyncJSON storeKey="url-json" location={{ part: 'queryParams' }}>
-      {/* Jotai needs no Provider in the default-store case;
-          we just need to keep the helpers ported in step 3 available */}
-      <JotaiStorageBootstrap />
-      {/* ...rest of providers */}
-    </RecoilURLSyncJSON>
-  </RecoilLocalStorageSync>
+  <RecoilURLSyncJSON storeKey="url-json" location={{ part: 'queryParams' }}>
+    {/* Jotai needs no Provider in the default-store case;
+        URL + route sync live on per-atom helpers from step 3 */}
+    {/* ...rest of providers */}
+  </RecoilURLSyncJSON>
 </RecoilRoot>
 ```
 
@@ -112,7 +109,7 @@ Reserved-but-skipped. No code change. See note above.
 **Playbook**
 
 1. Replace the two `atom({ key, default })` with plain `atom(...)` from Jotai.
-2. **Rename the exports** from `*State` → `*Atom` (`placeSearchActiveAtom`, `placeSearchQueryAtom`). This makes "what's been migrated" greppable and matches the Jotai convention used elsewhere in the plan (e.g. slice 5's `submittedJobsAtom`). Adopt the same rename for every future slice unless otherwise noted.
+2. **Rename the exports** from `*State` → `*Atom` (`placeSearchActiveAtom`, `placeSearchQueryAtom`). This makes "what's been migrated" greppable and matches the Jotai convention used elsewhere in the plan. Adopt the same rename for every future slice unless otherwise noted.
 3. Replace `useRecoilState` calls with `useAtom`.
 4. No sync, no families, no helpers needed.
 
@@ -171,46 +168,31 @@ Reserved-but-skipped. No code change. See note above.
 
 **Test plan**: toggle site-inspection mode via `MapInteractionModeSelector`; click the map and confirm the marker + details panel appear; open/close accordions (only one open at a time; scroll-into-view after animation); copy the URL and open in a new tab — marker and mode should restore; exit mode and confirm marker + `site` param are cleared.
 
-### Slice 5 — Downloads jobs
+### Slice 5 — Downloads _(decommissioned, 2026-06-02)_
 
-**Nodes**: `submittedJobsState`, `completedJobsState` (both `syncEffect({ storeKey: 'local-storage', refine, syncDefault: true })`), `lastSubmittedJobByParamsState` (selectorFamily, object param), `expandedDatasetByRegionState` (atomFamily); `moveJobToCompletedTransaction` (`useRecoilTransaction_UNSTABLE`).
+**Status**: not migrated — job-tracking Recoil removed instead of ported to Jotai.
 
-**Bridge nodes touched**: only `RecoilLocalStorageSync` and the `local-storage` store key. No other slices read these atoms.
+**Removed (was the only `local-storage` sync surface in the app):**
 
-**Files**: [`src/modules/downloads/data/jobs.ts`](../../../src/modules/downloads/data/jobs.ts), [`src/modules/downloads/sections/datasets/dataset-indicator/DatasetStatusIndicator.tsx`](../../../src/modules/downloads/sections/datasets/dataset-indicator/DatasetStatusIndicator.tsx), [`src/modules/downloads/sections/datasets/ProcessorVersionListItem.tsx`](../../../src/modules/downloads/sections/datasets/ProcessorVersionListItem.tsx).
+| Recoil node                                 | Role                                                   |
+| ------------------------------------------- | ------------------------------------------------------ |
+| `submittedJobsState`, `completedJobsState`  | `syncEffect({ storeKey: 'local-storage' })` job queues |
+| `lastSubmittedJobByParamsState`             | selectorFamily lookup                                  |
+| `moveJobToCompletedTransaction`             | `useRecoilTransaction_UNSTABLE`                        |
+| `usePruneOldJobs`, `usePruneJobsBeforeLast` | stale-job cleanup hooks                                |
 
-**Helpers needed**: the new Jotai localStorage adapter from step 3 (must preserve date revival for `SavedJob.inserted: Date`).
+**Deleted files:** [`src/modules/downloads/data/jobs.ts`](../../../src/modules/downloads/data/jobs.ts) (and related job-status helpers/tests).
 
-**Risk**: medium (first real local-storage migration; transaction conversion).
+**App change:** `<RecoilLocalStorageSync storeKey="local-storage">` removed from [`src/App.tsx`](../../../src/App.tsx) — no Recoil atoms use `syncEffect` anymore. [`RecoilLocalStorageSync.tsx`](../../../src/lib/recoil/sync-stores/RecoilLocalStorageSync.tsx) remains until Slice 16 deletes `lib/recoil/`.
 
-**Playbook**
+**What remains on Jotai (downloads UI only):**
 
-1. In `lib/jotai/sync/local-storage.ts` (created in step 3), expose `atomWithLocalStorage<T>(key, initial, validator?)`.
-2. Replace `submittedJobsState` and `completedJobsState` with `atomWithLocalStorage`. Pass a Refine validator (or zod schema) to enforce the same shape as today's `jobsArrayChecker`.
-3. Convert `moveJobToCompletedTransaction` from `useRecoilTransaction_UNSTABLE` to a `useAtomCallback`:
+- **Dataset accordion** — `expandedDatasetByRegionAtomFamily` colocated inline in [`ProcessorVersionListItem.tsx`](../../../src/modules/downloads/sections/datasets/ProcessorVersionListItem.tsx) (same `useOpen(boundary.name, processorVersion.name)` pattern as the old Recoil `atomFamily`; no prop drilling through `DatasetsList` / `ProcessorListItem`).
+- **Status chips** — [`DatasetStatusIndicator.tsx`](../../../src/modules/downloads/sections/datasets/dataset-indicator/DatasetStatusIndicator.tsx) reads package availability via `usePackageData` only (no job queue state).
 
-```ts
-export function useMoveJobToCompleted() {
-  return useAtomCallback(
-    useCallback((get, set, jobId: string) => {
-      const list = get(submittedJobsAtom);
-      const job = list.find((j) => j.jobId === jobId);
-      if (!job) return;
-      const clone = { ..._.cloneDeep(job), inserted: new Date() };
-      set(
-        submittedJobsAtom,
-        list.filter((j) => j.jobId !== jobId),
-      );
-      set(completedJobsAtom, (old) => [clone, ...old]);
-    }, []),
-  );
-}
-```
+**Original playbook (obsolete):** migrating `submittedJobs`/`completedJobs` to `atomWithLocalStorage` and converting the job transaction to `useAtomCallback`. Kept in git history only; `atomWithLocalStorage` has no production consumers yet.
 
-4. `lastSubmittedJobByParamsState`: rewrite as `atomFamily((p) => atom((get) => get(submittedJobsAtom).findLast(...)), equal)` with a deep-equal comparator for the `{ boundaryName, processorVersion }` param.
-5. `expandedDatasetByRegionState`: trivial `atomFamily((boundaryName) => atom(false))`.
-
-**Test plan**: open `/downloads`, expand a dataset, "submit" a job (the stub `submitJob` throws — instead, manually inject via DevTools or comment-out the throw). Reload the tab and confirm `submittedJobs`/`completedJobs` survive. Open a second tab and confirm cross-tab updates work (write a job in tab 1, see tab 2 update). Verify `usePruneOldJobs` still moves stale jobs.
+**Test plan:** open `/downloads`, pick a region, expand one dataset accordion and confirm others in the same region collapse; reload and confirm accordion state resets (session-only, not persisted). Confirm status chips reflect API package status (Loading / Unavailable / Ready), not job progress.
 
 ### Slice 6 — Map basemap
 
@@ -509,7 +491,7 @@ Trivial follow-up to Slice 9 — once `hoverState`, `selectionState`, `hoverPosi
 
 ### Slice 16 — Cleanup
 
-- Remove `<RecoilRoot>`, `<RecoilLocalStorageSync>`, `<RecoilURLSyncJSON>` from [`src/App.tsx`](../../../src/App.tsx).
+- Remove `<RecoilRoot>` and `<RecoilURLSyncJSON>` from [`src/App.tsx`](../../../src/App.tsx). (`<RecoilLocalStorageSync>` already removed — no `syncEffect` atoms remain.)
 - Remove all bridge components (`RecoilToJotaiBridge` etc.).
 - Drop `recoil`, `recoil-sync` from [`package.json`](../../../package.json). Keep `@recoiljs/refine` or replace independently.
 - Delete `src/lib/recoil/`.
@@ -539,7 +521,7 @@ There is exactly one `hoverState` per process. Whether it's defined as a Recoil 
 
 ### When isolation _does_ extend to a feature
 
-A feature can be migrated independently when **every atom it imports is unique to that feature**. The slices that meet this bar are: Slice 2 (Place search), Slice 3 (Mobile tab content flags), Slice 4 (Pixel driller accordion), Slice 5 (Downloads), and the URL-/route-state slices (6, 7) whose atoms are leaf-level. ArticleMap fails this bar because of `interaction-state.ts`.
+A feature can be migrated independently when **every atom it imports is unique to that feature**. The slices that meet this bar are: Slice 2 (Place search), Slice 3 (Mobile tab content flags), Slice 4 (Pixel driller accordion), and the URL-/route-state slices (6, 7) whose atoms are leaf-level. Slice 5 (Downloads jobs) was decommissioned rather than migrated. ArticleMap fails this bar because of `interaction-state.ts`.
 
 ### General rule for spotting this
 

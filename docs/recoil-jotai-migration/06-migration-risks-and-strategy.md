@@ -46,7 +46,7 @@ The new helpers in `src/lib/jotai/sync-stores/` are exactly the right shape for 
 For each slice in `04-migration-slices.md`, write a happy-path render test:
 
 - **Map URL slice** — render the map, confirm URL updates on pan/zoom, confirm back/forward restores state.
-- **Job tracking slice** — submit a job, verify `localStorage` payload, force a `storage` event from another tab, confirm `usePruneOldJobs` still fires.
+- ~~**Job tracking slice**~~ — removed with Downloads job pipeline decommission (2026-06-02). `atomWithLocalStorage` has no production consumers; unit-test the helper directly if/when a feature needs it.
 - **View transition slice** — change `viewState`, confirm sidebar expanded/visibility atoms flip together as one observable change (per the `viewTransitionEffect` in `src/sidebar/SidebarContent.tsx`, lines 302–321).
 
 ### 1.5 Manual smoke tests with a per-slice checklist
@@ -74,7 +74,7 @@ The Jotai equivalents preserve identical observable semantics. Most of the codeb
 
 ### Tier B — semantics shift slightly, but most call sites won't notice
 
-- **`useRecoilCallback` / `useRecoilTransaction_UNSTABLE`** (4 distinct call sites: `data-params.ts`, `jobs.ts`, `population-exposure.tsx`, `infrastructure-risk.tsx`). Jotai's `useAtomCallback` provides the same `(get, set)` interface, but Recoil's `transact_UNSTABLE` guaranteed _no observer sees intermediate state_; Jotai's store updates after every `set`. In practice React batches the renders, so the **visible** result is the same. The risk: a derived atom that reads two atoms updated sequentially in one callback. In this codebase the riskiest example is `viewTransitionEffect` (`SidebarContent.tsx` 302–321) flipping many `sidebarVisibilityToggleState(path)` atoms while the derived `sidebarSectionsUrlOutwardState` (in `sidebar/url-state.tsx`) reads them all. Expect the URL replica to fire several times during a transition instead of once.
+- **`useRecoilCallback` / `useRecoilTransaction_UNSTABLE`** (formerly 4 call sites; `jobs.ts` removed 2026-06-02). Remaining: migrated or Slice 16 leftovers only. Jotai's `useAtomCallback` provides the same `(get, set)` interface, but Recoil's `transact_UNSTABLE` guaranteed _no observer sees intermediate state_; Jotai's store updates after every `set`. In practice React batches the renders, so the **visible** result is the same. The risk: a derived atom that reads two atoms updated sequentially in one callback. In this codebase the riskiest example was `viewTransitionEffect` (`SidebarContent.tsx` 302–321) flipping many `sidebarVisibilityToggleState(path)` atoms while the derived `sidebarSectionsUrlOutwardState` (in `sidebar/url-state.tsx`) reads them all — now on Jotai (Slice 15a). Expect the URL replica to fire several times during a transition instead of once.
 
 - **`useRecoilValueLoadable`** (e.g. `data-params.ts:59`). Jotai's `loadable(atom)` produces an atom you read with `useAtomValue`. Result shape is `{ state: 'loading' | 'hasError' | 'hasData', data, error }` instead of `{ state, contents }`. Mechanical change, type-safe.
 
@@ -160,7 +160,7 @@ The new `makeSelectAtom` is a 1:1 port, but Jotai has `atomWithDefault((get) => 
 
 ### 3.4 `RecoilURLSyncJSON` / `RecoilLocalStorageSync` providers at the App root
 
-Already addressed by `atom-with-url-sync.ts` / `atom-with-local-storage.ts` — per-atom sync removes the need for global provider components, removes the "shared storeKey" coupling, and is easier to reason about. Don't preserve the centralized-provider model.
+Already addressed by `atom-with-url-sync.ts` / `atom-with-local-storage.ts` — per-atom sync removes the need for global provider components. **As of 2026-06-02:** `<RecoilLocalStorageSync>` is unmounted (no `syncEffect` atoms remain); `<RecoilURLSyncJSON>` is still mounted but unused (all URL-synced state is on Jotai). Both wrappers drop in Slice 16.
 
 ### 3.5 `MapViewRouteSync` writing into an atom
 
