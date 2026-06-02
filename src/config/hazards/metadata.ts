@@ -603,7 +603,7 @@ Maps show annual probability of a "drought event", defined by Lange et al (2020)
   },
   {
     id: 'earthquake',
-    title: 'Seismic Risk',
+    title: 'Earthquakes (GEM)',
     description:
       'The Global Earthquake Model (GEM) Global Seismic Hazard Map (version 2023.1) depicts the geographic distribution of the Peak Ground Acceleration (PGA) with a 10% probability of being exceeded in 50 years, computed for reference rock conditions (shear wave velocity, VS30, of 760-800 m/s).',
     risk_data_type: ['hazard'],
@@ -625,7 +625,15 @@ Maps show annual probability of a "drought event", defined by Lange et al (2020)
       sources: [
         {
           id: 'source_gem_earthquake',
-          name: 'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1), DOI: 10.1177/8755293020931866. Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S., Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A., Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data set]. Zenodo. DOI 10.5281/zenodo.8409647.',
+          name: 'Pagani M, Garcia-Pelaez J, Gee R, Johnson K, Silva V, Simionato M, Styron R, Vigano D, Danciu L, Monelli D, Poggi V, Weatherill G. (2019). The 2018 version of the Global Earthquake Model: Hazard component. Earthquake Spectra, 36(1), DOI: https://doi.org/10.1177/8755293020931866',
+          url: 'https://doi.org/10.1177/8755293020931866',
+          type: 'dataset',
+          risk_data_type: ['hazard'],
+          license: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+        },
+        {
+          id: 'source_gem_earthquake_data',
+          name: 'Johnson, K., Villani, M., Bayliss, K., Brooks, C., Chandrasekhar, S., Chartier, T., Chen, Y.-S., Garcia-Pelaez, J., Gee, R., Styron, R., Rood, A., Simionato, M., & Pagani, M. (2023). Global Seismic Hazard Map (v2023.1.0) [Data set]. Zenodo. DOI https://doi.org/10.5281/zenodo.8409647',
           url: 'https://doi.org/10.5281/zenodo.8409647',
           type: 'dataset',
           risk_data_type: ['hazard'],
@@ -636,9 +644,19 @@ Maps show annual probability of a "drought event", defined by Lange et al (2020)
   },
   {
     id: 'landslide',
-    title: 'Landslide',
-    description:
-      'The Global Landslide hazard map is a gridded dataset of landslide hazard produced at the global scale. The dataset comprises gridded maps of estimated annual frequency of significant landslides per square kilometre. Significant landslides are those which are likely to have been reported had they occurred in a populated place; limited information on reported landslide size makes it difficult to tie frequencies to size ranges but broadly speaking would be at least greater than 100 m2. The data provides frequency estimates for each grid cell on land between 60S and 72N for landslides triggered by seismicity and rainfall.',
+    title: 'Landslide (World Bank/Arup)',
+    description: `The Global Landslide hazard map is a gridded dataset of landslide hazard produced at the global scale. The dataset comprises gridded maps of estimated annual frequency of significant landslides per square kilometre. Significant landslides are those which are likely to have been reported had they occurred in a populated place; limited information on reported landslide size makes it difficult to tie frequencies to size ranges but broadly speaking would be at least greater than 100 m2. The data provides frequency estimates for each grid cell on land between 60S and 72N for landslides triggered by seismicity and rainfall.
+
+The dataset is publicly available for download and use and it consists of 4 global map layers:
+
+Mean annual rainfall-triggered landslide hazard (1980—2018): raster values represent the modelled average annual frequency of significant rainfall-triggered landslides per sq. km.
+
+Median annual rainfall-triggered landslide hazard (1980—2018): raster values represent the modelled median annual frequency of significant rainfall-triggered landslides per sq. km.
+
+Mean annual earthquake-triggered landslide hazard: raster values represent the modelled average annual frequency of significant earthquake-triggered landslides per sq. km.
+
+Aggregate hazard index ranging from 1 (low) to 4 (very high)
+`,
     risk_data_type: ['hazard'],
     spatial: GLOBAL_SPATIAL,
     publisher: { name: 'Arup' },

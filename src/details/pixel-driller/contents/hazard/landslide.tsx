@@ -126,25 +126,25 @@ export const Landslides: FC<PixelComponentProps> = ({ records }) => {
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Annual probability (earthquake trigger)
+            Mean annual earthquake-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(earthquakeProb)}</Typography>
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Annual probability (rainfall - mean)
+            Mean annual rainfall-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(rainfallMeanProb)}</Typography>
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Annual probability (rainfall - median)
+            Median annual rainfall-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(rainfallMedianProb)}</Typography>
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Susceptibility
+            Susceptibility. Aggregate hazard index ranging from 1 (low) to 4 (very high)
           </Typography>
           <Typography variant="body1">{susceptibilityCategory ?? 'N/A'}</Typography>
         </Box>

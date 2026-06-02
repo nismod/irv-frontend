@@ -45,8 +45,9 @@ const earthquakeColumns: DatapackageTableSchemaField[] = [
   {
     name: 'value',
     type: 'number',
-    title: 'Ground shaking',
-    description: 'Ground shaking intensity (model units).',
+    title: 'PGA (g)',
+    description:
+      'Peak Ground Acceleration (in units of g) with a 10% probability of being exceeded in 50 years',
   },
 ];
 
@@ -88,10 +89,10 @@ export const Earthquakes: FC<PixelComponentProps> = ({ records }) => {
   );
 
   const formatValue = (v: number | null): string =>
-    v == null ? 'N/A' : v.toFixed(3).replace(/\.?0+$/, '');
+    v == null ? '-' : v.toFixed(3).replace(/\.?0+$/, '') + 'g';
 
-  const rpLabel = primaryRecord?.layer.keys.rp ?? '475';
-  const mediumLabel = primaryRecord?.layer.keys.medium ?? 'rock';
+  const rpLabel = primaryRecord?.layer.keys.rp ?? '-';
+  const mediumLabel = primaryRecord?.layer.keys.medium ?? '-';
 
   useRegisterExportConfig('earthquakes', earthquakesExportConfig);
 
