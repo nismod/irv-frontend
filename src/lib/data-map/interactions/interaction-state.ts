@@ -2,8 +2,6 @@ import { atom } from 'jotai';
 import { atomFamily } from 'jotai-family';
 import { atomWithReset, RESET } from 'jotai/utils';
 
-import { isReset } from '@/lib/jotai/is-reset';
-
 import { InteractionTarget } from './types';
 
 /**
@@ -43,7 +41,7 @@ export const allowedGroupLayersAtom = atom(
   (get) => get(allowedGroupLayersInternalAtom),
   (get, set, newAllowedGroups: AllowedGroupLayers | typeof RESET) => {
     const oldAllowedGroupLayers = get(allowedGroupLayersInternalAtom);
-    const shouldReset = isReset(newAllowedGroups);
+    const shouldReset = newAllowedGroups === RESET;
 
     for (const group of Object.keys(oldAllowedGroupLayers)) {
       if (shouldReset) {

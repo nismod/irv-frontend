@@ -4,7 +4,6 @@ import { atomWithDefault, atomWithReset, RESET } from 'jotai/utils';
 import _ from 'lodash';
 
 import { BoundingBox } from '@/lib/bounding-box';
-import { isReset } from '@/lib/jotai/is-reset';
 import { useSyncStateThrottled } from '@/lib/jotai/state-sync/use-sync-state-throttled';
 
 import { mapViewConfig } from '@/config/map-view';
@@ -35,7 +34,7 @@ export const mapViewStateAtom = atom<MapViewState, [MapViewState | typeof RESET]
     zoom: get(mapZoomAtom),
   }),
   (_get, set, newValue) => {
-    if (isReset(newValue)) {
+    if (newValue === RESET) {
       set(mapZoomAtom, RESET);
       set(mapLonAtom, RESET);
       set(mapLatAtom, RESET);

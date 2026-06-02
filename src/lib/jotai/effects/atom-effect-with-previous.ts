@@ -2,10 +2,10 @@ import type { Atom } from 'jotai';
 import { atom } from 'jotai';
 import { atomEffect } from 'jotai-effect';
 
-import type { StateEffectInterface } from '@/lib/jotai/state-effects/types';
+import type { StoreOps } from './store-ops';
 
-export type StateEffectWithPrevious<T> = (
-  ops: StateEffectInterface,
+export type EffectWithPrevious<T> = (
+  ops: StoreOps,
   value: T,
   previousValue: T | undefined,
 ) => void | (() => void);
@@ -18,7 +18,7 @@ export type StateEffectWithPrevious<T> = (
  * can be subscribed from multiple stores without cross-talk. `get.peek` avoids treating
  * previous as a dependency and re-running when it is updated.
  */
-export function atomEffectWithPrevious<T>(sourceAtom: Atom<T>, effect: StateEffectWithPrevious<T>) {
+export function atomEffectWithPrevious<T>(sourceAtom: Atom<T>, effect: EffectWithPrevious<T>) {
   const previousAtom = atom(undefined as T | undefined, (_get, _set, next: T | undefined) => next);
 
   return atomEffect((get, set) => {

@@ -6,7 +6,7 @@ import {
   CheckboxTreeState,
   recalculateCheckboxStates,
 } from '@/lib/controls/checkbox-tree/CheckboxTree';
-import { StateEffectInterface } from '@/lib/jotai/state-effects/types';
+import type { StoreOps } from '@/lib/jotai/effects/store-ops';
 
 import { NETWORK_LAYERS_HIERARCHY } from '@/config/networks/hierarchy';
 import { NetworkLayerType } from '@/config/networks/metadata';
@@ -29,10 +29,7 @@ export const networkSelectionAtom = atom((get): NetworkLayerType[] => {
   ) as NetworkLayerType[];
 });
 
-export function syncInfrastructureSelectionStateEffect(
-  { get, set }: StateEffectInterface,
-  layers: string[],
-) {
+export function syncInfrastructureSelectionStateEffect({ get, set }: StoreOps, layers: string[]) {
   const currentSelection = get(networkTreeCheckboxAtom);
   const updatedTreeState = {
     checked: {

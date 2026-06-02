@@ -1,14 +1,10 @@
-import type { StateEffectInterface } from '@/lib/jotai/state-effects/types';
+import type { StoreOps } from '@/lib/jotai/effects/store-ops';
 import { collectAllPathsUnder, getParentPath } from '@/lib/paths/utils';
 
 import { sidebarPathChildrenAtomFamily, sidebarVisibilityToggleAtomFamily } from './sidebar-state';
 
 /** Hide every path under `root`, then show `visiblePath` and its ancestors. */
-export function setOnlyVisiblePathUnder(
-  { get, set }: StateEffectInterface,
-  root: string,
-  visiblePath: string,
-) {
+export function setOnlyVisiblePathUnder({ get, set }: StoreOps, root: string, visiblePath: string) {
   for (const path of collectAllPathsUnder(root, (p) => get(sidebarPathChildrenAtomFamily(p)))) {
     set(sidebarVisibilityToggleAtomFamily(path), false);
   }

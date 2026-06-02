@@ -1,7 +1,7 @@
 import type { WritableAtom } from 'jotai';
 import difference from 'lodash/difference';
 
-import type { StateEffectWithPrevious } from '@/lib/jotai/effects/atom-effect-with-previous';
+import type { EffectWithPrevious } from '@/lib/jotai/effects/atom-effect-with-previous';
 
 export type PathSidebarState = { expanded: boolean; visible: boolean };
 
@@ -55,7 +55,7 @@ export function makeSectionViewTransitionEffect<V extends string>(
   topLevelSections: readonly string[],
   expandedAtomFamily: BooleanAtomFamily,
   visibilityAtomFamily: BooleanAtomFamily,
-): StateEffectWithPrevious<V> {
+): EffectWithPrevious<V> {
   return ({ set }, newView, previousView) => {
     applySectionViewTransition(
       config,
