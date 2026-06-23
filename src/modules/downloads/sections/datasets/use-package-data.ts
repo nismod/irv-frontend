@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
 
-import { useObjectMemo } from '@/lib/hooks/use-object-memo';
-
 import { usePackageByRegion } from '../../data/packages';
 import {
   computePackageData,
@@ -19,7 +17,10 @@ export function usePackageData(boundaryName: string, pvName: string) {
       retry: 0,
     },
   );
-  const packageQueryObj = useObjectMemo({ status, fetchStatus, error, data });
+  const packageQueryObj = useMemo(
+    () => ({ status, fetchStatus, error, data }),
+    [status, fetchStatus, error, data],
+  );
 
   return useMemo(
     () =>

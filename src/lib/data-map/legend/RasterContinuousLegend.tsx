@@ -1,10 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import { FormatFunction } from '@/lib/formats';
-import { useObjectMemo } from '@/lib/hooks/use-object-memo';
 
 import { GradientLegend } from './GradientLegend';
 import { useRasterContinuousColorMapValues } from './use-raster-color-map-values';
+
+const DEFAULT_RANGE_TRUNCATED: [boolean, boolean] = [false, false];
 
 export interface RasterContinuousColorMap {
   type: 'continuous';
@@ -31,15 +32,15 @@ export const RasterContinuousLegend: FC<{
   ({
     label,
     description,
-    colorMap: { scheme, range, rangeTruncated = [false, false] as [boolean, boolean] },
+    colorMap: { scheme, range, rangeTruncated = DEFAULT_RANGE_TRUNCATED },
     getValueLabel,
   }) => {
     const colorMapValues = useRasterContinuousColorMapValues(scheme, range);
 
-    const colorMap = useObjectMemo({
-      colorMapValues,
-      rangeTruncated,
-    });
+    const colorMap = useMemo(
+      () => ({ colorMapValues, rangeTruncated }),
+      [colorMapValues, rangeTruncated],
+    );
 
     return (
       <GradientLegend

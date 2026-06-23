@@ -29,14 +29,24 @@ interface SiteDetailsContentProps {
   lat: number;
 }
 
+interface PixelDataRequestState {
+  coordinateKey: string;
+  data: PixelResponse | null;
+  error: string | null;
+}
+
 /**
  * Inner component that uses the download context.
  * Separated to allow context access within the provider.
  */
 const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
-  const [pixelData, setPixelData] = useState<PixelResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const coordinateKey = `${lng}:${lat}`;
+  const [pixelDataRequest, setPixelDataRequest] = useState<PixelDataRequestState | null>(null);
+  const currentPixelDataRequest =
+    pixelDataRequest?.coordinateKey === coordinateKey ? pixelDataRequest : null;
+  const pixelData = currentPixelDataRequest?.data ?? null;
+  const error = currentPixelDataRequest?.error ?? null;
+  const loading = currentPixelDataRequest === null;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const openAccordion = useAtomValue(openAccordionAtom);
   const transitionCount = useAtomValue(accordionTransitionCountAtom);
@@ -56,29 +66,42 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   }, [lat, lng]);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    const abortController = new AbortController();
 
     const fetchPixelData = async () => {
-      setLoading(true);
-      setError(null);
       try {
         // Fetch from API endpoint
-        const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`);
+        const response = await fetch(`/api/pixel-driller/point/${lng}/${lat}`, {
+          signal: abortController.signal,
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setPixelData(asPixelResponse(data));
+        setPixelDataRequest({
+          coordinateKey,
+          data: asPixelResponse(data),
+          error: null,
+        });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch site data');
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        setPixelDataRequest({
+          coordinateKey,
+          data: null,
+          error: err instanceof Error ? err.message : 'Failed to fetch site data',
+        });
         console.error('Error fetching pixel data:', err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchPixelData();
-  }, [lng, lat]);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [lng, lat, coordinateKey]);
 
   // Scroll the currently open section into view once layout is stable
   // (no accordion transitions in flight) and data is loaded.
