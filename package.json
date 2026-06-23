@@ -95,11 +95,11 @@
     "type-fest": "^4.36.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.1",
-    "vite": "^7.1.12",
-    "vite-plugin-qrcode": "^0.3.0",
+    "vite": "^8.1.0",
+    "vite-plugin-qrcode": "^0.4.1",
     "vite-plugin-svgr": "^4.5.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.9"
   },
   "scripts": {
     "update": "ncu -i --reject react,react-dom,@types/react,@types/react-dom",
