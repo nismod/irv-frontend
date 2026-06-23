@@ -1,12 +1,13 @@
 /// <reference types="vitest" />
 
+import { fileURLToPath, URL } from 'node:url';
+
 import mdx from '@mdx-js/rollup';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 import { qrcode } from 'vite-plugin-qrcode';
 import svgrPlugin from 'vite-plugin-svgr';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 /**
  * To set up a development proxy, create and edit the file dev-proxy/proxy-table.ts
@@ -28,7 +29,6 @@ export default defineConfig({
       ...mdx({}),
     },
     react(),
-    viteTsconfigPaths(),
     svgrPlugin(),
     qrcode({
       filter: (url) => url.startsWith('http://192'),
@@ -41,6 +41,12 @@ export default defineConfig({
       filename: 'bundle-analyse.html',
     }),
   ],
+  resolve: {
+    tsconfigPaths: true,
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
   build: {
     outDir: 'build',
   },
@@ -48,5 +54,4 @@ export default defineConfig({
     proxy: devProxy,
     host: '0.0.0.0', // listen on all network interfaces
   },
-  test: {},
 });
