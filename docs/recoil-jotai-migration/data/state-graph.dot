@@ -1,0 +1,621 @@
+// State dependency graph for irv-frontend Recoil state.
+// Generated from data/state-graph.json (2026-04-23 snapshot).
+// Render with: dot -Tsvg state-graph.dot -o state-graph.svg
+//
+// Node styles:
+//   atom         => ellipse
+//   selector     => box (rounded)
+//   atomFamily   => ellipse, peripheries=2
+//   selectorFamily => box (rounded), peripheries=2
+//   writable selector => box, color=red (writes back into deps)
+//   async        => fontcolor=blue, italic
+//   boundary (provider) => box, shape=parallelogram
+//   hub          => penwidth=2
+//   orphan       => style=dashed, color=gray
+//
+// Edge styles:
+//   get               => default solid
+//   set               => bold red
+//   default           => green, "default"
+//   effect            => orange dashed, "effect"
+//   syncReplica       => purple dashed, "sync"
+//   urlSync           => blue dashed, "URL"
+//   localStorageSync  => blue dashed, "LS"
+//   routeSync         => blue dashed, "route"
+//   providerValue     => grey dashed, "provider"
+
+digraph IrvRecoilState {
+  rankdir=LR;
+  splines=true;
+  overlap=false;
+  nodesep=0.4;
+  ranksep=0.6;
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+
+  ////////////////////////////////////////////////////////////////////////////
+  // App-shell boundaries
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_app_shell {
+    label="App shell (boundaries)";
+    style=rounded;
+    node [shape=parallelogram, fillcolor="#fff7e6", style=filled];
+    "RecoilRoot.main"            [label="<RecoilRoot>\nApp.tsx"];
+    "RecoilLocalStorageSync.main"[label="<RecoilLocalStorageSync>\nstoreKey=local-storage"];
+    "RecoilURLSyncJSON.main"     [label="<RecoilURLSyncJSON>\nstoreKey=url-json"];
+    "MapViewRouteSync.route"     [label="<RecoilSync>\nstoreKey=map-view-route\nMapViewRouteSync"];
+    "RasterColorMapSourceProvider.main" [label="RasterColorMapSourceProvider"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Articles map (nested RecoilRoot)
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_articles_map {
+    label="Articles map (nested RecoilRoot)";
+    style=rounded;
+    node [shape=parallelogram, fillcolor="#fff7e6", style=filled];
+    "RecoilRoot.article" [label="<RecoilRoot>\nper ArticleMap"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Sidebar visibility hub
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_sidebar_hub {
+    label="Sidebar visibility hub";
+    style=rounded;
+    node [shape=ellipse];
+    "sidebarVisibilityToggleState" [peripheries=2, penwidth=2, label="sidebarVisibilityToggleState\n(atomFamily<path>)"];
+    "sidebarExpandedState"         [peripheries=2, label="sidebarExpandedState\n(atomFamily<path>)"];
+    "sidebarPathChildrenState"     [peripheries=2, label="sidebarPathChildrenState\n(atomFamily<path>)"];
+    "sidebarPathChildrenLoadingState" [peripheries=2, label="sidebarPathChildrenLoadingState\n(atomFamily<path>)"];
+    node [shape=box, style=rounded];
+    "sidebarPathVisibilityState"   [peripheries=2, penwidth=2, label="sidebarPathVisibilityState\n(selectorFamily<path>)"];
+    "sidebarSectionsUrlOutward"    [label="sidebarSectionsUrlOutward\n(selector)"];
+    node [shape=ellipse, style=""];
+    "sidebarSectionsUrlParams"     [label="sidebarSectionsUrlParams\n(atom)"];
+    "viewState"                    [label="viewState\n(atom, route-synced)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Data params spine
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_data_params {
+    label="Data-params spine";
+    style=rounded;
+    node [shape=ellipse];
+    "paramsConfigState" [peripheries=2, penwidth=2, fontcolor=blue, label="paramsConfigState\n(atomFamily<group>, async)"];
+    "paramsState"       [peripheries=2, penwidth=2, fontcolor=blue, label="paramsState\n(atomFamily<group>, async)"];
+    "infrastructureRiskConfig" [label="infrastructureRiskConfig\n(atom, local)"];
+    node [shape=box, style=rounded];
+    "paramValueState"        [peripheries=2, label="paramValueState\n(selectorFamily<{group,param}>)"];
+    "paramOptionsState"      [peripheries=2, label="paramOptionsState\n(selectorFamily<{group,param}>)"];
+    "dataParamsByGroupState" [peripheries=2, penwidth=2, label="dataParamsByGroupState\n(selectorFamily<group>)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Data-domain queries (async API-backed)
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_data_domains {
+    label="Data-domain queries (async)";
+    style=rounded;
+    node [shape=box, style=rounded, fontcolor=blue];
+    "rasterAllSourcesQuery"     [label="rasterAllSourcesQuery\n(selector, async)"];
+    "rasterSourceByDomainQuery" [peripheries=2, label="rasterSourceByDomainQuery\n(selectorFamily<domain>)"];
+    "rasterSourceDomainsQuery"  [peripheries=2, label="rasterSourceDomainsQuery\n(selectorFamily<domain>, async)"];
+    "hazardDomainsConfigState"  [peripheries=2, label="hazardDomainsConfigState\n(selectorFamily<HazardType>, async)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Map view + URL
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_map_view_url {
+    label="Map view + URL coords";
+    style=rounded;
+    node [shape=ellipse];
+    "mapZoomUrl" [label="mapZoomUrl\n(atom, urlSync z)"];
+    "mapLonUrl"  [label="mapLonUrl\n(atom, urlSync x)"];
+    "mapLatUrl"  [label="mapLatUrl\n(atom, urlSync y)"];
+    "mapLat"     [label="mapLat\n(atom, internal)"];
+    "mapLon"     [label="mapLon\n(atom, internal)"];
+    "mapZoom"    [label="mapZoom\n(atom, internal)"];
+    "nonCoordsMapViewState" [label="nonCoordsMapViewState\n(atom)"];
+    "mapFitBoundsState"     [label="mapFitBoundsState\n(atom)"];
+    node [shape=box, style=rounded, color=red];
+    "mapViewState" [label="mapViewState\n(selector RW)\ndangerouslyAllowMutability"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Map basemap + pixel driller
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_map_basemap {
+    label="Map basemap & interaction mode";
+    style=rounded;
+    node [shape=ellipse];
+    "showLabels"                 [label="showLabels (atom)"];
+    "background"                 [label="background (atom)"];
+    "mapInteractionMode"         [label="mapInteractionMode (atom)"];
+    "pixelDrillerClickLocation"  [label="pixelDrillerClickLocation (atom)"];
+    "pixelDrillerSiteUrl"        [label="pixelDrillerSiteUrl (atom, urlSync site)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Map interactions
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_interactions {
+    label="Map interactions";
+    style=rounded;
+    node [shape=ellipse];
+    "hoverState"     [peripheries=2, label="hoverState\n(atomFamily<group>)"];
+    "selectionState" [peripheries=2, penwidth=2, label="selectionState\n(atomFamily<group>)"];
+    "hoverPosition"  [label="hoverPosition (atom)"];
+    "allowedGroupLayersInternal" [label="allowedGroupLayersInternal (atom)"];
+    node [shape=box, style=rounded, color=red];
+    "allowedGroupLayersState" [label="allowedGroupLayersState\n(selector RW)"];
+    node [shape=box, style=rounded, color=black];
+    "interactionGroupsState"  [label="interactionGroupsState\n(selector, static)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Hazards selection
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_hazards {
+    label="Hazards selection";
+    style=rounded;
+    node [shape=ellipse];
+    "hazardSelectionState" [peripheries=2, label="hazardSelectionState\n(atomFamily<hazard>)"];
+    node [shape=box, style=rounded];
+    "hazardVisibilityState" [label="hazardVisibilityState\n(selector)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Networks / damages styling
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_networks_damages {
+    label="Networks / damages styling";
+    style=rounded;
+    node [shape=ellipse];
+    "infrastructureRiskShownState" [label="showInfrastructureRiskState\n(atom)"];
+    "damageSourceState"            [label="damageSourceState (atom)"];
+    "damageTypeState"              [label="damageTypeState (atom)"];
+    "networkTreeExpandedState"     [label="networkTreeExpandedState (atom)"];
+    "networkTreeSelectionState"    [label="networkTreeCheckboxState\n(atom)"];
+    node [shape=box, style=rounded];
+    "showInfrastructureDamagesState" [label="showInfrastructureDamagesState\n(selector)"];
+    "eadAccessorState"               [label="damagesFieldState\n(selector)"];
+    "damageMapStyleParamsState"      [label="damageMapStyleParamsState\n(selector)"];
+    "networksStyleState"             [label="networksStyleState\n(selector)"];
+    "networkSelectionState"          [label="networkSelectionState\n(selector)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Population & regional exposure
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_population_exposure {
+    label="Population & regional exposure";
+    style=rounded;
+    node [shape=ellipse];
+    "populationExposureHazardState" [label="populationExposureHazardState\n(atom)"];
+    "regionalExposureVariableState" [label="regionalExposureVariableState\n(atom)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // NbS adaptation
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_nbs {
+    label="NbS adaptation";
+    style=rounded;
+    node [shape=ellipse];
+    "nbsAdaptationTypeState"      [label="nbsAdaptationTypeState"];
+    "nbsRegionScopeLevelState"    [label="nbsRegionScopeLevelState"];
+    "nbsAdaptationHazardState"    [label="nbsAdaptationHazardState"];
+    "nbsVariableState"            [label="nbsVariableState"];
+    "selectedAdaptationFeatureState" [label="selectedAdaptationFeatureState"];
+    "hoveredAdaptationFeatureState"  [label="hoveredAdaptationFeatureState\n(ORPHAN)", style=dashed, color=gray];
+    node [shape=box, style=rounded];
+    "nbsRegionScopeLevelIdPropertyState" [label="nbsRegionScopeLevelIdPropertyState"];
+    "nbsSelectedScopeRegionState"        [label="nbsSelectedScopeRegionState"];
+    "nbsSelectedScopeRegionBboxState"    [label="nbsSelectedScopeRegionBboxState"];
+    "nbsSelectedScopeRegionIdState"      [label="nbsSelectedScopeRegionIdState"];
+    "nbsSelectedScopeRegionNameState"    [label="nbsSelectedScopeRegionNameState"];
+    "nbsAdaptationScopeSpecState"        [label="nbsAdaptationScopeSpecState"];
+    "nbsIsDataVariableContinuous"        [label="nbsIsDataVariableContinuous"];
+    "nbsLayerSpecState"                  [label="nbsLayerSpecState"];
+    "nbsFieldSpecState"                  [label="nbsFieldSpecState"];
+    "nbsColorSpecState"                  [label="nbsColorSpecState"];
+    "nbsStyleParamsState"                [label="nbsStyleParamsState"];
+    "nbsPrimaryCategoricalVariableState" [label="nbsPrimaryCategoricalVariableState"];
+    "nbsCategoricalConfigState"          [label="nbsCategoricalConfigState"];
+    "showPrioritisationState"            [label="showPrioritisationState"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // View-layers assembly + simple selection atoms
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_view_layers {
+    label="View-layers assembly";
+    style=rounded;
+    node [shape=ellipse];
+    "buildingDensityTypeState"   [label="buildingDensityTypeState"];
+    "cddSelectionState"          [label="cddSelectionState"];
+    "hdiVariableState"           [label="hdiVariableState"];
+    "hdiRegionLevelState"        [label="hdiRegionLevelState"];
+    "industrySelectionState"     [label="industrySelectionState"];
+    "naturalAssetsSelectionState"[label="naturalAssetsSelectionState\n(ORPHAN)", style=dashed, color=gray];
+    "protectedAreaTypeSelectionState" [label="protectedAreaTypeSelectionState"];
+    "topographySelectionState"   [label="topographySelectionState"];
+    "travelTimeTypeState"        [label="travelTimeTypeState"];
+    "boundedFeatureBboxState"    [label="boundedFeatureState (atom)"];
+
+    node [shape=box, style=rounded];
+    "featureBoundingBoxLayerState" [label="featureBoundingBoxLayerState"];
+
+    "viewLayersState/viewLayersNestedState" [label="viewLayersNested (selector, internal)"];
+    "viewLayersState/viewLayersFlatState"   [penwidth=2, label="viewLayersState (selector)\nwaitForAll over ~22 layers"];
+
+    "viewLayersParamsState/singleViewLayerState" [peripheries=2, label="singleViewLayerState (selectorFamily<id>)"];
+    "viewLayersParamsState/singleViewLayerParamsState" [peripheries=2, label="singleViewLayerParamsState (selectorFamily<id>)"];
+    "viewLayersParamsState/viewLayersParamsState" [label="viewLayersParamsState (selector)"];
+
+    "landCoverLayerState"                [label="landCoverLayerState"];
+    "populationLayerState"               [label="populationLayerState"];
+    "buildingDensityLayerState"          [label="buildingDensityLayerState"];
+    "organicCarbonLayerState"            [label="organicCarbonLayerState"];
+    "biodiversityIntactnessLayerState"   [label="biodiversityIntactnessLayerState"];
+    "forestLandscapeIntegrityLayerState" [label="forestLandscapeIntegrityLayerState"];
+    "travelTimeLayerState"               [label="travelTimeLayerState"];
+    "topographyLayerState"               [label="topographyLayersState"];
+    "cddLayerState"                      [label="cddLayersState"];
+    "hdiGridLayerState"                  [label="hdiGridLayerState"];
+    "humanDevelopmentLayerState"         [label="humanDevelopmentLayerState"];
+    "regionalExposureLayerState"         [label="regionalExposureLayerState"];
+    "protectedAreasKeysState"            [label="protectedAreasKeysState"];
+    "protectedAreasPointLayerState"      [label="protectedAreasPointLayerState"];
+    "protectedAreasPolygonLayerState"    [label="protectedAreasPolygonLayerState"];
+    "hazardLayerState"                   [label="hazardLayerState"];
+    "populationExposureLayerState"       [label="populationExposureLayerState"];
+    "nbsScopeRegionLayerState"           [label="nbsScopeRegionLayerState"];
+    "nbsLayerState"                      [label="nbsLayerState"];
+    "rwiLayerState"                      [label="rwiLayerState"];
+    "networkLayersState"                 [label="networkLayersState"];
+    "networkStyleParamsState"            [label="networkStyleParamsState"];
+    "industryLayerState"                 [label="industryLayersState"];
+    "healthcareLayersState"              [label="healthcareLayersState"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Damages drill-down details panel
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_damages {
+    label="Damages drill-down (details panel)";
+    style=rounded;
+    node [shape=ellipse];
+    "DamagesSection/featureState"          [label="featureState (atom)"];
+    "DamagesSection/selectedHazard/impl"   [label="selectedHazard/impl (atom)"];
+    "DamagesSection/selectedEpoch/impl"    [label="selectedEpoch/impl (atom)"];
+    "DamagesSection/selectedRpOption/impl" [label="selectedRpOption/impl (atom)"];
+
+    node [shape=box, style=rounded];
+    "DamagesSection/hazardDataParams"      [label="hazardDataParams\n(selector, uses noWait)"];
+    "DamagesSection/damagesOrderingState"  [label="damagesOrderingState"];
+    "DamagesSection/damagesDataState"      [label="damagesDataState"];
+    "DamagesSection/selectedDamagesData"   [label="selectedDamagesData"];
+    "rpOrderingState"                      [label="rpOrderingState"];
+    "DamagesSection/rpDamageDataState"     [label="rpDamageDataState"];
+    "DamagesSection/selectedRpDataState"   [label="selectedRpDataState"];
+    "DamagesSection/filteredTableDataState"[label="filteredTableDataState"];
+    "DamagesSection/hazardsState"          [label="hazardsState"];
+    "DamagesSection/epochsState"           [label="epochsState"];
+    "DamagesSection/rpOptionsState"        [label="rpOptionsState"];
+
+    "DamagesSection/selectedHazard/default" [label="selectedHazard/default"];
+    "DamagesSection/selectedEpoch/default"  [label="selectedEpoch/default"];
+    "DamagesSection/selectedRpOption/default" [label="selectedRpOption/default"];
+
+    node [shape=box, style=rounded, color=red];
+    "DamagesSection/selectedHazard"   [label="selectedHazard\n(selector RW)"];
+    "DamagesSection/selectedEpoch"    [label="selectedEpoch\n(selector RW)"];
+    "DamagesSection/selectedRpOption" [label="selectedRpOption\n(selector RW)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Pixel driller
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_pixel_driller {
+    label="Pixel driller accordion";
+    style=rounded;
+    node [shape=ellipse];
+    "hazardAccordionExpandedState"   [peripheries=2, label="hazardAccordionExpandedState\n(atomFamily<section>)"];
+    "openAccordionState"             [label="openAccordionState"];
+    "accordionTransitionCountState"  [label="accordionTransitionCountState"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Downloads jobs
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_downloads {
+    label="Downloads jobs";
+    style=rounded;
+    node [shape=ellipse];
+    "submittedJobs" [label="submittedJobs (atom, LS-sync)"];
+    "completedJobs" [label="completedJobs (atom, LS-sync)"];
+    "expandedDatasetByRegion" [peripheries=2, label="expandedDatasetByRegion\n(atomFamily<boundary>)"];
+    node [shape=box, style=rounded];
+    "lastSubmittedJobByParams" [peripheries=2, label="lastSubmittedJobByParams\n(selectorFamily<{boundary,proc}>)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Place search, mobile tabs
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_place_search {
+    label="Place search";
+    style=rounded;
+    node [shape=ellipse];
+    "placeSearchActive" [label="placeSearchActive"];
+    "placeSearchQuery"  [label="placeSearchQuery"];
+  }
+
+  subgraph cluster_mobile_tabs {
+    label="Mobile tabs";
+    style=rounded;
+    node [shape=ellipse];
+    "mobileTabHasContentState" [peripheries=2, label="mobileTabHasContentState\n(atomFamily<tab>)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Raster colormap (async)
+  ////////////////////////////////////////////////////////////////////////////
+  subgraph cluster_raster_colormap {
+    label="Raster colormap (async)";
+    style=rounded;
+    node [shape=box, style=rounded, fontcolor=blue];
+    "colorMapValuesQuery"          [peripheries=2, label="colorMapValuesQuery\n(selectorFamily<scheme>, async)"];
+    "terracottaColorMapValuesQuery"[peripheries=2, penwidth=2, label="terracottaColorMapValuesQuery\n(selectorFamily<{scheme,range}>)"];
+    "apiFeatureQuery"              [peripheries=2, label="apiFeatureQuery\n(selectorFamily<id>, async)"];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  // EDGES
+  ////////////////////////////////////////////////////////////////////////////
+
+  // App-shell sync edges
+  "RecoilLocalStorageSync.main" -> "submittedJobs" [color=blue, style=dashed, label="LS"];
+  "RecoilLocalStorageSync.main" -> "completedJobs" [color=blue, style=dashed, label="LS"];
+  "RecoilURLSyncJSON.main" -> "mapZoomUrl" [color=blue, style=dashed, label="URL z"];
+  "RecoilURLSyncJSON.main" -> "mapLonUrl"  [color=blue, style=dashed, label="URL x"];
+  "RecoilURLSyncJSON.main" -> "mapLatUrl"  [color=blue, style=dashed, label="URL y"];
+  "RecoilURLSyncJSON.main" -> "pixelDrillerSiteUrl" [color=blue, style=dashed, label="URL site"];
+  "RecoilURLSyncJSON.main" -> "sidebarSectionsUrlParams" [color=blue, style=dashed, label="URL sections"];
+  "RecoilURLSyncJSON.main" -> "sidebarVisibilityToggleState" [color=blue, style=dashed, label="URL init"];
+  "MapViewRouteSync.route" -> "viewState" [color=blue, style=dashed, label="route :view"];
+  "RasterColorMapSourceProvider.main" -> "terracottaColorMapValuesQuery" [color=grey, style=dashed, label="provider"];
+
+  // map view url defaults & writes
+  "mapLatUrl" -> "mapLat" [color=darkgreen, label="default"];
+  "mapLonUrl" -> "mapLon" [color=darkgreen, label="default"];
+  "mapZoomUrl" -> "mapZoom" [color=darkgreen, label="default"];
+
+  "mapViewState" -> "mapLat";
+  "mapViewState" -> "mapLon";
+  "mapViewState" -> "mapZoom";
+  "mapViewState" -> "nonCoordsMapViewState";
+  "mapViewState" -> "mapLat" [color=red, penwidth=2, label="set"];
+  "mapViewState" -> "mapLon" [color=red, penwidth=2, label="set"];
+  "mapViewState" -> "mapZoom" [color=red, penwidth=2, label="set"];
+  "mapViewState" -> "nonCoordsMapViewState" [color=red, penwidth=2, label="set"];
+
+  "mapLat" -> "mapLatUrl" [color=purple, style=dashed, label="sync 2s"];
+  "mapLon" -> "mapLonUrl" [color=purple, style=dashed, label="sync 2s"];
+  "mapZoom" -> "mapZoomUrl" [color=purple, style=dashed, label="sync 2s"];
+
+  // sidebar hub
+  "sidebarVisibilityToggleState" -> "sidebarExpandedState" [color=darkgreen, label="default (per param)"];
+  "sidebarPathVisibilityState" -> "sidebarVisibilityToggleState";
+  "sidebarPathVisibilityState" -> "sidebarPathVisibilityState" [label="recursive parent"];
+  "sidebarPathVisibilityState" -> "sidebarVisibilityToggleState" [color=red, penwidth=2, label="set"];
+  "sidebarPathVisibilityState" -> "sidebarPathVisibilityState" [color=red, penwidth=2, label="set parent"];
+  "sidebarSectionsUrlOutward" -> "sidebarVisibilityToggleState";
+  "sidebarSectionsUrlOutward" -> "sidebarPathChildrenState";
+  "sidebarSectionsUrlOutward" -> "sidebarSectionsUrlParams" [color=purple, style=dashed, label="StateSyncRoot"];
+  "viewState" -> "sidebarExpandedState"          [color=orange, style=dashed, label="viewTransition effect"];
+  "viewState" -> "sidebarVisibilityToggleState"  [color=orange, style=dashed, label="viewTransition effect"];
+
+  // data params spine
+  "infrastructureRiskConfig" -> "paramsConfigState" [color=orange, style=dashed, label="useLoadParamsConfig"];
+  "infrastructureRiskConfig" -> "paramsState"       [color=orange, style=dashed, label="useLoadParamsConfig"];
+  "hazardDomainsConfigState" -> "paramsConfigState" [color=orange, style=dashed, label="useLoadParamsConfig"];
+  "hazardDomainsConfigState" -> "paramsState"       [color=orange, style=dashed, label="useLoadParamsConfig"];
+  "paramsState" -> "paramValueState";
+  "paramsState" -> "paramOptionsState";
+  "paramsState" -> "dataParamsByGroupState";
+  "paramsConfigState" -> "DamagesSection/hazardDataParams" [label="noWait"];
+
+  // data domain queries
+  "rasterAllSourcesQuery" -> "rasterSourceByDomainQuery";
+  "rasterSourceByDomainQuery" -> "rasterSourceDomainsQuery";
+  "rasterSourceDomainsQuery" -> "hazardDomainsConfigState";
+
+  // hazards
+  "hazardSelectionState" -> "hazardVisibilityState";
+  "hazardVisibilityState" -> "hazardLayerState";
+  "dataParamsByGroupState" -> "hazardLayerState";
+
+  "populationExposureHazardState" -> "sidebarVisibilityToggleState" [color=orange, style=dashed, label="showOneHazard effect"];
+  "paramValueState" -> "sidebarVisibilityToggleState" [color=orange, style=dashed, label="syncHazard effect"];
+  "paramValueState" -> "damageSourceState" [color=orange, style=dashed, label="syncHazard effect"];
+  "paramValueState" -> "networkTreeSelectionState" [color=orange, style=dashed, label="syncInfra effect"];
+
+  // networks / damages
+  "infrastructureRiskShownState" -> "showInfrastructureDamagesState";
+  "showInfrastructureDamagesState" -> "networksStyleState";
+  "damageSourceState" -> "eadAccessorState";
+  "damageTypeState" -> "eadAccessorState";
+  "dataParamsByGroupState" -> "eadAccessorState";
+  "eadAccessorState" -> "damageMapStyleParamsState";
+  "networksStyleState" -> "networkStyleParamsState";
+  "damageMapStyleParamsState" -> "networkStyleParamsState";
+  "networkTreeSelectionState" -> "networkSelectionState";
+  "networkSelectionState" -> "networkLayersState";
+  "sidebarPathVisibilityState" -> "networkLayersState" [label="exposure/infrastructure"];
+  "infrastructureRiskShownState" -> "sidebarVisibilityToggleState" [color=purple, style=dashed, label="LinkViewLayerToPath"];
+
+  // population / regional exposure
+  "populationExposureHazardState" -> "populationExposureLayerState";
+  "sidebarPathVisibilityState" -> "populationExposureLayerState" [label="risk/population"];
+  "dataParamsByGroupState" -> "populationExposureLayerState";
+  "regionalExposureVariableState" -> "regionalExposureLayerState";
+  "sidebarPathVisibilityState" -> "regionalExposureLayerState" [label="risk/regional"];
+
+  // NbS subgraph
+  "nbsRegionScopeLevelState" -> "nbsRegionScopeLevelIdPropertyState";
+  "selectionState" -> "nbsSelectedScopeRegionState" [label="scope_regions"];
+  "nbsSelectedScopeRegionState" -> "nbsSelectedScopeRegionBboxState";
+  "nbsSelectedScopeRegionState" -> "nbsSelectedScopeRegionIdState";
+  "nbsRegionScopeLevelIdPropertyState" -> "nbsSelectedScopeRegionIdState";
+  "nbsSelectedScopeRegionState" -> "nbsSelectedScopeRegionNameState";
+  "nbsRegionScopeLevelState" -> "nbsSelectedScopeRegionNameState";
+  "nbsRegionScopeLevelIdPropertyState" -> "nbsAdaptationScopeSpecState";
+  "nbsSelectedScopeRegionIdState" -> "nbsAdaptationScopeSpecState";
+  "nbsVariableState" -> "nbsIsDataVariableContinuous";
+  "nbsIsDataVariableContinuous" -> "nbsLayerSpecState";
+  "nbsAdaptationTypeState" -> "nbsLayerSpecState";
+  "nbsIsDataVariableContinuous" -> "nbsFieldSpecState";
+  "nbsAdaptationTypeState" -> "nbsFieldSpecState";
+  "nbsVariableState" -> "nbsFieldSpecState";
+  "nbsAdaptationHazardState" -> "nbsFieldSpecState";
+  "nbsIsDataVariableContinuous" -> "nbsColorSpecState";
+  "nbsVariableState" -> "nbsColorSpecState";
+  "nbsIsDataVariableContinuous" -> "nbsStyleParamsState";
+  "nbsFieldSpecState" -> "nbsStyleParamsState";
+  "nbsColorSpecState" -> "nbsStyleParamsState";
+  "nbsAdaptationTypeState" -> "nbsPrimaryCategoricalVariableState";
+  "nbsVariableState" -> "nbsCategoricalConfigState";
+  "nbsPrimaryCategoricalVariableState" -> "nbsCategoricalConfigState";
+  "sidebarPathVisibilityState" -> "nbsScopeRegionLayerState" [label="adaptation/nbs"];
+  "nbsRegionScopeLevelState" -> "nbsScopeRegionLayerState";
+  "showLabels" -> "nbsScopeRegionLayerState";
+  "background" -> "nbsScopeRegionLayerState";
+  "sidebarPathVisibilityState" -> "nbsLayerState";
+  "nbsStyleParamsState" -> "nbsLayerState";
+  "nbsAdaptationTypeState" -> "nbsLayerState";
+  "nbsCategoricalConfigState" -> "nbsLayerState";
+  "sidebarPathVisibilityState" -> "showPrioritisationState";
+  "nbsSelectedScopeRegionIdState" -> "showPrioritisationState";
+  "nbsIsDataVariableContinuous" -> "showPrioritisationState";
+
+  // interactions
+  "allowedGroupLayersInternal" -> "allowedGroupLayersState";
+  "allowedGroupLayersState" -> "allowedGroupLayersInternal" [color=red, penwidth=2, label="set"];
+  "allowedGroupLayersState" -> "hoverState" [color=red, penwidth=2, label="set/reset"];
+  "allowedGroupLayersState" -> "selectionState" [color=red, penwidth=2, label="set/reset"];
+
+  // view layers assembly
+  "viewLayersState/viewLayersFlatState" -> "viewLayersState/viewLayersNestedState";
+  "viewLayersState/viewLayersNestedState" -> "landCoverLayerState";
+  "viewLayersState/viewLayersNestedState" -> "populationLayerState";
+  "viewLayersState/viewLayersNestedState" -> "buildingDensityLayerState";
+  "viewLayersState/viewLayersNestedState" -> "organicCarbonLayerState";
+  "viewLayersState/viewLayersNestedState" -> "biodiversityIntactnessLayerState";
+  "viewLayersState/viewLayersNestedState" -> "forestLandscapeIntegrityLayerState";
+  "viewLayersState/viewLayersNestedState" -> "travelTimeLayerState";
+  "viewLayersState/viewLayersNestedState" -> "topographyLayerState";
+  "viewLayersState/viewLayersNestedState" -> "cddLayerState";
+  "viewLayersState/viewLayersNestedState" -> "hdiGridLayerState";
+  "viewLayersState/viewLayersNestedState" -> "humanDevelopmentLayerState";
+  "viewLayersState/viewLayersNestedState" -> "regionalExposureLayerState";
+  "viewLayersState/viewLayersNestedState" -> "protectedAreasPolygonLayerState";
+  "viewLayersState/viewLayersNestedState" -> "hazardLayerState";
+  "viewLayersState/viewLayersNestedState" -> "populationExposureLayerState";
+  "viewLayersState/viewLayersNestedState" -> "nbsLayerState";
+  "viewLayersState/viewLayersNestedState" -> "rwiLayerState";
+  "viewLayersState/viewLayersNestedState" -> "networkLayersState";
+  "viewLayersState/viewLayersNestedState" -> "industryLayerState";
+  "viewLayersState/viewLayersNestedState" -> "healthcareLayersState";
+  "viewLayersState/viewLayersNestedState" -> "protectedAreasPointLayerState";
+  "viewLayersState/viewLayersNestedState" -> "nbsScopeRegionLayerState";
+  "viewLayersState/viewLayersNestedState" -> "featureBoundingBoxLayerState";
+
+  "viewLayersState/viewLayersFlatState" -> "viewLayersParamsState/singleViewLayerState";
+  "viewLayersState/viewLayersFlatState" -> "viewLayersParamsState/viewLayersParamsState";
+  "viewLayersParamsState/singleViewLayerState" -> "viewLayersParamsState/singleViewLayerParamsState";
+  "viewLayersParamsState/singleViewLayerParamsState" -> "viewLayersParamsState/viewLayersParamsState";
+  "selectionState" -> "viewLayersParamsState/singleViewLayerParamsState" [label="per layer group"];
+
+  // sidebar visibility -> layer selectors
+  "sidebarPathVisibilityState" -> "landCoverLayerState";
+  "sidebarPathVisibilityState" -> "populationLayerState";
+  "sidebarPathVisibilityState" -> "buildingDensityLayerState";
+  "buildingDensityTypeState" -> "buildingDensityLayerState";
+  "sidebarPathVisibilityState" -> "organicCarbonLayerState";
+  "sidebarPathVisibilityState" -> "biodiversityIntactnessLayerState";
+  "sidebarPathVisibilityState" -> "forestLandscapeIntegrityLayerState";
+  "sidebarPathVisibilityState" -> "travelTimeLayerState";
+  "travelTimeTypeState" -> "travelTimeLayerState";
+  "sidebarPathVisibilityState" -> "topographyLayerState";
+  "topographySelectionState" -> "topographyLayerState";
+  "sidebarPathVisibilityState" -> "cddLayerState";
+  "cddSelectionState" -> "cddLayerState";
+  "sidebarPathVisibilityState" -> "hdiGridLayerState";
+  "sidebarPathVisibilityState" -> "humanDevelopmentLayerState";
+  "hdiVariableState" -> "humanDevelopmentLayerState";
+  "hdiRegionLevelState" -> "humanDevelopmentLayerState";
+  "sidebarPathVisibilityState" -> "protectedAreasKeysState";
+  "protectedAreaTypeSelectionState" -> "protectedAreasKeysState";
+  "protectedAreasKeysState" -> "protectedAreasPointLayerState";
+  "protectedAreasKeysState" -> "protectedAreasPolygonLayerState";
+  "sidebarPathVisibilityState" -> "rwiLayerState";
+  "sidebarPathVisibilityState" -> "hazardLayerState";
+  "sidebarPathVisibilityState" -> "industryLayerState";
+  "industrySelectionState" -> "industryLayerState";
+  "sidebarPathVisibilityState" -> "healthcareLayersState";
+
+  "boundedFeatureBboxState" -> "featureBoundingBoxLayerState";
+
+  // downloads
+  "submittedJobs" -> "lastSubmittedJobByParams";
+  "submittedJobs" -> "completedJobs" [color=orange, style=dashed, label="moveJobToCompleted tx"];
+
+  // damages drill-down internal
+  "DamagesSection/featureState" -> "DamagesSection/damagesDataState";
+  "DamagesSection/hazardDataParams" -> "DamagesSection/damagesOrderingState";
+  "DamagesSection/damagesOrderingState" -> "DamagesSection/damagesDataState";
+  "DamagesSection/damagesDataState" -> "DamagesSection/selectedDamagesData";
+  "DamagesSection/selectedHazard" -> "DamagesSection/selectedDamagesData";
+
+  "DamagesSection/hazardDataParams" -> "rpOrderingState";
+  "DamagesSection/featureState" -> "DamagesSection/rpDamageDataState";
+  "rpOrderingState" -> "DamagesSection/rpDamageDataState";
+  "DamagesSection/selectedHazard" -> "DamagesSection/selectedRpDataState";
+  "DamagesSection/selectedEpoch" -> "DamagesSection/selectedRpDataState";
+  "DamagesSection/rpDamageDataState" -> "DamagesSection/selectedRpDataState";
+  "DamagesSection/selectedRpOption" -> "DamagesSection/filteredTableDataState";
+  "DamagesSection/selectedRpDataState" -> "DamagesSection/filteredTableDataState";
+
+  "DamagesSection/damagesDataState" -> "DamagesSection/hazardsState";
+  "DamagesSection/damagesDataState" -> "DamagesSection/epochsState";
+  "DamagesSection/selectedRpDataState" -> "DamagesSection/rpOptionsState";
+
+  // makeSelectState internals
+  "DamagesSection/hazardsState" -> "DamagesSection/selectedHazard/default";
+  "DamagesSection/selectedHazard/impl" -> "DamagesSection/selectedHazard";
+  "DamagesSection/selectedHazard/default" -> "DamagesSection/selectedHazard";
+  "DamagesSection/hazardsState" -> "DamagesSection/selectedHazard" [label="includes() membership"];
+  "DamagesSection/selectedHazard" -> "DamagesSection/selectedHazard/impl" [color=red, penwidth=2, label="set"];
+
+  "DamagesSection/epochsState" -> "DamagesSection/selectedEpoch/default";
+  "DamagesSection/selectedEpoch/impl" -> "DamagesSection/selectedEpoch";
+  "DamagesSection/selectedEpoch/default" -> "DamagesSection/selectedEpoch";
+  "DamagesSection/epochsState" -> "DamagesSection/selectedEpoch";
+  "DamagesSection/selectedEpoch" -> "DamagesSection/selectedEpoch/impl" [color=red, penwidth=2, label="set"];
+
+  "DamagesSection/rpOptionsState" -> "DamagesSection/selectedRpOption/default";
+  "DamagesSection/selectedRpOption/impl" -> "DamagesSection/selectedRpOption";
+  "DamagesSection/selectedRpOption/default" -> "DamagesSection/selectedRpOption";
+  "DamagesSection/rpOptionsState" -> "DamagesSection/selectedRpOption";
+  "DamagesSection/selectedRpOption" -> "DamagesSection/selectedRpOption/impl" [color=red, penwidth=2, label="set"];
+
+  // apiFeatureQuery -> featureState via syncReplica
+  "apiFeatureQuery" -> "DamagesSection/featureState" [color=purple, style=dashed, label="useSyncValueToRecoil"];
+
+  // colormap
+  "colorMapValuesQuery" -> "terracottaColorMapValuesQuery";
+}

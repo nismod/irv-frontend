@@ -1,4 +1,4 @@
-import { useRecoilState } from 'recoil';
+import { atom, useAtom } from 'jotai';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 
@@ -7,10 +7,13 @@ import {
   RegionalExposureVariableType,
 } from '@/config/regional-risk/metadata';
 import { InputSection } from '@/sidebar/ui/InputSection';
-import { regionalExposureVariableState } from '@/state/data-selection/regional-risk';
+
+export const regionalExposureVariableAtom = atom<RegionalExposureVariableType>(
+  'pop_exposed_seismic_threshold0.1g',
+);
 
 export const RegionalRiskSection = () => {
-  const [rexpVariable, setRexpVariable] = useRecoilState(regionalExposureVariableState);
+  const [rexpVariable, setRexpVariable] = useAtom(regionalExposureVariableAtom);
 
   return (
     <>

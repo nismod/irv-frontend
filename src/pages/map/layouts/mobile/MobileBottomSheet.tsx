@@ -9,7 +9,7 @@ import { ContentWatcherScope } from '@/lib/mobile-tabs/content-watcher';
 import { NonUnmountingTabPanel } from '@/lib/mobile-tabs/NonUnmountingTabPanel';
 import { TabNavigationAction } from '@/lib/mobile-tabs/TabNavigationAction';
 
-import { MobileTabContentWatcher, mobileTabHasContentState } from './tab-has-content';
+import { MobileTabContentWatcher, mobileTabHasContentAtomFamily } from './tab-has-content';
 import { TabConfig } from './tabs-config';
 
 const bottomNavigationHeightPx = 56;
@@ -106,7 +106,7 @@ const MobileBottomSheetTabNavigation: FC<{
           label={label}
           IconComponent={IconComponent}
           value={id}
-          tabHasContentState={mobileTabHasContentState}
+          tabHasContentAtomFamily={mobileTabHasContentAtomFamily}
         />
       ))}
     </BottomNavigation>

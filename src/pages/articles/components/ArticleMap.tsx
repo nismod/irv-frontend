@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { MapViewState } from 'deck.gl';
-import { FC, ReactNode, Suspense, useState } from 'react';
-import { RecoilRoot } from 'recoil';
+import { createStore, Provider } from 'jotai';
+import { FC, ReactNode, Suspense, useMemo, useState } from 'react';
 
 import { BaseMap } from '@/lib/data-map/BaseMap';
 import { DataMap } from '@/lib/data-map/DataMap';
@@ -90,11 +90,6 @@ const ArticleMapNavigationControl = withProps(MapHudNavigationControl, {
   showCompass: false,
 });
 
-/**
- * DataMap embed for narrative articles: nested Recoil store so interaction state
- * does not touch the main app map. Basemap style matches the app's light raster.
- * Wrap with `ArticleFigure` for title and caption.
- */
 const ArticleMapInner: FC<ArticleMapProps> = ({
   viewLayers,
   viewLayersParams = {},
@@ -150,15 +145,22 @@ const ArticleMapInner: FC<ArticleMapProps> = ({
 };
 
 /**
- * Wrapped in `RecoilRoot` + `Suspense` for async basemap style only; tooltip has its own `Suspense`
- * so raster colormap loading does not unmount the map.
+ * DataMap embed for narrative articles.
+ *
+ * Wrap with `ArticleFigure` for title and caption. Basemap style matches the app's light raster.
+ *
+ * Internally wrapped in a per-instance Jotai `<Provider>` so interaction state does not touch the main app map.
  */
-export const ArticleMap: FC<ArticleMapProps> = (props) => (
-  <RecoilRoot>
-    <Suspense fallback={null}>
-      <ErrorBoundary message="There was a problem displaying this map.">
-        <ArticleMapInner {...props} />
-      </ErrorBoundary>
-    </Suspense>
-  </RecoilRoot>
-);
+export const ArticleMap: FC<ArticleMapProps> = (props) => {
+  const store = useMemo(() => createStore(), []);
+
+  return (
+    <Provider store={store}>
+      <Suspense fallback={null}>
+        <ErrorBoundary message="There was a problem displaying this map.">
+          <ArticleMapInner {...props} />
+        </ErrorBoundary>
+      </Suspense>
+    </Provider>
+  );
+};

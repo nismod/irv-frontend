@@ -1,9 +1,8 @@
-import { Feature } from 'geojson';
-import { atom, selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { LayerSpec, ScopeSpec } from '@/lib/asset-list/use-sorted-features';
-import { bboxWktToAppBoundingBox, BoundingBox, extendBbox } from '@/lib/bounding-box';
-import { selectionState } from '@/lib/data-map/interactions/interaction-state';
+import { bboxWktToAppBoundingBox, extendBbox } from '@/lib/bounding-box';
+import { selectionAtomFamily } from '@/lib/data-map/interactions/interaction-state';
 import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/types';
 import { ColorSpec, FieldSpec, StyleParams } from '@/lib/data-map/view-layers';
 
@@ -20,209 +19,155 @@ import {
   NbsRegionScopeLevel,
 } from '@/config/nbs/metadata';
 
-export const nbsAdaptationTypeState = atom<NbsAdaptationType>({
-  key: 'nbsAdaptationTypeState',
-  default: 'slope_vegetation:natural_regeneration',
+export const nbsAdaptationTypeAtom = atom<NbsAdaptationType>(
+  'slope_vegetation:natural_regeneration',
+);
+
+export const nbsRegionScopeLevelAtom = atom<NbsRegionScopeLevel>('adm0');
+
+export const nbsRegionScopeLevelIdPropertyAtom = atom((get) => {
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
+  return NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
 });
 
-export const nbsRegionScopeLevelState = atom<NbsRegionScopeLevel>({
-  key: 'nbsRegionScopeLevelState',
-  default: 'adm0',
+export const nbsSelectedScopeRegionAtom = atom((get) => {
+  const nbsRegionSelection = get(
+    selectionAtomFamily('scope_regions'),
+  ) as InteractionTarget<VectorTarget> | null;
+  return nbsRegionSelection?.target.feature ?? null;
 });
 
-export const nbsRegionScopeLevelIdPropertyState = selector<string>({
-  key: 'nbsRegionScopeLevelIdPropertyState',
-  get: ({ get }) => {
-    const nbsRegionScopeLevel = get(nbsRegionScopeLevelState);
-    return NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
-  },
+export const nbsSelectedScopeRegionBboxAtom = atom((get) => {
+  const selectedRegion = get(nbsSelectedScopeRegionAtom);
+  if (!selectedRegion) {
+    return null;
+  }
+
+  return extendBbox(bboxWktToAppBoundingBox(selectedRegion.properties.bbox_wkt), 5);
 });
 
-// === NBS Selected Region State ===
+export const nbsSelectedScopeRegionIdAtom = atom((get) => {
+  const selectedRegion = get(nbsSelectedScopeRegionAtom);
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
+  const idProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
 
-export const nbsSelectedScopeRegionState = selector<Feature | null>({
-  key: 'nbsSelectedScopeRegionState',
-  get: ({ get }) => {
-    const nbsRegionSelection = get(
-      selectionState('scope_regions'),
-    ) as InteractionTarget<VectorTarget>;
-    return nbsRegionSelection?.target.feature ?? null;
-  },
+  if (!selectedRegion || !idProperty) {
+    return null;
+  }
+
+  return selectedRegion.properties[idProperty];
 });
 
-export const nbsSelectedScopeRegionBboxState = selector<BoundingBox | null>({
-  key: 'nbsSelectedScopeRegionBboxState',
-  get: ({ get }) => {
-    const selectedRegion = get(nbsSelectedScopeRegionState);
-    if (!selectedRegion) {
-      return null;
-    }
+export const nbsSelectedScopeRegionNameAtom = atom((get) => {
+  const selectedRegion = get(nbsSelectedScopeRegionAtom);
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
+  const nameProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.nameProperty;
 
-    return extendBbox(bboxWktToAppBoundingBox(selectedRegion.properties.bbox_wkt), 5);
-  },
+  if (!selectedRegion || !nameProperty) {
+    return null;
+  }
+
+  return selectedRegion.properties[nameProperty] ?? null;
 });
 
-export const nbsSelectedScopeRegionIdState = selector<number | string | null>({
-  key: 'nbsSelectedScopeRegionIdState',
-  get: ({ get }) => {
-    const selectedRegion = get(nbsSelectedScopeRegionState);
-    const idProperty = get(nbsRegionScopeLevelIdPropertyState);
+export const nbsAdaptationScopeSpecAtom = atom((get): ScopeSpec | null => {
+  const nbsRegionScopeLevel = get(nbsRegionScopeLevelAtom);
+  const idProperty = NBS_REGION_SCOPE_LEVEL_METADATA[nbsRegionScopeLevel]?.idProperty;
+  const selectedRegionId = get(nbsSelectedScopeRegionIdAtom);
 
-    if (!selectedRegion || !idProperty) {
-      return null;
-    }
+  if (!idProperty || !selectedRegionId) {
+    return null;
+  }
 
-    return selectedRegion.properties[idProperty];
-  },
+  return {
+    [idProperty]: selectedRegionId,
+  };
 });
 
-export const nbsSelectedScopeRegionNameState = selector<string | null>({
-  key: 'nbsSelectedScopeRegionNameState',
-  get: ({ get }) => {
-    const selectedRegion = get(nbsSelectedScopeRegionState);
-    const nameProperty =
-      NBS_REGION_SCOPE_LEVEL_METADATA[get(nbsRegionScopeLevelState)]?.nameProperty;
+export const nbsAdaptationHazardAtom = atom<NbsHazardType>('ls');
 
-    if (!selectedRegion || !nameProperty) {
-      return null;
-    }
+export const nbsVariableAtom = atom<NbsDataVariable>('avoided_ead_mean');
 
-    return selectedRegion.properties[nameProperty] ?? null;
-  },
+export const nbsIsDataVariableContinuousAtom = atom((get) => {
+  const nbsVariable = get(nbsVariableAtom);
+  return NBS_DATA_VARIABLE_METADATA[nbsVariable]?.dataType === 'continuous';
 });
 
-export const nbsAdaptationScopeSpecState = selector<ScopeSpec>({
-  key: 'nbsAdaptationScopeSpecState',
-  get: ({ get }) => {
-    const idProperty = get(nbsRegionScopeLevelIdPropertyState);
-    const selectedRegionId = get(nbsSelectedScopeRegionIdState);
+export const nbsLayerSpecAtom = atom((get): LayerSpec => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return null;
+  }
 
-    if (!idProperty || !selectedRegionId) {
-      return null;
-    }
-
-    return {
-      [idProperty]: selectedRegionId,
-    };
-  },
+  return {
+    layer: NBS_VECTOR_LAYER_PER_ADAPTATION_TYPE[get(nbsAdaptationTypeAtom)],
+  };
 });
 
-// === NBS Adaptation Hazard State ===
+export const nbsFieldSpecAtom = atom((get): FieldSpec => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return null;
+  }
+  const nbsAdaptationType = get(nbsAdaptationTypeAtom);
+  const nbsVariable = get(nbsVariableAtom);
+  const nbsAdaptationHazard = get(nbsAdaptationHazardAtom);
 
-export const nbsAdaptationHazardState = atom<NbsHazardType>({
-  key: 'nbsAdaptationHazardState',
-  default: 'ls',
+  return {
+    fieldGroup: 'adaptation',
+    field: nbsVariable,
+    fieldDimensions: {
+      hazard: nbsAdaptationHazard,
+      rcp: 'baseline',
+      adaptation_name: nbsAdaptationType,
+      adaptation_protection_level: 1,
+    },
+    fieldParams: {},
+  };
 });
 
-// === NBS Data Variable State ===
+export const nbsColorSpecAtom = atom((get): ColorSpec => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return null;
+  }
 
-export const nbsVariableState = atom<NbsDataVariable>({
-  key: 'nbsVariableState',
-  default: 'avoided_ead_mean',
+  const nbsVariable = get(nbsVariableAtom);
+
+  return NBS_ADAPTATION_COLORMAPS[nbsVariable];
 });
 
-export const nbsIsDataVariableContinuous = selector<boolean>({
-  key: 'nbsIsDataVariableContinuous',
-  get: ({ get }) => {
-    const nbsVariable = get(nbsVariableState);
-    return NBS_DATA_VARIABLE_METADATA[nbsVariable]?.dataType === 'continuous';
-  },
+export const nbsStyleParamsAtom = atom((get): StyleParams => {
+  if (!get(nbsIsDataVariableContinuousAtom)) {
+    return {};
+  }
+
+  const fieldSpec = get(nbsFieldSpecAtom);
+  const colorSpec = get(nbsColorSpecAtom);
+
+  return {
+    colorMap: {
+      colorSpec,
+      fieldSpec,
+    },
+  };
 });
 
-export const nbsLayerSpecState = selector<LayerSpec>({
-  key: 'nbsLayerSpecState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return null;
-    }
-
-    return {
-      layer: NBS_VECTOR_LAYER_PER_ADAPTATION_TYPE[get(nbsAdaptationTypeState)],
-    };
-  },
+const nbsPrimaryCategoricalVariableAtom = atom((get) => {
+  const nbsAdaptationType = get(nbsAdaptationTypeAtom);
+  return NBS_PRIMARY_CATEGORICAL_VARIABLE_PER_ADAPTATION_TYPE[nbsAdaptationType];
 });
 
-export const nbsFieldSpecState = selector<FieldSpec>({
-  key: 'nbsFieldSpecState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return null;
-    }
-    const nbsAdaptationType = get(nbsAdaptationTypeState);
-    const nbsVariable = get(nbsVariableState);
-    const nbsAdaptationHazard = get(nbsAdaptationHazardState);
+export const nbsCategoricalConfigAtom = atom((get): NbsCategoricalConfig => {
+  const nbsVariable = get(nbsVariableAtom);
+  const variableMeta = NBS_DATA_VARIABLE_METADATA[nbsVariable];
+  if (variableMeta.dataType === 'categorical') {
+    return variableMeta.categoricalConfig;
+  }
 
-    return {
-      fieldGroup: 'adaptation',
-      field: nbsVariable,
-      fieldDimensions: {
-        hazard: nbsAdaptationHazard,
-        rcp: 'baseline',
-        adaptation_name: nbsAdaptationType,
-        adaptation_protection_level: 1,
-      },
-      fieldParams: {},
-    };
-  },
-});
+  const primaryCategoricalVariable = get(nbsPrimaryCategoricalVariableAtom);
+  const categoricalVarMeta = NBS_DATA_VARIABLE_METADATA[primaryCategoricalVariable];
 
-export const nbsColorSpecState = selector<ColorSpec>({
-  key: 'nbsColorSpecState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return null;
-    }
+  if (categoricalVarMeta.dataType !== 'categorical') {
+    return null;
+  }
 
-    const nbsVariable = get(nbsVariableState);
-
-    return NBS_ADAPTATION_COLORMAPS[nbsVariable];
-  },
-});
-
-export const nbsStyleParamsState = selector<StyleParams>({
-  key: 'nbsStyleParamsState',
-  get: ({ get }) => {
-    if (!get(nbsIsDataVariableContinuous)) {
-      return {};
-    }
-
-    const fieldSpec = get(nbsFieldSpecState);
-    const colorSpec = get(nbsColorSpecState);
-
-    return {
-      colorMap: {
-        colorSpec,
-        fieldSpec,
-      },
-    };
-  },
-});
-
-const nbsPrimaryCategoricalVariableState = selector<NbsDataVariable>({
-  key: 'nbsPrimaryCategoricalVariableState',
-  get: ({ get }) => {
-    const nbsAdaptationType = get(nbsAdaptationTypeState);
-    return NBS_PRIMARY_CATEGORICAL_VARIABLE_PER_ADAPTATION_TYPE[nbsAdaptationType];
-  },
-});
-
-export const nbsCategoricalConfigState = selector<NbsCategoricalConfig>({
-  key: 'nbsCategoricalConfigState',
-  get: ({ get }) => {
-    const nbsVariable = get(nbsVariableState);
-    const variableMeta = NBS_DATA_VARIABLE_METADATA[nbsVariable];
-    if (variableMeta.dataType === 'categorical') {
-      return variableMeta.categoricalConfig;
-    } else {
-      const primaryCategoricalVariable = get(nbsPrimaryCategoricalVariableState);
-
-      const categoricalVarMeta = NBS_DATA_VARIABLE_METADATA[primaryCategoricalVariable];
-
-      if (categoricalVarMeta.dataType !== 'categorical') {
-        return null;
-      }
-
-      return categoricalVarMeta.categoricalConfig;
-    }
-  },
+  return categoricalVarMeta.categoricalConfig;
 });

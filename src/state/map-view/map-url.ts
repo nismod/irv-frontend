@@ -1,69 +1,27 @@
-import { number } from '@recoiljs/refine';
-import { atom, DefaultValue } from 'recoil';
-import { urlSyncEffect, WriteAtom } from 'recoil-sync';
+import { atomWithUrlSync, makeUrlNumberCodec } from '@/lib/jotai/sync-stores/atom-with-url-sync';
 
 import { mapViewConfig } from '@/config/map-view';
 
-/**
- * Makes a recoil-sync write function that saves a number with up to `maximumFractionDigits`
- */
-function makeWriteNumber(itemKey: string, maximumFractionDigits: number) {
-  const writeNumber: WriteAtom<number> = ({ write, reset }, x) => {
-    if (x instanceof DefaultValue) {
-      reset(itemKey);
-    } else {
-      write(
-        itemKey,
-        +x.toLocaleString(undefined, {
-          minimumFractionDigits: 1,
-          maximumFractionDigits,
-          useGrouping: false,
-        }),
-      );
-    }
-  };
+const zoomCodec = makeUrlNumberCodec(2);
+const coordCodec = makeUrlNumberCodec(5);
 
-  return writeNumber;
-}
-
-export const mapZoomUrlState = atom({
-  key: 'mapZoomUrl',
-  default: mapViewConfig.initialViewState.zoom,
-  effects: [
-    urlSyncEffect({
-      storeKey: 'url-json',
-      itemKey: 'z',
-      refine: number(),
-      write: makeWriteNumber('z', 2),
-      syncDefault: true,
-    }),
-  ],
+export const mapZoomUrlAtom = atomWithUrlSync('z', {
+  defaultValue: mapViewConfig.initialViewState.zoom,
+  syncDefault: true,
+  serialize: zoomCodec.serialize,
+  deserialize: zoomCodec.deserialize,
 });
 
-export const mapLonUrlState = atom({
-  key: 'mapLonUrl',
-  default: mapViewConfig.initialViewState.longitude,
-  effects: [
-    urlSyncEffect({
-      storeKey: 'url-json',
-      itemKey: 'x',
-      refine: number(),
-      write: makeWriteNumber('x', 5),
-      syncDefault: true,
-    }),
-  ],
+export const mapLonUrlAtom = atomWithUrlSync('x', {
+  defaultValue: mapViewConfig.initialViewState.longitude,
+  syncDefault: true,
+  serialize: coordCodec.serialize,
+  deserialize: coordCodec.deserialize,
 });
 
-export const mapLatUrlState = atom({
-  key: 'mapLatUrl',
-  default: mapViewConfig.initialViewState.latitude,
-  effects: [
-    urlSyncEffect({
-      storeKey: 'url-json',
-      itemKey: 'y',
-      refine: number(),
-      write: makeWriteNumber('y', 5),
-      syncDefault: true,
-    }),
-  ],
+export const mapLatUrlAtom = atomWithUrlSync('y', {
+  defaultValue: mapViewConfig.initialViewState.latitude,
+  syncDefault: true,
+  serialize: coordCodec.serialize,
+  deserialize: coordCodec.deserialize,
 });

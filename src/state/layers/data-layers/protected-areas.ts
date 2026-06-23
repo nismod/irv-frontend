@@ -1,29 +1,23 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { truthyKeys } from '@/lib/helpers';
 
 import { ProtectedAreaType } from '@/config/protected-areas/metadata';
 import { protectedAreaViewLayer } from '@/config/protected-areas/protected-area-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { protectedAreaTypeSelectionState } from '@/state/data-selection/protected-areas';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
+import { protectedAreaTypeSelectionAtom } from '@/state/data-selection/protected-areas';
 
-export const protectedAreasKeysState = selector<ProtectedAreaType[]>({
-  key: 'protectedAreasKeysState',
-  get: ({ get }) =>
-    get(sidebarPathVisibilityState('vulnerability/nature/protected-areas'))
-      ? truthyKeys(get(protectedAreaTypeSelectionState))
-      : [],
-});
+export const protectedAreasKeysAtom = atom<ProtectedAreaType[]>((get) =>
+  get(sidebarPathVisibilityAtomFamily('vulnerability/nature/protected-areas'))
+    ? truthyKeys(get(protectedAreaTypeSelectionAtom))
+    : [],
+);
 
-export const protectedAreasPointLayerState = selector<ViewLayer[]>({
-  key: 'protectedAreasPointLayerState',
-  get: ({ get }) =>
-    get(protectedAreasKeysState).map((type) => protectedAreaViewLayer('points', type)),
-});
+export const protectedAreasPointLayerAtom = atom<ViewLayer[]>((get) =>
+  get(protectedAreasKeysAtom).map((type) => protectedAreaViewLayer('points', type)),
+);
 
-export const protectedAreasPolygonLayerState = selector<ViewLayer[]>({
-  key: 'protectedAreasPolygonLayerState',
-  get: ({ get }) =>
-    get(protectedAreasKeysState).map((type) => protectedAreaViewLayer('polygons', type)),
-});
+export const protectedAreasPolygonLayerAtom = atom<ViewLayer[]>((get) =>
+  get(protectedAreasKeysAtom).map((type) => protectedAreaViewLayer('polygons', type)),
+);

@@ -1,14 +1,13 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { regionalExposureLayer } from '@/config/regional-risk/regional-risk-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { regionalExposureVariableState } from '@/state/data-selection/regional-risk';
+import { regionalExposureVariableAtom } from '@/sidebar/sections/risk/regional-risk';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 
-export const regionalExposureLayerState = selector<ViewLayer>({
-  key: 'regionalExposureLayerState',
-  get: ({ get }) =>
-    get(sidebarPathVisibilityState('risk/regional')) &&
-    regionalExposureLayer(get(regionalExposureVariableState)),
+export const regionalExposureLayerAtom = atom<ViewLayer | false>((get) => {
+  if (!get(sidebarPathVisibilityAtomFamily('risk/regional'))) return false;
+
+  return regionalExposureLayer(get(regionalExposureVariableAtom));
 });

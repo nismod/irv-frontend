@@ -1,16 +1,8 @@
-import { string } from '@recoiljs/refine';
-import { atom } from 'recoil';
-import { syncEffect } from 'recoil-sync';
+import { atom } from 'jotai';
 
 export type ViewType = 'hazard' | 'exposure' | 'vulnerability' | 'risk' | 'adaptation';
 
-export const viewState = atom<ViewType>({
-  key: 'viewState',
-  effects: [
-    syncEffect({
-      storeKey: 'map-view-route',
-      itemKey: 'view',
-      refine: string(),
-    }),
-  ],
-});
+const INITIAL_VIEW: ViewType = 'hazard';
+
+/** Current map view (route segment `:view`). Synced via `RouteParamSync` in MapPage. */
+export const viewAtom = atom<ViewType>(INITIAL_VIEW);

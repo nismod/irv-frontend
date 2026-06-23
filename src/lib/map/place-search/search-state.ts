@@ -1,11 +1,7 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-export const placeSearchActiveState = atom<boolean>({
-  key: 'placeSearchActive',
-  default: false,
-});
+/** Whether the map's place-search field is expanded/visible. */
+export const placeSearchActiveAtom = atom<boolean>(false);
 
-export const placeSearchQueryState = atom<string>({
-  key: 'placeSearchQuery',
-  default: '',
-});
+/** Current text in the map's place-search field. */
+export const placeSearchQueryAtom = atom<string>('');

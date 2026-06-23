@@ -1,25 +1,22 @@
-import { GetRecoilValue } from 'recoil';
-
-import { selectionState } from '@/lib/data-map/interactions/interaction-state';
-import { makeViewLayerParamsState } from '@/lib/data-map/state/make-view-layer-params-state';
+import { selectionAtomFamily } from '@/lib/data-map/interactions/interaction-state';
+import { makeViewLayerParamsAtom } from '@/lib/data-map/state/make-view-layer-params-atom';
+import type { Getter } from '@/lib/data-map/state/make-view-layer-params-atom';
 import { IrvViewLayerParams, ViewLayer } from '@/lib/data-map/view-layers';
 
-import { viewLayersState } from './view-layers';
+import { viewLayersAtom } from './view-layers';
 
-export const viewLayersParamsState = makeViewLayerParamsState<IrvViewLayerParams>({
-  key: 'viewLayersParamsState',
-  viewLayersState,
-  getParamsForViewLayer:
-    (viewLayer: ViewLayer) =>
-    ({ get }) => ({
-      selection: getSelectionParam(get, viewLayer),
-      // add more view layer params here when they are added to the app
-    }),
+export const viewLayersParamsAtom = makeViewLayerParamsAtom<IrvViewLayerParams>({
+  viewLayersAtom,
+  getParamsForViewLayer: (viewLayer: ViewLayer) => (get: Getter) => ({
+    selection: getSelectionParam(get, viewLayer),
+  }),
 });
 
-function getSelectionParam(get: GetRecoilValue, viewLayer: ViewLayer) {
+function getSelectionParam(get: Getter, viewLayer: ViewLayer) {
   const interactionGroup = viewLayer.interactionGroup;
-  const groupSelection = get(selectionState(interactionGroup));
+  if (interactionGroup == null) return null;
+
+  const groupSelection = get(selectionAtomFamily(interactionGroup));
 
   return groupSelection?.viewLayer.id === viewLayer.id ? groupSelection : null;
 }

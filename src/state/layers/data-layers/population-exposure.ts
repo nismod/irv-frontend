@@ -1,17 +1,15 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
+
+import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { exposureViewLayer } from '@/config/hazards/exposure/exposure-view-layer';
-import { populationExposureHazardState } from '@/sidebar/sections/risk/population-exposure';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { dataParamsByGroupState } from '@/state/data-params';
+import { populationExposureHazardAtom } from '@/sidebar/sections/risk/population-exposure';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
+import { dataParamsByGroupAtomFamily } from '@/state/data-params';
 
-export const populationExposureLayerState = selector({
-  key: 'populationExposureLayerState',
-  get: ({ get }) => {
-    const hazard = get(populationExposureHazardState);
-    return (
-      get(sidebarPathVisibilityState('risk/population')) &&
-      exposureViewLayer(hazard, get(dataParamsByGroupState(hazard)))
-    );
-  },
+export const populationExposureLayerAtom = atom<ViewLayer | false>((get) => {
+  if (!get(sidebarPathVisibilityAtomFamily('risk/population'))) return false;
+
+  const hazard = get(populationExposureHazardAtom);
+  return exposureViewLayer(hazard, get(dataParamsByGroupAtomFamily(hazard)));
 });

@@ -1,8 +1,7 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
-import { showInfrastructureDamagesState } from '../damage-mapping/damage-map';
+import { showInfrastructureDamagesAtom } from '../damage-mapping/damage-map';
 
-export const networksStyleState = selector<string>({
-  key: 'networksStyleState',
-  get: ({ get }) => (get(showInfrastructureDamagesState) ? 'damages' : 'type'),
-});
+export const networksStyleAtom = atom((get) =>
+  get(showInfrastructureDamagesAtom) ? 'damages' : 'type',
+);

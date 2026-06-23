@@ -1,0 +1,3172 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "State dependency graph of Recoil atoms/selectors in src/. Snapshot 2026-04-23.",
+  "metadata": {
+    "packageVersions": {
+      "recoil": "^0.7.7",
+      "recoil-sync": "^0.2.0",
+      "@recoiljs/refine": "^0.1.1"
+    },
+    "edgeTypes": {
+      "get": "Selector reads the dependency in its get() function",
+      "set": "Writable selector writes the dependency in its set() function",
+      "default": "Atom's default points at the other atom/family",
+      "effect": "A StateEffectRoot{,Async} or useRecoilTransaction_UNSTABLE writes the target when the source changes",
+      "syncReplica": "A useSyncState / useSyncValueToRecoil / useSyncStateThrottled push from source to target",
+      "urlSync": "Atom uses urlSyncEffect (recoil-sync) against the 'url-json' store key",
+      "localStorageSync": "Atom uses syncEffect({ storeKey: 'local-storage' })",
+      "routeSync": "Atom uses syncEffect({ storeKey: 'map-view-route' })",
+      "providerValue": "Atom is injected as a value into a React context provider"
+    },
+    "slices": [
+      "app-shell",
+      "articles-map",
+      "place-search",
+      "mobile-tabs",
+      "pixel-driller-accordion",
+      "downloads-jobs",
+      "map-basemap",
+      "map-view-url",
+      "damages-drill-down",
+      "map-interactions",
+      "nbs-adaptation",
+      "networks-damages",
+      "population-regional-exposure",
+      "hazards-selection",
+      "data-params-spine",
+      "data-domain-queries",
+      "sidebar-visibility-hub",
+      "view-layers-assembly",
+      "raster-colormap"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "showLabels",
+      "exportName": "showLabelsState",
+      "file": "src/map/layers/layers-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-basemap"
+    },
+    {
+      "id": "background",
+      "exportName": "backgroundState",
+      "file": "src/map/layers/layers-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-basemap"
+    },
+    {
+      "id": "mapInteractionMode",
+      "exportName": "mapInteractionModeState",
+      "file": "src/state/map-view/map-interaction-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-basemap"
+    },
+    {
+      "id": "pixelDrillerClickLocation",
+      "exportName": "pixelDrillerClickLocationState",
+      "file": "src/state/map-view/map-interaction-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-basemap"
+    },
+    {
+      "id": "pixelDrillerSiteUrl",
+      "exportName": "pixelDrillerSiteUrlState",
+      "file": "src/state/map-view/pixel-driller-url-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "url-json",
+      "urlKey": "site",
+      "slice": "map-basemap"
+    },
+    {
+      "id": "mapZoomUrl",
+      "exportName": "mapZoomUrlState",
+      "file": "src/state/map-view/map-url.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "url-json",
+      "urlKey": "z",
+      "slice": "map-view-url"
+    },
+    {
+      "id": "mapLonUrl",
+      "exportName": "mapLonUrlState",
+      "file": "src/state/map-view/map-url.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "url-json",
+      "urlKey": "x",
+      "slice": "map-view-url"
+    },
+    {
+      "id": "mapLatUrl",
+      "exportName": "mapLatUrlState",
+      "file": "src/state/map-view/map-url.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "url-json",
+      "urlKey": "y",
+      "slice": "map-view-url"
+    },
+    {
+      "id": "mapLat",
+      "exportName": "mapLatState (internal)",
+      "file": "src/state/map-view/map-view-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-view-url",
+      "notes": "default = mapLatUrlState atom"
+    },
+    {
+      "id": "mapLon",
+      "exportName": "mapLonState (internal)",
+      "file": "src/state/map-view/map-view-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-view-url",
+      "notes": "default = mapLonUrlState atom"
+    },
+    {
+      "id": "mapZoom",
+      "exportName": "mapZoomState (internal)",
+      "file": "src/state/map-view/map-view-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-view-url",
+      "notes": "default = mapZoomUrlState atom"
+    },
+    {
+      "id": "nonCoordsMapViewState",
+      "exportName": "nonCoordsMapViewStateState",
+      "file": "src/state/map-view/map-view-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-view-url"
+    },
+    {
+      "id": "mapViewState",
+      "exportName": "mapViewStateState",
+      "file": "src/state/map-view/map-view-state.ts",
+      "kind": "selector",
+      "writable": true,
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-view-url",
+      "notes": "dangerouslyAllowMutability: true"
+    },
+    {
+      "id": "mapFitBoundsState",
+      "exportName": "mapFitBoundsState",
+      "file": "src/map/MapView.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-view-url"
+    },
+    {
+      "id": "viewState",
+      "exportName": "viewState",
+      "file": "src/state/view.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "map-view-route",
+      "slice": "sidebar-visibility-hub"
+    },
+    {
+      "id": "sidebarVisibilityToggleState",
+      "exportName": "sidebarVisibilityToggleState",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "kind": "atomFamily",
+      "paramType": "string (path)",
+      "async": false,
+      "synced": "url-json",
+      "urlSyncMechanism": "defaultSectionVisibilitySyncEffect(path) read-only effect from src/sidebar/url-state.tsx",
+      "slice": "sidebar-visibility-hub",
+      "isHub": true
+    },
+    {
+      "id": "sidebarExpandedState",
+      "exportName": "sidebarExpandedState",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "kind": "atomFamily",
+      "paramType": "string (path)",
+      "async": false,
+      "synced": null,
+      "slice": "sidebar-visibility-hub",
+      "notes": "default = sidebarVisibilityToggleState atomFamily (cross-family default)"
+    },
+    {
+      "id": "sidebarPathChildrenState",
+      "exportName": "sidebarPathChildrenState",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "kind": "atomFamily",
+      "paramType": "string (path)",
+      "async": false,
+      "synced": null,
+      "slice": "sidebar-visibility-hub"
+    },
+    {
+      "id": "sidebarPathChildrenLoadingState",
+      "exportName": "sidebarPathChildrenLoadingState",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "kind": "atomFamily",
+      "paramType": "string (path)",
+      "async": false,
+      "synced": null,
+      "slice": "sidebar-visibility-hub"
+    },
+    {
+      "id": "sidebarPathVisibilityState",
+      "exportName": "sidebarPathVisibilityState",
+      "file": "src/lib/data-selection/make-hierarchical-visibility-state.ts",
+      "kind": "selectorFamily",
+      "writable": true,
+      "paramType": "string (path)",
+      "async": false,
+      "synced": null,
+      "slice": "sidebar-visibility-hub",
+      "isHub": true,
+      "notes": "Recursive read/write through the visibility tree"
+    },
+    {
+      "id": "sidebarSectionsUrlOutward",
+      "exportName": "sidebarSectionsUrlOutwardState (local)",
+      "file": "src/sidebar/url-state.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "sidebar-visibility-hub"
+    },
+    {
+      "id": "sidebarSectionsUrlParams",
+      "exportName": "sidebarSectionsUrlParamsState",
+      "file": "src/sidebar/url-state.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "url-json",
+      "urlKey": "sections",
+      "slice": "sidebar-visibility-hub"
+    },
+    {
+      "id": "infrastructureRiskConfig",
+      "exportName": "infrastructureRiskConfig (local)",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "data-params-spine"
+    },
+    {
+      "id": "populationExposureHazardState",
+      "exportName": "populationExposureHazardState",
+      "file": "src/sidebar/sections/risk/population-exposure.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "population-regional-exposure"
+    },
+    {
+      "id": "paramsConfigState",
+      "exportName": "paramsConfigState",
+      "file": "src/state/data-params.ts",
+      "kind": "atomFamily",
+      "paramType": "string (group)",
+      "async": true,
+      "synced": null,
+      "slice": "data-params-spine",
+      "isHub": true,
+      "notes": "default = () => new Promise(() => {}) — Suspense until hydrated"
+    },
+    {
+      "id": "paramsState",
+      "exportName": "paramsState",
+      "file": "src/state/data-params.ts",
+      "kind": "atomFamily",
+      "paramType": "string (group)",
+      "async": true,
+      "synced": null,
+      "slice": "data-params-spine",
+      "isHub": true,
+      "notes": "default = () => new Promise(() => {}) — Suspense until hydrated"
+    },
+    {
+      "id": "paramValueState",
+      "exportName": "paramValueState",
+      "file": "src/state/data-params.ts",
+      "kind": "selectorFamily",
+      "paramType": "{ group: string; param: string }",
+      "async": false,
+      "synced": null,
+      "slice": "data-params-spine",
+      "notes": "OBJECT PARAM: Jotai port needs custom areEqual"
+    },
+    {
+      "id": "paramOptionsState",
+      "exportName": "paramOptionsState",
+      "file": "src/state/data-params.ts",
+      "kind": "selectorFamily",
+      "paramType": "{ group: string; param: string }",
+      "async": false,
+      "synced": null,
+      "slice": "data-params-spine",
+      "notes": "OBJECT PARAM: Jotai port needs custom areEqual"
+    },
+    {
+      "id": "dataParamsByGroupState",
+      "exportName": "dataParamsByGroupState",
+      "file": "src/state/data-params.ts",
+      "kind": "selectorFamily",
+      "paramType": "string (group)",
+      "async": false,
+      "synced": null,
+      "slice": "data-params-spine",
+      "isHub": true
+    },
+    {
+      "id": "rasterAllSourcesQuery",
+      "exportName": "rasterAllSourcesQuery",
+      "file": "src/state/data-domains/sources.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": true,
+      "synced": null,
+      "slice": "data-domain-queries"
+    },
+    {
+      "id": "rasterSourceByDomainQuery",
+      "exportName": "rasterSourceByDomainQuery",
+      "file": "src/state/data-domains/sources.ts",
+      "kind": "selectorFamily",
+      "paramType": "string (domain)",
+      "async": false,
+      "synced": null,
+      "slice": "data-domain-queries"
+    },
+    {
+      "id": "rasterSourceDomainsQuery",
+      "exportName": "rasterSourceDomainsQuery",
+      "file": "src/state/data-domains/sources.ts",
+      "kind": "selectorFamily",
+      "paramType": "string (domain)",
+      "async": true,
+      "synced": null,
+      "slice": "data-domain-queries"
+    },
+    {
+      "id": "hazardDomainsConfigState",
+      "exportName": "hazardDomainsConfigState",
+      "file": "src/state/data-domains/hazards.ts",
+      "kind": "selectorFamily",
+      "paramType": "HazardType",
+      "async": true,
+      "synced": null,
+      "slice": "data-domain-queries"
+    },
+    {
+      "id": "hazardSelectionState",
+      "exportName": "hazardSelectionState",
+      "file": "src/state/data-selection/hazards.ts",
+      "kind": "atomFamily",
+      "paramType": "string (hazard group)",
+      "async": false,
+      "synced": null,
+      "slice": "hazards-selection"
+    },
+    {
+      "id": "hazardVisibilityState",
+      "exportName": "hazardVisibilityState",
+      "file": "src/state/data-selection/hazards.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "hazards-selection"
+    },
+    {
+      "id": "infrastructureRiskShownState",
+      "exportName": "showInfrastructureRiskState",
+      "file": "src/state/data-selection/damage-mapping/damage-map.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "showInfrastructureDamagesState",
+      "exportName": "showInfrastructureDamagesState",
+      "file": "src/state/data-selection/damage-mapping/damage-map.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "damageSourceState",
+      "exportName": "damageSourceState",
+      "file": "src/state/data-selection/damage-mapping/damage-map.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "damageTypeState",
+      "exportName": "damageTypeState",
+      "file": "src/state/data-selection/damage-mapping/damage-map.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "eadAccessorState",
+      "exportName": "damagesFieldState",
+      "file": "src/state/data-selection/damage-mapping/damage-style-params.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "damageMapStyleParamsState",
+      "exportName": "damageMapStyleParamsState",
+      "file": "src/state/data-selection/damage-mapping/damage-style-params.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "networksStyleState",
+      "exportName": "networksStyleState",
+      "file": "src/state/data-selection/networks/networks-style.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "networkTreeExpandedState",
+      "exportName": "networkTreeExpandedState",
+      "file": "src/state/data-selection/networks/network-selection.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "networkTreeSelectionState",
+      "exportName": "networkTreeCheckboxState",
+      "file": "src/state/data-selection/networks/network-selection.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "networkSelectionState",
+      "exportName": "networkSelectionState",
+      "file": "src/state/data-selection/networks/network-selection.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "networks-damages"
+    },
+    {
+      "id": "regionalExposureVariableState",
+      "exportName": "regionalExposureVariableState",
+      "file": "src/state/data-selection/regional-risk.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "population-regional-exposure"
+    },
+    {
+      "id": "buildingDensityTypeState",
+      "exportName": "buildingDensityTypeState",
+      "file": "src/state/data-selection/building-density.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "cddSelectionState",
+      "exportName": "cddSelectionState",
+      "file": "src/state/data-selection/cdd.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "hdiVariableState",
+      "exportName": "hdiVariableState",
+      "file": "src/state/data-selection/human-development.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "hdiRegionLevelState",
+      "exportName": "hdiRegionLevelState",
+      "file": "src/state/data-selection/human-development.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "industrySelectionState",
+      "exportName": "industrySelectionState",
+      "file": "src/state/data-selection/industry.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "naturalAssetsSelectionState",
+      "exportName": "naturalAssetsSelectionState",
+      "file": "src/state/data-selection/natural-assets.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly",
+      "orphan": true
+    },
+    {
+      "id": "protectedAreaTypeSelectionState",
+      "exportName": "protectedAreaTypeSelectionState",
+      "file": "src/state/data-selection/protected-areas.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "topographySelectionState",
+      "exportName": "topographySelectionState",
+      "file": "src/state/data-selection/topography.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "travelTimeTypeState",
+      "exportName": "travelTimeTypeState",
+      "file": "src/state/data-selection/travel-time.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "nbsAdaptationTypeState",
+      "exportName": "nbsAdaptationTypeState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsRegionScopeLevelState",
+      "exportName": "nbsRegionScopeLevelState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsRegionScopeLevelIdPropertyState",
+      "exportName": "nbsRegionScopeLevelIdPropertyState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsSelectedScopeRegionState",
+      "exportName": "nbsSelectedScopeRegionState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsSelectedScopeRegionBboxState",
+      "exportName": "nbsSelectedScopeRegionBboxState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsSelectedScopeRegionIdState",
+      "exportName": "nbsSelectedScopeRegionIdState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsSelectedScopeRegionNameState",
+      "exportName": "nbsSelectedScopeRegionNameState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsAdaptationScopeSpecState",
+      "exportName": "nbsAdaptationScopeSpecState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsAdaptationHazardState",
+      "exportName": "nbsAdaptationHazardState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsVariableState",
+      "exportName": "nbsVariableState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsIsDataVariableContinuous",
+      "exportName": "nbsIsDataVariableContinuous",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsLayerSpecState",
+      "exportName": "nbsLayerSpecState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsFieldSpecState",
+      "exportName": "nbsFieldSpecState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsColorSpecState",
+      "exportName": "nbsColorSpecState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsStyleParamsState",
+      "exportName": "nbsStyleParamsState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsPrimaryCategoricalVariableState",
+      "exportName": "nbsPrimaryCategoricalVariableState (internal)",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "nbsCategoricalConfigState",
+      "exportName": "nbsCategoricalConfigState",
+      "file": "src/state/data-selection/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "showPrioritisationState",
+      "exportName": "showPrioritisationState",
+      "file": "src/config/nbs/components/NbsPrioritisationPanel.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "hoveredAdaptationFeatureState",
+      "exportName": "hoveredAdaptationFeatureState",
+      "file": "src/config/nbs/components/FeatureAdaptationsTable.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation",
+      "orphan": true
+    },
+    {
+      "id": "selectedAdaptationFeatureState",
+      "exportName": "selectedAdaptationFeatureState",
+      "file": "src/config/nbs/components/FeatureAdaptationsTable.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "nbs-adaptation"
+    },
+    {
+      "id": "hoverState",
+      "exportName": "hoverState",
+      "file": "src/lib/data-map/interactions/interaction-state.ts",
+      "kind": "atomFamily",
+      "paramType": "string (interaction group)",
+      "async": false,
+      "synced": null,
+      "slice": "map-interactions"
+    },
+    {
+      "id": "hoverPosition",
+      "exportName": "hoverPositionState",
+      "file": "src/lib/data-map/interactions/interaction-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-interactions"
+    },
+    {
+      "id": "selectionState",
+      "exportName": "selectionState",
+      "file": "src/lib/data-map/interactions/interaction-state.ts",
+      "kind": "atomFamily",
+      "paramType": "string (interaction group)",
+      "async": false,
+      "synced": null,
+      "slice": "map-interactions",
+      "isHub": true
+    },
+    {
+      "id": "allowedGroupLayersInternal",
+      "exportName": "allowedGroupLayersInternal (local)",
+      "file": "src/lib/data-map/interactions/interaction-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-interactions"
+    },
+    {
+      "id": "allowedGroupLayersState",
+      "exportName": "allowedGroupLayersState",
+      "file": "src/lib/data-map/interactions/interaction-state.ts",
+      "kind": "selector",
+      "writable": true,
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-interactions",
+      "notes": "Uses isReset() to cascade resets to hoverState/selectionState family members"
+    },
+    {
+      "id": "interactionGroupsState",
+      "exportName": "interactionGroupsState",
+      "file": "src/state/layers/interaction-groups.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "map-interactions"
+    },
+    {
+      "id": "boundedFeatureBboxState",
+      "exportName": "boundedFeatureState",
+      "file": "src/state/layers/ui-layers/feature-bbox.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "featureBoundingBoxLayerState",
+      "exportName": "featureBoundingBoxLayerState",
+      "file": "src/state/layers/ui-layers/feature-bbox.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "viewLayersState/viewLayersNestedState",
+      "exportName": "viewLayersNestedState (internal in makeViewLayersState)",
+      "file": "src/lib/data-map/state/make-view-layers-state.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "viewLayersState/viewLayersFlatState",
+      "exportName": "viewLayersState",
+      "file": "src/state/layers/view-layers.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly",
+      "isHub": true,
+      "notes": "Uses waitForAll over ~22 sibling layer selectors"
+    },
+    {
+      "id": "viewLayersParamsState/singleViewLayerState",
+      "exportName": "singleViewLayerState (internal)",
+      "file": "src/lib/data-map/state/make-view-layer-params-state.ts",
+      "kind": "selectorFamily",
+      "paramType": "string (viewLayerId)",
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "viewLayersParamsState/singleViewLayerParamsState",
+      "exportName": "singleViewLayerParamsState (internal)",
+      "file": "src/lib/data-map/state/make-view-layer-params-state.ts",
+      "kind": "selectorFamily",
+      "paramType": "string (viewLayerId)",
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "viewLayersParamsState/viewLayersParamsState",
+      "exportName": "viewLayersParamsState",
+      "file": "src/state/layers/view-layers-params.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "landCoverLayerState",
+      "exportName": "landCoverLayerState",
+      "file": "src/state/layers/data-layers/land-cover.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "populationLayerState",
+      "exportName": "populationLayerState",
+      "file": "src/state/layers/data-layers/population.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "buildingDensityLayerState",
+      "exportName": "buildingDensityLayerState",
+      "file": "src/state/layers/data-layers/building-density.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "organicCarbonLayerState",
+      "exportName": "organicCarbonLayerState",
+      "file": "src/state/layers/data-layers/organic-carbon.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "biodiversityIntactnessLayerState",
+      "exportName": "biodiversityIntactnessLayerState",
+      "file": "src/state/layers/data-layers/nature-vulnerability.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "forestLandscapeIntegrityLayerState",
+      "exportName": "forestLandscapeIntegrityLayerState",
+      "file": "src/state/layers/data-layers/nature-vulnerability.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "travelTimeLayerState",
+      "exportName": "travelTimeLayerState",
+      "file": "src/state/layers/data-layers/travel-time.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "topographyLayerState",
+      "exportName": "topographyLayersState",
+      "file": "src/state/layers/data-layers/topography.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "cddLayerState",
+      "exportName": "cddLayersState",
+      "file": "src/state/layers/data-layers/cdd.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "hdiGridLayerState",
+      "exportName": "hdiGridLayerState",
+      "file": "src/state/layers/data-layers/hdi-grid.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "humanDevelopmentLayerState",
+      "exportName": "humanDevelopmentLayerState",
+      "file": "src/state/layers/data-layers/human-development.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "regionalExposureLayerState",
+      "exportName": "regionalExposureLayerState",
+      "file": "src/state/layers/data-layers/regional-risk.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "protectedAreasKeysState",
+      "exportName": "protectedAreasKeysState",
+      "file": "src/state/layers/data-layers/protected-areas.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "protectedAreasPointLayerState",
+      "exportName": "protectedAreasPointLayerState",
+      "file": "src/state/layers/data-layers/protected-areas.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "protectedAreasPolygonLayerState",
+      "exportName": "protectedAreasPolygonLayerState",
+      "file": "src/state/layers/data-layers/protected-areas.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "hazardLayerState",
+      "exportName": "hazardLayerState",
+      "file": "src/state/layers/data-layers/hazards.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "populationExposureLayerState",
+      "exportName": "populationExposureLayerState",
+      "file": "src/state/layers/data-layers/population-exposure.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "nbsScopeRegionLayerState",
+      "exportName": "nbsScopeRegionLayerState",
+      "file": "src/state/layers/data-layers/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "nbsLayerState",
+      "exportName": "nbsLayerState",
+      "file": "src/state/layers/data-layers/nbs.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "rwiLayerState",
+      "exportName": "rwiLayerState",
+      "file": "src/state/layers/data-layers/rwi.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "networkLayersState",
+      "exportName": "networkLayersState",
+      "file": "src/state/layers/data-layers/networks.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "networkStyleParamsState",
+      "exportName": "networkStyleParamsState",
+      "file": "src/state/layers/data-layers/networks.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "industryLayerState",
+      "exportName": "industryLayersState",
+      "file": "src/state/layers/data-layers/industry.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "healthcareLayersState",
+      "exportName": "healthcareLayersState",
+      "file": "src/state/layers/data-layers/healthcare.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "view-layers-assembly"
+    },
+    {
+      "id": "apiFeatureQuery",
+      "exportName": "apiFeatureQuery",
+      "file": "src/state/queries.ts",
+      "kind": "selectorFamily",
+      "paramType": "number (featureId)",
+      "async": true,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/featureState",
+      "exportName": "featureState",
+      "file": "src/details/features/damages/DamagesSection.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/hazardDataParams",
+      "exportName": "hazardDataParamsState",
+      "file": "src/details/features/damages/DamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down",
+      "notes": "Uses noWait() over paramsConfigState family to avoid suspending"
+    },
+    {
+      "id": "DamagesSection/damagesOrderingState",
+      "exportName": "damagesOrderingState (internal)",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/damagesDataState",
+      "exportName": "damagesDataState",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedDamagesData",
+      "exportName": "selectedDamagesDataState (internal)",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "rpOrderingState",
+      "exportName": "rpOrderingState (internal)",
+      "file": "src/details/features/damages/RPDamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/rpDamageDataState",
+      "exportName": "rpDamageDataState (internal)",
+      "file": "src/details/features/damages/RPDamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedRpDataState",
+      "exportName": "selectedRpDataState",
+      "file": "src/details/features/damages/RPDamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/filteredTableDataState",
+      "exportName": "filteredTableDataState (internal)",
+      "file": "src/details/features/damages/RPDamagesSection.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/hazardsState",
+      "exportName": "hazardsState (internal)",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/epochsState",
+      "exportName": "epochsState (internal)",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/rpOptionsState",
+      "exportName": "rpOptionsState (internal)",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedHazard/impl",
+      "exportName": "(internal, makeSelectState backing atom)",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedHazard/default",
+      "exportName": "(internal, makeSelectState default selector)",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedHazard",
+      "exportName": "selectedHazardState",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "kind": "selector",
+      "writable": true,
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down",
+      "notes": "Produced by makeSelectState('DamagesSection/selectedHazard', hazardsState)"
+    },
+    {
+      "id": "DamagesSection/selectedEpoch/impl",
+      "exportName": "(internal)",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedEpoch/default",
+      "exportName": "(internal)",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedEpoch",
+      "exportName": "selectedEpochState",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "kind": "selector",
+      "writable": true,
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedRpOption/impl",
+      "exportName": "(internal)",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedRpOption/default",
+      "exportName": "(internal)",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "kind": "selector",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "DamagesSection/selectedRpOption",
+      "exportName": "selectedRpOptionState",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "kind": "selector",
+      "writable": true,
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "damages-drill-down"
+    },
+    {
+      "id": "hazardAccordionExpandedState",
+      "exportName": "hazardAccordionExpandedState",
+      "file": "src/details/pixel-driller/hazard-accordion.tsx",
+      "kind": "atomFamily",
+      "paramType": "string (section key)",
+      "async": false,
+      "synced": null,
+      "slice": "pixel-driller-accordion"
+    },
+    {
+      "id": "openAccordionState",
+      "exportName": "openAccordionState",
+      "file": "src/details/pixel-driller/hazard-accordion.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "pixel-driller-accordion"
+    },
+    {
+      "id": "accordionTransitionCountState",
+      "exportName": "accordionTransitionCountState",
+      "file": "src/details/pixel-driller/hazard-accordion.tsx",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "pixel-driller-accordion"
+    },
+    {
+      "id": "submittedJobs",
+      "exportName": "submittedJobsState",
+      "file": "src/modules/downloads/data/jobs.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "local-storage",
+      "slice": "downloads-jobs"
+    },
+    {
+      "id": "completedJobs",
+      "exportName": "completedJobsState",
+      "file": "src/modules/downloads/data/jobs.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": "local-storage",
+      "slice": "downloads-jobs",
+      "notes": "Written-only by moveJobToCompletedTransaction; no direct hook reads"
+    },
+    {
+      "id": "lastSubmittedJobByParams",
+      "exportName": "lastSubmittedJobByParamsState",
+      "file": "src/modules/downloads/data/jobs.ts",
+      "kind": "selectorFamily",
+      "paramType": "{ boundaryName: string; processorVersion: string }",
+      "async": false,
+      "synced": null,
+      "slice": "downloads-jobs",
+      "notes": "OBJECT PARAM: Jotai port needs custom areEqual"
+    },
+    {
+      "id": "expandedDatasetByRegion",
+      "exportName": "expandedDatasetByRegionState (local)",
+      "file": "src/modules/downloads/sections/datasets/ProcessorVersionListItem.tsx",
+      "kind": "atomFamily",
+      "paramType": "string (boundary name)",
+      "async": false,
+      "synced": null,
+      "slice": "downloads-jobs"
+    },
+    {
+      "id": "placeSearchActive",
+      "exportName": "placeSearchActiveState",
+      "file": "src/lib/map/place-search/search-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "place-search"
+    },
+    {
+      "id": "placeSearchQuery",
+      "exportName": "placeSearchQueryState",
+      "file": "src/lib/map/place-search/search-state.ts",
+      "kind": "atom",
+      "paramType": null,
+      "async": false,
+      "synced": null,
+      "slice": "place-search"
+    },
+    {
+      "id": "mobileTabHasContentState",
+      "exportName": "mobileTabHasContentState",
+      "file": "src/pages/map/layouts/mobile/tab-has-content.tsx",
+      "kind": "atomFamily",
+      "paramType": "string (tab id)",
+      "async": false,
+      "synced": null,
+      "slice": "mobile-tabs"
+    },
+    {
+      "id": "colorMapValuesQuery",
+      "exportName": "colorMapValuesQuery (internal)",
+      "file": "src/config/terracotta-color-map.ts",
+      "kind": "selectorFamily",
+      "paramType": "string (color scheme)",
+      "async": true,
+      "synced": null,
+      "slice": "raster-colormap"
+    },
+    {
+      "id": "terracottaColorMapValuesQuery",
+      "exportName": "terracottaColorMapValuesQuery",
+      "file": "src/config/terracotta-color-map.ts",
+      "kind": "selectorFamily",
+      "paramType": "{ scheme: string; range: [number, number] }",
+      "async": false,
+      "synced": null,
+      "slice": "raster-colormap",
+      "notes": "OBJECT PARAM: Jotai port needs custom areEqual. Injected as value into RasterColorMapSourceProvider in App.tsx."
+    },
+    {
+      "id": "RecoilRoot.main",
+      "exportName": "<RecoilRoot> (App)",
+      "file": "src/App.tsx",
+      "kind": "boundary",
+      "slice": "app-shell"
+    },
+    {
+      "id": "RecoilLocalStorageSync.main",
+      "exportName": "<RecoilLocalStorageSync storeKey=\"local-storage\">",
+      "file": "src/App.tsx",
+      "kind": "boundary",
+      "slice": "app-shell"
+    },
+    {
+      "id": "RecoilURLSyncJSON.main",
+      "exportName": "<RecoilURLSyncJSON storeKey=\"url-json\">",
+      "file": "src/App.tsx",
+      "kind": "boundary",
+      "slice": "app-shell"
+    },
+    {
+      "id": "MapViewRouteSync.route",
+      "exportName": "<RecoilSync storeKey=\"map-view-route\">",
+      "file": "src/pages/map/MapViewRouteSync.tsx",
+      "kind": "boundary",
+      "slice": "app-shell"
+    },
+    {
+      "id": "RasterColorMapSourceProvider.main",
+      "exportName": "<RasterColorMapSourceProvider state={terracottaColorMapValuesQuery}>",
+      "file": "src/App.tsx",
+      "kind": "boundary",
+      "slice": "app-shell"
+    },
+    {
+      "id": "RecoilRoot.article",
+      "exportName": "<RecoilRoot> (nested per ArticleMap)",
+      "file": "src/pages/articles/components/ArticleMap.tsx",
+      "kind": "boundary",
+      "slice": "articles-map"
+    }
+  ],
+  "edges": [
+    { "from": "RecoilLocalStorageSync.main", "to": "submittedJobs", "via": "localStorageSync" },
+    { "from": "RecoilLocalStorageSync.main", "to": "completedJobs", "via": "localStorageSync" },
+    { "from": "RecoilURLSyncJSON.main", "to": "mapZoomUrl", "via": "urlSync" },
+    { "from": "RecoilURLSyncJSON.main", "to": "mapLonUrl", "via": "urlSync" },
+    { "from": "RecoilURLSyncJSON.main", "to": "mapLatUrl", "via": "urlSync" },
+    { "from": "RecoilURLSyncJSON.main", "to": "pixelDrillerSiteUrl", "via": "urlSync" },
+    { "from": "RecoilURLSyncJSON.main", "to": "sidebarSectionsUrlParams", "via": "urlSync" },
+    {
+      "from": "RecoilURLSyncJSON.main",
+      "to": "sidebarVisibilityToggleState",
+      "via": "urlSync",
+      "note": "Read-only initial state via defaultSectionVisibilitySyncEffect(path)"
+    },
+    { "from": "MapViewRouteSync.route", "to": "viewState", "via": "routeSync" },
+    {
+      "from": "RasterColorMapSourceProvider.main",
+      "to": "terracottaColorMapValuesQuery",
+      "via": "providerValue"
+    },
+
+    {
+      "from": "mapLatUrl",
+      "to": "mapLat",
+      "via": "default",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapLonUrl",
+      "to": "mapLon",
+      "via": "default",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapZoomUrl",
+      "to": "mapZoom",
+      "via": "default",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+
+    {
+      "from": "mapViewState",
+      "to": "mapLat",
+      "via": "get",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapViewState",
+      "to": "mapLon",
+      "via": "get",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapViewState",
+      "to": "mapZoom",
+      "via": "get",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapViewState",
+      "to": "nonCoordsMapViewState",
+      "via": "get",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapViewState",
+      "to": "mapLat",
+      "via": "set",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapViewState",
+      "to": "mapLon",
+      "via": "set",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapViewState",
+      "to": "mapZoom",
+      "via": "set",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+    {
+      "from": "mapViewState",
+      "to": "nonCoordsMapViewState",
+      "via": "set",
+      "file": "src/state/map-view/map-view-state.ts"
+    },
+
+    {
+      "from": "mapLat",
+      "to": "mapLatUrl",
+      "via": "syncReplica",
+      "file": "src/state/map-view/map-view-state.ts",
+      "note": "useSyncStateThrottled 2000ms"
+    },
+    {
+      "from": "mapLon",
+      "to": "mapLonUrl",
+      "via": "syncReplica",
+      "file": "src/state/map-view/map-view-state.ts",
+      "note": "useSyncStateThrottled 2000ms"
+    },
+    {
+      "from": "mapZoom",
+      "to": "mapZoomUrl",
+      "via": "syncReplica",
+      "file": "src/state/map-view/map-view-state.ts",
+      "note": "useSyncStateThrottled 2000ms"
+    },
+
+    {
+      "from": "sidebarVisibilityToggleState",
+      "to": "sidebarExpandedState",
+      "via": "default",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "note": "Cross-family default"
+    },
+
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "sidebarVisibilityToggleState",
+      "via": "get",
+      "file": "src/lib/data-selection/make-hierarchical-visibility-state.ts"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "sidebarPathVisibilityState",
+      "via": "get",
+      "file": "src/lib/data-selection/make-hierarchical-visibility-state.ts",
+      "note": "Recursive on parentPath"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "sidebarVisibilityToggleState",
+      "via": "set",
+      "file": "src/lib/data-selection/make-hierarchical-visibility-state.ts"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "sidebarPathVisibilityState",
+      "via": "set",
+      "file": "src/lib/data-selection/make-hierarchical-visibility-state.ts",
+      "note": "Recursive parent set"
+    },
+
+    {
+      "from": "sidebarSectionsUrlOutward",
+      "to": "sidebarVisibilityToggleState",
+      "via": "get",
+      "file": "src/sidebar/url-state.tsx"
+    },
+    {
+      "from": "sidebarSectionsUrlOutward",
+      "to": "sidebarPathChildrenState",
+      "via": "get",
+      "file": "src/sidebar/url-state.tsx"
+    },
+    {
+      "from": "sidebarSectionsUrlOutward",
+      "to": "sidebarSectionsUrlParams",
+      "via": "syncReplica",
+      "file": "src/sidebar/url-state.tsx",
+      "note": "via StateSyncRoot in SidebarUrlStateSyncRoot"
+    },
+
+    {
+      "from": "viewState",
+      "to": "sidebarExpandedState",
+      "via": "effect",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "note": "viewTransitionEffect StateEffectRootAsync"
+    },
+    {
+      "from": "viewState",
+      "to": "sidebarVisibilityToggleState",
+      "via": "effect",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "note": "viewTransitionEffect"
+    },
+
+    {
+      "from": "infrastructureRiskConfig",
+      "to": "paramsConfigState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "note": "via useLoadParamsConfig('infrastructure-risk')"
+    },
+    {
+      "from": "infrastructureRiskConfig",
+      "to": "paramsState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx"
+    },
+    {
+      "from": "hazardDomainsConfigState",
+      "to": "paramsConfigState",
+      "via": "effect",
+      "file": "src/sidebar/sections/hazards/HazardsControl.tsx",
+      "note": "useLoadParamsConfig(hazardDomainsConfigState(type), type)"
+    },
+    {
+      "from": "hazardDomainsConfigState",
+      "to": "paramsState",
+      "via": "effect",
+      "file": "src/sidebar/sections/hazards/HazardsControl.tsx"
+    },
+
+    {
+      "from": "rasterAllSourcesQuery",
+      "to": "rasterSourceByDomainQuery",
+      "via": "get",
+      "file": "src/state/data-domains/sources.ts"
+    },
+    {
+      "from": "rasterSourceByDomainQuery",
+      "to": "rasterSourceDomainsQuery",
+      "via": "get",
+      "file": "src/state/data-domains/sources.ts"
+    },
+    {
+      "from": "rasterSourceDomainsQuery",
+      "to": "hazardDomainsConfigState",
+      "via": "get",
+      "file": "src/state/data-domains/hazards.ts"
+    },
+
+    {
+      "from": "paramsState",
+      "to": "paramValueState",
+      "via": "get",
+      "file": "src/state/data-params.ts"
+    },
+    {
+      "from": "paramsState",
+      "to": "paramOptionsState",
+      "via": "get",
+      "file": "src/state/data-params.ts"
+    },
+    {
+      "from": "paramsState",
+      "to": "dataParamsByGroupState",
+      "via": "get",
+      "file": "src/state/data-params.ts"
+    },
+    {
+      "from": "paramsConfigState",
+      "to": "DamagesSection/hazardDataParams",
+      "via": "get",
+      "file": "src/details/features/damages/DamagesSection.tsx",
+      "note": "via noWait()"
+    },
+
+    {
+      "from": "hazardSelectionState",
+      "to": "hazardVisibilityState",
+      "via": "get",
+      "file": "src/state/data-selection/hazards.ts"
+    },
+    {
+      "from": "hazardVisibilityState",
+      "to": "hazardLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/hazards.ts"
+    },
+    {
+      "from": "dataParamsByGroupState",
+      "to": "hazardLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/hazards.ts"
+    },
+
+    {
+      "from": "populationExposureHazardState",
+      "to": "sidebarVisibilityToggleState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/population-exposure.tsx",
+      "note": "showOneHazardStateEffect via StateEffectRoot"
+    },
+    {
+      "from": "paramValueState",
+      "to": "sidebarVisibilityToggleState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "note": "syncHazardEffect for hazard param"
+    },
+    {
+      "from": "paramValueState",
+      "to": "damageSourceState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "note": "syncHazardEffect"
+    },
+    {
+      "from": "paramValueState",
+      "to": "networkTreeSelectionState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "note": "syncInfrastructureWithSectorEffect"
+    },
+
+    {
+      "from": "infrastructureRiskShownState",
+      "to": "showInfrastructureDamagesState",
+      "via": "get",
+      "file": "src/state/data-selection/damage-mapping/damage-map.ts"
+    },
+    {
+      "from": "showInfrastructureDamagesState",
+      "to": "networksStyleState",
+      "via": "get",
+      "file": "src/state/data-selection/networks/networks-style.ts"
+    },
+    {
+      "from": "damageSourceState",
+      "to": "eadAccessorState",
+      "via": "get",
+      "file": "src/state/data-selection/damage-mapping/damage-style-params.ts"
+    },
+    {
+      "from": "damageTypeState",
+      "to": "eadAccessorState",
+      "via": "get",
+      "file": "src/state/data-selection/damage-mapping/damage-style-params.ts"
+    },
+    {
+      "from": "dataParamsByGroupState",
+      "to": "eadAccessorState",
+      "via": "get",
+      "file": "src/state/data-selection/damage-mapping/damage-style-params.ts"
+    },
+    {
+      "from": "eadAccessorState",
+      "to": "damageMapStyleParamsState",
+      "via": "get",
+      "file": "src/state/data-selection/damage-mapping/damage-style-params.ts"
+    },
+    {
+      "from": "networksStyleState",
+      "to": "networkStyleParamsState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/networks.ts"
+    },
+    {
+      "from": "damageMapStyleParamsState",
+      "to": "networkStyleParamsState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/networks.ts",
+      "note": "via networksStyleState branch"
+    },
+    {
+      "from": "networkTreeSelectionState",
+      "to": "networkSelectionState",
+      "via": "get",
+      "file": "src/state/data-selection/networks/network-selection.ts"
+    },
+    {
+      "from": "networkSelectionState",
+      "to": "networkLayersState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/networks.ts"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "networkLayersState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/networks.ts",
+      "note": "specifically path 'exposure/infrastructure'"
+    },
+
+    {
+      "from": "infrastructureRiskShownState",
+      "to": "sidebarVisibilityToggleState",
+      "via": "syncReplica",
+      "file": "src/sidebar/LinkViewLayerToPath.tsx",
+      "note": "useSyncValueToRecoil for risk/infrastructure path"
+    },
+
+    {
+      "from": "populationExposureHazardState",
+      "to": "populationExposureLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/population-exposure.ts"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "populationExposureLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/population-exposure.ts",
+      "note": "path 'risk/population'"
+    },
+    {
+      "from": "dataParamsByGroupState",
+      "to": "populationExposureLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/population-exposure.ts"
+    },
+
+    {
+      "from": "regionalExposureVariableState",
+      "to": "regionalExposureLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/regional-risk.ts"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "regionalExposureLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/regional-risk.ts",
+      "note": "path 'risk/regional'"
+    },
+
+    {
+      "from": "InitPopulationView",
+      "to": "sidebarPathChildrenState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/population-exposure.tsx",
+      "note": "syncExposure transaction reads exposure path children"
+    },
+    {
+      "from": "InitPopulationView",
+      "to": "sidebarVisibilityToggleState",
+      "via": "effect",
+      "file": "src/sidebar/sections/risk/population-exposure.tsx",
+      "note": "syncExposure transaction writes leaves"
+    },
+
+    {
+      "from": "nbsRegionScopeLevelState",
+      "to": "nbsRegionScopeLevelIdPropertyState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "selectionState",
+      "to": "nbsSelectedScopeRegionState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts",
+      "note": "param='scope_regions'"
+    },
+    {
+      "from": "nbsSelectedScopeRegionState",
+      "to": "nbsSelectedScopeRegionBboxState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsSelectedScopeRegionState",
+      "to": "nbsSelectedScopeRegionIdState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsRegionScopeLevelIdPropertyState",
+      "to": "nbsSelectedScopeRegionIdState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsSelectedScopeRegionState",
+      "to": "nbsSelectedScopeRegionNameState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsRegionScopeLevelState",
+      "to": "nbsSelectedScopeRegionNameState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsRegionScopeLevelIdPropertyState",
+      "to": "nbsAdaptationScopeSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsSelectedScopeRegionIdState",
+      "to": "nbsAdaptationScopeSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsVariableState",
+      "to": "nbsIsDataVariableContinuous",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsIsDataVariableContinuous",
+      "to": "nbsLayerSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsAdaptationTypeState",
+      "to": "nbsLayerSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsIsDataVariableContinuous",
+      "to": "nbsFieldSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsAdaptationTypeState",
+      "to": "nbsFieldSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsVariableState",
+      "to": "nbsFieldSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsAdaptationHazardState",
+      "to": "nbsFieldSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsIsDataVariableContinuous",
+      "to": "nbsColorSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsVariableState",
+      "to": "nbsColorSpecState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsIsDataVariableContinuous",
+      "to": "nbsStyleParamsState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsFieldSpecState",
+      "to": "nbsStyleParamsState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsColorSpecState",
+      "to": "nbsStyleParamsState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsAdaptationTypeState",
+      "to": "nbsPrimaryCategoricalVariableState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsVariableState",
+      "to": "nbsCategoricalConfigState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+    {
+      "from": "nbsPrimaryCategoricalVariableState",
+      "to": "nbsCategoricalConfigState",
+      "via": "get",
+      "file": "src/state/data-selection/nbs.ts"
+    },
+
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "nbsScopeRegionLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts",
+      "note": "path 'adaptation/nbs'"
+    },
+    {
+      "from": "nbsRegionScopeLevelState",
+      "to": "nbsScopeRegionLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts"
+    },
+    {
+      "from": "showLabels",
+      "to": "nbsScopeRegionLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts"
+    },
+    {
+      "from": "background",
+      "to": "nbsScopeRegionLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "nbsLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts"
+    },
+    {
+      "from": "nbsStyleParamsState",
+      "to": "nbsLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts"
+    },
+    {
+      "from": "nbsAdaptationTypeState",
+      "to": "nbsLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts"
+    },
+    {
+      "from": "nbsCategoricalConfigState",
+      "to": "nbsLayerState",
+      "via": "get",
+      "file": "src/state/layers/data-layers/nbs.ts"
+    },
+
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "showPrioritisationState",
+      "via": "get",
+      "file": "src/config/nbs/components/NbsPrioritisationPanel.tsx"
+    },
+    {
+      "from": "nbsSelectedScopeRegionIdState",
+      "to": "showPrioritisationState",
+      "via": "get",
+      "file": "src/config/nbs/components/NbsPrioritisationPanel.tsx"
+    },
+    {
+      "from": "nbsIsDataVariableContinuous",
+      "to": "showPrioritisationState",
+      "via": "get",
+      "file": "src/config/nbs/components/NbsPrioritisationPanel.tsx"
+    },
+
+    {
+      "from": "allowedGroupLayersInternal",
+      "to": "allowedGroupLayersState",
+      "via": "get",
+      "file": "src/lib/data-map/interactions/interaction-state.ts"
+    },
+    {
+      "from": "allowedGroupLayersState",
+      "to": "allowedGroupLayersInternal",
+      "via": "set",
+      "file": "src/lib/data-map/interactions/interaction-state.ts"
+    },
+    {
+      "from": "allowedGroupLayersState",
+      "to": "hoverState",
+      "via": "set",
+      "file": "src/lib/data-map/interactions/interaction-state.ts",
+      "note": "reset/set with filtering"
+    },
+    {
+      "from": "allowedGroupLayersState",
+      "to": "selectionState",
+      "via": "set",
+      "file": "src/lib/data-map/interactions/interaction-state.ts"
+    },
+
+    {
+      "from": "viewLayersState/viewLayersFlatState",
+      "to": "viewLayersState/viewLayersNestedState",
+      "via": "get",
+      "file": "src/lib/data-map/state/make-view-layers-state.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "landCoverLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "populationLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "buildingDensityLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "organicCarbonLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "biodiversityIntactnessLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "forestLandscapeIntegrityLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "travelTimeLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "topographyLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "cddLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "hdiGridLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "humanDevelopmentLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "regionalExposureLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "protectedAreasPolygonLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "hazardLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "populationExposureLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "nbsLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "rwiLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "networkLayersState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "industryLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "healthcareLayersState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "protectedAreasPointLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "nbsScopeRegionLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersNestedState",
+      "to": "featureBoundingBoxLayerState",
+      "via": "get",
+      "file": "src/state/layers/view-layers.ts"
+    },
+
+    {
+      "from": "viewLayersState/viewLayersFlatState",
+      "to": "viewLayersParamsState/singleViewLayerState",
+      "via": "get",
+      "file": "src/lib/data-map/state/make-view-layer-params-state.ts"
+    },
+    {
+      "from": "viewLayersState/viewLayersFlatState",
+      "to": "viewLayersParamsState/viewLayersParamsState",
+      "via": "get",
+      "file": "src/lib/data-map/state/make-view-layer-params-state.ts"
+    },
+    {
+      "from": "viewLayersParamsState/singleViewLayerState",
+      "to": "viewLayersParamsState/singleViewLayerParamsState",
+      "via": "get",
+      "file": "src/lib/data-map/state/make-view-layer-params-state.ts"
+    },
+    {
+      "from": "viewLayersParamsState/singleViewLayerParamsState",
+      "to": "viewLayersParamsState/viewLayersParamsState",
+      "via": "get",
+      "file": "src/lib/data-map/state/make-view-layer-params-state.ts"
+    },
+    {
+      "from": "selectionState",
+      "to": "viewLayersParamsState/singleViewLayerParamsState",
+      "via": "get",
+      "file": "src/state/layers/view-layers-params.ts",
+      "note": "via getParamsForViewLayer using interactionGroup"
+    },
+
+    { "from": "sidebarPathVisibilityState", "to": "landCoverLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "populationLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "buildingDensityLayerState", "via": "get" },
+    { "from": "buildingDensityTypeState", "to": "buildingDensityLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "organicCarbonLayerState", "via": "get" },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "biodiversityIntactnessLayerState",
+      "via": "get"
+    },
+    {
+      "from": "sidebarPathVisibilityState",
+      "to": "forestLandscapeIntegrityLayerState",
+      "via": "get"
+    },
+    { "from": "sidebarPathVisibilityState", "to": "travelTimeLayerState", "via": "get" },
+    { "from": "travelTimeTypeState", "to": "travelTimeLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "topographyLayerState", "via": "get" },
+    { "from": "topographySelectionState", "to": "topographyLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "cddLayerState", "via": "get" },
+    { "from": "cddSelectionState", "to": "cddLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "hdiGridLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "humanDevelopmentLayerState", "via": "get" },
+    { "from": "hdiVariableState", "to": "humanDevelopmentLayerState", "via": "get" },
+    { "from": "hdiRegionLevelState", "to": "humanDevelopmentLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "protectedAreasKeysState", "via": "get" },
+    { "from": "protectedAreaTypeSelectionState", "to": "protectedAreasKeysState", "via": "get" },
+    { "from": "protectedAreasKeysState", "to": "protectedAreasPointLayerState", "via": "get" },
+    { "from": "protectedAreasKeysState", "to": "protectedAreasPolygonLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "rwiLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "hazardLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "industryLayerState", "via": "get" },
+    { "from": "industrySelectionState", "to": "industryLayerState", "via": "get" },
+    { "from": "sidebarPathVisibilityState", "to": "healthcareLayersState", "via": "get" },
+
+    {
+      "from": "boundedFeatureBboxState",
+      "to": "featureBoundingBoxLayerState",
+      "via": "get",
+      "file": "src/state/layers/ui-layers/feature-bbox.ts"
+    },
+
+    {
+      "from": "submittedJobs",
+      "to": "lastSubmittedJobByParams",
+      "via": "get",
+      "file": "src/modules/downloads/data/jobs.ts"
+    },
+    {
+      "from": "submittedJobs",
+      "to": "completedJobs",
+      "via": "effect",
+      "file": "src/modules/downloads/data/jobs.ts",
+      "note": "moveJobToCompletedTransaction reads submitted, writes both"
+    },
+
+    {
+      "from": "DamagesSection/featureState",
+      "to": "DamagesSection/damagesDataState",
+      "via": "get",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/hazardDataParams",
+      "to": "DamagesSection/damagesOrderingState",
+      "via": "get",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/damagesOrderingState",
+      "to": "DamagesSection/damagesDataState",
+      "via": "get",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/damagesDataState",
+      "to": "DamagesSection/selectedDamagesData",
+      "via": "get",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/selectedHazard",
+      "to": "DamagesSection/selectedDamagesData",
+      "via": "get",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx"
+    },
+
+    {
+      "from": "DamagesSection/hazardDataParams",
+      "to": "rpOrderingState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/featureState",
+      "to": "DamagesSection/rpDamageDataState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+    {
+      "from": "rpOrderingState",
+      "to": "DamagesSection/rpDamageDataState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/selectedHazard",
+      "to": "DamagesSection/selectedRpDataState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/selectedEpoch",
+      "to": "DamagesSection/selectedRpDataState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/rpDamageDataState",
+      "to": "DamagesSection/selectedRpDataState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/selectedRpOption",
+      "to": "DamagesSection/filteredTableDataState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+    {
+      "from": "DamagesSection/selectedRpDataState",
+      "to": "DamagesSection/filteredTableDataState",
+      "via": "get",
+      "file": "src/details/features/damages/RPDamagesSection.tsx"
+    },
+
+    {
+      "from": "DamagesSection/damagesDataState",
+      "to": "DamagesSection/hazardsState",
+      "via": "get",
+      "file": "src/details/features/damages/param-controls.tsx"
+    },
+    {
+      "from": "DamagesSection/damagesDataState",
+      "to": "DamagesSection/epochsState",
+      "via": "get",
+      "file": "src/details/features/damages/param-controls.tsx"
+    },
+    {
+      "from": "DamagesSection/selectedRpDataState",
+      "to": "DamagesSection/rpOptionsState",
+      "via": "get",
+      "file": "src/details/features/damages/param-controls.tsx"
+    },
+
+    {
+      "from": "DamagesSection/hazardsState",
+      "to": "DamagesSection/selectedHazard/default",
+      "via": "get",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "note": "via makeSelectState"
+    },
+    {
+      "from": "DamagesSection/selectedHazard/impl",
+      "to": "DamagesSection/selectedHazard",
+      "via": "get",
+      "file": "src/lib/recoil/make-state/make-select-state.ts"
+    },
+    {
+      "from": "DamagesSection/selectedHazard/default",
+      "to": "DamagesSection/selectedHazard",
+      "via": "get",
+      "file": "src/lib/recoil/make-state/make-select-state.ts"
+    },
+    {
+      "from": "DamagesSection/hazardsState",
+      "to": "DamagesSection/selectedHazard",
+      "via": "get",
+      "file": "src/lib/recoil/make-state/make-select-state.ts",
+      "note": "membership test"
+    },
+    {
+      "from": "DamagesSection/selectedHazard",
+      "to": "DamagesSection/selectedHazard/impl",
+      "via": "set",
+      "file": "src/lib/recoil/make-state/make-select-state.ts"
+    },
+
+    {
+      "from": "DamagesSection/epochsState",
+      "to": "DamagesSection/selectedEpoch/default",
+      "via": "get"
+    },
+    {
+      "from": "DamagesSection/selectedEpoch/impl",
+      "to": "DamagesSection/selectedEpoch",
+      "via": "get"
+    },
+    {
+      "from": "DamagesSection/selectedEpoch/default",
+      "to": "DamagesSection/selectedEpoch",
+      "via": "get"
+    },
+    { "from": "DamagesSection/epochsState", "to": "DamagesSection/selectedEpoch", "via": "get" },
+    {
+      "from": "DamagesSection/selectedEpoch",
+      "to": "DamagesSection/selectedEpoch/impl",
+      "via": "set"
+    },
+
+    {
+      "from": "DamagesSection/rpOptionsState",
+      "to": "DamagesSection/selectedRpOption/default",
+      "via": "get"
+    },
+    {
+      "from": "DamagesSection/selectedRpOption/impl",
+      "to": "DamagesSection/selectedRpOption",
+      "via": "get"
+    },
+    {
+      "from": "DamagesSection/selectedRpOption/default",
+      "to": "DamagesSection/selectedRpOption",
+      "via": "get"
+    },
+    {
+      "from": "DamagesSection/rpOptionsState",
+      "to": "DamagesSection/selectedRpOption",
+      "via": "get"
+    },
+    {
+      "from": "DamagesSection/selectedRpOption",
+      "to": "DamagesSection/selectedRpOption/impl",
+      "via": "set"
+    },
+
+    {
+      "from": "apiFeatureQuery",
+      "to": "DamagesSection/featureState",
+      "via": "syncReplica",
+      "file": "src/details/features/damages/DamagesSection.tsx",
+      "note": "useSyncValueToRecoil(fd, featureState) where fd comes from useRecoilValue(apiFeatureQuery(id))"
+    },
+
+    {
+      "from": "colorMapValuesQuery",
+      "to": "terracottaColorMapValuesQuery",
+      "via": "get",
+      "file": "src/config/terracotta-color-map.ts"
+    }
+  ],
+  "componentConsumers": [
+    { "atom": "showLabels", "file": "src/map/MapView.tsx", "hook": "useRecoilValue" },
+    {
+      "atom": "showLabels",
+      "file": "src/map/layers/MapLayerSelection.tsx",
+      "hook": "useRecoilState"
+    },
+    { "atom": "background", "file": "src/map/MapView.tsx", "hook": "useRecoilValue" },
+    {
+      "atom": "background",
+      "file": "src/map/layers/MapLayerSelection.tsx",
+      "hook": "useRecoilState"
+    },
+    { "atom": "mapInteractionMode", "file": "src/map/MapView.tsx", "hook": "useRecoilState" },
+    {
+      "atom": "mapInteractionMode",
+      "file": "src/map/MapInteractionModeSelector.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "mapInteractionMode",
+      "file": "src/details/DetailsContent.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "pixelDrillerClickLocation",
+      "file": "src/map/MapView.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "pixelDrillerClickLocation",
+      "file": "src/details/pixel-driller/PixelDrillerDetailsPanel.tsx",
+      "hook": "useRecoilValue"
+    },
+    { "atom": "pixelDrillerSiteUrl", "file": "src/map/MapView.tsx", "hook": "useRecoilState" },
+
+    { "atom": "mapViewState", "file": "src/map/MapView.tsx", "hook": "useRecoilState" },
+    {
+      "atom": "mapFitBoundsState",
+      "file": "src/map/MapView.tsx",
+      "hook": "useRecoilValue + useResetRecoilState"
+    },
+    {
+      "atom": "mapFitBoundsState",
+      "file": "src/map/use-map-fit-bounds.ts",
+      "hook": "useSetRecoilState"
+    },
+    {
+      "atom": "mapFitBoundsState",
+      "file": "src/pages/map/layouts/hud.tsx",
+      "hook": "useSetRecoilState"
+    },
+    {
+      "atom": "mapFitBoundsState",
+      "file": "src/config/nbs/components/NbsPrioritisationPanel.tsx",
+      "hook": "useMapFitBounds (-> useSetRecoilState)"
+    },
+
+    {
+      "atom": "viewState",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "hook": "useRecoilValue + StateEffectRootAsync(viewTransitionEffect)"
+    },
+
+    {
+      "atom": "sidebarVisibilityToggleState",
+      "file": "src/lib/data-selection/sidebar/SubSectionToggle.tsx",
+      "hook": "useRecoilCallback(snapshot.getLoadable)"
+    },
+    {
+      "atom": "sidebarVisibilityToggleState",
+      "file": "src/lib/paths/EnforceSingleChild.tsx",
+      "hook": "useRecoilCallback (set)"
+    },
+    {
+      "atom": "sidebarVisibilityToggleState",
+      "file": "src/sidebar/LinkViewLayerToPath.tsx",
+      "hook": "useSyncValueToRecoil"
+    },
+    {
+      "atom": "sidebarVisibilityToggleState",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "hook": "SidebarRoot prop + viewTransitionEffect"
+    },
+    {
+      "atom": "sidebarVisibilityToggleState",
+      "file": "src/sidebar/sections/risk/population-exposure.tsx",
+      "hook": "useRecoilTransaction_UNSTABLE (syncExposure/hideExposure)"
+    },
+    {
+      "atom": "sidebarVisibilityToggleState",
+      "file": "src/state/data-selection/hazards.ts",
+      "hook": "showOneHazardStateEffect (CurrentStateEffect)"
+    },
+
+    {
+      "atom": "sidebarExpandedState",
+      "file": "src/sidebar/SidebarContent.tsx",
+      "hook": "SidebarRoot prop + viewTransitionEffect"
+    },
+    {
+      "atom": "sidebarPathChildrenState",
+      "file": "src/lib/paths/PathRoot.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "sidebarPathChildrenLoadingState",
+      "file": "src/lib/paths/PathRoot.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "sidebarPathVisibilityState",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "sidebarPathVisibilityState",
+      "file": "src/sidebar/sections/risk/population-exposure.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "sidebarPathVisibilityState",
+      "file": "src/config/nbs/components/NbsPrioritisationPanel.tsx",
+      "hook": "useRecoilValue (via showPrioritisationState)"
+    },
+
+    {
+      "atom": "infrastructureRiskConfig",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "hook": "useLoadParamsConfig"
+    },
+
+    {
+      "atom": "populationExposureHazardState",
+      "file": "src/sidebar/sections/risk/population-exposure.tsx",
+      "hook": "useRecoilState + StateEffectRoot"
+    },
+
+    {
+      "atom": "paramsConfigState",
+      "file": "src/sidebar/sections/hazards/HazardsControl.tsx",
+      "hook": "useRecoilValue (EnsureHazardConfig)"
+    },
+    {
+      "atom": "paramsConfigState",
+      "file": "src/state/data-params.ts",
+      "hook": "useSetRecoilState + useRecoilValueLoadable (useLoadParamsConfig)"
+    },
+    {
+      "atom": "paramsConfigState",
+      "file": "src/state/data-params.ts",
+      "hook": "useRecoilTransaction_UNSTABLE (useUpdateDataParam)"
+    },
+    {
+      "atom": "paramsState",
+      "file": "src/state/data-params.ts",
+      "hook": "useSetRecoilState (useLoadParamsConfig)"
+    },
+    {
+      "atom": "paramsState",
+      "file": "src/state/data-params.ts",
+      "hook": "useRecoilTransaction_UNSTABLE (useUpdateDataParam)"
+    },
+    { "atom": "paramsState", "file": "src/sidebar/ui/DataParam.tsx", "hook": "useRecoilValue" },
+    {
+      "atom": "paramValueState",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "hook": "StateEffectRoot"
+    },
+    { "atom": "paramValueState", "file": "src/sidebar/ui/DataParam.tsx", "hook": "useRecoilValue" },
+    {
+      "atom": "paramOptionsState",
+      "file": "src/sidebar/ui/DataParam.tsx",
+      "hook": "useRecoilValue"
+    },
+
+    {
+      "atom": "hazardSelectionState",
+      "file": "src/sidebar/sections/hazards/HazardsControl.tsx",
+      "hook": "LinkViewLayerToPath -> useSyncValueToRecoil"
+    },
+    {
+      "atom": "hazardSelectionState",
+      "file": "src/state/data-selection/hazards.ts",
+      "hook": "selector read by hazardVisibilityState"
+    },
+
+    {
+      "atom": "infrastructureRiskShownState",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "hook": "LinkViewLayerToPath + useRecoilValue (showInfrastructureDamagesState)"
+    },
+    {
+      "atom": "damageSourceState",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "hook": "useRecoilValue + StateEffectRoot.set"
+    },
+    {
+      "atom": "networkTreeExpandedState",
+      "file": "src/sidebar/sections/networks/NetworkControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "networkTreeSelectionState",
+      "file": "src/sidebar/sections/networks/NetworkControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "networkTreeSelectionState",
+      "file": "src/sidebar/sections/risk/infrastructure-risk.tsx",
+      "hook": "syncInfrastructureSelectionStateEffect via StateEffectRoot"
+    },
+
+    {
+      "atom": "regionalExposureVariableState",
+      "file": "src/sidebar/sections/risk/regional-risk.tsx",
+      "hook": "useRecoilState"
+    },
+
+    {
+      "atom": "buildingDensityTypeState",
+      "file": "src/sidebar/sections/buildings/BuildingDensityControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "cddSelectionState",
+      "file": "src/sidebar/sections/risk/CDDControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "hdiVariableState",
+      "file": "src/sidebar/sections/vulnerability/HdiControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "hdiRegionLevelState",
+      "file": "src/sidebar/sections/vulnerability/HdiControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "industrySelectionState",
+      "file": "src/sidebar/sections/industry/IndustryControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "protectedAreaTypeSelectionState",
+      "file": "src/sidebar/sections/vulnerability/WdpaControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "topographySelectionState",
+      "file": "src/sidebar/sections/topography/TopographyControl.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "travelTimeTypeState",
+      "file": "src/sidebar/sections/vulnerability/TravelTimeControl.tsx",
+      "hook": "useRecoilState"
+    },
+
+    {
+      "atom": "nbsAdaptationTypeState",
+      "file": "src/sidebar/sections/adaptation/NbsAdaptationSection.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "nbsRegionScopeLevelState",
+      "file": "src/sidebar/sections/adaptation/NbsAdaptationSection.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "nbsAdaptationHazardState",
+      "file": "src/sidebar/sections/adaptation/NbsAdaptationSection.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "nbsVariableState",
+      "file": "src/sidebar/sections/adaptation/NbsAdaptationSection.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "showPrioritisationState",
+      "file": "src/config/nbs/components/NbsPrioritisationPanel.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "showPrioritisationState",
+      "file": "src/details/DetailsContent.tsx",
+      "hook": "useRecoilValue (transitively via NbsPrioritisationPanel render)"
+    },
+    {
+      "atom": "selectedAdaptationFeatureState",
+      "file": "src/config/nbs/components/FeatureAdaptationsTable.tsx",
+      "hook": "useRecoilState"
+    },
+
+    {
+      "atom": "hoverState",
+      "file": "src/lib/data-map/interactions/use-interactions.ts",
+      "hook": "useSetRecoilStateFamily"
+    },
+    {
+      "atom": "hoverState",
+      "file": "src/lib/data-map/tooltip/InteractionGroupTooltip.tsx",
+      "hook": "useRecoilValue (per group)"
+    },
+    {
+      "atom": "hoverPosition",
+      "file": "src/lib/data-map/DataMapTooltip.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "hoverPosition",
+      "file": "src/lib/data-map/interactions/use-interactions.ts",
+      "hook": "useSetRecoilState"
+    },
+    {
+      "atom": "selectionState",
+      "file": "src/lib/data-map/interactions/use-interactions.ts",
+      "hook": "useSetRecoilStateFamily"
+    },
+    {
+      "atom": "selectionState",
+      "file": "src/details/DetailsContent.tsx",
+      "hook": "useRecoilValue (per group: assets/wdpa/hdi/rexp)"
+    },
+    {
+      "atom": "selectionState",
+      "file": "src/details/ui/DeselectButton.tsx",
+      "hook": "useResetRecoilState"
+    },
+    {
+      "atom": "selectionState",
+      "file": "src/state/data-selection/nbs.ts",
+      "hook": "selector read for 'scope_regions' group"
+    },
+    {
+      "atom": "allowedGroupLayersState",
+      "file": "src/lib/data-map/interactions/use-interactions.ts",
+      "hook": "useSyncValueToRecoil(activeGroupLayerIds, allowedGroupLayersState)"
+    },
+    { "atom": "interactionGroupsState", "file": "src/map/MapView.tsx", "hook": "useRecoilValue" },
+
+    {
+      "atom": "boundedFeatureBboxState",
+      "file": "src/config/nbs/components/FeatureAdaptationsTable.tsx",
+      "hook": "useSetRecoilState"
+    },
+
+    {
+      "atom": "viewLayersState/viewLayersFlatState",
+      "file": "src/map/MapView.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "viewLayersState/viewLayersFlatState",
+      "file": "src/map/legend/MapLegend.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "viewLayersParamsState/viewLayersParamsState",
+      "file": "src/map/MapView.tsx",
+      "hook": "useRecoilValue"
+    },
+
+    {
+      "atom": "DamagesSection/featureState",
+      "file": "src/details/features/damages/DamagesSection.tsx",
+      "hook": "useSyncValueToRecoil"
+    },
+    {
+      "atom": "DamagesSection/hazardDataParams",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx",
+      "hook": "(via damagesOrderingState)"
+    },
+    {
+      "atom": "DamagesSection/damagesDataState",
+      "file": "src/details/features/damages/ExpectedDamagesSection.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "DamagesSection/selectedHazard",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "DamagesSection/selectedEpoch",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "DamagesSection/selectedRpOption",
+      "file": "src/details/features/damages/param-controls.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "DamagesSection/selectedRpDataState",
+      "file": "src/details/features/damages/RPDamagesSection.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "apiFeatureQuery",
+      "file": "src/details/features/asset-details.tsx",
+      "hook": "useRecoilValue"
+    },
+
+    {
+      "atom": "hazardAccordionExpandedState",
+      "file": "src/details/pixel-driller/hazard-accordion.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "openAccordionState",
+      "file": "src/details/pixel-driller/hazard-accordion.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "openAccordionState",
+      "file": "src/details/pixel-driller/SiteDetailsContent.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "accordionTransitionCountState",
+      "file": "src/details/pixel-driller/hazard-accordion.tsx",
+      "hook": "useSetRecoilState"
+    },
+    {
+      "atom": "accordionTransitionCountState",
+      "file": "src/details/pixel-driller/SiteDetailsContent.tsx",
+      "hook": "useRecoilValue + useSetRecoilState"
+    },
+
+    {
+      "atom": "submittedJobs",
+      "file": "src/modules/downloads/data/jobs.ts",
+      "hook": "useRecoilValue (usePruneOldJobs, usePruneJobsBeforeLast)"
+    },
+    {
+      "atom": "submittedJobs",
+      "file": "src/modules/downloads/data/jobs.ts",
+      "hook": "useRecoilTransaction_UNSTABLE (useMoveJobToCompleted)"
+    },
+    {
+      "atom": "completedJobs",
+      "file": "src/modules/downloads/data/jobs.ts",
+      "hook": "useRecoilTransaction_UNSTABLE (useMoveJobToCompleted)"
+    },
+    {
+      "atom": "lastSubmittedJobByParams",
+      "file": "src/modules/downloads/sections/datasets/dataset-indicator/DatasetStatusIndicator.tsx",
+      "hook": "useRecoilValue"
+    },
+    {
+      "atom": "expandedDatasetByRegion",
+      "file": "src/modules/downloads/sections/datasets/ProcessorVersionListItem.tsx",
+      "hook": "useRecoilState (via useOpen)"
+    },
+
+    {
+      "atom": "placeSearchActive",
+      "file": "src/lib/map/place-search/MapSearch.tsx",
+      "hook": "useRecoilState"
+    },
+    {
+      "atom": "placeSearchQuery",
+      "file": "src/lib/map/place-search/MapSearchField.tsx",
+      "hook": "useRecoilState"
+    },
+
+    {
+      "atom": "mobileTabHasContentState",
+      "file": "src/pages/map/layouts/mobile/MobileBottomSheet.tsx",
+      "hook": "via TabNavigationAction useRecoilValue"
+    },
+    {
+      "atom": "mobileTabHasContentState",
+      "file": "src/pages/map/layouts/mobile/tab-has-content.tsx",
+      "hook": "useSetRecoilState (MobileTabContentWatcher)"
+    },
+
+    {
+      "atom": "terracottaColorMapValuesQuery",
+      "file": "src/App.tsx",
+      "hook": "RasterColorMapSourceProvider value"
+    },
+    {
+      "atom": "terracottaColorMapValuesQuery",
+      "file": "src/lib/data-map/legend/use-raster-color-map-values.tsx",
+      "hook": "useRecoilValue"
+    }
+  ]
+}

@@ -4,93 +4,64 @@ import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Switch from '@mui/material/Switch';
-import _ from 'lodash';
-import { useEffect } from 'react';
-import {
-  atom,
-  TransactionInterface_UNSTABLE,
-  useRecoilState,
-  useRecoilTransaction_UNSTABLE,
-} from 'recoil';
+import { atom, useAtom } from 'jotai';
+import { atomEffect } from 'jotai-effect';
+import { useAtomCallback } from 'jotai/utils';
+import { useCallback, useEffect } from 'react';
 
 import { DataGroup } from '@/lib/data-selection/DataGroup';
-import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
+import { AtomEffectRoot } from '@/lib/jotai/effects/AtomEffectRoot';
 
 import { ExposureSource } from '@/config/hazards/exposure/exposure-view-layer';
 import { getHazardSidebarPath } from '@/config/hazards/metadata';
-import {
-  sidebarPathChildrenState,
-  sidebarPathVisibilityState,
-  sidebarVisibilityToggleState,
-} from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
-import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 
-export const populationExposureHazardState = atom<ExposureSource>({
-  key: 'populationExposureHazardState',
-  default: 'extreme_heat',
+import { hideExposure, syncExposure, syncHazardSidebar } from './risk-sidebar-sync';
+
+export const populationExposureHazardAtom = atom<ExposureSource>('extreme_heat');
+
+const syncPopulationHazardToSidebarEffectAtom = atomEffect((get, set) => {
+  syncHazardSidebar({ get, set }, getHazardSidebarPath(get(populationExposureHazardAtom)));
 });
 
-/**
- * set only population layer to visible
- */
-export function syncExposure({ get, set }: TransactionInterface_UNSTABLE, layer: string) {
-  const hazardSubPaths = get(sidebarPathChildrenState('exposure'));
-
-  /**
-   * Using sidebarVisibilityToggleState here for individual levels
-   * instead of the recursive sidebarPathVisibilityState
-   * because Recoil doesn't allow setting selectors in atomic transactions
-   */
-
-  set(sidebarVisibilityToggleState('exposure'), true);
-  _.forEach(hazardSubPaths, (subPath) => {
-    set(sidebarVisibilityToggleState(`exposure/${subPath}`), subPath === layer);
-  });
-}
-
-export function hideExposure({ set }: TransactionInterface_UNSTABLE, layer: string) {
-  set(sidebarVisibilityToggleState(`exposure/${layer}`), false);
-}
-
 const InitPopulationView = () => {
-  const updateExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => syncExposure(iface, 'population'),
-    [],
+  const updateExposure = useAtomCallback(
+    useCallback((get, set) => syncExposure({ get, set }, 'population'), []),
   );
-  const hideExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => hideExposure(iface, 'population'),
-    [],
+  const hideExposureFn = useAtomCallback(
+    useCallback((get, set) => hideExposure({ get, set }, 'population'), []),
   );
+
   useEffect(() => {
-    updateExposureTx();
+    updateExposure();
 
     return () => {
-      hideExposureTx();
+      hideExposureFn();
     };
-  }, [updateExposureTx, hideExposureTx]);
+  }, [updateExposure, hideExposureFn]);
 
   return null;
 };
 
 export const PopulationExposureSection = () => {
-  const [hazard, setHazard] = useRecoilState(populationExposureHazardState);
+  const [hazard, setHazard] = useAtom(populationExposureHazardAtom);
 
-  const [showHazards, setShowHazards] = useRecoilState(
-    sidebarPathVisibilityState(getHazardSidebarPath(hazard)),
-  );
-  const [showPopulation, setShowPopulation] = useRecoilState(
-    sidebarPathVisibilityState('exposure/population'),
-  );
+  const [showHazards, setShowHazards] = useAtom(
+    sidebarPathVisibilityAtomFamily(getHazardSidebarPath(hazard)),
+  ) as [boolean, (value: boolean) => void];
+  const [showPopulation, setShowPopulation] = useAtom(
+    sidebarPathVisibilityAtomFamily('exposure/population'),
+  ) as [boolean, (value: boolean) => void];
 
   return (
     <>
       <InitPopulationView />
-      <StateEffectRoot state={populationExposureHazardState} effect={showOneHazardStateEffect} />
+      <AtomEffectRoot effectAtom={syncPopulationHazardToSidebarEffectAtom} />
       <DataNotice>
         <DataNoticeTextBlock>
           Map shows expected annual population exposed to extreme events, based on the annual

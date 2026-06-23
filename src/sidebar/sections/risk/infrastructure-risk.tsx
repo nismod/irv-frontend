@@ -1,54 +1,51 @@
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { atom, useAtom, useAtomValue } from 'jotai';
+import { atomEffect } from 'jotai-effect';
+import { useAtomCallback } from 'jotai/utils';
 import _ from 'lodash';
-import { Suspense, useEffect } from 'react';
-import { atom, useRecoilState, useRecoilTransaction_UNSTABLE, useRecoilValue } from 'recoil';
+import { Suspense, useCallback, useEffect } from 'react';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { DataGroup } from '@/lib/data-selection/DataGroup';
 import { makeOptions } from '@/lib/helpers';
-import { StateEffectRoot } from '@/lib/recoil/state-effects/StateEffectRoot';
-import { StateEffect } from '@/lib/recoil/state-effects/types';
+import { AtomEffectRoot } from '@/lib/jotai/effects/AtomEffectRoot';
 
 import { getHazardSidebarPath, HAZARDS_METADATA, HazardType } from '@/config/hazards/metadata';
 import { NetworkLayerType } from '@/config/networks/metadata';
 import { LinkViewLayerToPath } from '@/sidebar/LinkViewLayerToPath';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 import { DataNotice, DataNoticeTextBlock } from '@/sidebar/ui/DataNotice';
 import { DataParam } from '@/sidebar/ui/DataParam';
 import { InputRow } from '@/sidebar/ui/InputRow';
 import { InputSection } from '@/sidebar/ui/InputSection';
 import { EpochControl } from '@/sidebar/ui/params/EpochControl';
 import { RCPControl } from '@/sidebar/ui/params/RCPControl';
-import { paramValueState, useLoadParamsConfig } from '@/state/data-params';
+import { paramValueAtomFamily, useLoadParamsConfig } from '@/state/data-params';
 import {
-  damageSourceState,
-  showInfrastructureRiskState,
+  damageSourceAtom,
+  showInfrastructureRiskAtom,
 } from '@/state/data-selection/damage-mapping/damage-map';
-import { showOneHazardStateEffect } from '@/state/data-selection/hazards';
 import { syncInfrastructureSelectionStateEffect } from '@/state/data-selection/networks/network-selection';
 
-import { hideExposure, syncExposure } from './population-exposure';
+import { hideExposure, syncExposure, syncHazardSidebar } from './risk-sidebar-sync';
 
 type SectorType = 'roads' | 'rail' | 'power';
 
-const infrastructureRiskConfig = atom({
-  key: 'infrastructureRiskConfig',
-  default: {
-    paramDomains: {
-      sector: ['roads', 'rail', 'power'],
-      hazard: ['fluvial', 'cyclone'],
-    },
-    paramDefaults: {
-      sector: 'roads',
-      hazard: 'fluvial',
-    },
-    paramDependencies: {
-      hazard: ({ sector }) => {
-        if (sector === 'roads') return ['fluvial'];
-        if (sector === 'rail') return ['fluvial'];
-        if (sector === 'power') return ['cyclone'];
-      },
+const infrastructureRiskConfigAtom = atom({
+  paramDomains: {
+    sector: ['roads', 'rail', 'power'],
+    hazard: ['fluvial', 'cyclone'],
+  },
+  paramDefaults: {
+    sector: 'roads',
+    hazard: 'fluvial',
+  },
+  paramDependencies: {
+    hazard: ({ sector }) => {
+      if (sector === 'roads') return ['fluvial'];
+      if (sector === 'rail') return ['fluvial'];
+      if (sector === 'power') return ['cyclone'];
     },
   },
 });
@@ -65,65 +62,64 @@ const SECTOR_LAYERS: Record<SectorType, NetworkLayerType[]> = {
   power: ['power_distribution', 'power_transmission'],
 };
 
-const syncInfrastructureWithSectorEffect: StateEffect<SectorType> = (iface, sector) => {
-  const layers = SECTOR_LAYERS[sector];
+const infrastructureSectorParam = { group: 'infrastructure-risk', param: 'sector' } as const;
+const infrastructureHazardParam = { group: 'infrastructure-risk', param: 'hazard' } as const;
 
-  syncInfrastructureSelectionStateEffect(iface, layers);
-};
+const syncSectorToNetworkTreeEffectAtom = atomEffect((get, set) => {
+  const sector = get(paramValueAtomFamily(infrastructureSectorParam)) as SectorType;
+  syncInfrastructureSelectionStateEffect({ get, set }, SECTOR_LAYERS[sector]);
+});
 
-const syncHazardEffect: StateEffect<HazardType> = (iface, hazard) => {
-  showOneHazardStateEffect(iface, hazard);
+const syncInfrastructureHazardToSidebarEffectAtom = atomEffect((get, set) => {
+  const hazard = get(paramValueAtomFamily(infrastructureHazardParam)) as HazardType;
+  syncHazardSidebar({ get, set }, getHazardSidebarPath(hazard));
+});
 
-  iface.set(damageSourceState, hazard);
+const syncHazardToDamageSourceEffectAtom = atomEffect((get, set) => {
+  set(damageSourceAtom, get(paramValueAtomFamily(infrastructureHazardParam)) as HazardType);
+});
+
+const InitInfrastructureView = () => {
+  const updateExposureFn = useAtomCallback(
+    useCallback((get, set) => syncExposure({ get, set }, 'infrastructure'), []),
+  );
+  const hideExposureFn = useAtomCallback(
+    useCallback((get, set) => hideExposure({ get, set }, 'infrastructure'), []),
+  );
+
+  useEffect(() => {
+    updateExposureFn();
+
+    return () => {
+      hideExposureFn();
+    };
+  }, [updateExposureFn, hideExposureFn]);
+
+  return null;
 };
 
 function labelHazard(x) {
   return HAZARDS_METADATA[x].label;
 }
 
-const InitInfrastructureView = () => {
-  const updateExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => syncExposure(iface, 'infrastructure'),
-    [],
-  );
-  const hideExposureTx = useRecoilTransaction_UNSTABLE(
-    (iface) => () => hideExposure(iface, 'infrastructure'),
-    [],
-  );
-  useEffect(() => {
-    updateExposureTx();
-
-    return () => {
-      hideExposureTx();
-    };
-  }, [updateExposureTx, hideExposureTx]);
-
-  return null;
-};
-
 export const InfrastructureRiskSection = () => {
-  useLoadParamsConfig(infrastructureRiskConfig, 'infrastructure-risk');
-  const damageSource = useRecoilValue(damageSourceState);
+  useLoadParamsConfig(infrastructureRiskConfigAtom, 'infrastructure-risk');
+  const damageSource = useAtomValue(damageSourceAtom);
 
-  const [showHazard, setShowHazard] = useRecoilState(
-    sidebarPathVisibilityState(getHazardSidebarPath(damageSource)),
+  const [showHazard, setShowHazard] = useAtom(
+    sidebarPathVisibilityAtomFamily(getHazardSidebarPath(damageSource)),
   );
 
   return (
     // the top-level Suspense prevents deadlock between the `useLoadParamConfig()` and components that use the state that hook loads
     // both the hook and the components suspend, and in React 18 concurrent mode, this makes React suspend the tree indefinitely
     <Suspense fallback="Loading data...">
-      <LinkViewLayerToPath state={showInfrastructureRiskState} />
+      <LinkViewLayerToPath atom={showInfrastructureRiskAtom} resetOnUnmount />
       <InitInfrastructureView />
+      <AtomEffectRoot effectAtom={syncSectorToNetworkTreeEffectAtom} />
+      <AtomEffectRoot effectAtom={syncHazardToDamageSourceEffectAtom} />
+      <AtomEffectRoot effectAtom={syncInfrastructureHazardToSidebarEffectAtom} />
       <InputSection>
-        <StateEffectRoot
-          state={paramValueState({ group: 'infrastructure-risk', param: 'sector' })}
-          effect={syncInfrastructureWithSectorEffect}
-        />
-        <StateEffectRoot
-          state={paramValueState({ group: 'infrastructure-risk', param: 'hazard' })}
-          effect={syncHazardEffect}
-        />
         <DataNotice>
           <DataNoticeTextBlock>
             Power sector assets (transmission lines) are assumed to be vulnerable to high wind

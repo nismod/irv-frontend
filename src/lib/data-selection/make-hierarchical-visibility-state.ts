@@ -1,37 +1,37 @@
-import { selectorFamily } from 'recoil';
+import { atom } from 'jotai';
+import { atomFamily } from 'jotai-family';
 
-import { getParentPath } from '../paths/utils';
-import { RecoilStateFamily } from '../recoil/types';
+import type { JotaiStateFamily } from '@/lib/jotai/types';
+import { getParentPath } from '@/lib/paths/utils';
 
-export function makeHierarchicalVisibilityState(
-  singleVisibilityState: RecoilStateFamily<boolean, string>,
-) {
-  const hierarchicalVisibilityState = selectorFamily<boolean, string>({
-    key: 'sidebarPathVisibilityState',
-    get:
-      (path: string) =>
-      ({ get }) => {
+/** Writable atom family: effective visibility (self preference ∧ parent visible). */
+export type HierarchicalVisibilityAtomFamily = JotaiStateFamily<boolean, string>;
+
+export function makeHierarchicalVisibilityAtomFamily(
+  singleVisibilityAtomFamily: JotaiStateFamily<boolean, string>,
+): HierarchicalVisibilityAtomFamily {
+  const hierarchicalVisibilityAtomFamily = atomFamily((path: string) =>
+    atom(
+      (get) => {
         const parentPath = getParentPath(path);
-
         return (
-          (parentPath === '' || get(hierarchicalVisibilityState(parentPath))) &&
-          get(singleVisibilityState(path))
+          (parentPath === '' || get(hierarchicalVisibilityAtomFamily(parentPath))) &&
+          get(singleVisibilityAtomFamily(path))
         );
       },
-    set:
-      (path: string) =>
-      ({ get, set }, newVisibility) => {
+      (get, set, newVisibility: boolean) => {
         if (newVisibility) {
-          set(singleVisibilityState(path), true);
+          set(singleVisibilityAtomFamily(path), true);
           const parentPath = getParentPath(path);
-          if (parentPath !== '' && get(hierarchicalVisibilityState(parentPath)) === false) {
-            set(hierarchicalVisibilityState(parentPath), true);
+          if (parentPath !== '' && get(hierarchicalVisibilityAtomFamily(parentPath)) === false) {
+            set(hierarchicalVisibilityAtomFamily(parentPath), true);
           }
         } else {
-          set(singleVisibilityState(path), false);
+          set(singleVisibilityAtomFamily(path), false);
         }
       },
-  });
+    ),
+  );
 
-  return hierarchicalVisibilityState;
+  return hierarchicalVisibilityAtomFamily as HierarchicalVisibilityAtomFamily;
 }

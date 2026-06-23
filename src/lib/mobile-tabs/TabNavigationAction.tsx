@@ -1,9 +1,9 @@
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { SvgIconProps } from '@mui/material/SvgIcon';
+import { useAtomValue } from 'jotai';
 import React, { ComponentType, FC } from 'react';
-import { useRecoilValue } from 'recoil';
 
-import { RecoilReadableStateFamily } from '@/lib/recoil/types';
+import { JotaiReadableStateFamily } from '@/lib/jotai/types';
 
 /**
  * Custom BottomNavigationAction that gets disabled if the corresponding tab doesn't have any content.
@@ -19,9 +19,9 @@ export const TabNavigationAction: FC<{
   showLabel?: boolean;
   onChange?: any;
 
-  tabHasContentState: RecoilReadableStateFamily<boolean, string>;
-}> = ({ value, label, IconComponent, selected, showLabel, onChange, tabHasContentState }) => {
-  const hasContent = useRecoilValue(tabHasContentState(value));
+  tabHasContentAtomFamily: JotaiReadableStateFamily<boolean, string>;
+}> = ({ value, label, IconComponent, selected, showLabel, onChange, tabHasContentAtomFamily }) => {
+  const hasContent = useAtomValue(tabHasContentAtomFamily(value));
   const disabled = !hasContent;
 
   // cloneElement is needed here because MUI BottomNavigation uses Children.map and cloneElement

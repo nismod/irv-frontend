@@ -1,13 +1,10 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { healthsitesViewLayer } from '@/config/healthcare/healthsites-view-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 
-export const healthcareLayersState = selector<ViewLayer>({
-  key: 'healthcareLayersState',
-  get: ({ get }) => {
-    return get(sidebarPathVisibilityState('exposure/healthsites')) && healthsitesViewLayer();
-  },
-});
+export const healthcareLayersAtom = atom<ViewLayer | false>((get) =>
+  get(sidebarPathVisibilityAtomFamily('exposure/healthsites')) ? healthsitesViewLayer() : false,
+);

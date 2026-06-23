@@ -1,12 +1,12 @@
+import { useSetAtom } from 'jotai';
 import { useCallback } from 'react';
-import { useSetRecoilState } from 'recoil';
 
 import { BoundingBox } from '@/lib/bounding-box';
 
-import { mapFitBoundsState } from './MapView';
+import { mapFitBoundsAtom } from '@/state/map-view/map-view-state';
 
 export function useMapFitBounds() {
-  const setMapFitBounds = useSetRecoilState(mapFitBoundsState);
+  const setMapFitBounds = useSetAtom(mapFitBoundsAtom);
 
   const handleSetMapFitBounds = useCallback(
     (bounds: BoundingBox) => {

@@ -1,42 +1,30 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { nbsViewLayer } from '@/config/nbs/nbs-layer';
 import { scopeRegionsLayer } from '@/config/nbs/scope-regions-layer';
-import { backgroundState, showLabelsState } from '@/map/layers/layers-state';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { backgroundAtom, showLabelsAtom } from '@/map/layers/layers-state';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 import {
-  nbsAdaptationTypeState,
-  nbsCategoricalConfigState,
-  nbsRegionScopeLevelState,
-  nbsStyleParamsState,
+  nbsAdaptationTypeAtom,
+  nbsCategoricalConfigAtom,
+  nbsRegionScopeLevelAtom,
+  nbsStyleParamsAtom,
 } from '@/state/data-selection/nbs';
 
-export const nbsScopeRegionLayerState = selector<ViewLayer[]>({
-  key: 'nbsScopeRegionLayerState',
-  get: ({ get }) => {
-    return get(sidebarPathVisibilityState('adaptation/nbs'))
-      ? [
-          scopeRegionsLayer(
-            get(nbsRegionScopeLevelState),
-            get(showLabelsState),
-            get(backgroundState),
-          ),
-        ]
-      : null;
-  },
-});
+export const nbsScopeRegionLayerAtom = atom<ViewLayer[] | null>((get) =>
+  get(sidebarPathVisibilityAtomFamily('adaptation/nbs'))
+    ? [scopeRegionsLayer(get(nbsRegionScopeLevelAtom), get(showLabelsAtom), get(backgroundAtom))]
+    : null,
+);
 
-export const nbsLayerState = selector<ViewLayer>({
-  key: 'nbsLayerState',
-  get: ({ get }) => {
-    return get(sidebarPathVisibilityState('adaptation/nbs'))
-      ? nbsViewLayer(
-          get(nbsStyleParamsState),
-          get(nbsAdaptationTypeState),
-          get(nbsCategoricalConfigState),
-        )
-      : null;
-  },
-});
+export const nbsLayerAtom = atom<ViewLayer | null>((get) =>
+  get(sidebarPathVisibilityAtomFamily('adaptation/nbs'))
+    ? nbsViewLayer(
+        get(nbsStyleParamsAtom),
+        get(nbsAdaptationTypeAtom),
+        get(nbsCategoricalConfigAtom),
+      )
+    : null,
+);

@@ -1,13 +1,10 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 export type MapInteractionMode = 'standard' | 'pixel-driller';
 
-export const mapInteractionModeState = atom<MapInteractionMode>({
-  key: 'mapInteractionMode',
-  default: 'standard',
-});
+export const mapInteractionModeAtom = atom<MapInteractionMode>('standard');
 
-export const pixelDrillerClickLocationState = atom<{ lng: number; lat: number } | null>({
-  key: 'pixelDrillerClickLocation',
-  default: null,
-});
+// Note: bind the `null` initial value to a typed variable to avoid Jotai's
+// `atom(value)` overload being resolved as the read-only `atom(readFn)` form.
+const INITIAL_PIXEL_DRILLER_CLICK_LOCATION: { lng: number; lat: number } | null = null;
+export const pixelDrillerClickLocationAtom = atom(INITIAL_PIXEL_DRILLER_CLICK_LOCATION);

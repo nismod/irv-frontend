@@ -2,9 +2,9 @@ import { Close } from '@mui/icons-material';
 import { Alert, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { buildZipFile } from '@/lib/downloads/download-utils';
 import { DownloadButton } from '@/lib/downloads/DownloadButton';
@@ -12,25 +12,16 @@ import { DownloadFile } from '@/lib/downloads/types';
 import { ExtLink } from '@/lib/nav';
 import { CopyableLink } from '@/lib/nav/CopyableLink';
 
-import { pixelDrillerClickLocationState } from '@/state/map-view/map-interaction-state';
-import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
+import { pixelDrillerClickLocationAtom } from '@/state/map-view/map-interaction-state';
+import { pixelDrillerSiteUrlAtom } from '@/state/map-view/pixel-driller-url-state';
 
+import { PixelDrillerLayerList } from './contents/PixelDrillerLayerList';
 import { asPixelResponse } from './data-transforms';
-import { CoastalFlooding } from './domains/aqueduct-coastal';
-import { RiverFloodingAqueduct } from './domains/aqueduct-river';
-import { CoolingDegreeDays } from './domains/cooling-degree-days';
-import { TropicalCyclonesIris } from './domains/cyclone-iris';
-import { TropicalCyclonesStorm } from './domains/cyclone-storm';
-import { Droughts } from './domains/droughts';
-import { Earthquakes } from './domains/earthquakes';
-import { ExtremeHeat } from './domains/extreme-heat';
-import { RiverFloodingJrc } from './domains/jrc-flood';
-import { Landslides } from './domains/landslide';
 import { DownloadDataProvider, useDownloadDataContext } from './download/download-context';
 import { buildReadmeFile } from './download/download-generators';
 import { createSpatialPoint } from './download/metadata-common';
 import { RdlsMetadataPackage } from './download/metadata-types';
-import { openAccordionState } from './hazard-accordion';
+import { accordionTransitionCountAtom, openAccordionAtom } from './hazard-accordion';
 import { PixelResponse } from './types';
 
 interface SiteDetailsContentProps {
@@ -47,10 +38,11 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const openAccordion = useRecoilValue(openAccordionState);
+  const openAccordion = useAtomValue(openAccordionAtom);
+  const transitionCount = useAtomValue(accordionTransitionCountAtom);
   const { getAllExportConfigs } = useDownloadDataContext();
-  const setPixelDrillerClickLocation = useSetRecoilState(pixelDrillerClickLocationState);
-  const setPixelDrillerSiteParam = useSetRecoilState(pixelDrillerSiteUrlState);
+  const setPixelDrillerClickLocation = useSetAtom(pixelDrillerClickLocationAtom);
+  const setPixelDrillerSiteParam = useSetAtom(pixelDrillerSiteUrlAtom);
 
   const coordinatesUrl = useMemo(() => {
     const siteValue = `"${lat.toFixed(6)},${lng.toFixed(6)}"`;
@@ -88,30 +80,52 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
     fetchPixelData();
   }, [lng, lat]);
 
-  // Scroll behavior when data loads or open accordion changes
-  useLayoutEffect(() => {
-    const container = containerRef.current;
+  // Scroll the currently open section into view once layout is stable
+  // (no accordion transitions in flight) and data is loaded.
+  // Uses a smooth animation in all cases (location or section changes).
+  useEffect(() => {
+    if (loading || error || !pixelData) return;
+    if (!openAccordion) return;
+    if (transitionCount > 0) return;
+
+    const section = document.querySelector<HTMLElement>(
+      `[data-pixel-driller-section="${openAccordion}"]`,
+    );
+    if (!section) return;
+
+    const container = section.closest<HTMLElement>('[data-accordion-scroll-container]');
     if (!container) return;
 
-    // While loading or on error / no data, keep scroll at top
-    if (loading || error || !pixelData) {
-      container.scrollTop = 0;
-      return;
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = section.getBoundingClientRect();
+
+    const containerHeight = containerRect.height;
+    const targetHeight = targetRect.height;
+    const padding = 10; // px of desired space above/below when possible
+
+    let delta = 0;
+
+    if (targetHeight >= containerHeight) {
+      // Target taller than container: align the top edge with padding if possible.
+      delta = targetRect.top - (containerRect.top + padding);
+    } else {
+      const isAbove = targetRect.top < containerRect.top + padding;
+      const isBelow = targetRect.bottom > containerRect.bottom - padding;
+
+      if (isAbove) {
+        delta = targetRect.top - (containerRect.top + padding);
+      } else if (isBelow) {
+        delta = targetRect.bottom - (containerRect.bottom - padding);
+      }
     }
 
-    // If no accordion is expanded, keep scroll at top
-    if (!openAccordion) {
-      container.scrollTop = 0;
-      return;
+    if (delta !== 0) {
+      container.scrollTo({
+        top: container.scrollTop + delta,
+        behavior: 'smooth',
+      });
     }
-
-    // Scroll the expanded accordion into view (no animation)
-    const target = container.querySelector<HTMLElement>(`[data-hazard-title="${openAccordion}"]`);
-    if (target) {
-      // Let the browser choose the appropriate scroll container and adjust immediately
-      target.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
-    }
-  }, [loading, error, pixelData, openAccordion]);
+  }, [loading, error, pixelData, openAccordion, transitionCount, lng, lat]);
 
   const makeDownloadZipFile = useCallback(async (): Promise<DownloadFile> => {
     const exportConfigs = getAllExportConfigs();
@@ -239,20 +253,7 @@ const SiteDetailsContentInner: FC<SiteDetailsContentProps> = ({ lng, lat }) => {
         </Box>
       )}
 
-      {!loading && !error && pixelData && (
-        <Box sx={{ mt: 2 }}>
-          <RiverFloodingAqueduct records={pixelData.results} />
-          <RiverFloodingJrc records={pixelData.results} />
-          <CoastalFlooding records={pixelData.results} />
-          <TropicalCyclonesIris records={pixelData.results} />
-          <TropicalCyclonesStorm records={pixelData.results} />
-          {/* <CoolingDegreeDays records={pixelData.results} /> */}
-          <ExtremeHeat records={pixelData.results} />
-          <Droughts records={pixelData.results} />
-          {/* <Landslides records={pixelData.results} /> */}
-          <Earthquakes records={pixelData.results} />
-        </Box>
-      )}
+      {!loading && !error && pixelData && <PixelDrillerLayerList records={pixelData.results} />}
     </Box>
   );
 };

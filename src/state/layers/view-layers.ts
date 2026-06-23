@@ -1,79 +1,70 @@
-import { waitForAll } from 'recoil';
+import { makeViewLayersAtom } from '@/lib/data-map/state/make-view-layers-atom';
 
-import { makeViewLayersState } from '@/lib/data-map/state/make-view-layers-state';
-
-import { buildingDensityLayerState } from './data-layers/building-density';
-import { cddLayersState } from './data-layers/cdd';
-import { hazardLayerState } from './data-layers/hazards';
-import { hdiGridLayerState } from './data-layers/hdi-grid';
-import { healthcareLayersState } from './data-layers/healthcare';
-import { humanDevelopmentLayerState } from './data-layers/human-development';
-import { industryLayersState } from './data-layers/industry';
-import { landCoverLayerState } from './data-layers/land-cover';
+import { buildingDensityLayerAtom } from './data-layers/building-density';
+import { cddLayersAtom } from './data-layers/cdd';
+import { hazardLayersAtom } from './data-layers/hazards';
+import { hdiGridLayerAtom } from './data-layers/hdi-grid';
+import { healthcareLayersAtom } from './data-layers/healthcare';
+import { humanDevelopmentLayerAtom } from './data-layers/human-development';
+import { industryLayersAtom } from './data-layers/industry';
+import { landCoverLayerAtom } from './data-layers/land-cover';
 import {
-  biodiversityIntactnessLayerState,
-  forestLandscapeIntegrityLayerState,
+  biodiversityIntactnessLayerAtom,
+  forestLandscapeIntegrityLayerAtom,
 } from './data-layers/nature-vulnerability';
-import { nbsLayerState, nbsScopeRegionLayerState } from './data-layers/nbs';
-import { networkLayersState } from './data-layers/networks';
-import { organicCarbonLayerState } from './data-layers/organic-carbon';
-import { populationLayerState } from './data-layers/population';
-import { populationExposureLayerState } from './data-layers/population-exposure';
+import { nbsLayerAtom, nbsScopeRegionLayerAtom } from './data-layers/nbs';
+import { networkLayersAtom } from './data-layers/networks';
+import { organicCarbonLayerAtom } from './data-layers/organic-carbon';
+import { populationLayerAtom } from './data-layers/population';
+import { populationExposureLayerAtom } from './data-layers/population-exposure';
 import {
-  protectedAreasPointLayerState,
-  protectedAreasPolygonLayerState,
+  protectedAreasPointLayerAtom,
+  protectedAreasPolygonLayerAtom,
 } from './data-layers/protected-areas';
-import { regionalExposureLayerState } from './data-layers/regional-risk';
-import { rwiLayerState } from './data-layers/rwi';
-import { topographyLayersState } from './data-layers/topography';
-import { travelTimeLayerState } from './data-layers/travel-time';
-import { featureBoundingBoxLayerState } from './ui-layers/feature-bbox';
+import { regionalExposureLayerAtom } from './data-layers/regional-risk';
+import { rwiLayerAtom } from './data-layers/rwi';
+import { topographyLayersAtom } from './data-layers/topography';
+import { travelTimeLayerAtom } from './data-layers/travel-time';
+import { featureBoundingBoxLayerAtom } from './ui-layers/feature-bbox';
 
-export const viewLayersState = makeViewLayersState({
-  key: 'viewLayersState',
-  getViewLayers: ({ get }) => {
-    return get(
-      waitForAll([
-        /**
-         * Data layers
-         */
+export const viewLayersAtom = makeViewLayersAtom([
+  /**
+   * Data layers
+   */
 
-        // raster layers that cover all/most of land
-        landCoverLayerState,
-        populationLayerState,
-        buildingDensityLayerState,
-        organicCarbonLayerState,
-        biodiversityIntactnessLayerState,
-        forestLandscapeIntegrityLayerState,
-        travelTimeLayerState,
-        topographyLayersState,
-        cddLayersState,
-        hdiGridLayerState,
+  // raster layers that cover all/most of land
+  landCoverLayerAtom,
+  populationLayerAtom,
+  buildingDensityLayerAtom,
+  organicCarbonLayerAtom,
+  biodiversityIntactnessLayerAtom,
+  forestLandscapeIntegrityLayerAtom,
+  travelTimeLayerAtom,
+  topographyLayersAtom,
+  cddLayersAtom,
+  hdiGridLayerAtom,
 
-        // vector layers that cover all/most of land
-        humanDevelopmentLayerState,
-        regionalExposureLayerState,
+  // vector layers that cover all/most of land
+  humanDevelopmentLayerAtom,
+  regionalExposureLayerAtom,
 
-        // vector / raster layers that cover some land
-        protectedAreasPolygonLayerState,
-        hazardLayerState,
-        populationExposureLayerState,
-        nbsLayerState,
-        rwiLayerState,
+  // vector / raster layers that cover some land
+  protectedAreasPolygonLayerAtom,
+  hazardLayersAtom,
+  populationExposureLayerAtom,
+  nbsLayerAtom,
+  rwiLayerAtom,
 
-        // point/line layers
-        networkLayersState,
-        industryLayersState,
-        healthcareLayersState,
-        protectedAreasPointLayerState,
+  // point/line layers
+  networkLayersAtom,
+  industryLayersAtom,
+  healthcareLayersAtom,
+  protectedAreasPointLayerAtom,
 
-        /**
-         * UI Layers
-         */
-        nbsScopeRegionLayerState,
+  /**
+   * UI Layers
+   */
+  nbsScopeRegionLayerAtom,
 
-        featureBoundingBoxLayerState,
-      ]),
-    );
-  },
-});
+  featureBoundingBoxLayerAtom,
+]);

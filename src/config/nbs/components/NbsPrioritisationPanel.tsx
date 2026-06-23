@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { useAtomValue } from 'jotai';
 import { FC, useEffect } from 'react';
-import { selector, useRecoilValue } from 'recoil';
 
 import { ListFeature } from '@/lib/asset-list/use-sorted-features';
 import { extendBbox } from '@/lib/bounding-box';
@@ -11,34 +11,27 @@ import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 import { NBS_ADAPTATION_TYPE_LABEL_LOOKUP } from '@/config/nbs/metadata';
 import { SidePanel } from '@/details/ui/SidePanel';
 import { useMapFitBounds } from '@/map/use-map-fit-bounds';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 import {
-  nbsAdaptationTypeState,
-  nbsIsDataVariableContinuous,
-  nbsSelectedScopeRegionBboxState,
-  nbsSelectedScopeRegionIdState,
-  nbsSelectedScopeRegionNameState,
+  nbsAdaptationTypeAtom,
+  nbsIsDataVariableContinuousAtom,
+  nbsSelectedScopeRegionBboxAtom,
+  nbsSelectedScopeRegionIdAtom,
+  nbsSelectedScopeRegionNameAtom,
 } from '@/state/data-selection/nbs';
 
 import { FeatureAdaptationsTable } from './FeatureAdaptationsTable';
 
-export const showPrioritisationState = selector<boolean>({
-  key: 'showPrioritisationState',
-  get: ({ get }) => {
-    return (
-      get(sidebarPathVisibilityState('adaptation/nbs')) &&
-      get(nbsSelectedScopeRegionIdState) != null &&
-      get(nbsIsDataVariableContinuous)
-    );
-  },
-});
-
 export const NbsPrioritisationPanel: FC = () => {
-  const adaptationType = useRecoilValue(nbsAdaptationTypeState);
-  const showPrioritisation = useRecoilValue(showPrioritisationState);
-  const selectedRegionName = useRecoilValue(nbsSelectedScopeRegionNameState);
+  const adaptationType = useAtomValue(nbsAdaptationTypeAtom);
+  const sidebarVisible = useAtomValue(sidebarPathVisibilityAtomFamily('adaptation/nbs'));
+  const selectedRegionId = useAtomValue(nbsSelectedScopeRegionIdAtom);
+  const isContinuous = useAtomValue(nbsIsDataVariableContinuousAtom);
+  const showPrioritisation = sidebarVisible && selectedRegionId != null && isContinuous;
 
-  const scopeRegionExtent = useRecoilValue(nbsSelectedScopeRegionBboxState);
+  const selectedRegionName = useAtomValue(nbsSelectedScopeRegionNameAtom);
+
+  const scopeRegionExtent = useAtomValue(nbsSelectedScopeRegionBboxAtom);
   const { setMapFitBounds } = useMapFitBounds();
 
   function handleZoomInFeature(feature: ListFeature) {

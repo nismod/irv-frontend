@@ -2,25 +2,22 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { selector, useRecoilState, useRecoilValue } from 'recoil';
+import { atom, useAtom, useAtomValue } from 'jotai';
 
 import { titleCase, unique } from '@/lib/helpers';
-import { makeSelectState } from '@/lib/recoil/make-state/make-select-state';
+import { makeSelectAtom } from '@/lib/jotai/make-state/make-select-atom';
 
 import { HAZARDS_METADATA } from '@/config/hazards/metadata';
 
-import { damagesDataState } from './ExpectedDamagesSection';
-import { selectedRpDataState } from './RPDamagesSection';
+import { damagesDataAtom } from './ExpectedDamagesSection';
+import { selectedRpDataAtom } from './RPDamagesSection';
 
-export const hazardsState = selector({
-  key: 'DamagesSection/hazardsState',
-  get: ({ get }) => unique(get(damagesDataState).map((d) => d.hazard)),
-});
-export const selectedHazardState = makeSelectState('DamagesSection/selectedHazard', hazardsState);
+export const hazardsAtom = atom((get) => unique(get(damagesDataAtom).map((d) => d.hazard)));
+export const selectedHazardAtom = makeSelectAtom(hazardsAtom);
 
 export const HazardSelect = () => {
-  const hazards = useRecoilValue(hazardsState);
-  const [selectedHazard, setSelectedHazard] = useRecoilState(selectedHazardState);
+  const hazards = useAtomValue(hazardsAtom);
+  const [selectedHazard, setSelectedHazard] = useAtom(selectedHazardAtom);
 
   return hazards.length ? (
     <FormControl fullWidth sx={{ my: 2 }} disabled={hazards.length === 1}>
@@ -40,15 +37,12 @@ export const HazardSelect = () => {
   ) : null;
 };
 
-export const epochsState = selector({
-  key: 'DamagesSection/epochsState',
-  get: ({ get }) => unique(get(damagesDataState).map((d) => d.epoch)).sort(),
-});
-export const selectedEpochState = makeSelectState('DamagesSection/selectedEpoch', epochsState);
+export const epochsAtom = atom((get) => unique(get(damagesDataAtom).map((d) => d.epoch)).sort());
+export const selectedEpochAtom = makeSelectAtom(epochsAtom);
 
 export const EpochSelect = () => {
-  const epochs = useRecoilValue(epochsState);
-  const [selectedEpoch, setSelectedEpoch] = useRecoilState(selectedEpochState);
+  const epochs = useAtomValue(epochsAtom);
+  const [selectedEpoch, setSelectedEpoch] = useAtom(selectedEpochAtom);
 
   return epochs.length ? (
     <FormControl fullWidth disabled={epochs.length === 1}>
@@ -70,33 +64,27 @@ export const EpochSelect = () => {
 
 export const SHOW_ALL_OPTION = 'Show All';
 
-const rpOptionsState = selector({
-  key: 'DamagesSection/rpOptionsState',
-  get: ({ get }) => {
-    const selectedRpData = get(selectedRpDataState);
+const rpOptionsAtom = atom((get) => {
+  const selectedRpData = get(selectedRpDataAtom);
 
-    return selectedRpData
-      ? [
-          SHOW_ALL_OPTION,
-          ...unique(
-            selectedRpData
-              .map((row) => row.rp)
-              .sort((a, b) => a - b)
-              .map(String),
-          ),
-        ]
-      : [];
-  },
+  return selectedRpData
+    ? [
+        SHOW_ALL_OPTION,
+        ...unique(
+          selectedRpData
+            .map((row) => row.rp)
+            .sort((a, b) => a - b)
+            .map(String),
+        ),
+      ]
+    : [];
 });
 
-export const selectedRpOptionState = makeSelectState(
-  'DamagesSection/selectedRpOption',
-  rpOptionsState,
-);
+export const selectedRpOptionAtom = makeSelectAtom(rpOptionsAtom);
 
 export const ReturnPeriodSelect = () => {
-  const rpOptions = useRecoilValue(rpOptionsState);
-  const [selectedRpOption, setSelectedRpOption] = useRecoilState(selectedRpOptionState);
+  const rpOptions = useAtomValue(rpOptionsAtom);
+  const [selectedRpOption, setSelectedRpOption] = useAtom(selectedRpOptionAtom);
 
   return rpOptions.length ? (
     <FormControl fullWidth disabled={rpOptions.length < 2}>

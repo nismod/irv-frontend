@@ -1,17 +1,18 @@
 import { FC, ReactNode } from 'react';
 
-import { RecoilStateFamily } from '../recoil/types';
+import type { JotaiStateFamily } from '@/lib/jotai/types';
+
 import { PathChildrenLoadingStateContext, PathChildrenStateContext } from './context';
 import { PathNode } from './PathNode';
 
 export const PathRoot: FC<{
-  pathChildrenState: RecoilStateFamily<string[], string>;
-  pathChildrenLoadingState: RecoilStateFamily<boolean, string>;
+  pathChildrenAtomFamily: JotaiStateFamily<string[], string>;
+  pathChildrenLoadingAtomFamily: JotaiStateFamily<boolean, string>;
   children?: ReactNode;
-}> = ({ pathChildrenState, pathChildrenLoadingState, children }) => {
+}> = ({ pathChildrenAtomFamily, pathChildrenLoadingAtomFamily, children }) => {
   return (
-    <PathChildrenStateContext.Provider value={pathChildrenState}>
-      <PathChildrenLoadingStateContext.Provider value={pathChildrenLoadingState}>
+    <PathChildrenStateContext.Provider value={pathChildrenAtomFamily}>
+      <PathChildrenLoadingStateContext.Provider value={pathChildrenLoadingAtomFamily}>
         <PathNode path="">{children}</PathNode>
       </PathChildrenLoadingStateContext.Provider>
     </PathChildrenStateContext.Provider>

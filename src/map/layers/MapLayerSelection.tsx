@@ -7,16 +7,16 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { useAtom } from 'jotai';
 import { useCallback, useState } from 'react';
-import { useRecoilState } from 'recoil';
 
-import { backgroundState, showLabelsState } from './layers-state';
+import { backgroundAtom, showLabelsAtom } from './layers-state';
 
 export const MapLayerSelection = () => {
   const [showPopover, setShowPopover] = useState(false);
 
-  const [background, setBackground] = useRecoilState(backgroundState);
-  const [showLabels, setShowLabels] = useRecoilState(showLabelsState);
+  const [background, setBackground] = useAtom(backgroundAtom);
+  const [showLabels, setShowLabels] = useAtom(showLabelsAtom);
 
   const other = background === 'satellite' ? 'light' : 'satellite';
 
@@ -39,7 +39,7 @@ export const MapLayerSelection = () => {
       <div
         onMouseEnter={() => setShowPopover(true)}
         onMouseLeave={() => setShowPopover(false)}
-        style={{ display: 'flex' }}
+        style={{ display: 'inline-flex', position: 'relative' }}
       >
         <Button
           aria-label="Toggle map background"
@@ -60,7 +60,17 @@ export const MapLayerSelection = () => {
           <LayersIcon />
         </Button>
         {showPopover && (
-          <Paper id="map-layers-popover" style={{ overflow: 'hidden', borderTopLeftRadius: 0 }}>
+          <Paper
+            id="map-layers-popover"
+            style={{
+              position: 'absolute',
+              left: 40,
+              top: 0,
+              overflow: 'hidden',
+              borderTopLeftRadius: 0,
+              zIndex: 1,
+            }}
+          >
             <Box width={220}>
               <Box px={2} py="6px" height={37} display="flex" borderBottom="1px solid #ddd">
                 <ToggleButtonGroup

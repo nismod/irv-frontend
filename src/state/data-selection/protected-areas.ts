@@ -1,11 +1,8 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 import { ProtectedAreaType } from '@/config/protected-areas/metadata';
 
-export const protectedAreaTypeSelectionState = atom<Record<ProtectedAreaType, boolean>>({
-  key: 'protectedAreaTypeSelectionState',
-  default: {
-    land: true,
-    marine: true,
-  },
+export const protectedAreaTypeSelectionAtom = atom<Record<ProtectedAreaType, boolean>>({
+  land: true,
+  marine: true,
 });

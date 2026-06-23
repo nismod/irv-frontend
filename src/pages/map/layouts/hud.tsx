@@ -1,5 +1,5 @@
+import { useSetAtom } from 'jotai';
 import { useCallback } from 'react';
-import { useSetRecoilState } from 'recoil';
 
 import {
   MapHudAttributionControl,
@@ -10,10 +10,10 @@ import { MapSearch } from '@/lib/map/place-search/MapSearch';
 import { PlaceSearchResult } from '@/lib/map/place-search/use-place-search';
 import { withProps } from '@/lib/react/with-props';
 
-import { mapFitBoundsState } from '@/map/MapView';
+import { mapFitBoundsAtom } from '@/state/map-view/map-view-state';
 
 export const AppPlaceSearch = () => {
-  const setFitBounds = useSetRecoilState(mapFitBoundsState);
+  const setFitBounds = useSetAtom(mapFitBoundsAtom);
 
   const handleSelectedSearchResult = useCallback(
     (result: PlaceSearchResult) => {

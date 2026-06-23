@@ -1,11 +1,10 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 
 import { landCoverViewLayer } from '@/config/land-cover/land-cover-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
 
-export const landCoverLayerState = selector<ViewLayer>({
-  key: 'landCoverLayerState',
-  get: ({ get }) => get(sidebarPathVisibilityState('exposure/land-cover')) && landCoverViewLayer(),
-});
+export const landCoverLayerAtom = atom<ViewLayer | false>((get) =>
+  get(sidebarPathVisibilityAtomFamily('exposure/land-cover')) ? landCoverViewLayer() : false,
+);

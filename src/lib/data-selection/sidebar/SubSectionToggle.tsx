@@ -3,19 +3,19 @@ import Collapse, { CollapseProps } from '@mui/material/Collapse';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { FC, Fragment, ReactNode, useContext, useMemo, useState } from 'react';
-import { useRecoilCallback } from 'recoil';
+import { useAtomCallback } from 'jotai/utils';
+import { FC, Fragment, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
 import {
   useHierarchicalVisibilityState,
   VisibilityStateContext,
 } from '@/lib/data-selection/sidebar/context';
+import { StateWatcher } from '@/lib/jotai/StateWatcher';
+import type { JotaiStateFamily } from '@/lib/jotai/types';
+import { useSetAtomFamily } from '@/lib/jotai/use-set-atom-family';
 import { usePath } from '@/lib/paths/context';
 import { SubPath } from '@/lib/paths/SubPath';
 import { makeChildPath } from '@/lib/paths/utils';
-import { StateWatcher } from '@/lib/recoil/StateWatcher';
-import { RecoilStateFamily } from '@/lib/recoil/types';
-import { useSetRecoilStateFamily } from '@/lib/recoil/use-set-recoil-state-family';
 
 export type SubSectionDefinition = {
   subPath: string;
@@ -30,12 +30,12 @@ export const SubSectionToggle: FC<{
 
   const path = usePath();
 
-  const visibilityToggleState = useContext(VisibilityStateContext);
-  const { getPathVisible, setPathVisible } = usePathVisibleFns(visibilityToggleState);
+  const visibilityToggleAtomFamily = useContext(VisibilityStateContext)!;
+  const { getPathVisible, setPathVisible } = usePathVisibleFns(visibilityToggleAtomFamily);
 
   const [selectedSection, setSelectedSection] = useState<string>();
 
-  function handleSelectedSection(selected: string) {
+  function handleSelectedSection(selected: string | undefined) {
     for (const subsection of sectionIds) {
       setPathVisible(makeChildPath(path, subsection), subsection === selected);
     }
@@ -59,10 +59,8 @@ export const SubSectionToggle: FC<{
 
   function handleChildVisibilityChange(child: string, visible: boolean) {
     if (visible) {
-      // pass
       handleSelectedSection(child);
     } else {
-      // check if all children are hidden
       const allHidden = sections.every(
         (section) => !getPathVisible(makeChildPath(path, section.subPath)),
       );
@@ -89,14 +87,17 @@ export const SubSectionToggle: FC<{
             <Fragment key={subPath}>
               <SubSection subPath={subPath}>{content}</SubSection>
               <StateWatcher
-                state={visibilityToggleState(makeChildPath(path, subPath))}
+                state={visibilityToggleAtomFamily(makeChildPath(path, subPath))}
                 onValue={(value) => handleChildVisibilityChange(subPath, value)}
               />
             </Fragment>
           ))}
         </Box>
       </Stack>
-      <StateWatcher state={visibilityToggleState(path)} onValue={handleParentVisibilityChange} />
+      <StateWatcher
+        state={visibilityToggleAtomFamily(path)}
+        onValue={handleParentVisibilityChange}
+      />
     </>
   );
 };
@@ -126,24 +127,18 @@ const SubSection: FC<{
   );
 };
 
-function usePathVisibleFns(visibilityToggleState: RecoilStateFamily<boolean, string>) {
-  const setPathVisible = useSetRecoilStateFamily(visibilityToggleState);
+function usePathVisibleFns(visibilityToggleAtomFamily: JotaiStateFamily<boolean, string>) {
+  const setPathVisible = useSetAtomFamily(visibilityToggleAtomFamily);
 
-  const getPathVisible = useRecoilCallback(
-    ({ snapshot }) => {
-      return (path: string) => {
-        const loadable = snapshot.getLoadable(visibilityToggleState(path));
-
-        if (loadable.state === 'hasValue') {
-          return loadable.getValue();
-        } else {
-          console.log(`isPathVisible: ${path} is not loaded yet`);
-          return false;
-        }
-      };
-    },
-    [visibilityToggleState],
+  const getPathVisible = useAtomCallback(
+    useCallback(
+      (get, _set, targetPath: string) => {
+        return get(visibilityToggleAtomFamily(targetPath));
+      },
+      [visibilityToggleAtomFamily],
+    ),
   );
+
   return { getPathVisible, setPathVisible };
 }
 
@@ -153,8 +148,8 @@ function SubSectionToggleButtonGroup({
   sections,
 }: {
   sections: SubSectionDefinition[];
-  selectedSection: string;
-  onSelectedSection: (sectionId: string) => void;
+  selectedSection: string | undefined;
+  onSelectedSection: (sectionId: string | undefined) => void;
 }) {
   return (
     <ToggleButtonGroup

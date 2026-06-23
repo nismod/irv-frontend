@@ -11,6 +11,7 @@ import { withoutAlpha } from '@/lib/deck/color';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
 
 import { SOURCES } from '../sources';
+import { getLandCoverCategoryName } from './land-cover-category-labels';
 import landCoverLegend from './land-cover-legend.json';
 
 const landCoverColorMap: RasterCategoricalColorMap = {
@@ -24,10 +25,6 @@ const landCoverColorValues = _.map(landCoverLegend, ({ color: rgba }, code) => (
 }));
 
 registerCategoricalColorScheme('land_cover', landCoverColorValues);
-
-const landCoverLabels = Object.fromEntries(
-  _.map(landCoverLegend, ({ name }, code) => [parseInt(code, 10), name]),
-);
 
 export function landCoverViewLayer(): ViewLayer {
   return {
@@ -54,7 +51,7 @@ export function landCoverViewLayer(): ViewLayer {
         colorMap: landCoverColorMap,
         color: hover.target.color,
         label: 'Land Cover',
-        formatValue: (x) => landCoverLabels[x],
+        formatValue: (x) => getLandCoverCategoryName(x) ?? String(x),
       });
     },
   };

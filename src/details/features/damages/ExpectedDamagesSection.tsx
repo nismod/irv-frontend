@@ -2,23 +2,23 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ExpectedDamage } from '@nismod/irv-api-client';
+import { atom, useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { selector, useRecoilValue } from 'recoil';
 
 import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 
 import { ButtonPlacement, DownloadButton } from '../DownloadButton';
 import {
   buildOrdering,
-  featureState,
-  hazardDataParamsState,
+  featureAtom,
+  hazardDataParamsAtom,
   orderDamages,
   QUIRKY_FIELDS_MAPPING,
 } from './DamagesSection';
 import { DamageTable } from './DamageTable';
 import { ExpectedDamageChart } from './ExpectedDamageChart';
-import { HazardSelect, selectedHazardState } from './param-controls';
+import { HazardSelect, selectedHazardAtom } from './param-controls';
 
 function getDamageKey({ hazard, rcp, epoch }) {
   return `${hazard}__rcp_${rcp}__epoch_${epoch}__conf_None`;
@@ -71,39 +71,30 @@ function makeDamagesCsv(damages: ExpectedDamageCell[]) {
   );
 }
 
-const damagesOrderingState = selector({
-  key: 'DamagesSection/damagesOrderingState',
-  get: ({ get }) => {
-    const params = get(hazardDataParamsState);
+const damagesOrderingAtom = atom((get) => {
+  const params = get(hazardDataParamsAtom);
 
-    return buildOrdering(params, ['rcp', 'epoch']);
-  },
+  return buildOrdering(params, ['rcp', 'epoch']);
 });
 
-export const damagesDataState = selector({
-  key: 'DamagesSection/damagesDataState',
-  get: ({ get }) => {
-    const raw = get(featureState)?.damages_expected;
-    if (raw == null) return [];
+export const damagesDataAtom = atom((get) => {
+  const raw = get(featureAtom)?.damages_expected;
+  if (raw == null) return [];
 
-    const prepared = prepareExpectedDamages(raw);
+  const prepared = prepareExpectedDamages(raw);
 
-    return orderDamages(prepared, get(damagesOrderingState), getDamageKey);
-  },
+  return orderDamages(prepared, get(damagesOrderingAtom), getDamageKey);
 });
 
-const selectedDamagesDataState = selector({
-  key: 'DamagesSection/selectedDamagesData',
-  get: ({ get }) => {
-    const selectedHazard = get(selectedHazardState);
-    return selectedHazard ? get(damagesDataState).filter((x) => x.hazard === selectedHazard) : null;
-  },
+const selectedDamagesDataAtom = atom((get) => {
+  const selectedHazard = get(selectedHazardAtom);
+  return selectedHazard ? get(damagesDataAtom).filter((x) => x.hazard === selectedHazard) : null;
 });
 
 export const ExpectedDamagesSection = () => {
-  const fd = useRecoilValue(featureState);
-  const damagesData = useRecoilValue(damagesDataState);
-  const selectedData = useRecoilValue(selectedDamagesDataState);
+  const fd = useAtomValue(featureAtom);
+  const damagesData = useAtomValue(damagesDataAtom);
+  const selectedData = useAtomValue(selectedDamagesDataAtom);
 
   const has_eael = useMemo(
     () => (selectedData ? selectedData.some((d) => d.eael_amax > 0) : null),

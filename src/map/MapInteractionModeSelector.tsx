@@ -1,11 +1,11 @@
 import { AdsClickOutlined } from '@mui/icons-material';
 import ToggleButton from '@mui/material/ToggleButton';
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 
-import { mapInteractionModeState } from '@/state/map-view/map-interaction-state';
+import { mapInteractionModeAtom } from '@/state/map-view/map-interaction-state';
 
 export const MapInteractionModeSelector = () => {
-  const [interactionMode, setInteractionMode] = useRecoilState(mapInteractionModeState);
+  const [interactionMode, setInteractionMode] = useAtom(mapInteractionModeAtom);
   const selected = interactionMode === 'pixel-driller';
 
   const handleToggle = () => {

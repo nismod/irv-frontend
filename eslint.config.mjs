@@ -29,9 +29,7 @@ export function createEslintConfig({ typeAware = true } = {}) {
     // recommended configs
     eslint.configs.recommended,
     // Use type-aware configs when typeAware is true, otherwise use stylistic (non-type-aware) rules
-    ...(typeAware
-      ? tseslint.configs.recommended
-      : tseslint.configs.stylistic),
+    ...(typeAware ? tseslint.configs.recommended : tseslint.configs.stylistic),
     prettierConfig,
 
     // React plugins
@@ -134,12 +132,7 @@ export function createEslintConfig({ typeAware = true } = {}) {
         'react/no-unescaped-entities': 'off', // TODO: enable rule
 
         // React Hooks rules
-        'react-hooks/exhaustive-deps': [
-          'warn',
-          {
-            additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)',
-          },
-        ],
+        'react-hooks/exhaustive-deps': ['warn', {}],
       },
     },
   );

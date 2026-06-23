@@ -3,8 +3,8 @@ import ZoomOut from '@mui/icons-material/ZoomOut';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { FC, useMemo } from 'react';
-import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { ExpandableRow } from '@/lib/asset-list/ExpandableRow';
 import { SortedAssetTable } from '@/lib/asset-list/SortedAssetTable';
@@ -15,37 +15,30 @@ import { ColorBox } from '@/lib/ui/data-display/ColorBox';
 import { apiClient } from '@/api-client';
 import { ExtendedAssetDetails } from '@/details/features/asset-details';
 import {
-  nbsAdaptationScopeSpecState,
-  nbsColorSpecState,
-  nbsFieldSpecState,
-  nbsLayerSpecState,
+  nbsAdaptationScopeSpecAtom,
+  nbsColorSpecAtom,
+  nbsFieldSpecAtom,
+  nbsLayerSpecAtom,
 } from '@/state/data-selection/nbs';
-import { boundedFeatureState } from '@/state/layers/ui-layers/feature-bbox';
+import { boundedFeatureAtom } from '@/state/layers/ui-layers/feature-bbox';
 
 import { getNbsDataFormatsConfig } from '../data-formats';
 import { NbsDetails } from '../details';
 
-export const hoveredAdaptationFeatureState = atom<ListFeature>({
-  key: 'hoveredAdaptationFeatureState',
-  default: null,
-});
-
-export const selectedAdaptationFeatureState = atom<ListFeature>({
-  key: 'selectedAdaptationFeatureState',
-  default: null,
-});
+const INITIAL_SELECTED_ADAPTATION_FEATURE: ListFeature | null = null;
+export const selectedAdaptationFeatureAtom = atom(INITIAL_SELECTED_ADAPTATION_FEATURE);
 
 export const FeatureAdaptationsTable: FC<{
   onZoomInFeature?: (feature: ListFeature) => void;
   onZoomOutRegion?: () => void;
 }> = ({ onZoomInFeature, onZoomOutRegion }) => {
-  const layerSpec = useRecoilValue(nbsLayerSpecState);
-  const fieldSpec = useRecoilValue(nbsFieldSpecState);
-  const colorSpec = useRecoilValue(nbsColorSpecState);
-  const scopeSpec = useRecoilValue(nbsAdaptationScopeSpecState);
+  const layerSpec = useAtomValue(nbsLayerSpecAtom);
+  const fieldSpec = useAtomValue(nbsFieldSpecAtom);
+  const colorSpec = useAtomValue(nbsColorSpecAtom);
+  const scopeSpec = useAtomValue(nbsAdaptationScopeSpecAtom);
 
-  const setBoundedFeature = useSetRecoilState(boundedFeatureState);
-  const [selectedFeature, setSelectedFeature] = useRecoilState(selectedAdaptationFeatureState);
+  const setBoundedFeature = useSetAtom(boundedFeatureAtom);
+  const [selectedFeature, setSelectedFeature] = useAtom(selectedAdaptationFeatureAtom);
 
   const colorFn = useMemo(() => colorMap(colorSpec), [colorSpec]);
 

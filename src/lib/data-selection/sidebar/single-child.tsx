@@ -5,7 +5,7 @@ import { EnforceSingleChild } from '@/lib/paths/EnforceSingleChild';
 import { VisibilityStateContext } from './context';
 
 export const EnforceSingleChildVisible = () => {
-  const visibilityState = useContext(VisibilityStateContext);
+  const visibilityAtomFamily = useContext(VisibilityStateContext);
 
-  return <EnforceSingleChild attributeState={visibilityState} />;
+  return <EnforceSingleChild attributeAtomFamily={visibilityAtomFamily!} />;
 };

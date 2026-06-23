@@ -4,8 +4,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
+import { atom, useAtom } from 'jotai';
+import { atomFamily } from 'jotai-family';
 import { useCallback, useRef } from 'react';
-import { atomFamily, useRecoilState } from 'recoil';
 
 import { firstNonEmptyString } from '@/lib/helpers';
 
@@ -14,14 +15,15 @@ import { globalStyleVariables } from '@/theme';
 import { DatasetDetails } from './dataset-details/DatasetDetails';
 import { DatasetStatusIndicator } from './dataset-indicator/DatasetStatusIndicator';
 
-const expandedDatasetByRegionState = atomFamily<string | null, string>({
-  key: 'expandedDatasetByRegion',
-  default: null,
-});
+const INITIAL_EXPANDED_DATASET: string | null = null;
+
+const expandedDatasetByRegionAtomFamily = atomFamily((_boundaryName: string) =>
+  atom(INITIAL_EXPANDED_DATASET),
+);
 
 function useOpen(boundaryName: string, processorVersion: string) {
-  const [expandedDataset, setExpandedDataset] = useRecoilState(
-    expandedDatasetByRegionState(boundaryName),
+  const [expandedDataset, setExpandedDataset] = useAtom(
+    expandedDatasetByRegionAtomFamily(boundaryName),
   );
 
   const open = expandedDataset === processorVersion;

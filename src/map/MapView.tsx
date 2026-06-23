@@ -1,8 +1,8 @@
+import { useAtom, useAtomValue } from 'jotai';
+import { useResetAtom } from 'jotai/utils';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import { MapMouseEvent } from 'react-map-gl/maplibre';
-import { atom, useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 
-import { BoundingBox } from '@/lib/bounding-box';
 import { BaseMap } from '@/lib/data-map/BaseMap';
 import { DataMap } from '@/lib/data-map/DataMap';
 import { DataMapTooltip } from '@/lib/data-map/DataMapTooltip';
@@ -10,47 +10,42 @@ import { MapBoundsFitter } from '@/lib/map/MapBoundsFitter';
 import { LocationMarker } from '@/lib/map/pixel-driller/LocationMarker';
 import { ErrorBoundary } from '@/lib/react/ErrorBoundary';
 
-import { interactionGroupsState } from '@/state/layers/interaction-groups';
-import { viewLayersState } from '@/state/layers/view-layers';
-import { viewLayersParamsState } from '@/state/layers/view-layers-params';
+import { interactionGroupsAtom } from '@/state/layers/interaction-groups';
+import { viewLayersAtom } from '@/state/layers/view-layers';
+import { viewLayersParamsAtom } from '@/state/layers/view-layers-params';
 import {
   MapInteractionMode,
-  mapInteractionModeState,
-  pixelDrillerClickLocationState,
+  mapInteractionModeAtom,
+  pixelDrillerClickLocationAtom,
 } from '@/state/map-view/map-interaction-state';
-import { mapViewStateState, useSyncMapUrl } from '@/state/map-view/map-view-state';
-import { pixelDrillerSiteUrlState } from '@/state/map-view/pixel-driller-url-state';
+import { mapFitBoundsAtom, mapViewStateAtom, useSyncMapUrl } from '@/state/map-view/map-view-state';
+import { pixelDrillerSiteUrlAtom } from '@/state/map-view/pixel-driller-url-state';
 
-import { backgroundState, showLabelsState } from './layers/layers-state';
+import { backgroundAtom, showLabelsAtom } from './layers/layers-state';
 import { TooltipContent } from './tooltip/TooltipContent';
 import { useBasemapStyle } from './use-basemap-style';
 
-export const mapFitBoundsState = atom<BoundingBox>({
-  key: 'mapFitBoundsState',
-  default: null,
-});
-
 const MapViewContent = ({ children }) => {
-  const [viewState, setViewState] = useRecoilState(mapViewStateState);
+  const [viewState, setViewState] = useAtom(mapViewStateAtom);
   useSyncMapUrl();
 
-  const background = useRecoilValue(backgroundState);
-  const showLabels = useRecoilValue(showLabelsState);
+  const background = useAtomValue(backgroundAtom);
+  const showLabels = useAtomValue(showLabelsAtom);
   const { mapStyle, firstLabelId } = useBasemapStyle(background, showLabels);
 
-  const viewLayers = useRecoilValue(viewLayersState);
-  const viewLayersParams = useRecoilValue(viewLayersParamsState);
+  const viewLayers = useAtomValue(viewLayersAtom);
+  const viewLayersParams = useAtomValue(viewLayersParamsAtom);
 
-  const interactionGroups = useRecoilValue(interactionGroupsState);
-  const [interactionMode, setInteractionMode] = useRecoilState(mapInteractionModeState);
-  const [clickLocation, setClickLocation] = useRecoilState(pixelDrillerClickLocationState);
-  const [siteParam, setSiteParam] = useRecoilState(pixelDrillerSiteUrlState);
+  const interactionGroups = useAtomValue(interactionGroupsAtom);
+  const [interactionMode, setInteractionMode] = useAtom(mapInteractionModeAtom);
+  const [clickLocation, setClickLocation] = useAtom(pixelDrillerClickLocationAtom);
+  const [siteParam, setSiteParam] = useAtom(pixelDrillerSiteUrlAtom);
 
-  const fitBounds = useRecoilValue(mapFitBoundsState);
+  const fitBounds = useAtomValue(mapFitBoundsAtom);
 
   const prevInteractionModeRef = useRef<MapInteractionMode | null>(null);
 
-  const resetFitBounds = useResetRecoilState(mapFitBoundsState);
+  const resetFitBounds = useResetAtom(mapFitBoundsAtom);
   useEffect(() => {
     // reset map fit bounds whenever MapView is mounted
     resetFitBounds();

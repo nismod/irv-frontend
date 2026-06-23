@@ -11,7 +11,9 @@ import { styled } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { FC, forwardRef, useCallback, useState } from 'react';
-import { NavLink as RouterNavLink, NavLinkProps as RouterNavLinkProps } from 'react-router-dom';
+import { NavLink as RouterNavLink, NavLinkProps as RouterNavLinkProps, To } from 'react-router-dom';
+
+import { useLiveLocationSearch } from '@/lib/nav/use-live-location-search';
 
 const BaseLink = styled(Link)({
   color: 'inherit',
@@ -66,6 +68,11 @@ const DrawerNavLink = forwardRef<HTMLAnchorElement, RouterNavLinkProps & Partial
 const GrowingDivider = styled(Divider)({
   flexGrow: 1,
 });
+
+/** View tabs share map camera + URL state; preserve the current query string when switching. */
+function viewTabTo(pathname: string, search: string): To {
+  return { pathname, search };
+}
 
 const navItems = [
   {
@@ -125,6 +132,7 @@ const MobileDrawer = styled(Drawer)({
 });
 
 const MobileNavContent: FC<{ height: number }> = ({ height }) => {
+  const search = useLiveLocationSearch();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const closeDrawer = useCallback(() => {
@@ -150,7 +158,12 @@ const MobileNavContent: FC<{ height: number }> = ({ height }) => {
             Home
           </ListItem>
           {navItems.map(({ to, title }) => (
-            <ListItem key={to} component={DrawerNavLink} to={to} onClick={closeDrawer}>
+            <ListItem
+              key={to}
+              component={DrawerNavLink}
+              to={viewTabTo(to, search)}
+              onClick={closeDrawer}
+            >
               {title}
             </ListItem>
           ))}
@@ -168,6 +181,7 @@ const MobileNavContent: FC<{ height: number }> = ({ height }) => {
 };
 
 const TabletNavContent: FC<{ height: number }> = ({ height }) => {
+  const search = useLiveLocationSearch();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const closeDrawer = useCallback(() => {
@@ -176,10 +190,12 @@ const TabletNavContent: FC<{ height: number }> = ({ height }) => {
 
   return (
     <>
-      <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
+      <ToolbarNavLink to="/" onClick={closeDrawer}>
+        GRI Risk Viewer
+      </ToolbarNavLink>
 
       {navItems.map(({ to, title }) => (
-        <ToolbarNavLink key={to} to={to}>
+        <ToolbarNavLink key={to} to={viewTabTo(to, search)} onClick={closeDrawer}>
           {title}
         </ToolbarNavLink>
       ))}
@@ -204,25 +220,29 @@ const TabletNavContent: FC<{ height: number }> = ({ height }) => {
   );
 };
 
-const DesktopNavContent = () => (
-  <>
-    <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
+const DesktopNavContent = () => {
+  const search = useLiveLocationSearch();
 
-    {navItems.map(({ to, title }) => (
-      <ToolbarNavLink key={to} to={to}>
-        {title}
-      </ToolbarNavLink>
-    ))}
+  return (
+    <>
+      <ToolbarNavLink to="/">GRI Risk Viewer</ToolbarNavLink>
 
-    <GrowingDivider />
+      {navItems.map(({ to, title }) => (
+        <ToolbarNavLink key={to} to={viewTabTo(to, search)}>
+          {title}
+        </ToolbarNavLink>
+      ))}
 
-    {secondaryNavItems.map(({ to, title }) => (
-      <ToolbarNavLinkSecondary key={to} to={to}>
-        {title}
-      </ToolbarNavLinkSecondary>
-    ))}
-  </>
-);
+      <GrowingDivider />
+
+      {secondaryNavItems.map(({ to, title }) => (
+        <ToolbarNavLinkSecondary key={to} to={to}>
+          {title}
+        </ToolbarNavLinkSecondary>
+      ))}
+    </>
+  );
+};
 
 const topStripeHeight = 6;
 

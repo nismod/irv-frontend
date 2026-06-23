@@ -1,31 +1,26 @@
-import { selector } from 'recoil';
+import { atom } from 'jotai';
 
 import { StyleParams, ViewLayer } from '@/lib/data-map/view-layers';
 
 import { infrastructureViewLayer } from '@/config/networks/infrastructure-view-layer';
-import { sidebarPathVisibilityState } from '@/sidebar/SidebarContent';
-import { damageMapStyleParamsState } from '@/state/data-selection/damage-mapping/damage-style-params';
-import { networkSelectionState } from '@/state/data-selection/networks/network-selection';
-import { networksStyleState } from '@/state/data-selection/networks/networks-style';
+import { sidebarPathVisibilityAtomFamily } from '@/sidebar/sidebar-state';
+import { damageMapStyleParamsAtom } from '@/state/data-selection/damage-mapping/damage-style-params';
+import { networkSelectionAtom } from '@/state/data-selection/networks/network-selection';
+import { networksStyleAtom } from '@/state/data-selection/networks/networks-style';
 
-export const networkLayersState = selector<ViewLayer[]>({
-  key: 'networkLayersState',
-  get: ({ get }) =>
-    get(sidebarPathVisibilityState('exposure/infrastructure'))
-      ? get(networkSelectionState).map((network) =>
-          infrastructureViewLayer(network, get(networkStyleParamsState)),
-        )
-      : [],
+export const networkStyleParamsAtom = atom<StyleParams>((get) => {
+  switch (get(networksStyleAtom)) {
+    case 'damages':
+      return get(damageMapStyleParamsAtom);
+    default:
+      return {};
+  }
 });
 
-export const networkStyleParamsState = selector<StyleParams>({
-  key: 'networkStyleParamsState',
-  get: ({ get }) => {
-    switch (get(networksStyleState)) {
-      case 'damages':
-        return get(damageMapStyleParamsState);
-      default:
-        return {};
-    }
-  },
-});
+export const networkLayersAtom = atom<ViewLayer[]>((get) =>
+  get(sidebarPathVisibilityAtomFamily('exposure/infrastructure'))
+    ? get(networkSelectionAtom).map((network) =>
+        infrastructureViewLayer(network, get(networkStyleParamsAtom)),
+      )
+    : [],
+);

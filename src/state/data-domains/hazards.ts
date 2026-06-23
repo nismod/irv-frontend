@@ -1,5 +1,6 @@
+import { atom } from 'jotai';
+import { atomFamily } from 'jotai-family';
 import _, { toNumber } from 'lodash';
-import { selectorFamily } from 'recoil';
 
 import {
   DataParamGroupConfig,
@@ -10,7 +11,7 @@ import {
 import { HAZARD_DOMAINS_CONFIG } from '@/config/hazards/domains';
 import { HazardType } from '@/config/hazards/metadata';
 
-import { rasterSourceDomainsQuery } from './sources';
+import { rasterSourceDomainsQueryAtomFamily } from './sources';
 
 const HAZARD_DOMAIN_PREPROCESSING = {
   rp: toNumber,
@@ -27,42 +28,37 @@ const HAZARD_DOMAIN_SORTING_FUNCTIONS = {
   rcp: [numbersLast, _.identity],
 };
 
-export const hazardDomainsConfigState = selectorFamily<DataParamGroupConfig, HazardType>({
-  key: 'hazardDomainsConfigState',
-  get:
-    (hazardType: HazardType) =>
-    ({ get }) => {
-      const { defaults, dependencies, domain } = HAZARD_DOMAINS_CONFIG[hazardType];
-      const preprocess = HAZARD_DOMAIN_PREPROCESSING;
+export const hazardDomainsConfigAtomFamily = atomFamily((hazardType: HazardType) =>
+  atom(async (get): Promise<DataParamGroupConfig> => {
+    const { defaults, dependencies, domain } = HAZARD_DOMAINS_CONFIG[hazardType];
+    const preprocess = HAZARD_DOMAIN_PREPROCESSING;
 
-      const paramNames = Object.keys(defaults);
+    const paramNames = Object.keys(defaults);
 
-      const sourceDomains = get(rasterSourceDomainsQuery(domain));
+    const sourceDomains = await get(rasterSourceDomainsQueryAtomFamily(domain));
 
-      const uniqueDomains = _(sourceDomains)
-        // get unique combinations of parameters
-        .map((x) => _.pick(x, paramNames))
-        .uniqWith(_.isEqual)
+    const uniqueDomains = _(sourceDomains)
+      .map((x) => _.pick(x, paramNames))
+      .uniqWith(_.isEqual)
 
-        // preprocess all fields according to config
-        .map((obj) =>
-          _.mapValues(obj, (value, key) => (preprocess[key] ? preprocess[key](value) : value)),
-        )
-        .value();
+      .map((obj) =>
+        _.mapValues(obj, (value, key) => (preprocess[key] ? preprocess[key](value) : value)),
+      )
+      .value();
 
-      const inferredDomains = inferDomainsFromData(uniqueDomains);
-      // sortBy sorts integers correctly, whereas sort stringifies which results in 1, 10, 2, 20 etc
-      const sortedDomains = _.mapValues(inferredDomains, (domain, domainName) =>
-        _.sortBy(domain, HAZARD_DOMAIN_SORTING_FUNCTIONS[domainName]),
-      );
-      return {
-        paramDomains: sortedDomains,
-        paramDefaults: defaults,
-        paramDependencies: inferDependenciesFromData(
-          uniqueDomains,
-          dependencies,
-          HAZARD_DOMAIN_SORTING_FUNCTIONS,
-        ),
-      };
-    },
-});
+    const inferredDomains = inferDomainsFromData(uniqueDomains);
+    // sortBy sorts integers correctly, whereas sort stringifies which results in 1, 10, 2, 20 etc
+    const sortedDomains = _.mapValues(inferredDomains, (domain, domainName) =>
+      _.sortBy(domain, HAZARD_DOMAIN_SORTING_FUNCTIONS[domainName]),
+    );
+    return {
+      paramDomains: sortedDomains,
+      paramDefaults: defaults,
+      paramDependencies: inferDependenciesFromData(
+        uniqueDomains,
+        dependencies,
+        HAZARD_DOMAIN_SORTING_FUNCTIONS,
+      ),
+    };
+  }),
+);

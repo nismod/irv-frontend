@@ -1,8 +1,5 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
 import { CDDType } from '@/config/cdd/metadata';
 
-export const cddSelectionState = atom<CDDType>({
-  key: 'cddSelectionState',
-  default: 'absolute',
-});
+export const cddSelectionAtom = atom<CDDType>('absolute');

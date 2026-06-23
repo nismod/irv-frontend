@@ -1,6 +1,4 @@
-import { string } from '@recoiljs/refine';
-import { atom, DefaultValue } from 'recoil';
-import { urlSyncEffect, WriteAtom } from 'recoil-sync';
+import { atomWithUrlSync } from '@/lib/jotai/sync-stores/atom-with-url-sync';
 
 /**
  * URL-synced state for the pixel driller "site" parameter.
@@ -8,29 +6,19 @@ import { urlSyncEffect, WriteAtom } from 'recoil-sync';
  * The value is stored in the URL query string as:
  *   site=<lat>,<lng>
  *
+ * (JSON-encoded by RecoilURLSyncJSON, so the wire form is `?site=%22lat%2Clng%22`.)
+ *
  * Internally we represent this as a string | null where:
  * - string: a "<lat>,<lng>" pair
  * - null: no site selected (param absent from URL)
  */
-const writeSiteParam: WriteAtom<string | null> = ({ write, reset }, value) => {
-  if (value instanceof DefaultValue || value == null || value === '') {
-    reset('site');
-  } else {
-    write('site', value);
-  }
-};
+const INITIAL_PIXEL_DRILLER_SITE_URL: string | null = null;
 
-export const pixelDrillerSiteUrlState = atom<string | null>({
-  key: 'pixelDrillerSiteUrl',
-  default: null,
-  effects: [
-    urlSyncEffect({
-      storeKey: 'url-json',
-      itemKey: 'site',
-      refine: string(),
-      write: writeSiteParam,
-      // Do not write the default (null) into the URL – absence means "no site".
-      syncDefault: false,
-    }),
-  ],
+export const pixelDrillerSiteUrlAtom = atomWithUrlSync('site', {
+  defaultValue: INITIAL_PIXEL_DRILLER_SITE_URL,
+  syncDefault: false,
+  serialize: (value) => {
+    if (value == null || value === '') return null;
+    return JSON.stringify(value);
+  },
 });

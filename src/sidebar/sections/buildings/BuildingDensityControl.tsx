@@ -1,4 +1,4 @@
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 
@@ -6,10 +6,10 @@ import {
   BUILDING_DENSITY_TYPE_LABELS,
   BuildingDensityType,
 } from '@/config/building-density/metadata';
-import { buildingDensityTypeState } from '@/state/data-selection/building-density';
+import { buildingDensityTypeAtom } from '@/state/data-selection/building-density';
 
 export const BuildingDensityControl = () => {
-  const [type, setType] = useRecoilState(buildingDensityTypeState);
+  const [type, setType] = useAtom(buildingDensityTypeAtom);
   return (
     <ParamDropdown<BuildingDensityType>
       value={type}

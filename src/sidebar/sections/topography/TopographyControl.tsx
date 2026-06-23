@@ -1,13 +1,13 @@
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
+import { useAtom } from 'jotai';
 import React from 'react';
-import { useRecoilState } from 'recoil';
 
-import { topographySelectionState } from '@/state/data-selection/topography';
+import { topographySelectionAtom } from '@/state/data-selection/topography';
 
 export const TopographyControl = () => {
-  const [radioState, setRadioState] = useRecoilState(topographySelectionState);
+  const [radioState, setRadioState] = useAtom(topographySelectionAtom);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const radioValue = (event.target as HTMLInputElement).value;

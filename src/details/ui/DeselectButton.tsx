@@ -1,11 +1,11 @@
 import Close from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import { useResetRecoilState } from 'recoil';
+import { useResetAtom } from 'jotai/utils';
 
-import { selectionState } from '@/lib/data-map/interactions/interaction-state';
+import { selectionAtomFamily } from '@/lib/data-map/interactions/interaction-state';
 
 export const DeselectButton = ({ interactionGroup, title }) => {
-  const clearSelection = useResetRecoilState(selectionState(interactionGroup));
+  const clearSelection = useResetAtom(selectionAtomFamily(interactionGroup));
 
   return (
     <IconButton onClick={() => clearSelection()} title={title}>

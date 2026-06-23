@@ -1,4 +1,6 @@
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
@@ -25,18 +27,29 @@ const titleMap: Record<RagStatus, string> = {
 };
 
 export const RagIndicator: FC<RagIndicatorProps> = ({ status }) => {
+  const tooltipText = titleMap[status];
   return (
-    <Box
-      sx={{
-        width: 16,
-        height: 16,
-        borderRadius: '50%',
-        backgroundColor: colorMap[status],
-        border: '1px solid rgba(0, 0, 0, 0.1)',
-        flexShrink: 0,
-      }}
-      title={titleMap[status]}
-    />
+    <Tooltip title={tooltipText} placement="top" arrow>
+      <IconButton
+        size="small"
+        aria-label={tooltipText}
+        disableRipple
+        sx={{
+          p: 0,
+          flexShrink: 0,
+        }}
+      >
+        <Box
+          sx={{
+            width: 16,
+            height: 16,
+            borderRadius: '50%',
+            backgroundColor: colorMap[status],
+            border: '1px solid rgba(0, 0, 0, 0.1)',
+          }}
+        />
+      </IconButton>
+    </Tooltip>
   );
 };
 

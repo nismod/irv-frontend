@@ -1,12 +1,11 @@
 import { FeatureOut } from '@nismod/irv-api-client';
-import { selectorFamily } from 'recoil';
+import { atom } from 'jotai';
+import { atomFamily } from 'jotai-family';
 
 import { apiClient } from '@/api-client';
 
-export const apiFeatureQuery = selectorFamily<FeatureOut, number>({
-  key: 'apiFeatureQuery',
-  get: (id: number) => async () => {
-    const feature = await apiClient.features.featuresReadFeature({ featureId: id });
-    return feature;
-  },
-});
+export const apiFeatureQueryAtomFamily = atomFamily((id: number) =>
+  atom(async (): Promise<FeatureOut> => {
+    return await apiClient.features.featuresReadFeature({ featureId: id });
+  }),
+);
