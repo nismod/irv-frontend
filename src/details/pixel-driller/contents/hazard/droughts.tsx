@@ -10,16 +10,14 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../../rag/rag-calculation';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Drought-specific key type definition
 interface DroughtKeys extends PixelRecordKeys {
@@ -52,25 +50,25 @@ const droughtColumns: DatapackageTableSchemaField[] = [
     name: 'rcp',
     type: 'string',
     title: 'RCP',
-    description: 'Representative Concentration Pathway (emissions scenario).',
+    description: 'Representative Concentration Pathway (Climate Scenario).',
   },
   {
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Time period or epoch of the simulation.',
+    description: 'Time period or epoch.',
   },
   {
     name: 'gcm',
     type: 'string',
     title: 'GCM',
-    description: 'Global Climate Model identifier.',
+    description: 'Global Climate Model.',
   },
   {
     name: 'value',
     type: 'number',
     title: 'Probability',
-    description: 'Event probability (0–1) for drought occurrence.',
+    description: 'Annual probability of drought occurrence.',
   },
 ];
 
@@ -80,57 +78,16 @@ const exportDroughts: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(droughtBaseName, droughtColumns, filtered);
 };
 
-const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: droughtBaseName,
-  title: 'Drought Occurrence (ISIMIP)',
-  description:
-    'Probability of drought occurrence at this site across multiple emissions scenarios, epochs and climate models.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${droughtBaseName}.csv`,
-      title: 'Drought Occurrence Data (ISIMIP)',
-      description:
-        'Drought occurrence probabilities from the ISIMIP project for this site across scenarios.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(droughtColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: '',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'Annual probability of extreme heat and drought events',
-      description:
-        'Derived dataset of extreme heat and drought event probabilities based on climate projections.',
-      lineage:
-        "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
-      url: 'https://doi.org/10.5281/zenodo.8147088',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_extreme_heat_drought',
-    },
-  ],
-});
+const getDroughtsMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(droughtBaseName, spatial, droughtColumns);
 
 const droughtsExportConfig: ExportConfig = {
   exportFunction: exportDroughts,
   metadataFunction: getDroughtsMetadata,
-  readmeFunction: () => ({
-    datasetDescription:
-      'extreme heat and drought (Russell et al 2023, derived from Lange et al 2020)',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(droughtBaseName),
 };
 
-export const Droughts: FC<HazardComponentProps> = ({ records }) => {
+export const Droughts: FC<PixelComponentProps> = ({ records }) => {
   // Filter for drought records (probability values)
   const droughtRecords = useMemo(() => filterDroughtRecords(records), [records]);
 

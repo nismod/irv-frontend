@@ -11,14 +11,12 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface BuildingKeys extends PixelRecordKeys {
   subtype?: string;
@@ -59,39 +57,13 @@ const exportBuildings: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(buildingsBaseName, buildingsColumns, filtered);
 };
 
-const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: buildingsBaseName,
-  title: 'Built-up surface',
-  description: 'Built-up surface area (m²) at this site, by subtype.',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${buildingsBaseName}.csv`,
-      title: 'Built-up surface',
-      description:
-        'Built-up surface area in m² at this site, for all buildings and for non-residential buildings only.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(buildingsColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [],
-});
+const getBuildingsMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(buildingsBaseName, spatial, buildingsColumns);
 
 const buildingsExportConfig: ExportConfig = {
   exportFunction: exportBuildings,
   metadataFunction: getBuildingsMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'built-up surface area by subtype (m²)',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(buildingsBaseName),
 };
 
 const formatBuiltUpSurfaceM2 = (value: number | null): string => {
@@ -100,7 +72,7 @@ const formatBuiltUpSurfaceM2 = (value: number | null): string => {
   return `${n} m²`;
 };
 
-export const Buildings: FC<HazardComponentProps> = ({ records }) => {
+export const Buildings: FC<PixelComponentProps> = ({ records }) => {
   const buildingRecords = useMemo(() => filterBuildingRecords(records), [records]);
 
   const allRecord = useMemo(() => findBySubtype(buildingRecords, SUBTYPE_ALL), [buildingRecords]);

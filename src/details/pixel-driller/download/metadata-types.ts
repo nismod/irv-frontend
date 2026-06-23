@@ -27,30 +27,39 @@ export interface DatapackageTableDialect {
 
 export type RiskDataType = 'hazard' | 'exposure' | 'vulnerability' | 'loss';
 
+export interface RdlsAttribution {
+  id: string;
+  entity: RdlsEntity;
+  role: string;
+}
+
 export interface RdlsEntity {
   name: string;
   email?: string;
   url?: string;
 }
 
-export interface RdlsGeometry {
-  type: 'Point';
-  // [longitude, latitude]
-  coordinates: [number, number];
-}
-
-export interface RdlsLocation {
-  geometry: RdlsGeometry;
-}
+export type RdlsLocation =
+  | {
+      // [longitude, latitude]
+      centroid: [number, number];
+    }
+  | {
+      scale: 'global';
+    };
 
 export interface RdlsResource {
   id: string;
   title: string;
   description: string;
+  access_url?: string;
+  download_url?: string;
+  media_type?: string;
   /**
    * Human-readable file format (e.g. "csv").
    */
-  format: string;
+  format?: string;
+  conforms_to?: string;
   /**
    * Table Schema for the resource - included from the Datapackage Table Schema specification.
    */
@@ -61,18 +70,17 @@ export interface RdlsResource {
   dialect?: DatapackageTableDialect;
 }
 
-// Pulling in optional fields from RDLS 0.3-dev
-// https://github.com/GFDRR/rdl-standard/blob/0.3-dev/schema/rdls_schema.json
+// Pulling in optional fields from RDLS 1.0-dev
+// https://github.com/GFDRR/rdl-standard/blob/1.0-dev/schema/rdls_schema.json
 // at risk of some change, will feedback and likely adopt explicitly
 export interface RdlsSource {
   id: string;
   name?: string;
   url?: string;
-  description?: string;
-  lineage?: string;
   type?: string;
+  risk_data_type?: RiskDataType[];
+  used_in?: string;
   license?: string;
-  component?: string;
 }
 
 export interface RdlsDataset {
@@ -86,8 +94,11 @@ export interface RdlsDataset {
   license: string;
   contact_point: RdlsEntity;
   creator: RdlsEntity;
-  attributions?: RdlsEntity[];
-  sources?: RdlsSource[];
+  attributions?: RdlsAttribution[];
+  lineage?: {
+    description?: string;
+    sources: RdlsSource[];
+  };
 }
 
 export interface RdlsMetadataPackage {

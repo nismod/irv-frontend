@@ -19,7 +19,7 @@ export const SSPControl = () => {
   return (
     <FormControl fullWidth disabled={disabled}>
       <FormLabel>
-        <abbr title="Shared Socio-Economic Pathway">SSP</abbr>
+        <abbr title="Shared Socio-Economic Pathway (Climate Scenario)">SSP</abbr>
       </FormLabel>
       <DataParam group={group} id="ssp">
         {({ value, onChange, options }) => (

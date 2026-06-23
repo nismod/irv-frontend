@@ -11,14 +11,12 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface DemKeys extends PixelRecordKeys {
   derivative?: string;
@@ -60,38 +58,13 @@ const exportDem: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(demBaseName, demColumns, filtered);
 };
 
-const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: demBaseName,
-  title: 'Topography (DEM)',
-  description: 'Elevation (metres above sea level) and slope (degrees) at this site.',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${demBaseName}.csv`,
-      title: 'Topography',
-      description: 'DEM elevation and slope values at this site.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(demColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [],
-});
+const getDemMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(demBaseName, spatial, demColumns);
 
 const demExportConfig: ExportConfig = {
   exportFunction: exportDem,
   metadataFunction: getDemMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'topography: elevation (m a.s.l.) and slope (°) from DEM',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(demBaseName),
 };
 
 const formatElevationM = (value: number | null): string => {
@@ -106,7 +79,7 @@ const formatSlopeDegrees = (value: number | null): string => {
   return `${n}°`;
 };
 
-export const Topography: FC<HazardComponentProps> = ({ records }) => {
+export const Topography: FC<PixelComponentProps> = ({ records }) => {
   const demRecords = useMemo(() => filterDemRecords(records), [records]);
 
   const elevationRecord = useMemo(

@@ -11,11 +11,9 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import {
@@ -23,7 +21,7 @@ import {
   combineRagStatusesMax,
 } from '../../rag/rag-calculation';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Cooling degree days-specific key type definition
 interface CddKeys extends PixelRecordKeys {
@@ -52,13 +50,13 @@ const cddColumns: DatapackageTableSchemaField[] = [
     name: 'metric',
     type: 'string',
     title: 'Metric',
-    description: 'Type of cooling degree days change (absolute or relative).',
+    description: 'Metric of change (absolute or relative).',
   },
   {
     name: 'value',
     type: 'number',
     title: 'Value',
-    description: 'Change in cooling degree days (absolute) or fraction (relative).',
+    description: 'Change in annual cooling degree days in days (absolute) or fraction (relative).',
   },
 ];
 
@@ -68,43 +66,16 @@ const exportCoolingDegreeDays: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(cddBaseName, cddColumns, filtered);
 };
 
-export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: cddBaseName,
-  title: 'Cooling Degree Days',
-  description:
-    'Change in cooling degree days at this site, expressed as absolute and relative metrics.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${cddBaseName}.csv`,
-      title: 'Cooling Degree Days Data',
-      description:
-        'Cooling degree days change data for this site, including absolute and relative metrics.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(cddColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: '',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  attributions: [],
-});
+export const getCoolingDegreeDaysMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(cddBaseName, spatial, cddColumns);
 
 const coolingDegreeDaysExportConfig: ExportConfig = {
   exportFunction: exportCoolingDegreeDays,
   metadataFunction: getCoolingDegreeDaysMetadata,
-  readmeFunction: () => ({
-    datasetDescription: '',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(cddBaseName),
 };
 
-export const CoolingDegreeDays: FC<HazardComponentProps> = ({ records }) => {
+export const CoolingDegreeDays: FC<PixelComponentProps> = ({ records }) => {
   const cddRecords = useMemo(() => filterCddRecords(records), [records]);
 
   const absoluteValue = useMemo(() => {

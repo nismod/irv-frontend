@@ -11,15 +11,13 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Landslide-specific key type definition
 export interface LandslideKeys extends PixelRecordKeys {
@@ -66,43 +64,16 @@ const exportLandslide: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(landslideBaseName, landslideColumns, filtered);
 };
 
-export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: landslideBaseName,
-  title: 'Landslide Susceptibility and Probabilities',
-  description:
-    'Landslide susceptibility and annual probabilities for different triggers at this site.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${landslideBaseName}.csv`,
-      title: 'Landslide Data',
-      description:
-        'Landslide susceptibility and annual probabilities for earthquake and rainfall triggers at this site.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(landslideColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: '',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  attributions: [],
-});
+export const getLandslidesMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(landslideBaseName, spatial, landslideColumns);
 
 const landslideExportConfig: ExportConfig = {
   exportFunction: exportLandslide,
   metadataFunction: getLandslidesMetadata,
-  readmeFunction: () => ({
-    datasetDescription: '',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(landslideBaseName),
 };
 
-export const Landslides: FC<HazardComponentProps> = ({ records }) => {
+export const Landslides: FC<PixelComponentProps> = ({ records }) => {
   const landslideRecords = useMemo(() => filterLandslideRecords(records), [records]);
 
   // Extract values for each subtype (treat null as zero for numeric values)
@@ -155,25 +126,25 @@ export const Landslides: FC<HazardComponentProps> = ({ records }) => {
       <Stack spacing={1.5}>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Annual probability (earthquake trigger)
+            Mean annual earthquake-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(earthquakeProb)}</Typography>
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Annual probability (rainfall - mean)
+            Mean annual rainfall-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(rainfallMeanProb)}</Typography>
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Annual probability (rainfall - median)
+            Median annual rainfall-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(rainfallMedianProb)}</Typography>
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Susceptibility
+            Susceptibility. Aggregate hazard index ranging from 1 (low) to 4 (very high)
           </Typography>
           <Typography variant="body1">{susceptibilityCategory ?? 'N/A'}</Typography>
         </Box>

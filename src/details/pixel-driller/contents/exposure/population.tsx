@@ -11,14 +11,12 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface PopulationKeys extends PixelRecordKeys {
   epoch?: string;
@@ -36,7 +34,7 @@ const populationColumns: DatapackageTableSchemaField[] = [
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Reference year or epoch for the population density estimate.',
+    description: 'Reference year for the population density estimate.',
   },
   {
     name: 'value',
@@ -51,38 +49,13 @@ const exportPopulation: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(populationBaseName, populationColumns, filtered);
 };
 
-const getPopulationMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: populationBaseName,
-  title: 'Population density',
-  description: 'Population density (people per km²) at this site.',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${populationBaseName}.csv`,
-      title: 'Population density',
-      description: 'Population density in people per km² at this site for the given epoch.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(populationColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [],
-});
+const getPopulationMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(populationBaseName, spatial, populationColumns);
 
 const populationExportConfig: ExportConfig = {
   exportFunction: exportPopulation,
   metadataFunction: getPopulationMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'population density (people per km²)',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(populationBaseName),
 };
 
 const formatPopulationDensity = (value: number | null): string => {
@@ -91,7 +64,7 @@ const formatPopulationDensity = (value: number | null): string => {
   return `${n} people/km²`;
 };
 
-export const Population: FC<HazardComponentProps> = ({ records }) => {
+export const Population: FC<PixelComponentProps> = ({ records }) => {
   const populationRecords = useMemo(() => filterPopulationRecords(records), [records]);
 
   const primaryRecord = useMemo(

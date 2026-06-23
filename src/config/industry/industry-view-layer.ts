@@ -4,36 +4,13 @@ import { InteractionTarget, VectorTarget } from '@/lib/data-map/interactions/typ
 import { VectorHoverDescription } from '@/lib/data-map/tooltip/VectorHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { border, fillColor, pointRadius } from '@/lib/deck/props/style';
-import { makeColorConfig, makeConfig } from '@/lib/helpers';
 
 import { SimpleAssetDetails } from '@/details/features/asset-details';
 import { IndustryType } from '@/state/data-selection/industry';
 
 import { makeAssetLayerFn } from '../assets/make-asset-layer-fn';
-import { AssetMetadata } from '../assets/metadata';
 import { IndustryDetails } from './details';
-
-export const INDUSTRY_COLORS = makeColorConfig<IndustryType>({
-  cement: '#e4cda9',
-  steel: '#5b8cc3',
-});
-
-export const INDUSTRY_METADATA = makeConfig<AssetMetadata & { shortLabel: string }, IndustryType>([
-  {
-    id: 'cement',
-    type: 'circle',
-    label: 'Industry (Cement)',
-    shortLabel: 'Cement',
-    color: INDUSTRY_COLORS.cement.css,
-  },
-  {
-    id: 'steel',
-    type: 'circle',
-    label: 'Industry (Steel)',
-    shortLabel: 'Steel',
-    color: INDUSTRY_COLORS.steel.css,
-  },
-]);
+import { INDUSTRY_COLORS, INDUSTRY_METADATA } from './metadata';
 
 export function industryViewLayer(industryType: IndustryType): ViewLayer {
   const { label, color } = INDUSTRY_METADATA[industryType];

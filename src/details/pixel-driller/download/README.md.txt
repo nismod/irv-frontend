@@ -16,7 +16,7 @@ topics:
 
 ## License
 
-This dataset is released as CC-BY-SA-NC under the [Creative Commons
+This dataset is released as CC-BY-NC under the [Creative Commons
 Attribution-NonCommercial 4.0 International
 License](https://creativecommons.org/licenses/by-nc/4.0/)
 
@@ -26,4 +26,3 @@ appropriately.
 ## References
 
 <!--PIXEL_DRILLER_DATASET_SOURCES_LIST-->
-

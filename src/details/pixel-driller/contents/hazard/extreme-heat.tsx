@@ -10,16 +10,14 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromSingleValueTwoThresholds } from '../../rag/rag-calculation';
 import { RagStatus } from '../../rag/rag-types';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Extreme Heat-specific key type definition
 export interface ExtremeHeatKeys extends PixelRecordKeys {
@@ -56,25 +54,25 @@ const extremeHeatColumns: DatapackageTableSchemaField[] = [
     name: 'rcp',
     type: 'string',
     title: 'RCP',
-    description: 'Representative Concentration Pathway (emissions scenario).',
+    description: 'Representative Concentration Pathway (Climate Scenario).',
   },
   {
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Time period or epoch of the simulation.',
+    description: 'Time period or epoch.',
   },
   {
     name: 'gcm',
     type: 'string',
     title: 'GCM',
-    description: 'Global Climate Model identifier.',
+    description: 'Global Climate Model.',
   },
   {
     name: 'value',
     type: 'number',
     title: 'Probability',
-    description: 'Event probability (0–1) for extreme heat occurrence.',
+    description: 'Annual probability of extreme heat occurrence.',
   },
 ];
 
@@ -84,60 +82,16 @@ const exportExtremeHeat: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(extremeHeatBaseName, extremeHeatColumns, filtered);
 };
 
-const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: extremeHeatBaseName,
-  title: 'Extreme Heat Occurrence (ISIMIP)',
-  description:
-    'Probability of extreme heat events at this site across multiple emissions scenarios, epochs and climate models.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${extremeHeatBaseName}.csv`,
-      title: 'Extreme Heat Occurrence Data (ISIMIP)',
-      description:
-        'Extreme heat occurrence probabilities from the ISIMIP project for this site across scenarios.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(extremeHeatColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC0 1.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'Annual probability of extreme heat and drought events',
-      description:
-        'Derived dataset of extreme heat and drought event probabilities based on climate projections.',
-      lineage:
-        "Russell, T., Nicholas, C., & Bernhofen, M. (2023), derived from Lange et al. (2020) climate impact event projections from Earth's Future.",
-      url: 'https://doi.org/10.5281/zenodo.8147088',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_extreme_heat_drought',
-    },
-  ],
-});
+const getExtremeHeatMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(extremeHeatBaseName, spatial, extremeHeatColumns);
 
 const extremeHeatExportConfig: ExportConfig = {
   exportFunction: exportExtremeHeat,
   metadataFunction: getExtremeHeatMetadata,
-  readmeFunction: () => ({
-    datasetDescription:
-      'extreme heat and drought (Russell et al 2023, derived from Lange et al 2020)',
-    datasetSources: [
-      'Russell, T., Nicholas, C., & Bernhofen, M. (2023). Annual probability of extreme heat and drought events, derived from Lange et al 2020 (Version 2) [Dataset]. Zenodo. DOI: https://doi.org/10.5281/zenodo.8147088',
-      "Lange, S., Volkholz, J., Geiger, T., Zhao, F., Vega, I., Veldkamp, T., et al. (2020). Projecting exposure to extreme climate impact events across six event categories and three spatial scales. Earth's Future, 8, e2020EF001616. DOI: https://doi.org/10.1029/2020EF001616",
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(extremeHeatBaseName),
 };
 
-export const ExtremeHeat: FC<HazardComponentProps> = ({ records }) => {
+export const ExtremeHeat: FC<PixelComponentProps> = ({ records }) => {
   // Filter for extreme heat records (probability values)
   const extremeHeatRecords = useMemo(() => filterExtremeHeatRecords(records), [records]);
 

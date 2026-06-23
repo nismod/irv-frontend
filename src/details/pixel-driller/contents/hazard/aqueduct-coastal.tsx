@@ -10,15 +10,13 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { HazardAccordion } from '../../hazard-accordion';
 import { calculateRagFromReturnPeriodValuesOneThreshold } from '../../rag/rag-calculation';
-import { ChartConfig, HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { ChartConfig, PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 // Aqueduct-specific key type definition
 export interface AqueductKeys extends PixelRecordKeys {
@@ -34,15 +32,16 @@ const aqueductCoastalChartConfig: ChartConfig = {
   id: 'coastal-aqueduct',
   title: 'Coastal flooding – Aqueduct',
   xLabel: 'Return period (years)',
-  yLabel: 'Flood height (m)',
+  yLabel: 'Flood depth (m)',
   // Coastal flooding: scenario = epoch + rcp, colour by rcp
   seriesFields: ['epoch', 'rcp'],
   colorField: 'rcp',
 };
 
-// Thresholds
-// Flood height above which damages are substantial (in meters) - used for river and coastal flooding
-const FLOOD_HEIGHT_THRESHOLD = 4; // TODO: Make this configurable or derive from domain knowledge
+// Thresholds above which damages are substantial (in meters)
+const FLOOD_HEIGHT_THRESHOLD = 0.3;
+// based on UK note - flood waters at any velocity with depth >= 0.3m pose risks to some
+// https://assets.publishing.service.gov.uk/media/602d04a98fa8f5037d371a08/FLOOD_HAZARD_RATINGS_AND_THRESHOLDS_explanatory_note.pdf
 
 // Type guard for Aqueduct records
 const isAqueductRecord = (record: PixelRecord): record is PixelRecord<AqueductKeys> => {
@@ -67,25 +66,25 @@ const aqueductCoastalColumns: DatapackageTableSchemaField[] = [
     name: 'rcp',
     type: 'string',
     title: 'RCP',
-    description: 'Representative Concentration Pathway scenario.',
+    description: 'Representative Concentration Pathway (Climate Scenario).',
   },
   {
     name: 'epoch',
     type: 'string',
     title: 'Epoch',
-    description: 'Time period or epoch of the simulation.',
+    description: 'Time period or epoch.',
   },
   {
     name: 'gcm',
     type: 'string',
     title: 'GCM',
-    description: 'Global Climate Model identifier.',
+    description: 'Global Climate Model.',
   },
   {
     name: 'value',
     type: 'number',
-    title: 'Flood height',
-    description: 'Flood height (m).',
+    title: 'Flood depth',
+    description: 'Flood depth (m).',
   },
 ];
 
@@ -95,58 +94,16 @@ const exportAqueductCoastal: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(aqueductCoastalBaseName, aqueductCoastalColumns, filtered);
 };
 
-export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: aqueductCoastalBaseName,
-  title: 'Aqueduct Coastal Flood Risk',
-  description:
-    'Coastal flood risk at this site as modelled by the Aqueduct project, including flood heights for multiple return periods and scenarios.',
-  risk_data_type: ['hazard'],
-  spatial,
-  resources: [
-    {
-      id: `${aqueductCoastalBaseName}.csv`,
-      title: 'Aqueduct Coastal Flood Risk Data',
-      description:
-        'Coastal flood height data from the Aqueduct project, representing coastal flood depths for this site across scenarios.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(aqueductCoastalColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY 4.0',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [
-    {
-      name: 'Aqueduct Floods',
-      description:
-        'Global riverine and coastal flood hazard maps including historical and future climate scenarios with multiple return periods.',
-      lineage:
-        'Ward, P.J., et al. (2020). Developed by World Resources Institute. Provides flood inundation depths for coastal and river flooding at global scale.',
-      url: 'https://www.wri.org/publication/aqueduct-floods-methodology',
-      type: 'dataset',
-      component: 'hazard',
-      license: 'CC-BY-4.0',
-      id: 'source_aqueduct_floods',
-    },
-  ],
-});
+export const getAqueductCoastalMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(aqueductCoastalBaseName, spatial, aqueductCoastalColumns);
 
 const aqueductCoastalExportConfig: ExportConfig = {
   exportFunction: exportAqueductCoastal,
   metadataFunction: getAqueductCoastalMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'coastal and river flooding (Ward et al 2020; Baugh et al 2024)',
-    datasetSources: [
-      'Ward, P.J., H.C. Winsemius, S. Kuzma, M.F.P. Bierkens, A. Bouwman, H. de Moel, A. Diaz Loaiza, et al. (2020) Aqueduct Floods Methodology. Technical Note. Washington, D.C.: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-floods-methodology',
-    ],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(aqueductCoastalBaseName),
 };
 
-export const CoastalFlooding: FC<HazardComponentProps> = ({ records }) => {
+export const CoastalFlooding: FC<PixelComponentProps> = ({ records }) => {
   const data = useMemo(
     () => toReturnPeriodRows(filterAqueductCoastalRecords(records), aqueductCoastalChartConfig),
     [records],

@@ -45,7 +45,7 @@ export interface ChartConfig {
   colorField?: KeyField;
 }
 
-export interface HazardComponentProps {
+export interface PixelComponentProps {
   // Accept base PixelRecord since components receive mixed records from API
   records: PixelRecord[];
 }

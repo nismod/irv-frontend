@@ -13,14 +13,12 @@ import {
 } from '../../download/download-context';
 import { buildDomainExportFile } from '../../download/download-generators';
 import {
-  COMMON_CONTACT_POINT,
-  COMMON_CREATOR,
-  COMMON_DIALECT,
-  COMMON_PUBLISHER,
-} from '../../download/metadata-common';
+  buildPixelDrillerMetadata,
+  getPixelDrillerReadmeContents,
+} from '../../download/metadata-from-config';
 import { DatapackageTableSchemaField, RdlsDataset } from '../../download/metadata-types';
 import { ExposureAccordion } from '../../hazard-accordion';
-import { HazardComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
+import { PixelComponentProps, PixelRecord, PixelRecordKeys } from '../../types';
 
 interface LandCoverKeys extends PixelRecordKeys {}
 
@@ -36,7 +34,7 @@ const landCoverColumns: DatapackageTableSchemaField[] = [
     name: 'value',
     type: 'number',
     title: 'Land cover class',
-    description: 'Categorical land cover class code (ESA CCI–style; see project legend).',
+    description: 'Categorical land cover class code (ESA CCI; see project legend).',
   },
 ];
 
@@ -45,38 +43,13 @@ const exportLandCover: ExportFunction = async (allRecords) => {
   return buildDomainExportFile(landCoverBaseName, landCoverColumns, filtered);
 };
 
-const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset => ({
-  id: landCoverBaseName,
-  title: 'Land cover',
-  description: 'Land cover class at this site (categorical; codes match the map legend).',
-  risk_data_type: ['exposure'],
-  spatial,
-  resources: [
-    {
-      id: `${landCoverBaseName}.csv`,
-      title: 'Land cover',
-      description: 'Land cover class code at this site.',
-      format: 'csv',
-      schema: {
-        fields: structuredClone(landCoverColumns),
-      },
-      dialect: COMMON_DIALECT,
-    },
-  ],
-  publisher: COMMON_PUBLISHER,
-  license: 'CC-BY-NC-SA',
-  contact_point: COMMON_CONTACT_POINT,
-  creator: COMMON_CREATOR,
-  sources: [],
-});
+const getLandCoverMetadata = ({ spatial }: MetadataArgs): RdlsDataset =>
+  buildPixelDrillerMetadata(landCoverBaseName, spatial, landCoverColumns);
 
 const landCoverExportConfig: ExportConfig = {
   exportFunction: exportLandCover,
   metadataFunction: getLandCoverMetadata,
-  readmeFunction: () => ({
-    datasetDescription: 'land cover (categorical class codes; same legend as map layer)',
-    datasetSources: [],
-  }),
+  readmeFunction: () => getPixelDrillerReadmeContents(landCoverBaseName),
 };
 
 function classCodeFromValue(value: number | null): number | null {
@@ -84,7 +57,7 @@ function classCodeFromValue(value: number | null): number | null {
   return Math.round(value);
 }
 
-export const LandCover: FC<HazardComponentProps> = ({ records }) => {
+export const LandCover: FC<PixelComponentProps> = ({ records }) => {
   const landCoverRecords = useMemo(() => filterLandCoverRecords(records), [records]);
 
   const primaryRecord = useMemo(
