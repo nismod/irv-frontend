@@ -1,4 +1,4 @@
-import { AdsClickOutlined } from '@mui/icons-material';
+import AdsClickOutlined from '@mui/icons-material/AdsClickOutlined';
 import ToggleButton from '@mui/material/ToggleButton';
 import { useAtom } from 'jotai';
 

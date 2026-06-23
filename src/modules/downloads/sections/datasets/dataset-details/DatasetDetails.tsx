@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Boundary, ProcessorVersionMetadata } from '@nismod/irv-autopkg-client';
-import Markdown from 'markdown-to-jsx';
+import Markdown from 'markdown-to-jsx/react';
 import { Link } from 'react-router-dom';
 
 import { roundWithSuffix } from '@/lib/formats';

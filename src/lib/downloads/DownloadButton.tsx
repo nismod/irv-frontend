@@ -1,4 +1,4 @@
-import { Download } from '@mui/icons-material';
+import Download from '@mui/icons-material/Download';
 import { IconButton } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { Promisable } from 'type-fest';
