@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Boundary, BoundarySummary } from '@nismod/irv-autopkg-client';
 import { useCallback, useEffect, useState } from 'react';
-import { defer, LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
+import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
 
 import { ParamDropdown } from '@/lib/controls/ParamDropdown';
 import { AppLink } from '@/lib/nav';
@@ -20,12 +20,12 @@ export const loader = async ({
   request: { signal },
   params: { regionId, metricId },
 }: LoaderFunctionArgs) => {
-  return defer({
+  return {
     regionId: regionId,
     region: await fetchRegionById({ regionId }, signal),
     regions: await fetchAllRegions({}, signal),
     metricId: metricId,
-  });
+  };
 };
 loader.displayName = 'regionMetricsLoader';
 type RegionMetricsLoaderData = {

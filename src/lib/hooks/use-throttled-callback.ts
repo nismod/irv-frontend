@@ -10,7 +10,7 @@ export function useThrottledCallback<Args extends any[]>(
   trailing: boolean = true,
 ) {
   const callbackRef = useTrackingRef(callback);
-  const throttledRef = useRef<ReturnType<typeof throttle>>();
+  const throttledRef = useRef<ReturnType<typeof throttle> | undefined>(undefined);
 
   useEffect(() => {
     const handler = throttle(

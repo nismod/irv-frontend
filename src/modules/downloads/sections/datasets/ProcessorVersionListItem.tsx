@@ -55,7 +55,7 @@ export function ProcessorVersionListItem({
 
   const [open, setOpen] = useOpen(boundary.name, processorVersion.name);
 
-  const listItemRef = useRef<HTMLDivElement>();
+  const listItemRef = useRef<HTMLDivElement | null>(null);
 
   const title = firstNonEmptyString(
     meta.data_title,

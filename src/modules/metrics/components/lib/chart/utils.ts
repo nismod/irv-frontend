@@ -23,7 +23,7 @@ export const combineChartDimensions = (dimensions) => {
 };
 
 export const useChartDimensions = (passedSettings) => {
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement | null>(null);
   const dimensions = combineChartDimensions(passedSettings);
 
   const [width, changeWidth] = useState(0);
@@ -33,6 +33,8 @@ export const useChartDimensions = (passedSettings) => {
     if (dimensions.width && dimensions.height) return;
 
     const element = ref.current;
+    if (!element) return;
+
     const resizeObserver = new ResizeObserver((entries) => {
       if (!Array.isArray(entries)) return;
       if (!entries.length) return;

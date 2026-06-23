@@ -6,7 +6,7 @@ import { Boundary, Processor } from '@nismod/irv-autopkg-client';
 import { MultiPolygon, Polygon } from 'geojson';
 import { range } from 'lodash';
 import { Suspense } from 'react';
-import { Await, defer, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { Await, LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 
 import { BackLink } from '@/lib/nav';
 
@@ -17,10 +17,10 @@ import { fetchRegionById } from '../../data/regions';
 import { DatasetsList } from '../../sections/datasets/DatasetsList';
 
 export const loader = async ({ request: { signal }, params: { regionId } }: LoaderFunctionArgs) => {
-  return defer({
+  return {
     region: await fetchRegionById({ regionId }, signal),
     datasets: fetchAllDatasets({}, signal),
-  });
+  };
 };
 
 loader.displayName = 'singleRegionLoader';

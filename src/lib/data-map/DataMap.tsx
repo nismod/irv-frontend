@@ -67,7 +67,7 @@ export const DataMap: FC<DataMapProps> = ({
     [beforeId, viewLayers, viewLayersParams],
   );
 
-  const deckRef = useRef<MapboxOverlay>();
+  const deckRef = useRef<MapboxOverlay | null>(null);
 
   const { current: map } = useMap();
   const zoom = map.getMap().getZoom();
