@@ -12,7 +12,7 @@ RUN --mount=type=secret,id=GH_TOKEN GH_NPM_AUTH=$(cat /run/secrets/GH_TOKEN) npm
 COPY public public
 COPY src src
 COPY index.html tsconfig.json tsconfig.vite.json vite.config.ts ./
-RUN echo "export const devProxy = {};" > ./dev-proxy/proxy-table.ts
+RUN mkdir -p ./dev-proxy; echo "export const devProxy = {};" > ./dev-proxy/proxy-table.ts
 # build to static site
 RUN npm run build
 
