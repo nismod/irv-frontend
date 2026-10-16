@@ -14,7 +14,7 @@ import svgrPlugin from 'vite-plugin-svgr';
  * You can copy and rename one of the included examples.
  * See https://vitejs.dev/config/server-options.html#server-proxy for syntax
  */
-const proxyTable = await import('./dev-proxy/proxy-table').catch((err) => {
+const proxyTable = await import('./dev-proxy/proxy-table.ts').catch((err) => {
   console.error(err);
   console.log('Fallback to empty proxy table');
   return { devProxy: {} };
