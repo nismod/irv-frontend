@@ -58,17 +58,19 @@ export const DataMap: FC<DataMapProps> = ({
 
   const dataLoadTrigger = useDataLoadTrigger(dataLoaders);
 
+  const { current: map } = useMap();
+  const mapInstance = map.getMap();
+  const zoom = mapInstance.getZoom();
+  const existingBeforeId = beforeId && mapInstance.getLayer(beforeId) ? beforeId : undefined;
+
   /** Function called every time the map zoom changes, to calculate new list of deck layers */
   const layersFunction = useCallback(
     ({ zoom }: { zoom: number }) =>
       viewLayers.map((viewLayer) =>
-        makeDeckLayers(viewLayer, viewLayersParams[viewLayer.id], zoom, beforeId),
+        makeDeckLayers(viewLayer, viewLayersParams[viewLayer.id], zoom, existingBeforeId),
       ),
-    [beforeId, viewLayers, viewLayersParams],
+    [existingBeforeId, viewLayers, viewLayersParams],
   );
-
-  const { current: map } = useMap();
-  const zoom = map.getMap().getZoom();
   const deckRef = useRef<MapLibreOverlay | null>(null);
 
   /**
