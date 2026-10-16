@@ -1,11 +1,8 @@
-import { parseSync } from '@loaders.gl/core';
-import { WKTLoader } from '@loaders.gl/wkt';
 import { ApiClient, FeatureListItemOut_float_ } from '@nismod/irv-api-client';
-import bbox from '@turf/bbox';
 import pick from 'lodash/pick';
 import { startTransition, useCallback, useEffect, useState } from 'react';
 
-import { BoundingBox } from '@/lib/bounding-box';
+import { bboxWktToAppBoundingBox, BoundingBox } from '@/lib/bounding-box';
 import { FieldSpec } from '@/lib/data-map/view-layers';
 
 export interface PageInfo {
@@ -28,12 +25,9 @@ export type ListFeature = Omit<FeatureListItemOut_float_, 'bbox_wkt'> & {
 };
 
 function processFeature(f: FeatureListItemOut_float_): ListFeature {
-  const originalBboxGeom = parseSync(f.bbox_wkt, WKTLoader);
-  const processedBbox: BoundingBox = bbox(originalBboxGeom) as BoundingBox;
-
   return {
     ...f,
-    bbox: processedBbox,
+    bbox: bboxWktToAppBoundingBox(f.bbox_wkt),
   };
 }
 

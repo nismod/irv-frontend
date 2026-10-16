@@ -2,7 +2,6 @@ import { parseSync } from '@loaders.gl/core';
 import { WKTLoader } from '@loaders.gl/wkt';
 import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
-import buffer from '@turf/buffer';
 import { GeoJSON } from 'geojson';
 
 /**
@@ -43,8 +42,23 @@ export function geoJsonToAppBoundingBox(geoJson: GeoJSON): BoundingBox {
   return bbox(geoJson) as BoundingBox;
 }
 
+export function appBoundingBoxToPolygon(boundingBox: BoundingBox) {
+  return bboxPolygon(boundingBox);
+}
+
+/** Pad bounds by an approximate distance, using the midpoint latitude for longitude scaling. */
 export function extendBbox(boundingBox: BoundingBox, kilometers: number): BoundingBox {
-  return bbox(buffer(bboxPolygon(boundingBox), kilometers)) as BoundingBox;
+  const [minX, minY, maxX, maxY] = boundingBox;
+  const midpointLatitude = ((minY + maxY) / 2) * (Math.PI / 180);
+  const latitudePadding = (kilometers / 6371.0088) * (180 / Math.PI);
+  const longitudePadding = Math.min(180, latitudePadding / Math.cos(midpointLatitude));
+
+  return [
+    Math.max(-180, minX - longitudePadding),
+    Math.max(-90, minY - latitudePadding),
+    Math.min(180, maxX + longitudePadding),
+    Math.min(90, maxY + latitudePadding),
+  ];
 }
 
 /** Parse a bounding box geometry expressed as a WKT string and convert it to a `BoundingBox` object */

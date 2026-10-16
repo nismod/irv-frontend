@@ -1,7 +1,6 @@
-import bboxPolygon from '@turf/bbox-polygon';
 import { atom } from 'jotai';
 
-import { BoundingBox, extendBbox } from '@/lib/bounding-box';
+import { appBoundingBoxToPolygon, BoundingBox, extendBbox } from '@/lib/bounding-box';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { boundingBoxLayer } from '@/lib/deck/layers/bounding-box-layer';
 
@@ -27,7 +26,7 @@ export const featureBoundingBoxLayerAtom = atom<ViewLayer | null>((get) => {
     id: `feature-bounding-box-${id}`,
     fn: ({ deckProps, zoom }) => {
       const zoomBasedPaddingKm = calculateZoomBasedBuffer(zoom);
-      const geom = bboxPolygon(extendBbox(bbox, zoomBasedPaddingKm));
+      const geom = appBoundingBoxToPolygon(extendBbox(bbox, zoomBasedPaddingKm));
       return boundingBoxLayer({ bboxGeom: geom }, deckProps);
     },
   };
