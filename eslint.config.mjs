@@ -1,5 +1,6 @@
 import eslint from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
+import { defaultConditionNames } from 'eslint-import-resolver-typescript';
 import importPlugin from 'eslint-plugin-import';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -59,6 +60,8 @@ export function createEslintConfig({ typeAware = true } = {}) {
         ...(typeAware && {
           'import/resolver': {
             typescript: {
+              // Jotai uses versioned type exports; resolve these before its fallback declaration.
+              conditionNames: ['types@>=5.5', ...defaultConditionNames],
               // https://github.com/import-js/eslint-plugin-import/issues/1872#issuecomment-789895457
               project: '.',
             },
