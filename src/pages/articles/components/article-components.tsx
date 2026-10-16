@@ -1,13 +1,19 @@
+import { lazy, Suspense } from 'react';
+
 import { MapMarker } from '@/lib/map/marker/MapMarker';
 import { AppLink } from '@/lib/nav';
 import { H1, H2, H3, H4, H5, H6 } from '@/lib/ui/mui/typography';
 
 import { ArticleParagraph } from '@/pages/ui/ArticleContainer';
 
-import { ArticleChart } from './ArticleChart';
+import type { ArticleChartProps } from './ArticleChart';
 import { ArticleFigure } from './ArticleFigure';
 import { ArticleMap } from './ArticleMap';
 import { Callout } from './Callout';
+
+const ArticleChart = lazy(() =>
+  import('./ArticleChart').then((module) => ({ default: module.ArticleChart })),
+);
 
 /**
  * Components available inside article MDX files.
@@ -61,7 +67,11 @@ export const articleMdxComponents = {
     </ArticleParagraph>
   ),
   Callout,
-  ArticleChart,
+  ArticleChart: (props: ArticleChartProps) => (
+    <Suspense fallback={null}>
+      <ArticleChart {...props} />
+    </Suspense>
+  ),
   ArticleFigure,
   ArticleMap,
   MapMarker,

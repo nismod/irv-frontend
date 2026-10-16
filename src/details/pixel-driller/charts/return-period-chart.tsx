@@ -2,11 +2,20 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import _ from 'lodash';
-import { FC, useMemo, useState } from 'react';
+import { FC, lazy, Suspense, useMemo, useState } from 'react';
 
 import { ChartConfig, ReturnPeriodRow } from '../types';
-import { ReturnPeriodDetailedChart } from './return-period-detailed';
-import { ReturnPeriodGroupedByPathwayChart } from './return-period-grouped-by-pathway';
+
+const ReturnPeriodDetailedChart = lazy(() =>
+  import('./return-period-detailed').then((module) => ({
+    default: module.ReturnPeriodDetailedChart,
+  })),
+);
+const ReturnPeriodGroupedByPathwayChart = lazy(() =>
+  import('./return-period-grouped-by-pathway').then((module) => ({
+    default: module.ReturnPeriodGroupedByPathwayChart,
+  })),
+);
 
 export interface ReturnPeriodChartProps {
   config: ChartConfig;
@@ -86,21 +95,23 @@ export const ReturnPeriodChart: FC<ReturnPeriodChartProps> = ({ config, data }) 
         </Box>
       )}
       <Box sx={{ width: '100%' }}>
-        {effectiveMode === 'detailed' ? (
-          <ReturnPeriodDetailedChart
-            data={filteredData}
-            config={config}
-            width={400}
-            height={chartHeight}
-          />
-        ) : (
-          <ReturnPeriodGroupedByPathwayChart
-            data={filteredData}
-            config={config}
-            width={400}
-            height={chartHeight}
-          />
-        )}
+        <Suspense fallback={null}>
+          {effectiveMode === 'detailed' ? (
+            <ReturnPeriodDetailedChart
+              data={filteredData}
+              config={config}
+              width={400}
+              height={chartHeight}
+            />
+          ) : (
+            <ReturnPeriodGroupedByPathwayChart
+              data={filteredData}
+              config={config}
+              width={400}
+              height={chartHeight}
+            />
+          )}
+        </Suspense>
       </Box>
     </Box>
   );

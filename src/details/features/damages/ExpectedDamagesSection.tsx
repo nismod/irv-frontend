@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import { ExpectedDamage } from '@nismod/irv-api-client';
 import { atom, useAtomValue } from 'jotai';
 import _ from 'lodash';
-import { useMemo } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 
 import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 
@@ -17,8 +17,11 @@ import {
   QUIRKY_FIELDS_MAPPING,
 } from './DamagesSection';
 import { DamageTable } from './DamageTable';
-import { ExpectedDamageChart } from './ExpectedDamageChart';
 import { HazardSelect, selectedHazardAtom } from './param-controls';
+
+const ExpectedDamageChart = lazy(() =>
+  import('./ExpectedDamageChart').then((module) => ({ default: module.ExpectedDamageChart })),
+);
 
 function getDamageKey({ hazard, rcp, epoch }) {
   return `${hazard}__rcp_${rcp}__epoch_${epoch}__conf_None`;
@@ -120,28 +123,32 @@ export const ExpectedDamagesSection = () => {
         {selectedData ? (
           <>
             <Box mt={1}>
-              <ExpectedDamageChart
-                data={{
-                  table: selectedData,
-                }}
-                field="ead_mean"
-                field_min="ead_amin"
-                field_max="ead_amax"
-                field_title="EAD (USD)"
-              />
-            </Box>
-            {has_eael ? (
-              <Box mt={1}>
-                <Typography variant="subtitle2">Expected Annual Economic Losses</Typography>
+              <Suspense fallback={null}>
                 <ExpectedDamageChart
                   data={{
                     table: selectedData,
                   }}
-                  field="eael_mean"
-                  field_min="eael_amin"
-                  field_max="eael_amax"
-                  field_title="EAEL (USD/day)"
+                  field="ead_mean"
+                  field_min="ead_amin"
+                  field_max="ead_amax"
+                  field_title="EAD (USD)"
                 />
+              </Suspense>
+            </Box>
+            {has_eael ? (
+              <Box mt={1}>
+                <Typography variant="subtitle2">Expected Annual Economic Losses</Typography>
+                <Suspense fallback={null}>
+                  <ExpectedDamageChart
+                    data={{
+                      table: selectedData,
+                    }}
+                    field="eael_mean"
+                    field_min="eael_amin"
+                    field_max="eael_amax"
+                    field_title="EAEL (USD/day)"
+                  />
+                </Suspense>
               </Box>
             ) : (
               <Box mt={1}>

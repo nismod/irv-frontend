@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import { ReturnPeriodDamage } from '@nismod/irv-api-client';
 import { atom, useAtomValue } from 'jotai';
 import _ from 'lodash';
+import { lazy, Suspense } from 'react';
 
 import { InputRow } from '@/sidebar/ui/InputRow';
 
@@ -23,8 +24,13 @@ import {
   selectedRpOptionAtom,
   SHOW_ALL_OPTION,
 } from './param-controls';
-import { ReturnPeriodDamageChart } from './ReturnPeriodDamageChart';
 import { RPDamageTable } from './RPDamageTable';
+
+const ReturnPeriodDamageChart = lazy(() =>
+  import('./ReturnPeriodDamageChart').then((module) => ({
+    default: module.ReturnPeriodDamageChart,
+  })),
+);
 
 function getRPDamageKey({ hazard, rcp, epoch, rp }) {
   return `${hazard}__rcp_${rcp}__epoch_${epoch}__rp_${rp}__conf_None`;
@@ -147,15 +153,17 @@ export const RPDamagesSection = () => {
 
         {selectedRPData ? (
           <>
-            <ReturnPeriodDamageChart
-              data={{
-                table: selectedRPData,
-              }}
-              field_key="damage_mean"
-              field_title="Damage (USD)"
-              field_min="damage_amin"
-              field_max="damage_amax"
-            />
+            <Suspense fallback={null}>
+              <ReturnPeriodDamageChart
+                data={{
+                  table: selectedRPData,
+                }}
+                field_key="damage_mean"
+                field_title="Damage (USD)"
+                field_min="damage_amin"
+                field_max="damage_amax"
+              />
+            </Suspense>
             <RPDamageTable damages={filteredTableData} />
           </>
         ) : (
