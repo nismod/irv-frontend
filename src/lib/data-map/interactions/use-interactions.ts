@@ -1,4 +1,4 @@
-import type { MapboxOverlay } from '@deck.gl/mapbox';
+import type { MapLibreOverlay } from '@deck.gl/maplibre';
 import { useSetAtom } from 'jotai';
 import _ from 'lodash';
 import { useCallback, useMemo } from 'react';
@@ -74,7 +74,7 @@ export function useInteractions(
   useSyncValueToAtom(activeGroupLayerIds, allowedGroupLayersAtom);
 
   const onHover = useCallback(
-    (info: any, deck: MapboxOverlay) => {
+    (info: any, deck: MapLibreOverlay) => {
       const { x, y, coordinate } = info;
 
       for (const [groupName, layerIds] of Object.entries(activeGroupLayerIds)) {
@@ -109,7 +109,7 @@ export function useInteractions(
   );
 
   const onClick = useCallback(
-    (info: any, deck: MapboxOverlay) => {
+    (info: any, deck: MapLibreOverlay) => {
       const { x, y } = info;
       for (const [groupName, layerIds] of Object.entries(activeGroupLayerIds)) {
         const interactionGroup = interactionGroupLookup[groupName];

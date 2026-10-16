@@ -1,4 +1,4 @@
-import type { MapboxOverlay } from '@deck.gl/mapbox';
+import type { MapLibreOverlay } from '@deck.gl/maplibre';
 import { FC, useCallback, useMemo, useRef } from 'react';
 import { useMap } from 'react-map-gl/maplibre';
 
@@ -67,10 +67,9 @@ export const DataMap: FC<DataMapProps> = ({
     [beforeId, viewLayers, viewLayersParams],
   );
 
-  const deckRef = useRef<MapboxOverlay | null>(null);
-
   const { current: map } = useMap();
   const zoom = map.getMap().getZoom();
+  const deckRef = useRef<MapLibreOverlay | null>(null);
 
   /**
    * List of deck.gl layers, recalculated upon zoom change,
