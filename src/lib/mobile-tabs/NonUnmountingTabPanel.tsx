@@ -7,5 +7,13 @@ import Box from '@mui/material/Box';
 export const NonUnmountingTabPanel = ({ value, children }) => {
   const context = useTabContext();
 
-  return <Box display={value === context?.value ? 'block' : 'none'}>{children}</Box>;
+  return (
+    <Box
+      sx={{
+        display: value === context?.value ? 'block' : 'none',
+      }}
+    >
+      {children}
+    </Box>
+  );
 };

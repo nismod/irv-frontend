@@ -71,8 +71,20 @@ export const MapLayerSelection = () => {
               zIndex: 1,
             }}
           >
-            <Box width={220}>
-              <Box px={2} py="6px" height={37} display="flex" borderBottom="1px solid #ddd">
+            <Box
+              sx={{
+                width: 220,
+              }}
+            >
+              <Box
+                sx={{
+                  px: 2,
+                  py: '6px',
+                  height: 37,
+                  display: 'flex',
+                  borderBottom: '1px solid #ddd',
+                }}
+              >
                 <ToggleButtonGroup
                   exclusive
                   color="primary"
@@ -84,7 +96,11 @@ export const MapLayerSelection = () => {
                   <ToggleButton value="satellite">Satellite</ToggleButton>
                 </ToggleButtonGroup>
               </Box>
-              <Box px={2}>
+              <Box
+                sx={{
+                  px: 2,
+                }}
+              >
                 <Box>
                   <FormControlLabel
                     label="Show labels"

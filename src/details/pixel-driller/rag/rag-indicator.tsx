@@ -61,7 +61,12 @@ export const RagStatusDisplay: FC<RagStatusDisplayProps> = ({ status }) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <RagIndicator status={status} />
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         Risk assessment: {status}
       </Typography>
     </Box>

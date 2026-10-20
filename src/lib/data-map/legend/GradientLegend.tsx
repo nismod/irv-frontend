@@ -62,7 +62,13 @@ const LegendGradient: FC<{
           slots={{ transition: Fade }}
           slotProps={{ transition: { timeout: 0 } }}
         >
-          <Box height={legendHeight} flexGrow={1} bgcolor={color} />
+          <Box
+            sx={{
+              height: legendHeight,
+              flexGrow: 1,
+              bgcolor: color,
+            }}
+          />
         </Tooltip>
       ))}
     </>
@@ -88,22 +94,39 @@ export const GradientLegend: FC<GradientLegendProps> = memo(
     return (
       <LegendLayout label={label} description={description}>
         <Box
-          height={legendHeight + 2}
-          width={256}
-          bgcolor="#ccc"
-          display="flex"
-          flexDirection="row"
-          border="1px solid gray"
+          sx={{
+            height: legendHeight + 2,
+            width: 256,
+            bgcolor: '#ccc',
+            display: 'flex',
+            flexDirection: 'row',
+            border: '1px solid gray',
+          }}
         >
           {colorMap && <LegendGradient colorMap={colorMap} getValueLabel={getValueLabel} />}
         </Box>
-        <Box height={10} position="relative">
+        <Box
+          sx={{
+            height: 10,
+            position: 'relative',
+          }}
+        >
           {colorMap && (
             <>
-              <Box position="absolute" left={0}>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  left: 0,
+                }}
+              >
                 <Typography>{getValueLabel(range[0])}</Typography>
               </Box>
-              <Box position="absolute" right={0}>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                }}
+              >
                 <Typography>{getValueLabel(range[1])}</Typography>
               </Box>
             </>

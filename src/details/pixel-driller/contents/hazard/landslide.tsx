@@ -125,25 +125,49 @@ export const Landslides: FC<PixelComponentProps> = ({ records }) => {
     <HazardAccordion title="Landslide" ragStatus={ragStatus}>
       <Stack spacing={1.5}>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Mean annual earthquake-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(earthquakeProb)}</Typography>
         </Box>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Mean annual rainfall-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(rainfallMeanProb)}</Typography>
         </Box>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Median annual rainfall-triggered landslide hazard
           </Typography>
           <Typography variant="body1">{formatProbability(rainfallMedianProb)}</Typography>
         </Box>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Susceptibility. Aggregate hazard index ranging from 1 (low) to 4 (very high)
           </Typography>
           <Typography variant="body1">{susceptibilityCategory ?? 'N/A'}</Typography>

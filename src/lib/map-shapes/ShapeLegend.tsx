@@ -7,7 +7,13 @@ export type { MapShapeType };
 export const ShapeLegend = ({ type, color }: { type: MapShapeType; color: string }) => {
   const ShapeComponent = shapeComponents[type];
   return (
-    <Box component="span" display="inline-block" marginRight={1}>
+    <Box
+      component="span"
+      sx={{
+        display: 'inline-block',
+        marginRight: 1,
+      }}
+    >
       <ShapeComponent fill={color} width="10px" height="10px" />
     </Box>
   );

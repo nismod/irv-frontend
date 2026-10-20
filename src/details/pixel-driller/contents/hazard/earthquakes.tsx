@@ -100,7 +100,13 @@ export const Earthquakes: FC<PixelComponentProps> = ({ records }) => {
     <HazardAccordion title="Earthquakes" ragStatus={ragStatus}>
       <Stack spacing={1.5}>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Ground shaking (return period {rpLabel} years, medium: {mediumLabel})
           </Typography>
           <Typography variant="body1">{formatValue(value)}</Typography>

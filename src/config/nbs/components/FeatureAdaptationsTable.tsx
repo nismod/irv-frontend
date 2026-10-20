@@ -46,7 +46,14 @@ export const FeatureAdaptationsTable: FC<{
 
   return (
     <>
-      <Box position="absolute" top={0} right={25} zIndex={1000}></Box>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 25,
+          zIndex: 1000,
+        }}
+      ></Box>
       <SortedAssetTable
         apiClient={apiClient}
         layerSpec={layerSpec}
@@ -80,7 +87,11 @@ export const FeatureAdaptationsTable: FC<{
             onMouseEnter={() => setBoundedFeature(feature)}
             onMouseLeave={() => setBoundedFeature(null)}
             expandableContent={
-              <Box py={1}>
+              <Box
+                sx={{
+                  py: 1,
+                }}
+              >
                 <ExtendedAssetDetails
                   feature={feature}
                   label="Nature-based solution"

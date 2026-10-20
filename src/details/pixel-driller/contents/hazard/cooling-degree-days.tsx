@@ -118,7 +118,13 @@ export const CoolingDegreeDays: FC<PixelComponentProps> = ({ records }) => {
     <HazardAccordion title="Cooling Degree Days" ragStatus={ragStatus}>
       <Stack spacing={1.5}>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Absolute change in cooling degree days
           </Typography>
           <Typography variant="body1">
@@ -126,7 +132,13 @@ export const CoolingDegreeDays: FC<PixelComponentProps> = ({ records }) => {
           </Typography>
         </Box>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Relative change in cooling degree days
           </Typography>
           <Typography variant="body1">

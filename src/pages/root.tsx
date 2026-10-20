@@ -16,11 +16,13 @@ const RootLayout = ({ children }) => {
     <>
       <Nav height={globalStyleVariables.navbarHeight} />
       <Box
-        position="absolute"
-        top={globalStyleVariables.navbarHeight}
-        bottom={0}
-        left={0}
-        right={0}
+        sx={{
+          position: 'absolute',
+          top: globalStyleVariables.navbarHeight,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
       >
         {children}
         <PageFooter />
@@ -42,7 +44,11 @@ export const RootErrorRoute = () => {
   return (
     <RootLayout>
       <Container>
-        <Box p={2}>
+        <Box
+          sx={{
+            p: 2,
+          }}
+        >
           <Typography>
             <Error />{' '}
             {error.status === 404 ? 'Page not found (404)' : 'There was an unexpected error'}

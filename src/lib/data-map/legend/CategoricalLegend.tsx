@@ -20,8 +20,19 @@ const legendItemHeight = 12;
 const LegendItem: FC<CategoricalLegendItem> = ({ color, label, shape = 'square' }) => {
   const ShapeComponent = shapeComponents[shape];
   return (
-    <Box display="flex" alignItems="center">
-      <Box mr={1} display="flex" alignItems="center">
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <Box
+        sx={{
+          mr: 1,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <ShapeComponent
           width={legendItemHeight}
           height={legendItemHeight}
@@ -48,7 +59,15 @@ export interface CategoricalLegendProps {
 export const CategoricalLegend: FC<CategoricalLegendProps> = memo(
   ({ label, description, items }) => (
     <LegendLayout label={label} description={description}>
-      <Stack gap={0.5}>{items?.map((item, i) => <LegendItem key={i} {...item} />)}</Stack>
+      <Stack
+        sx={{
+          gap: 0.5,
+        }}
+      >
+        {items?.map((item, i) => (
+          <LegendItem key={i} {...item} />
+        ))}
+      </Stack>
     </LegendLayout>
   ),
 );

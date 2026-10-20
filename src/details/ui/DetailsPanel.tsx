@@ -9,7 +9,15 @@ export const DetailsPanel = ({ interactionGroup, children }) => {
   return (
     <SidePanel>
       <ErrorBoundary message="There was a problem displaying these details.">
-        <Box position="absolute" top={0} right={0} p={2} zIndex={1000}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            p: 2,
+            zIndex: 1000,
+          }}
+        >
           <DeselectButton interactionGroup={interactionGroup} title="Deselect" />
         </Box>
         {children}

@@ -18,7 +18,16 @@ import { MOBILE_TABS_CONFIG } from './tabs-config';
 
 export const MapPageMobileLayout = () => (
   <>
-    <Box position="absolute" overflow="clip" top={0} left={0} right={0} bottom={0}>
+    <Box
+      sx={{
+        position: 'absolute',
+        overflow: 'clip',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
+    >
       <MapView>
         <MapHudMobileLayout />
       </MapView>

@@ -91,13 +91,25 @@ export const Buildings: FC<PixelComponentProps> = ({ records }) => {
     <ExposureAccordion title="Buildings" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Built-up surface — all buildings
           </Typography>
           <Typography variant="body1">{formatBuiltUpSurfaceM2(allValue)}</Typography>
         </Box>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Built-up surface — non-residential
           </Typography>
           <Typography variant="body1">{formatBuiltUpSurfaceM2(nonResidentialValue)}</Typography>

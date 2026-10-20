@@ -105,9 +105,17 @@ export const ExpectedDamagesSection = () => {
   );
 
   return (
-    <Box py={2}>
+    <Box
+      sx={{
+        py: 2,
+      }}
+    >
       <Stack spacing={3}>
-        <Box position="relative">
+        <Box
+          sx={{
+            position: 'relative',
+          }}
+        >
           <Typography variant="h6">Expected Annual Damages</Typography>
           {fd && (
             <ButtonPlacement>
@@ -122,7 +130,11 @@ export const ExpectedDamagesSection = () => {
         <HazardSelect />
         {selectedData ? (
           <>
-            <Box mt={1}>
+            <Box
+              sx={{
+                mt: 1,
+              }}
+            >
               <Suspense fallback={null}>
                 <ExpectedDamageChart
                   data={{
@@ -136,7 +148,11 @@ export const ExpectedDamagesSection = () => {
               </Suspense>
             </Box>
             {has_eael ? (
-              <Box mt={1}>
+              <Box
+                sx={{
+                  mt: 1,
+                }}
+              >
                 <Typography variant="subtitle2">Expected Annual Economic Losses</Typography>
                 <Suspense fallback={null}>
                   <ExpectedDamageChart
@@ -151,14 +167,22 @@ export const ExpectedDamagesSection = () => {
                 </Suspense>
               </Box>
             ) : (
-              <Box mt={1}>
+              <Box
+                sx={{
+                  mt: 1,
+                }}
+              >
                 <Typography variant="body2">
                   Indirect damages (losses) due to disruption of infrastructure services (loss of
                   power, transport disruption) are not yet available.
                 </Typography>
               </Box>
             )}
-            <Box mt={1}>
+            <Box
+              sx={{
+                mt: 1,
+              }}
+            >
               <DamageTable damages={selectedData} />
             </Box>
           </>

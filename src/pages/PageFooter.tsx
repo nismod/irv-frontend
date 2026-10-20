@@ -27,15 +27,23 @@ const FooterExtLink = ({ children, href }) => (
 );
 
 export const PageFooter = () => (
-  <Box padding={4} borderTop={'1px solid #aca2a3'}>
+  <Box
+    sx={{
+      padding: 4,
+      borderTop: '1px solid #aca2a3',
+    }}
+  >
     <footer>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
-        flexWrap="wrap"
         spacing={{ md: 1, lg: 4 }}
-        sx={{ mt: 4, mb: 2 }}
-        justifyContent="left"
-        alignItems="left"
+        sx={{
+          flexWrap: 'wrap',
+          justifyContent: 'left',
+          alignItems: 'left',
+          mt: 4,
+          mb: 2,
+        }}
       >
         <FooterNavLink to="/" sx={{ fontWeight: 600, textDecoration: 'none' }}>
           GRI Risk Viewer

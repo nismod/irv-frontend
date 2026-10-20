@@ -26,7 +26,12 @@ export const Card = ({ title, href, image, text }) => (
           {title}
         </Typography>
         <img src={image} alt={title} width="100%" height="auto" style={{ display: 'block' }} />
-        <Box height={165} sx={{ overflow: 'hidden' }}>
+        <Box
+          sx={{
+            height: 165,
+            overflow: 'hidden',
+          }}
+        >
           <Typography
             variant="body1"
             sx={{

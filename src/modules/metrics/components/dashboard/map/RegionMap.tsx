@@ -89,10 +89,12 @@ export default function RegionMap({
   return (
     <Box
       ref={containerRef}
-      height={responsiveHeight}
-      width={responsiveWidth}
-      position="relative"
-      sx={{ backgroundColor: 'white' }}
+      sx={{
+        height: responsiveHeight,
+        width: responsiveWidth,
+        position: 'relative',
+        backgroundColor: 'white',
+      }}
     >
       {width != null && (
         <Suspense fallback={'Loading map...'}>

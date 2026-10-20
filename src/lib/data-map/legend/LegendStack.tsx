@@ -15,9 +15,19 @@ export const LegendStack: FC<{
   legendConfigs: Map<string, GroupedLegendLayers>;
 }> = ({ legendConfigs }) => (
   <Paper>
-    <Box p={1} maxWidth={270}>
+    <Box
+      sx={{
+        p: 1,
+        maxWidth: 270,
+      }}
+    >
       <Suspense fallback={'Loading legend...'}>
-        <Stack gap={0.3} divider={<Divider />}>
+        <Stack
+          divider={<Divider />}
+          sx={{
+            gap: 0.3,
+          }}
+        >
           {Array.from(legendConfigs).map(([legendKey, { main }]) => (
             <Suspense key={legendKey} fallback={<LegendLoading />}>
               {main.renderLegend()}

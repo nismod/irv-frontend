@@ -65,12 +65,14 @@ export const IntroPage = () => {
 
           <Stack
             direction={{ sm: 'column', md: 'row' }}
-            flexWrap="wrap"
             useFlexGap={true}
-            justifyContent="center"
-            alignItems="top"
             spacing={2}
-            sx={{ margin: '32px 0 !important' }}
+            sx={{
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'top',
+              margin: '32px 0 !important',
+            }}
           >
             <Card
               image="./card-hazard.png"
@@ -118,12 +120,14 @@ export const IntroPage = () => {
 
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
-            flexWrap="wrap"
             divider={<Divider orientation="vertical" flexItem />}
-            justifyContent="center"
-            alignItems="center"
             spacing={2}
-            mb={6}
+            sx={{
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mb: 6,
+            }}
           >
             <ExtLink href="https://opsis.eci.ox.ac.uk">
               <img

@@ -46,9 +46,17 @@ const nbsAdaptationNameLabelLookup = toLabelLookup(NBS_ADAPTATION_TYPE_LABELS);
 export const NbsExtendedDetails: ApiDetailsComponentType = ({ fd }) => {
   const adaptations = fd?.adaptation;
   return (
-    <Box py={2}>
+    <Box
+      sx={{
+        py: 2,
+      }}
+    >
       <Stack spacing={3}>
-        <Box position="relative">
+        <Box
+          sx={{
+            position: 'relative',
+          }}
+        >
           <Typography variant="h6">Adaptations</Typography>
           {fd && (
             <ButtonPlacement>

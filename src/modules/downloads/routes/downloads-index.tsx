@@ -83,9 +83,20 @@ export const Component = () => {
           </ArticleSection>
         </ArticleContentContainer>
       </ArticleContainer>
-      <Stack direction="column" alignItems={'center'}>
+      <Stack
+        direction="column"
+        sx={{
+          alignItems: 'center',
+        }}
+      >
         <RegionSearchNavigation regions={regions} title="Select a country" />
-        <Typography textAlign="center" sx={{ mt: 2, mb: 8 }}>
+        <Typography
+          sx={{
+            textAlign: 'center',
+            mt: 2,
+            mb: 8,
+          }}
+        >
           Or <AppLink to="regions">browse all countries</AppLink>
         </Typography>
       </Stack>

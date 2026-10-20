@@ -79,7 +79,13 @@ export const LandCover: FC<PixelComponentProps> = ({ records }) => {
     <ExposureAccordion title="Land Cover" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Category
           </Typography>
           <Typography variant="body1">{displayLabel}</Typography>

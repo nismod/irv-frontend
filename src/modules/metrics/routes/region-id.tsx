@@ -115,34 +115,58 @@ export const Component = () => {
   );
 
   return (
-    <Stack direction="column" gap={6} alignItems={'center'} paddingBottom={100} width={'100%'}>
+    <Stack
+      direction="column"
+      sx={{
+        gap: 6,
+        alignItems: 'center',
+        paddingBottom: 100,
+        width: '100%',
+      }}
+    >
       <Stack
         direction="column"
-        gap={isMobile ? 1 : 1}
-        alignItems={'center'}
-        paddingTop={5}
-        width={'100%'}
+        sx={{
+          gap: isMobile ? 1 : 1,
+          alignItems: 'center',
+          paddingTop: 5,
+          width: '100%',
+        }}
       >
         <Stack
           direction={'column'}
-          gap={isMobile ? 1 : 3}
-          paddingX={0}
-          sx={{ backgroundColor: 'white' }}
+          sx={{
+            gap: isMobile ? 1 : 3,
+            paddingX: 0,
+            backgroundColor: 'white',
+          }}
         >
           <Stack
             direction={isMobile ? 'column' : 'row'}
-            alignItems={'center'}
-            gap={5}
-            justifyContent={'center'}
+            sx={{
+              alignItems: 'center',
+              gap: 5,
+              justifyContent: 'center',
+            }}
           >
-            <Stack direction="column" alignItems={'center'} paddingX={2}>
+            <Stack
+              direction="column"
+              sx={{
+                alignItems: 'center',
+                paddingX: 2,
+              }}
+            >
               <RegionSearchNavigation
                 regions={regions}
                 title="Select a country"
                 selectedRegionSummary={boundarySummary}
                 metricId={selectedMetricId}
               />
-              <Typography textAlign="center">
+              <Typography
+                sx={{
+                  textAlign: 'center',
+                }}
+              >
                 Or <AppLink to="/metrics/regions">browse all countries</AppLink>
               </Typography>
             </Stack>
@@ -150,11 +174,19 @@ export const Component = () => {
 
           <Stack
             direction={isMobile ? 'column' : 'row'}
-            gap={isMobile ? 3 : 7}
-            justifyContent={'center'}
-            alignItems={'center'}
+            sx={{
+              gap: isMobile ? 3 : 7,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
-            <Stack direction="column" alignItems={'center'} width={'275px'}>
+            <Stack
+              direction="column"
+              sx={{
+                alignItems: 'center',
+                width: '275px',
+              }}
+            >
               <ParamDropdown
                 title={'Metric'}
                 onChange={(selection) => handleMetricSelection(selection)}
@@ -165,15 +197,19 @@ export const Component = () => {
 
             <Stack
               direction={'row'}
-              gap={isMobile ? 5 : 8}
-              justifyContent={'center'}
-              alignItems={'center'}
+              sx={{
+                gap: isMobile ? 5 : 8,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
             >
               <Stack
                 direction="column"
-                alignItems={'center'}
-                maxWidth={'150px'}
-                minWidth={isMobile ? 'auto' : '150px'}
+                sx={{
+                  alignItems: 'center',
+                  maxWidth: '150px',
+                  minWidth: isMobile ? 'auto' : '150px',
+                }}
               >
                 <ParamDropdown
                   title={'Year'}
@@ -207,7 +243,13 @@ export const Component = () => {
           </Stack>
         </Stack>
 
-        <Box paddingX={isMobile ? 2 : 5} width={'100%'} height={'100vh'}>
+        <Box
+          sx={{
+            paddingX: isMobile ? 2 : 5,
+            width: '100%',
+            height: '100vh',
+          }}
+        >
           {chartData && geojson && geojson.data ? (
             <Dashboard
               region={region}

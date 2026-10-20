@@ -7,8 +7,20 @@ import Typography from '@mui/material/Typography';
 export const TableSectionContainer = ({ children }) => {
   return (
     // MUI tables lose dynamic styling in flex containers, so use margins for centering
-    <Box marginX={'auto'} maxWidth={'fit-content'} marginY={6}>
-      <Box component={'div'} maxWidth={'75rem'} paddingX={2}>
+    <Box
+      sx={{
+        marginX: 'auto',
+        maxWidth: 'fit-content',
+        marginY: 6,
+      }}
+    >
+      <Box
+        component={'div'}
+        sx={{
+          maxWidth: '75rem',
+          paddingX: 2,
+        }}
+      >
         {children}
       </Box>
     </Box>

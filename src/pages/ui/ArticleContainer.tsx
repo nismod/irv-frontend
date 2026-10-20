@@ -17,7 +17,14 @@ const ParagraphTypography = styled(Typography)(({ theme }) => ({
 
 export const ArticleSection = ({ children }) => {
   return (
-    <Stack spacing={2} paddingX={2} marginY={6} alignItems={'center'}>
+    <Stack
+      spacing={2}
+      sx={{
+        paddingX: 2,
+        marginY: 6,
+        alignItems: 'center',
+      }}
+    >
       {children}
     </Stack>
   );
@@ -49,7 +56,12 @@ export const SubSectionHeader = ({ children }) => {
 
 export const NarrowContainer = ({ children }) => {
   return (
-    <Box width={'100%'} maxWidth={'50rem'}>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: '50rem',
+      }}
+    >
       {children}
     </Box>
   );
@@ -83,7 +95,12 @@ export const ArticleContainer = ({ children }) => {
 
 export const ArticleContentContainer = ({ children }) => {
   return (
-    <Box component={'div'} paddingY={2}>
+    <Box
+      component={'div'}
+      sx={{
+        paddingY: 2,
+      }}
+    >
       {children}
     </Box>
   );

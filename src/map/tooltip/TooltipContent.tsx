@@ -10,7 +10,13 @@ import { WdpaHoverDescription } from '@/config/protected-areas/WdpaHoverDescript
 
 const TooltipSection = ({ children }) =>
   children && (
-    <Box px={1} py={0.5} borderBottom="1px solid #ccc">
+    <Box
+      sx={{
+        px: 1,
+        py: 0.5,
+        borderBottom: '1px solid #ccc',
+      }}
+    >
       <PreventHide />
       {children}
     </Box>
@@ -23,7 +29,11 @@ const InteractionGroupTooltipWrapped = withProps(InteractionGroupTooltip, {
 export const TooltipContent: FC = () => {
   return (
     <AutoHidePaper>
-      <Box minWidth={200}>
+      <Box
+        sx={{
+          minWidth: 200,
+        }}
+      >
         <ErrorBoundary message="There was a problem displaying the tooltip.">
           <InteractionGroupTooltipWrapped group="assets" />
           <InteractionGroupTooltipWrapped group="hazards" />

@@ -35,7 +35,15 @@ interface DetailsFeature extends SimpleFeature {
 }
 
 const AssetDetailsWrapper: FC<{ children?: ReactNode }> = ({ children }) => {
-  return <Box position="relative">{children}</Box>;
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+      }}
+    >
+      {children}
+    </Box>
+  );
 };
 
 const AssetDetailsHeader: FC<{ label: string; color: string }> = ({ label, color }) => {

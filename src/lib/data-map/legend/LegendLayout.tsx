@@ -11,11 +11,25 @@ export const LegendLayout = ({
   description?: string | ReactNode;
   children: ReactNode;
 }) => (
-  <Box mb={2}>
-    <Box mb={1}>
+  <Box
+    sx={{
+      mb: 2,
+    }}
+  >
+    <Box
+      sx={{
+        mb: 1,
+      }}
+    >
       <Typography variant="body1">{label}</Typography>
       {description && <Typography variant="body2">{description}</Typography>}
     </Box>
-    <Box minWidth={255}>{children}</Box>
+    <Box
+      sx={{
+        minWidth: 255,
+      }}
+    >
+      {children}
+    </Box>
   </Box>
 );

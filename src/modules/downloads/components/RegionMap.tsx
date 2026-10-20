@@ -68,7 +68,14 @@ export function RegionMap({
   const { width, height, ref: containerRef } = useResizeDetector();
 
   return (
-    <Box ref={containerRef} height={responsiveHeight} width={responsiveWidth} position="relative">
+    <Box
+      ref={containerRef}
+      sx={{
+        height: responsiveHeight,
+        width: responsiveWidth,
+        position: 'relative',
+      }}
+    >
       {width != null && (
         <Suspense fallback={null}>
           <RegionMapImpl

@@ -31,15 +31,17 @@ export const MapLegend: FC<{
 
   return (
     <Box
-      position="absolute"
       {...{ right, bottom, left }}
-      zIndex={1000}
-      sx={{ pointerEvents: 'none' }}
+      sx={{
+        position: 'absolute',
+        zIndex: 1000,
+        pointerEvents: 'none',
+      }}
     >
       <Stack
         direction={'column'}
-        alignItems={'center'}
         sx={{
+          alignItems: 'center',
           pointerEvents: 'none',
           backgroundColor: 'white',
           width: 220,

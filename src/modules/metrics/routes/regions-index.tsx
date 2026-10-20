@@ -30,14 +30,30 @@ export const Component = () => {
   const { pathname } = useLocation();
 
   return (
-    <Stack direction="column" gap={15} paddingBottom={100} mt={5}>
+    <Stack
+      direction="column"
+      sx={{
+        gap: 15,
+        paddingBottom: 100,
+        mt: 5,
+      }}
+    >
       <Container maxWidth="md">
         <AppLink to="/metrics/regions/afg">&larr; Back</AppLink>
         <Typography variant="h2">All countries</Typography>
-        <Stack mt={3} spacing={2}>
+        <Stack
+          spacing={2}
+          sx={{
+            mt: 3,
+          }}
+        >
           <Box>
             <Typography variant="h3">Search</Typography>
-            <Box my={1}>
+            <Box
+              sx={{
+                my: 1,
+              }}
+            >
               <RegionSearchNavigation
                 regions={regions}
                 title="Select a country"

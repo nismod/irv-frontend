@@ -163,26 +163,43 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
       })}
     >
       <Stack
-        sx={{ alignItems: 'center', flexWrap: 'wrap', width: '100%', justifyContent: 'center' }}
-        gap={2}
+        sx={{
+          gap: 2,
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          width: '100%',
+          justifyContent: 'center',
+        }}
       >
         <Stack
           direction={isMobile ? 'column' : 'row'}
-          justifyContent={'center'}
-          width="100%"
-          padding="0px"
-          alignItems={isMobile ? 'center' : 'end'}
-          gap={5}
+          sx={{
+            justifyContent: 'center',
+            width: '100%',
+            padding: '0px',
+            alignItems: isMobile ? 'center' : 'end',
+            gap: 5,
+          }}
         >
           <Stack sx={{ maxHeight: '500px', width: isMobile ? '100%' : '50%' }}>
             {!selectedCountryData.length ? (
-              <Stack direction={'column'} alignItems={'center'}>
+              <Stack
+                direction={'column'}
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 <Typography>No data available.</Typography>
               </Stack>
             ) : (
               <></>
             )}
-            <Stack direction="row" justifyContent={'space-between'}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'space-between',
+              }}
+            >
               <Typography variant="h2">{country.name_long}</Typography>
 
               <IconButton
@@ -214,9 +231,11 @@ const DashboardCharts: FC<DashboardChartsProps> = ({
           {selectedCountryData.length ? (
             <Stack
               direction="row"
-              justifyContent={'end'}
-              alignItems={'start'}
-              width={isMobile ? '100%' : '50%'}
+              sx={{
+                justifyContent: 'end',
+                alignItems: 'start',
+                width: isMobile ? '100%' : '50%',
+              }}
             >
               <RegionsLineChart
                 xAccessor={(d) => d.year}

@@ -34,10 +34,19 @@ export const Component = () => {
     <CenteredLayout>
       <AppLink to="/downloads">&larr; Back</AppLink>
       <Typography variant="h2">All countries</Typography>
-      <Stack mt={3} spacing={2}>
+      <Stack
+        spacing={2}
+        sx={{
+          mt: 3,
+        }}
+      >
         <Box>
           <Typography variant="h3">Search</Typography>
-          <Box my={1}>
+          <Box
+            sx={{
+              my: 1,
+            }}
+          >
             <RegionSearchNavigation regions={regions} title="Select a country" />
           </Box>
         </Box>

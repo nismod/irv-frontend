@@ -43,7 +43,11 @@ export const Component = () => {
         width="100%"
         height={300}
       />
-      <Box mt={5}>
+      <Box
+        sx={{
+          mt: 5,
+        }}
+      >
         <Typography variant="h3">Datasets</Typography>
         <Suspense fallback={<DatasetsSkeleton />}>
           <Await resolve={datasets}>

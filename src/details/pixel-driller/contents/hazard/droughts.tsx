@@ -122,7 +122,13 @@ export const Droughts: FC<PixelComponentProps> = ({ records }) => {
   return (
     <HazardAccordion title="Droughts" ragStatus={ragStatus}>
       <Box>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Typography
+          variant="body2"
+          gutterBottom
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Maximum probability of drought event (worst case across all scenarios)
         </Typography>
         <Typography variant="body1">{formatProbability(aggregatedProbability)}</Typography>

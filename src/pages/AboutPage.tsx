@@ -159,10 +159,12 @@ export const AboutPage = () => (
 
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          flexWrap="wrap"
-          sx={{ mb: 2 }}
-          justifyContent="center"
-          alignItems="center"
+          sx={{
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mb: 2,
+          }}
         >
           <ExtLink href="https://resilient-planet-data.org/">
             <img
@@ -176,11 +178,14 @@ export const AboutPage = () => (
 
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          flexWrap="wrap"
           spacing={{ md: 1, lg: 4 }}
-          sx={{ mt: 4, mb: 2 }}
-          justifyContent="center"
-          alignItems="center"
+          sx={{
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mt: 4,
+            mb: 2,
+          }}
         >
           <ExtLink href="https://ukcgfi.org/">
             <img height="60" src="/logo-cgfi.png" alt="CGFI" />
@@ -211,11 +216,14 @@ export const AboutPage = () => (
 
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          flexWrap="wrap"
           spacing={{ md: 1, lg: 4 }}
-          sx={{ mt: 4, mb: 2 }}
-          justifyContent="center"
-          alignItems="center"
+          sx={{
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+            mt: 4,
+            mb: 2,
+          }}
         >
           <ExtLink href="https://www.ukri.org/councils/nerc/">
             <img height="60" src="/logo-nerc.png" alt="NERC" />

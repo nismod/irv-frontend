@@ -20,28 +20,42 @@ import {
 
 const SidebarLayout = ({ top, bottom, left, right, width, children }) => (
   <Box
-    position="absolute"
-    top={top}
-    bottom={bottom}
-    left={left}
-    right={right}
-    width={width - 20}
-    zIndex={1000}
-    sx={{ pointerEvents: 'none' }}
+    sx={{
+      position: 'absolute',
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right,
+      width: width - 20,
+      zIndex: 1000,
+      pointerEvents: 'none',
+    }}
   >
     <Box
-      overflow="auto"
-      maxHeight="100%"
       // This is used to scroll accordion sections into view when they are opened (e.g. in Pixel Driller details)
       data-accordion-scroll-container
-      sx={{ pointerEvents: 'auto' }}
-      position="absolute"
-      left={0}
-      right={-20}
-      top={0}
+      sx={{
+        overflow: 'auto',
+        maxHeight: '100%',
+        position: 'absolute',
+        left: 0,
+        right: -20,
+        top: 0,
+        pointerEvents: 'auto',
+      }}
     >
-      <Box width={width - 20}>
-        <Box pl={1} pt={1} sx={{ pointerEvents: 'auto' }}>
+      <Box
+        sx={{
+          width: width - 20,
+        }}
+      >
+        <Box
+          sx={{
+            pl: 1,
+            pt: 1,
+            pointerEvents: 'auto',
+          }}
+        >
           {children}
         </Box>
       </Box>
@@ -83,7 +97,16 @@ export const MapPageDesktopLayout = () => {
       >
         <LayersSidebar />
       </SidebarLayout>
-      <Box position="absolute" overflow="clip" top={0} left={0} right={0} bottom={0}>
+      <Box
+        sx={{
+          position: 'absolute',
+          overflow: 'clip',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+      >
         <MapView>
           <MapHudDesktopLayout />
         </MapView>

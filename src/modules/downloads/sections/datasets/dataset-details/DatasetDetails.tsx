@@ -23,8 +23,16 @@ export function DatasetDetails({
   const { status, data } = usePackageData(boundary.name, meta.name);
 
   return (
-    <Box p={2}>
-      <Box py={1}>
+    <Box
+      sx={{
+        p: 2,
+      }}
+    >
+      <Box
+        sx={{
+          py: 1,
+        }}
+      >
         <Typography variant="h3">Downloads</Typography>
         <Typography variant="subtitle1" color="GrayText">
           Format: {meta.data_formats.join(', ')}
@@ -40,7 +48,11 @@ export function DatasetDetails({
           <Typography>No data yet.</Typography>
         )}
       </Box>
-      <Box py={1}>
+      <Box
+        sx={{
+          py: 1,
+        }}
+      >
         {meta.data_summary && (
           <>
             <H3>Summary</H3>
@@ -75,7 +87,12 @@ export function DatasetDetails({
 function DownloadsList({ paths }: { paths: string[] | string }) {
   const pathList = Array.isArray(paths) ? paths : [paths];
   return (
-    <Box maxHeight="500px" sx={{ overflowY: 'auto' }}>
+    <Box
+      sx={{
+        maxHeight: '500px',
+        overflowY: 'auto',
+      }}
+    >
       <ol style={{ fontSize: '14px' }}>
         {pathList.map((p) => (
           <li key={p}>

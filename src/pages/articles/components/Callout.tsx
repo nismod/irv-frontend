@@ -18,7 +18,13 @@ export const Callout = ({
       borderLeftColor: 'primary.main',
     }}
   >
-    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+    <Typography
+      variant="subtitle2"
+      gutterBottom
+      sx={{
+        color: 'text.secondary',
+      }}
+    >
       {title}
     </Typography>
     <Box sx={{ '& p:last-child': { mb: 0 } }}>{children}</Box>

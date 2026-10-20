@@ -46,7 +46,15 @@ export const MobileBottomSheet: FC<{ tabsConfig: TabConfig[] }> = ({ tabsConfig 
     >
       <Drawer.Portal>
         <Drawer.Content asChild={true}>
-          <Box position="fixed" zIndex={1001} bottom={0} left={0} right={0}>
+          <Box
+            sx={{
+              position: 'fixed',
+              zIndex: 1001,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          >
             <Paper
               elevation={3}
               square={true}
@@ -55,7 +63,12 @@ export const MobileBottomSheet: FC<{ tabsConfig: TabConfig[] }> = ({ tabsConfig 
                 borderTopRightRadius: '24px',
               }}
             >
-              <Box pt={0.1} height="100dvh">
+              <Box
+                sx={{
+                  pt: 0.1,
+                  height: '100dvh',
+                }}
+              >
                 <Drawer.Handle
                   style={{ marginBlock: `${handleMarginBlockPx}px`, width: '150px' }}
                 />
@@ -81,7 +94,15 @@ export const MobileBottomSheet: FC<{ tabsConfig: TabConfig[] }> = ({ tabsConfig 
             </Paper>
           </Box>
         </Drawer.Content>
-        <Box position="fixed" bottom={0} zIndex={6000} width="100%" sx={{ cursor: 'default' }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            zIndex: 6000,
+            width: '100%',
+            cursor: 'default',
+          }}
+        >
           <MobileBottomSheetTabNavigation
             tabsConfig={tabsConfig}
             selectedId={bottomTabId}
@@ -115,7 +136,11 @@ const MobileBottomSheetTabNavigation: FC<{
 
 const MobileTabPanel: FC<{ tabConfig: TabConfig }> = ({ tabConfig: { id, ContentComponent } }) => (
   <NonUnmountingTabPanel value={id}>
-    <Box m={2}>
+    <Box
+      sx={{
+        m: 2,
+      }}
+    >
       <ContentWatcherScope watcher={<MobileTabContentWatcher tabId={id} />}>
         <ContentComponent />
       </ContentWatcherScope>

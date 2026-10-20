@@ -22,13 +22,14 @@ export const ArticleMapCollapsibleLegend: FC<{ viewLayers: ViewLayer[] }> = ({ v
 
   return (
     <Box
-      display="flex"
-      flexDirection="column-reverse"
-      alignItems="flex-start"
-      gap={0.5}
       sx={{
+        display: 'flex',
+        flexDirection: 'column-reverse',
+        alignItems: 'flex-start',
+        gap: 0.5,
         width: 'fit-content',
         maxWidth: 'min(270px, calc(100vw - 32px))',
+
         // Let clicks pass through padding/gap; only the button and legend stack capture events.
         pointerEvents: 'none',
       }}

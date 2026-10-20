@@ -4,9 +4,9 @@ import { FC, ReactNode } from 'react';
 
 export const LayerStylePanel: FC<{ children?: ReactNode }> = ({ children }) => {
   return (
-    <Box mt={2}>
+    <Box sx={{ mt: 2 }}>
       <Paper>
-        <Box p={2}>{children}</Box>
+        <Box sx={{ p: 2 }}>{children}</Box>
       </Paper>
     </Box>
   );

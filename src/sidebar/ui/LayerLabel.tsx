@@ -12,7 +12,12 @@ export interface LayerLabelProps {
 
 export const LayerLabel: FC<LayerLabelProps> = ({ label, type, color }) => {
   return (
-    <Stack direction="row" alignItems="center">
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <ShapeLegend type={type} color={color} />
       <Typography>{label}</Typography>
     </Stack>

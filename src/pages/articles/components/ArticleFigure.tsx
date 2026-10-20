@@ -37,13 +37,26 @@ export const ArticleFigure: FC<ArticleFigureProps> = ({
     }}
   >
     {title ? (
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom component="div">
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        component="div"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         {title}
       </Typography>
     ) : null}
     <Box sx={{ '& p:last-child': { mb: 0 } }}>{children}</Box>
     {caption ? (
-      <Typography variant="body2" color="text.secondary" sx={{ mt: title || children ? 1.5 : 0 }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary',
+          mt: title || children ? 1.5 : 0,
+        }}
+      >
         {caption}
       </Typography>
     ) : null}

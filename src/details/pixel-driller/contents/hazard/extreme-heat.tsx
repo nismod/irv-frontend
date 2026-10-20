@@ -126,7 +126,13 @@ export const ExtremeHeat: FC<PixelComponentProps> = ({ records }) => {
   return (
     <HazardAccordion title="Extreme Heat" ragStatus={ragStatus}>
       <Box>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Typography
+          variant="body2"
+          gutterBottom
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Maximum probability of extreme heat event (worst case across all scenarios)
         </Typography>
         <Typography variant="body1">{formatProbability(aggregatedProbability)}</Typography>

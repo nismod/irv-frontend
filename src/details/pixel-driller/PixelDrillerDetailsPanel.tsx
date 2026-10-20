@@ -42,7 +42,13 @@ export const PixelDrillerDetailsPanel: FC = () => {
               py: 2,
             }}
           >
-            <Typography variant="body1" color="text.secondary" align="center">
+            <Typography
+              variant="body1"
+              align="center"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Click on the map to see details for a location
             </Typography>
           </Box>

@@ -50,16 +50,26 @@ export const MapHudRegion: FC<MapHudProps> = ({ position, style = {}, StackProps
   };
   return (
     <Box
-      position="absolute"
       {...effectiveStyle}
       // stop interactions with HUD from triggering map events: https://github.com/visgl/deck.gl/discussions/6252
       onPointerUp={eventPreventDefault}
       onMouseMove={eventPreventDefault}
-      sx={{ pointerEvents: 'auto' }}
+      sx={[
+        {
+          position: 'absolute',
+          pointerEvents: 'auto',
+        },
+        ...(Array.isArray(effectiveStyle.sx) ? effectiveStyle.sx : [effectiveStyle.sx]),
+      ]}
     >
       <Stack {...StackProps}>
         {React.Children.map(children, (ch) => (
-          <Box display="flex" justifyContent={justifyContent}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: justifyContent,
+            }}
+          >
             {ch}
           </Box>
         ))}

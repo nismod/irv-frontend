@@ -98,13 +98,25 @@ export const Topography: FC<PixelComponentProps> = ({ records }) => {
     <ExposureAccordion title="Topography" disabled={disabled}>
       <Stack spacing={1.5}>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Elevation (metres above sea level)
           </Typography>
           <Typography variant="body1">{formatElevationM(elevationValue)}</Typography>
         </Box>
         <Box>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Slope
           </Typography>
           <Typography variant="body1">{formatSlopeDegrees(slopeValue)}</Typography>

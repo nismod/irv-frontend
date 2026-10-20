@@ -59,13 +59,23 @@ export const NbsPrioritisationPanel: FC = () => {
     <SidePanel>
       <ContentWatcher />
       <ErrorBoundary message="There was a problem displaying these details.">
-        <Box px={2} pt={2}>
+        <Box
+          sx={{
+            px: 2,
+            pt: 2,
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             {NBS_ADAPTATION_TYPE_LABEL_LOOKUP[adaptationType]}
             {selectedRegionName ? ` - ${selectedRegionName}` : ''}
           </Typography>
         </Box>
-        <Box height="60vh" position="relative">
+        <Box
+          sx={{
+            height: '60vh',
+            position: 'relative',
+          }}
+        >
           <FeatureAdaptationsTable
             onZoomInFeature={handleZoomInFeature}
             onZoomOutRegion={handleZoomOutRegion}

@@ -30,21 +30,38 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render() {
     if (this.state.hasError) {
       return (
-        <Box p={1}>
+        <Box
+          sx={{
+            p: 1,
+          }}
+        >
           <Stack direction="column" spacing={2}>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent={this.props.justifyErrorContent}
-              gap={1}
+              sx={{
+                alignItems: 'center',
+                justifyContent: this.props.justifyErrorContent,
+                gap: 1,
+              }}
             >
               <ErrorOutline />
               <Typography>{this.props.message}</Typography>
             </Stack>
             {process.env.NODE_ENV === 'development' && (
-              <Box maxWidth="min(100%,700px)" alignSelf="center">
+              <Box
+                sx={{
+                  maxWidth: 'min(100%,700px)',
+                  alignSelf: 'center',
+                }}
+              >
                 <Paper>
-                  <Box p={1} maxWidth="100%" overflow="scroll">
+                  <Box
+                    sx={{
+                      p: 1,
+                      maxWidth: '100%',
+                      overflow: 'scroll',
+                    }}
+                  >
                     <pre>
                       <code>
                         {this.state.error?.stack.toString() ?? this.state.error.toString()}

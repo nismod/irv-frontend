@@ -77,16 +77,22 @@ export function ProcessorVersionListItem({
         }}
       >
         <Stack
-          mb={1}
-          width="100%"
           direction={{ xs: 'column', sm: 'row' }}
           spacing={{ xs: 1, sm: 2 }}
-          alignItems={{ xs: 'start', sm: 'center' }}
-          justifyContent="space-between"
+          sx={{
+            mb: 1,
+            width: '100%',
+            alignItems: { xs: 'start', sm: 'center' },
+            justifyContent: 'space-between',
+          }}
         >
           <ListItemText primary={title} sx={{ flexGrow: 1 }} />
 
-          <Box alignSelf={{ xs: 'end', sm: 'center' }}>
+          <Box
+            sx={{
+              alignSelf: { xs: 'end', sm: 'center' },
+            }}
+          >
             <DatasetStatusIndicator
               boundary={boundary}
               processorVersion={processorVersion}
@@ -104,7 +110,12 @@ export function ProcessorVersionListItem({
           }
         }}
       >
-        <Box sx={{ minHeight: '200px' }} bgcolor="#fafafa">
+        <Box
+          sx={{
+            bgcolor: '#fafafa',
+            minHeight: '200px',
+          }}
+        >
           <DatasetDetails meta={meta} boundary={boundary} />
         </Box>
       </Collapse>

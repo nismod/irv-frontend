@@ -131,9 +131,17 @@ export const RPDamagesSection = () => {
   const filteredTableData = useAtomValue(filteredTableDataAtom);
 
   return (
-    <Box py={2}>
+    <Box
+      sx={{
+        py: 2,
+      }}
+    >
       <Stack spacing={3}>
-        <Box position="relative">
+        <Box
+          sx={{
+            position: 'relative',
+          }}
+        >
           <Typography variant="h6">Return Period Damages</Typography>
           {fd && (
             <ButtonPlacement>
