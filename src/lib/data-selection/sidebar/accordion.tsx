@@ -1,6 +1,6 @@
 import MuiAccordion from '@mui/material/Accordion';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -12,7 +12,9 @@ export const Accordion = styled(MuiAccordion)({
   overflow: 'hidden',
 });
 
-export const AccordionSummary = styled(MuiAccordionSummary)({
+export const AccordionSummary = styled((props: AccordionSummaryProps) => (
+  <MuiAccordionSummary component="div" {...props} />
+))({
   '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
     transform: 'rotate(90deg)',
   },
