@@ -48,7 +48,7 @@ export const SortedAssetTable: FC<{
 
   return (
     <>
-      <TableContainer component={Box} height="calc(100% - 48px)" overflow="scroll">
+      <TableContainer component={Box} sx={{ height: 'calc(100% - 48px)', overflow: 'scroll' }}>
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>{header}</TableRow>
