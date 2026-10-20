@@ -1,4 +1,4 @@
-import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import ErrorOutlined from '@mui/icons-material/ErrorOutlined';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack, { StackProps } from '@mui/material/Stack';
@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 gap: 1,
               }}
             >
-              <ErrorOutline />
+              <ErrorOutlined />
               <Typography>{this.props.message}</Typography>
             </Stack>
             {process.env.NODE_ENV === 'development' && (
