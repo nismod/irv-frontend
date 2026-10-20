@@ -1,8 +1,10 @@
 import ErrorOutlined from '@mui/icons-material/ErrorOutlined';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import Stack, { StackProps } from '@mui/material/Stack';
+import Stack from '@mui/material/Stack';
+import type { Theme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import type { SystemCssProperties } from '@mui/system';
 import { Component, ReactNode } from 'react';
 
 interface ErrorBoundaryState {
@@ -13,7 +15,8 @@ interface ErrorBoundaryState {
 interface ErrorBoundaryProps {
   children?: ReactNode;
   message: string;
-  justifyErrorContent?: StackProps['justifyContent'];
+  // SystemCssProperties<Theme> describes the style properties supported in sx
+  justifyErrorContent?: SystemCssProperties<Theme>['justifyContent'];
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {

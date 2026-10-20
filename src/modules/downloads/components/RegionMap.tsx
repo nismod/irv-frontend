@@ -1,5 +1,7 @@
 import ZoomOutMap from '@mui/icons-material/ZoomOutMap';
-import Box, { BoxProps } from '@mui/material/Box';
+import Box from '@mui/material/Box';
+import type { Theme } from '@mui/material/styles';
+import type { SystemCssProperties } from '@mui/system';
 import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import { MultiPolygon, Polygon } from 'geojson';
 import { Suspense, useCallback, useState } from 'react';
@@ -62,8 +64,9 @@ export function RegionMap({
 }: {
   regionGeometry: MultiPolygon;
   regionEnvelope: Polygon;
-  width: BoxProps['width'];
-  height: BoxProps['height'];
+  // SystemCssProperties<Theme> gives types for style properties in sx
+  width: SystemCssProperties<Theme>['width'];
+  height: SystemCssProperties<Theme>['height'];
 }) {
   const { width, height, ref: containerRef } = useResizeDetector();
 

@@ -1,6 +1,8 @@
 import type { Color } from '@deck.gl/core';
 import ZoomOutMap from '@mui/icons-material/ZoomOutMap';
-import Box, { BoxProps } from '@mui/material/Box';
+import Box from '@mui/material/Box';
+import type { Theme } from '@mui/material/styles';
+import type { SystemCssProperties } from '@mui/system';
 import { Polygon } from '@nismod/irv-autopkg-client';
 import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import type { Feature } from 'geojson';
@@ -74,8 +76,9 @@ export default function RegionMap({
 }: {
   countryEnvelope: Polygon;
   countryId: string;
-  width: BoxProps['width'];
-  height: BoxProps['height'];
+  // SystemCssProperties<Theme> describes the individual style properties supported inside sx
+  width: SystemCssProperties<Theme>['width'];
+  height: SystemCssProperties<Theme>['height'];
   selectedCountryData: any;
   highlightRegion: string;
   setHighlightRegion: any;
