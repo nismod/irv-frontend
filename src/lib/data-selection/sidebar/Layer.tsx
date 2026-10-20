@@ -46,13 +46,12 @@ const LayerImpl: FC<LayerProps> = ({
   const [expanded, setExpanded] = useExpandedState(path);
 
   const hasChildren = children != null;
-  const allowExpand = visible && hasChildren;
 
   return (
     <Accordion
       disabled={disabled}
-      expanded={allowExpand && expanded}
-      onChange={(e, expanded) => allowExpand && setExpanded(expanded)}
+      expanded={expanded}
+      onChange={(e, expanded) => setExpanded(expanded)}
       disableGutters
       sx={{
         border: '2px solid #eee',
@@ -65,12 +64,10 @@ const LayerImpl: FC<LayerProps> = ({
       }}
     >
       <AccordionSummary
-        // TODO: find a better way than adding !important to change cursor
-        sx={{ cursor: allowExpand ? 'pointer' : 'default !important' }}
         // if layer has no children, display bullet Icon
         expandIcon={
           hasChildren ? (
-            <ArrowRight color={allowExpand ? 'action' : 'disabled'} />
+            <ArrowRight color={'action'} />
           ) : (
             <CharacterIcon color="disabled">•</CharacterIcon>
           )
@@ -84,9 +81,6 @@ const LayerImpl: FC<LayerProps> = ({
                 visibility={visible}
                 onVisibility={(visible) => {
                   setVisible(visible);
-                  if (hasChildren) {
-                    setExpanded(visible);
-                  }
                 }}
               />
             )
