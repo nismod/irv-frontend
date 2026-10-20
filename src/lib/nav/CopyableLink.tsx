@@ -1,9 +1,8 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Link, { LinkProps } from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
-import { ReactNode, useCallback, useState } from 'react';
+import { Fragment, ReactNode, useCallback, useState } from 'react';
 
 export interface CopyableLinkProps extends Omit<LinkProps, 'href' | 'children'> {
   href: string;
@@ -49,8 +48,8 @@ export const CopyableLink = ({
   }, [href]);
 
   return (
-    <Box sx={{ display: 'inline-flex', alignItems: 'center' }}>
-      <Link href={href} {...linkProps}>
+    <Fragment>
+      <Link href={href} {...(linkProps.component ? { to: href } : {})} {...linkProps}>
         {label}
       </Link>
       <Tooltip title={copied ? copiedTooltip : copyTooltip}>
@@ -58,6 +57,6 @@ export const CopyableLink = ({
           <ContentCopyIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>
-    </Box>
+    </Fragment>
   );
 };
