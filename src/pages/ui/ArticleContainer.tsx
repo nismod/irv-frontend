@@ -70,9 +70,7 @@ export const NarrowContainer = ({ children }) => {
 export const ArticleParagraph = ({ children }) => {
   return (
     <NarrowContainer>
-      <ParagraphTypography paragraph={true} margin={'0px'}>
-        {children}
-      </ParagraphTypography>
+      <ParagraphTypography sx={{ margin: 0 }}>{children}</ParagraphTypography>
     </NarrowContainer>
   );
 };
@@ -83,7 +81,12 @@ export const EmphasisTextContainer = ({ children }) => {
 
 export const EmphasisTextParagraph = ({ children }) => {
   return (
-    <Typography variant="h5" paragraph={true}>
+    <Typography
+      variant="h5"
+      sx={{
+        marginBottom: '1rem',
+      }}
+    >
       {children}
     </Typography>
   );

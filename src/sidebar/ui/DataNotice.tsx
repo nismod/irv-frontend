@@ -10,7 +10,12 @@ export const DataNotice = ({ children }) => {
 export const DataNoticeTextBlock = ({ children }) => {
   return (
     // Let parent handle spacing.
-    <Typography variant="body2" paragraph={true} sx={{ m: 0 }}>
+    <Typography
+      variant="body2"
+      sx={{
+        m: 0,
+      }}
+    >
       {children}
     </Typography>
   );
