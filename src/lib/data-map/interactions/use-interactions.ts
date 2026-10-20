@@ -1,7 +1,8 @@
 import type { MapLibreOverlay } from '@deck.gl/maplibre';
+import type { PickingInfo } from 'deck.gl';
 import { useSetAtom } from 'jotai';
 import _ from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { useSyncValueToAtom } from '@/lib/jotai/state-sync/use-sync-state';
@@ -14,6 +15,7 @@ import {
   selectionAtomFamily,
 } from './interaction-state';
 import { processPicked } from './process-picked';
+import { RasterReadbackPool } from './raster-readback';
 import { InteractionGroupConfig, InteractionTarget } from './types';
 
 /**
@@ -49,6 +51,17 @@ export function useInteractions(
   const primaryGroupPickingRadius =
     (primaryGroup && interactionGroupLookup[primaryGroup].pickingRadius) ?? defaultPickingRadius;
 
+  /** Interaction groups included in deck's automatic hover picking pass. */
+  const hoverPassGroups = useMemo(
+    () =>
+      new Set(
+        interactionGroups
+          .filter((group) => group.id === primaryGroup || group.usesAutoHighlight)
+          .map((group) => group.id),
+      ),
+    [interactionGroups, primaryGroup],
+  );
+
   /** all view layers that have an interaction group set = are interactive */
   const interactiveLayers = useMemo(
     () => viewLayers.filter((x) => x.interactionGroup),
@@ -73,43 +86,127 @@ export function useInteractions(
 
   useSyncValueToAtom(activeGroupLayerIds, allowedGroupLayersAtom);
 
-  const onHover = useCallback(
-    (info: any, deck: MapLibreOverlay) => {
-      const { x, y, coordinate } = info;
+  const hoverRequest = useRef(0);
+  const clickRequest = useRef(0);
+  const readbackPool = useRef<RasterReadbackPool | null>(null);
+  const hoverQueue = useRef<{
+    pending: (() => Promise<void>) | null;
+    running: Promise<void> | null;
+  }>({ pending: null, running: null });
 
-      for (const [groupName, layerIds] of Object.entries(activeGroupLayerIds)) {
-        const { type, pickingRadius: radius, pickMultiple } = interactionGroupLookup[groupName];
+  useEffect(() => {
+    const pool = (readbackPool.current ??= new RasterReadbackPool());
+    return () => {
+      pool.destroy();
+      readbackPool.current = null;
+    };
+  }, []);
 
-        const pickingParams = { x, y, layerIds, radius };
+  const processHover = useCallback(
+    async (info: any, deck: MapLibreOverlay, request: number) => {
+      const { x, y } = info;
+      const hoveredViewLayerId = info.picked && info.layer && lookupViewForDeck(info.layer.id);
+      const hoveredGroup = viewLayerLookup[hoveredViewLayerId]?.interactionGroup;
+      const batch = (readbackPool.current ??= new RasterReadbackPool()).createBatch();
 
-        const pickedObjects = pickMultiple
-          ? deck.pickMultipleObjects(pickingParams)
-          : [deck.pickObject(pickingParams)];
+      const groupTasks = Object.entries(activeGroupLayerIds).map(async ([groupName, layerIds]) => {
+        try {
+          const { type, pickingRadius: radius, pickMultiple } = interactionGroupLookup[groupName];
 
-        const interactionTargets: InteractionTarget[] = pickedObjects
-          .map(
-            (info) =>
-              info && processPicked(info, type, groupName, viewLayerLookup, lookupViewForDeck),
-          )
-          .filter(Boolean);
+          const pickingParams = { x, y, layerIds, radius };
 
-        setInteractionGroupHover(groupName, interactionTargets);
-      }
+          // Explicit queries default to radius 0; automatic hover uses the
+          // primary group's radius and only includes hoverPassGroups.
+          const groupRadius = radius ?? 0;
+          const coveredByHover = hoverPassGroups.has(groupName);
+          let pickedObjects: PickingInfo[];
+          if (coveredByHover && info.picked === false && groupRadius <= primaryGroupPickingRadius) {
+            pickedObjects = [];
+          } else if (
+            coveredByHover &&
+            !pickMultiple &&
+            hoveredGroup === groupName &&
+            groupRadius === primaryGroupPickingRadius
+          ) {
+            pickedObjects = [info];
+          } else {
+            pickedObjects = pickMultiple
+              ? deck.pickMultipleObjects(pickingParams)
+              : [deck.pickObject(pickingParams)];
+          }
 
-      setHoverAnchor(coordinate ? { lng: coordinate[0], lat: coordinate[1] } : null);
+          // Wait for every readback, including when a sibling readback fails,
+          // before allowing the next hover batch to start.
+          const results = await Promise.allSettled(
+            pickedObjects.map(
+              (info) =>
+                info &&
+                processPicked(info, type, groupName, viewLayerLookup, lookupViewForDeck, batch),
+            ),
+          );
+          const failure = results.find((result) => result.status === 'rejected');
+          if (failure?.status === 'rejected') {
+            throw failure.reason;
+          }
+          const interactionTargets: InteractionTarget[] = results.flatMap((result) =>
+            result.status === 'fulfilled' && result.value ? [result.value] : [],
+          );
+
+          if (request === hoverRequest.current) {
+            setInteractionGroupHover(groupName, interactionTargets);
+          }
+        } catch (error) {
+          if (request === hoverRequest.current) {
+            setInteractionGroupHover(groupName, []);
+            console.warn('Unable to process map hover', error);
+          }
+        }
+      });
+      // Every group queues its copies synchronously before awaiting their results.
+      batch.submit();
+      await Promise.all(groupTasks);
     },
     [
       activeGroupLayerIds,
       lookupViewForDeck,
       interactionGroupLookup,
-      setHoverAnchor,
+      hoverPassGroups,
+      primaryGroupPickingRadius,
       setInteractionGroupHover,
       viewLayerLookup,
     ],
   );
 
-  const onClick = useCallback(
+  const onHover = useCallback(
     (info: any, deck: MapLibreOverlay) => {
+      const request = ++hoverRequest.current;
+      const { coordinate } = info;
+      setHoverAnchor(coordinate ? { lng: coordinate[0], lat: coordinate[1] } : null);
+
+      const queue = hoverQueue.current;
+      // Replace queued work rather than accumulating readbacks as the pointer moves.
+      queue.pending = () => processHover(info, deck, request);
+      if (!queue.running) {
+        queue.running = (async () => {
+          try {
+            while (queue.pending) {
+              const next = queue.pending;
+              queue.pending = null;
+              await next();
+            }
+          } finally {
+            queue.running = null;
+          }
+        })();
+      }
+      return queue.running;
+    },
+    [processHover, setHoverAnchor],
+  );
+
+  const onClick = useCallback(
+    async (info: any, deck: MapLibreOverlay) => {
+      const request = ++clickRequest.current;
       const { x, y } = info;
       for (const [groupName, layerIds] of Object.entries(activeGroupLayerIds)) {
         const interactionGroup = interactionGroupLookup[groupName];
@@ -123,9 +220,12 @@ export function useInteractions(
             continue;
           }
           const selectionTarget =
-            info && processPicked(info, type, groupName, viewLayerLookup, lookupViewForDeck);
+            info &&
+            (await processPicked(info, type, groupName, viewLayerLookup, lookupViewForDeck));
 
-          setInteractionGroupSelection(groupName, selectionTarget);
+          if (request === clickRequest.current) {
+            setInteractionGroupSelection(groupName, selectionTarget);
+          }
         }
       }
     },
@@ -138,18 +238,14 @@ export function useInteractions(
     ],
   );
 
-  /**
-   * Interaction groups which should be rendered during the hover picking pass
-   */
-  const hoverPassGroups = useMemo(
-    () =>
-      new Set(
-        _.filter(
-          interactionGroups,
-          (group) => group.id === primaryGroup || group.usesAutoHighlight,
-        ).map((group) => group.id),
-      ),
-    [interactionGroups, primaryGroup],
+  // Discard pending results when the interaction configuration changes or the map unmounts.
+  useEffect(
+    () => () => {
+      hoverRequest.current++;
+      clickRequest.current++;
+      hoverQueue.current.pending = null;
+    },
+    [onHover, onClick],
   );
 
   const layerFilter = ({ layer: deckLayer, renderPass }) => {

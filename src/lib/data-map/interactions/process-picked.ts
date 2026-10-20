@@ -1,7 +1,8 @@
-import { Texture } from '@luma.gl/core';
+import type { Texture } from '@luma.gl/core';
 import { BitmapLayer, PickingInfo } from 'deck.gl';
 
 import { ViewLayer } from '../view-layers';
+import { RasterReadbackPool, type RasterReadbackBatch } from './raster-readback';
 import { InteractionStyle, RasterTarget, VectorTarget } from './types';
 
 /** Extended PickingInfo type for BitmapLayer */
@@ -13,27 +14,33 @@ type BitmapPickingInfo = PickingInfo & {
   };
 };
 
-function processRasterTarget(info: BitmapPickingInfo): RasterTarget {
-  const { bitmap, sourceLayer, layer } = info;
+async function processRasterTarget(
+  info: BitmapPickingInfo,
+  readbackBatch?: RasterReadbackBatch,
+): Promise<RasterTarget | null> {
+  const { bitmap, sourceLayer } = info;
   if (bitmap) {
-    const { device } = layer.context;
-    // the current deck.gl docs suggest using the deprecated function - see https://github.com/visgl/deck.gl/issues/9493
-    const pixelColor = device.readPixelsToArrayWebGL(
-      (sourceLayer as BitmapLayer).props.image as Texture,
-      {
-        sourceX: bitmap.pixel[0],
-        sourceY: bitmap.pixel[1],
-        sourceWidth: 1,
-        sourceHeight: 1,
-      },
-    );
+    const texture = (sourceLayer as BitmapLayer).props.image as Texture;
+    const region = { x: bitmap.pixel[0], y: bitmap.pixel[1], width: 1, height: 1 };
+    // Standalone callers own a temporary pool; hover supplies a shared batch.
+    const pool = readbackBatch ? null : new RasterReadbackPool();
+    const batch = readbackBatch ?? pool.createBatch();
 
-    return pixelColor[3]
-      ? {
-          color: Array.from(pixelColor) as [number, number, number, number],
-        }
-      : null;
+    try {
+      const pendingPixel = batch.readPixel(texture, region);
+      if (pool) {
+        batch.submit();
+      }
+      const pixelColor = await pendingPixel;
+
+      return pixelColor[3]
+        ? { color: Array.from(pixelColor.subarray(0, 4)) as [number, number, number, number] }
+        : null;
+    } finally {
+      pool?.destroy();
+    }
   }
+  return null;
 }
 
 function processVectorTarget(info: PickingInfo): VectorTarget {
@@ -55,16 +62,17 @@ const processingFunctionsByType = {
  * Process raw deck.gl picking info and enrich with data about
  * view layer and interaction group
  */
-export function processPicked(
+export async function processPicked(
   info: PickingInfo,
   type: InteractionStyle,
   groupName: string,
   viewLayerLookup: Record<string, ViewLayer>,
   lookupViewForDeck: (deckLayerId: string) => string,
+  readbackBatch?: RasterReadbackBatch,
 ) {
   const deckLayerId = info.layer.id;
   const viewLayerId = lookupViewForDeck(deckLayerId);
-  const target = processingFunctionsByType[type](info);
+  const target = await processingFunctionsByType[type](info, readbackBatch);
 
   return (
     target && {
