@@ -22,9 +22,28 @@ export class RasterReadbackPool {
     }
     const buffers = this.idle.get(device);
     const index = buffers?.findIndex((buffer) => buffer.byteLength >= byteLength) ?? -1;
-    return index >= 0
-      ? buffers.splice(index, 1)[0]
-      : device.createBuffer({ byteLength, usage: Buffer.COPY_DST | Buffer.MAP_READ });
+    if (index >= 0) {
+      return buffers.splice(index, 1)[0];
+    }
+    const buffer = device.createBuffer({ byteLength, usage: Buffer.COPY_DST | Buffer.MAP_READ });
+    try {
+      if (device.type === 'webgl') {
+        const { gl } = device as WebGLDevice;
+        // luma.gl 9.4 allocates MAP_READ buffers with STATIC_DRAW on WebGL.
+        // Set the readback hint once, before any copies use this pooled buffer.
+        const previous = gl.getParameter(gl.PIXEL_PACK_BUFFER_BINDING) as WebGLBuffer | null;
+        try {
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer.handle as WebGLBuffer);
+          gl.bufferData(gl.PIXEL_PACK_BUFFER, byteLength, gl.STREAM_READ);
+        } finally {
+          gl.bindBuffer(gl.PIXEL_PACK_BUFFER, previous);
+        }
+      }
+      return buffer;
+    } catch (error) {
+      buffer.destroy();
+      throw error;
+    }
   }
 
   release(device: Device, buffer: Buffer, reusable: boolean) {

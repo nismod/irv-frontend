@@ -378,7 +378,7 @@ describe('asynchronous interactions', () => {
     vi.mocked(processPicked).mockImplementation(actual.processPicked);
     const device = {
       type: 'webgl',
-      gl: { flush: vi.fn() },
+      gl: { getParameter: vi.fn(), bindBuffer: vi.fn(), bufferData: vi.fn(), flush: vi.fn() },
       createFence: vi.fn(() => ({ signaled: Promise.resolve(), destroy: vi.fn() })),
       createBuffer: vi.fn(({ byteLength }) => ({
         byteLength,

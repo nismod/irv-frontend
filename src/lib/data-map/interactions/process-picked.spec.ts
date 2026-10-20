@@ -16,7 +16,7 @@ function makeRasterPick(color = [10, 20, 30, 255], type = 'webgl') {
   };
   const device = {
     type,
-    gl: { flush: vi.fn() },
+    gl: { getParameter: vi.fn(), bindBuffer: vi.fn(), bufferData: vi.fn(), flush: vi.fn() },
     createBuffer: vi.fn(() => buffer),
     createFence: vi.fn(() => fence),
   };

@@ -1,4 +1,5 @@
 import type { Texture } from '@luma.gl/core';
+import { GL } from '@luma.gl/webgl/constants';
 import { describe, expect, it, vi } from 'vitest';
 
 import { RasterReadbackPool } from './raster-readback';
@@ -14,9 +15,18 @@ function deferred() {
 function makeDevice(type = 'webgl') {
   return {
     type,
-    gl: { flush: vi.fn() },
+    gl: {
+      PIXEL_PACK_BUFFER: GL.PIXEL_PACK_BUFFER,
+      PIXEL_PACK_BUFFER_BINDING: GL.PIXEL_PACK_BUFFER_BINDING,
+      STREAM_READ: GL.STREAM_READ,
+      getParameter: vi.fn((): object | null => null),
+      bindBuffer: vi.fn(),
+      bufferData: vi.fn(),
+      flush: vi.fn(),
+    },
     createBuffer: vi.fn(({ byteLength }: { byteLength: number }) => ({
       byteLength,
+      handle: {},
       readAsync: vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3, 255])),
       destroy: vi.fn(),
     })),
@@ -76,6 +86,8 @@ describe('raster readback batches', () => {
 
   it('reuses buffers across batches without reading stale pixels', async () => {
     const device = makeDevice();
+    const previousBinding = {};
+    device.gl.getParameter.mockReturnValue(previousBinding);
     const pool = new RasterReadbackPool();
     for (const color of [
       [1, 2, 3, 255],
@@ -88,6 +100,19 @@ describe('raster readback batches', () => {
       await expect(result).resolves.toEqual(new Uint8Array(color));
     }
     expect(device.createBuffer).toHaveBeenCalledOnce();
+    expect(device.gl.bufferData).toHaveBeenCalledExactlyOnceWith(
+      device.gl.PIXEL_PACK_BUFFER,
+      4,
+      device.gl.STREAM_READ,
+    );
+    expect(device.gl.bindBuffer).toHaveBeenCalledWith(
+      device.gl.PIXEL_PACK_BUFFER,
+      device.createBuffer.mock.results[0].value.handle,
+    );
+    expect(device.gl.bindBuffer).toHaveBeenLastCalledWith(
+      device.gl.PIXEL_PACK_BUFFER,
+      previousBinding,
+    );
     expect(device.createFence).toHaveBeenCalledTimes(3);
     pool.destroy();
   });
@@ -207,6 +232,27 @@ describe('raster readback batches', () => {
     pool.destroy();
   });
 
+  it('restores the binding and destroys the buffer if readback allocation fails', async () => {
+    const device = makeDevice();
+    const previousBinding = {};
+    device.gl.getParameter.mockReturnValue(previousBinding);
+    device.gl.bufferData.mockImplementationOnce(() => {
+      throw new Error('allocation failed');
+    });
+    const pool = new RasterReadbackPool();
+    const batch = pool.createBatch();
+    const result = batch.readPixel(makeTexture(device), region);
+    batch.submit();
+    await expect(result).rejects.toThrow('allocation failed');
+    expect(device.gl.bindBuffer).toHaveBeenLastCalledWith(
+      device.gl.PIXEL_PACK_BUFFER,
+      previousBinding,
+    );
+    expect(device.createBuffer.mock.results[0].value.destroy).toHaveBeenCalledOnce();
+    expect(device.createFence).not.toHaveBeenCalled();
+    pool.destroy();
+  });
+
   it('defers destruction of active buffers until their readbacks settle', async () => {
     const device = makeDevice();
     const completion = deferred();
@@ -235,6 +281,7 @@ describe('raster readback batches', () => {
     expect(device.createBuffer).toHaveBeenCalledOnce();
     expect(device.createFence).not.toHaveBeenCalled();
     expect(device.gl.flush).not.toHaveBeenCalled();
+    expect(device.gl.bufferData).not.toHaveBeenCalled();
     pool.destroy();
   });
 });
