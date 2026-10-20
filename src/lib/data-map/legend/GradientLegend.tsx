@@ -59,8 +59,8 @@ const LegendGradient: FC<{
           enterDelay={200}
           leaveDelay={0}
           // deactivates transition animation
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 0 }}
+          slots={{ transition: Fade }}
+          slotProps={{ transition: { timeout: 0 } }}
         >
           <Box height={legendHeight} flexGrow={1} bgcolor={color} />
         </Tooltip>

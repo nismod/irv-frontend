@@ -58,8 +58,10 @@ const LayerImpl: FC<LayerProps> = ({
         border: '2px solid #eee',
       }}
       elevation={0}
-      TransitionProps={{
-        unmountOnExit: !visible && unmountOnHide,
+      slotProps={{
+        transition: {
+          unmountOnExit: !visible && unmountOnHide,
+        },
       }}
     >
       <AccordionSummary
