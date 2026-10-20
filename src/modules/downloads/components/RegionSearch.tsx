@@ -29,13 +29,17 @@ export const RegionSearch = ({
           {...params}
           label={title}
           fullWidth
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: icon ? (
-              <InputAdornment position="end">{icon}</InputAdornment>
-            ) : (
-              params.InputProps.endAdornment
-            ),
+          slotProps={{
+            ...params.slotProps,
+
+            input: {
+              ...params.slotProps.input,
+              endAdornment: icon ? (
+                <InputAdornment position="end">{icon}</InputAdornment>
+              ) : (
+                params.slotProps.input.endAdornment
+              ),
+            },
           }}
         />
       )}
