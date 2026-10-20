@@ -39,7 +39,7 @@ export const MapPageMobileLayout = () => (
 const MapHudMobileLayout = () => {
   return (
     <MapHud bottom={120}>
-      <MapHudRegion position="top-left" StackProps={{ spacing: 1 }}>
+      <MapHudRegion position="top-left" slotProps={{ stack: { spacing: 1 } }}>
         <AppPlaceSearch />
         <MapLayerSelection />
         <MapInteractionModeSelector />

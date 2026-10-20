@@ -66,7 +66,7 @@ const SidebarLayout = ({ top, bottom, left, right, width, children }) => (
 const MapHudDesktopLayout = () => {
   return (
     <MapHud left={globalStyleVariables.controlSidebarWidth}>
-      <MapHudRegion position="top-left" StackProps={{ spacing: 1 }}>
+      <MapHudRegion position="top-left" slotProps={{ stack: { spacing: 1 } }}>
         <AppPlaceSearch />
         <MapLayerSelection />
         <MapInteractionModeSelector />
@@ -74,7 +74,7 @@ const MapHudDesktopLayout = () => {
       <MapHudRegion position="top-right">
         <AppNavigationControl />
       </MapHudRegion>
-      <MapHudRegion position="bottom-right" style={{ maxWidth: '40%' }}>
+      <MapHudRegion position="bottom-right" sx={{ maxWidth: '40%' }}>
         <AppScaleControl />
         <AppAttributionControl />
       </MapHudRegion>

@@ -1,33 +1,35 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import type { Theme } from '@mui/material/styles';
+import type { SystemCssProperties } from '@mui/system';
 import React, { ComponentProps, FC, ReactNode } from 'react';
 
 import { eventPreventDefault } from '@/lib/helpers';
 
 const hudRegions = {
   'top-left': {
-    style: {
+    sx: {
       top: 0,
       left: 0,
     },
     justifyContent: 'left',
   },
   'top-right': {
-    style: {
+    sx: {
       top: 0,
       right: 0,
     },
     justifyContent: 'right',
   },
   'bottom-right': {
-    style: {
+    sx: {
       bottom: 0,
       right: 0,
     },
     justifyContent: 'right',
   },
   'bottom-left': {
-    style: {
+    sx: {
       bottom: 0,
       left: 0,
     },
@@ -37,32 +39,29 @@ const hudRegions = {
 
 export interface MapHudProps {
   position: keyof typeof hudRegions;
-  style?: ComponentProps<typeof Box>['style'];
-  StackProps?: ComponentProps<typeof Stack>;
+  sx?: SystemCssProperties<Theme>;
+  slotProps?: { stack?: ComponentProps<typeof Stack> };
   children?: ReactNode;
 }
-export const MapHudRegion: FC<MapHudProps> = ({ position, style = {}, StackProps, children }) => {
-  const { style: defaultRegionStyle, justifyContent } = hudRegions[position];
+export const MapHudRegion: FC<MapHudProps> = ({ position, sx = {}, slotProps, children }) => {
+  const { justifyContent, sx: sxDefault } = hudRegions[position];
   const effectiveStyle = {
-    ...defaultRegionStyle,
+    ...sxDefault,
     m: 1,
-    style,
+    ...sx,
   };
   return (
     <Box
-      {...effectiveStyle}
       // stop interactions with HUD from triggering map events: https://github.com/visgl/deck.gl/discussions/6252
       onPointerUp={eventPreventDefault}
       onMouseMove={eventPreventDefault}
-      sx={[
-        {
-          position: 'absolute',
-          pointerEvents: 'auto',
-        },
-        ...(Array.isArray(effectiveStyle.sx) ? effectiveStyle.sx : [effectiveStyle.sx]),
-      ]}
+      sx={{
+        position: 'absolute',
+        pointerEvents: 'auto',
+        ...effectiveStyle,
+      }}
     >
-      <Stack {...StackProps}>
+      <Stack {...slotProps?.stack}>
         {React.Children.map(children, (ch) => (
           <Box
             sx={{
