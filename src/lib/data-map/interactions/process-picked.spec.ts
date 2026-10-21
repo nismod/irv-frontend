@@ -1,25 +1,22 @@
 import type { PickingInfo } from 'deck.gl';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { ViewLayer } from '../view-layers';
 import { processPicked } from './process-picked';
+import { makeReadbackDevice } from './raster-readback-test-utils';
 
 const viewLayer = { id: 'raster' } as ViewLayer;
 const lookup = () => viewLayer.id;
 
 function makeRasterPick(color = [10, 20, 30, 255], type = 'webgl') {
-  const fence = { signaled: Promise.resolve(), destroy: vi.fn() };
   const buffer = {
+    handle: {},
     byteLength: 8,
     readAsync: vi.fn().mockResolvedValue(new Uint8Array([...color, 0, 0, 0, 0])),
     destroy: vi.fn(),
   };
-  const device = {
-    type,
-    gl: { getParameter: vi.fn(), bindBuffer: vi.fn(), bufferData: vi.fn(), flush: vi.fn() },
-    createBuffer: vi.fn(() => buffer),
-    createFence: vi.fn(() => fence),
-  };
+  const device = makeReadbackDevice(type);
+  device.createBuffer.mockReturnValue(buffer);
   const texture = {
     device,
     computeMemoryLayout: vi.fn(() => ({ byteLength: 8 })),
@@ -30,23 +27,25 @@ function makeRasterPick(color = [10, 20, 30, 255], type = 'webgl') {
     sourceLayer: { props: { image: texture } },
     bitmap: { pixel: [12, 34] },
   } as unknown as PickingInfo;
-  return { info, fence, buffer, device, texture };
+  return { info, buffer, device, texture };
 }
 
 describe('processPicked', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   it('waits for GPU completion before reading a raster pixel and releases resources', async () => {
-    const { info, fence, buffer, texture } = makeRasterPick();
-    let complete: () => void;
-    fence.signaled = new Promise<void>((resolve) => {
-      complete = resolve;
-    });
+    vi.useFakeTimers();
+    const { info, device, buffer, texture } = makeRasterPick();
+    device.gl.clientWaitSync.mockReturnValue(device.gl.TIMEOUT_EXPIRED);
 
     const result = processPicked(info, 'raster', 'hazards', { raster: viewLayer }, lookup);
     expect(texture.readBuffer).toHaveBeenCalledWith({ x: 12, y: 34, width: 1, height: 1 }, buffer);
     expect(buffer.readAsync).not.toHaveBeenCalled();
     expect(buffer.destroy).not.toHaveBeenCalled();
 
-    complete();
+    device.gl.clientWaitSync.mockReturnValue(device.gl.CONDITION_SATISFIED);
+    await vi.advanceTimersByTimeAsync(1);
     await expect(result).resolves.toEqual({
       interactionGroup: 'hazards',
       interactionStyle: 'raster',
@@ -54,7 +53,7 @@ describe('processPicked', () => {
       deckLayerId: 'bitmap',
       target: { color: [10, 20, 30, 255] },
     });
-    expect(fence.destroy).toHaveBeenCalledOnce();
+    expect(device.gl.deleteSync).toHaveBeenCalledOnce();
     expect(buffer.destroy).toHaveBeenCalledOnce();
   });
 
@@ -66,12 +65,12 @@ describe('processPicked', () => {
   });
 
   it('releases resources if readback fails', async () => {
-    const { info, buffer, fence } = makeRasterPick();
+    const { info, buffer, device } = makeRasterPick();
     buffer.readAsync.mockRejectedValue(new Error('readback failed'));
     await expect(
       processPicked(info, 'raster', 'hazards', { raster: viewLayer }, lookup),
     ).rejects.toThrow('readback failed');
-    expect(fence.destroy).toHaveBeenCalledOnce();
+    expect(device.gl.deleteSync).toHaveBeenCalledOnce();
     expect(buffer.destroy).toHaveBeenCalledOnce();
   });
 
@@ -91,7 +90,7 @@ describe('processPicked', () => {
     await expect(
       processPicked(info, 'raster', 'hazards', { raster: viewLayer }, lookup),
     ).resolves.toMatchObject({ target: { color: [10, 20, 30, 255] } });
-    expect(device.createFence).not.toHaveBeenCalled();
+    expect(device.gl.fenceSync).not.toHaveBeenCalled();
   });
 
   it('returns no target without bitmap coordinates', async () => {

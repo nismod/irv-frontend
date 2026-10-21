@@ -10,6 +10,7 @@ import type { ViewLayer } from '../view-layers';
 import { hoverAtomFamily, hoverPositionAtom, selectionAtomFamily } from './interaction-state';
 import { processPicked } from './process-picked';
 import { RasterReadbackBatch } from './raster-readback';
+import { makeReadbackDevice } from './raster-readback-test-utils';
 import type { InteractionGroupConfig, InteractionTarget } from './types';
 import { useInteractions } from './use-interactions';
 
@@ -376,16 +377,13 @@ describe('asynchronous interactions', () => {
   it('shares readback resources across groups and batches and destroys them on unmount', async () => {
     const actual = await vi.importActual<typeof import('./process-picked')>('./process-picked');
     vi.mocked(processPicked).mockImplementation(actual.processPicked);
-    const device = {
-      type: 'webgl',
-      gl: { getParameter: vi.fn(), bindBuffer: vi.fn(), bufferData: vi.fn(), flush: vi.fn() },
-      createFence: vi.fn(() => ({ signaled: Promise.resolve(), destroy: vi.fn() })),
-      createBuffer: vi.fn(({ byteLength }) => ({
-        byteLength,
-        readAsync: vi.fn().mockResolvedValue(new Uint8Array([10, 20, 30, 255])),
-        destroy: vi.fn(),
-      })),
-    };
+    const device = makeReadbackDevice();
+    device.createBuffer.mockImplementation(({ byteLength }) => ({
+      byteLength,
+      handle: {},
+      readAsync: vi.fn().mockResolvedValue(new Uint8Array([10, 20, 30, 255])),
+      destroy: vi.fn(),
+    }));
     const picks = Object.fromEntries(
       ['raster', 'other'].map((id) => [
         id,
@@ -424,19 +422,33 @@ describe('asynchronous interactions', () => {
 
     await handlers.onHover(event, deck);
     expect(device.createBuffer).toHaveBeenCalledTimes(2);
-    expect(device.createFence).toHaveBeenCalledOnce();
+    expect(device.gl.fenceSync).toHaveBeenCalledOnce();
     expect(device.gl.flush).toHaveBeenCalledOnce();
     expect(store.get(hoverAtomFamily('hazards'))[0].target.color).toEqual([10, 20, 30, 255]);
     expect(store.get(hoverAtomFamily('assets'))[0].target.color).toEqual([10, 20, 30, 255]);
 
     await handlers.onHover({ ...event, x: 20 }, deck);
     expect(device.createBuffer).toHaveBeenCalledTimes(2);
-    expect(device.createFence).toHaveBeenCalledTimes(2);
+    expect(device.gl.fenceSync).toHaveBeenCalledTimes(2);
     expect(device.gl.flush).toHaveBeenCalledTimes(2);
     device.createBuffer.mock.results.forEach(({ value }) =>
       expect(value.destroy).not.toHaveBeenCalled(),
     );
+    // A failed batch must release the queue so the latest hover still runs.
+    device.gl.clientWaitSync.mockReturnValueOnce(device.gl.WAIT_FAILED);
+    const failed = handlers.onHover({ ...event, x: 30 }, deck);
+    const queued = handlers.onHover({ ...event, x: 40 }, deck);
+    await Promise.all([failed, queued]);
+    expect(device.gl.fenceSync).toHaveBeenCalledTimes(4);
+    expect(device.createBuffer).toHaveBeenCalledTimes(4);
+    expect(store.get(hoverAtomFamily('hazards'))[0].target.color).toEqual([10, 20, 30, 255]);
+    device.gl.clientWaitSync.mockReturnValue(device.gl.TIMEOUT_EXPIRED);
+    const pending = handlers.onHover({ ...event, x: 50 }, deck);
+    const discarded = handlers.onHover({ ...event, x: 60 }, deck);
     act(() => root.render(null));
+    await Promise.all([pending, discarded]);
+    expect(device.gl.fenceSync).toHaveBeenCalledTimes(5);
+    expect(device.gl.deleteSync).toHaveBeenCalledTimes(5);
     device.createBuffer.mock.results.forEach(({ value }) =>
       expect(value.destroy).toHaveBeenCalledOnce(),
     );

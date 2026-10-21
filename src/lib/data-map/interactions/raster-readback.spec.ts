@@ -1,8 +1,9 @@
 import type { Texture } from '@luma.gl/core';
 import { GL } from '@luma.gl/webgl/constants';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { RasterReadbackPool } from './raster-readback';
+import { makeReadbackDevice as makeDevice } from './raster-readback-test-utils';
 
 function deferred() {
   let resolve: () => void;
@@ -10,28 +11,6 @@ function deferred() {
     resolve = complete;
   });
   return { promise, resolve };
-}
-
-function makeDevice(type = 'webgl') {
-  return {
-    type,
-    gl: {
-      PIXEL_PACK_BUFFER: GL.PIXEL_PACK_BUFFER,
-      PIXEL_PACK_BUFFER_BINDING: GL.PIXEL_PACK_BUFFER_BINDING,
-      STREAM_READ: GL.STREAM_READ,
-      getParameter: vi.fn((): object | null => null),
-      bindBuffer: vi.fn(),
-      bufferData: vi.fn(),
-      flush: vi.fn(),
-    },
-    createBuffer: vi.fn(({ byteLength }: { byteLength: number }) => ({
-      byteLength,
-      handle: {},
-      readAsync: vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3, 255])),
-      destroy: vi.fn(),
-    })),
-    createFence: vi.fn(() => ({ signaled: Promise.resolve(), destroy: vi.fn() })),
-  };
 }
 
 function makeTexture(
@@ -51,11 +30,13 @@ function makeTexture(
 const region = { x: 1, y: 2, width: 1, height: 1 };
 
 describe('raster readback batches', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   it('shares one fence and flush after all copies, preserving separate pixel results', async () => {
     const device = makeDevice();
-    const completion = deferred();
-    const fence = { signaled: completion.promise, destroy: vi.fn() };
-    device.createFence.mockReturnValueOnce(fence);
+    vi.useFakeTimers();
+    device.gl.clientWaitSync.mockReturnValue(GL.TIMEOUT_EXPIRED);
     const firstTexture = makeTexture(device);
     const secondTexture = makeTexture(device, [4, 5, 6, 255]);
     const pool = new RasterReadbackPool();
@@ -64,21 +45,25 @@ describe('raster readback batches', () => {
     const second = batch.readPixel(secondTexture, region);
     const buffers = device.createBuffer.mock.results.map(({ value }) => value);
 
-    expect(device.createFence).not.toHaveBeenCalled();
+    expect(device.gl.fenceSync).not.toHaveBeenCalled();
     expect(buffers).toHaveLength(2);
     expect(buffers[0]).not.toBe(buffers[1]);
     batch.submit();
-    expect(device.createFence).toHaveBeenCalledOnce();
+    expect(device.gl.fenceSync).toHaveBeenCalledOnce();
     expect(device.gl.flush).toHaveBeenCalledOnce();
     expect(vi.mocked(secondTexture.readBuffer).mock.invocationCallOrder[0]).toBeLessThan(
-      device.createFence.mock.invocationCallOrder[0],
+      device.gl.fenceSync.mock.invocationCallOrder[0],
     );
     buffers.forEach((buffer) => expect(buffer.readAsync).not.toHaveBeenCalled());
 
-    completion.resolve();
+    device.gl.clientWaitSync.mockReturnValue(GL.CONDITION_SATISFIED);
+    await vi.advanceTimersByTimeAsync(1);
     await expect(first).resolves.toEqual(new Uint8Array([1, 2, 3, 255]));
     await expect(second).resolves.toEqual(new Uint8Array([4, 5, 6, 255]));
-    expect(fence.destroy).toHaveBeenCalledOnce();
+    expect(device.gl.deleteSync).toHaveBeenCalledExactlyOnceWith(
+      device.gl.fenceSync.mock.results[0].value,
+    );
+    expect(vi.getTimerCount()).toBe(0);
     buffers.forEach((buffer) => expect(buffer.destroy).not.toHaveBeenCalled());
     pool.destroy();
     buffers.forEach((buffer) => expect(buffer.destroy).toHaveBeenCalledOnce());
@@ -113,7 +98,7 @@ describe('raster readback batches', () => {
       device.gl.PIXEL_PACK_BUFFER,
       previousBinding,
     );
-    expect(device.createFence).toHaveBeenCalledTimes(3);
+    expect(device.gl.fenceSync).toHaveBeenCalledTimes(3);
     pool.destroy();
   });
 
@@ -167,8 +152,8 @@ describe('raster readback batches', () => {
     const second = batch.readPixel(makeTexture(secondDevice), region);
     batch.submit();
     await Promise.all([first, second]);
-    expect(firstDevice.createFence).toHaveBeenCalledOnce();
-    expect(secondDevice.createFence).toHaveBeenCalledOnce();
+    expect(firstDevice.gl.fenceSync).toHaveBeenCalledOnce();
+    expect(secondDevice.gl.fenceSync).toHaveBeenCalledOnce();
     expect(firstDevice.gl.flush).toHaveBeenCalledOnce();
     expect(secondDevice.gl.flush).toHaveBeenCalledOnce();
     expect(firstDevice.createBuffer).toHaveBeenCalledOnce();
@@ -196,9 +181,7 @@ describe('raster readback batches', () => {
 
   it('rejects every read and discards their buffers when creating the shared fence fails', async () => {
     const device = makeDevice();
-    device.createFence.mockImplementationOnce(() => {
-      throw new Error('fence failed');
-    });
+    device.gl.fenceSync.mockReturnValueOnce(null);
     const pool = new RasterReadbackPool();
     const batch = pool.createBatch();
     const results = Promise.allSettled([
@@ -249,14 +232,14 @@ describe('raster readback batches', () => {
       previousBinding,
     );
     expect(device.createBuffer.mock.results[0].value.destroy).toHaveBeenCalledOnce();
-    expect(device.createFence).not.toHaveBeenCalled();
+    expect(device.gl.fenceSync).not.toHaveBeenCalled();
     pool.destroy();
   });
 
-  it('defers destruction of active buffers until their readbacks settle', async () => {
+  it('cancels pending fence waits and releases buffers when the pool is destroyed', async () => {
+    vi.useFakeTimers();
     const device = makeDevice();
-    const completion = deferred();
-    device.createFence.mockReturnValueOnce({ signaled: completion.promise, destroy: vi.fn() });
+    device.gl.clientWaitSync.mockReturnValue(GL.TIMEOUT_EXPIRED);
     const pool = new RasterReadbackPool();
     const batch = pool.createBatch();
     const result = batch.readPixel(makeTexture(device), region);
@@ -264,9 +247,101 @@ describe('raster readback batches', () => {
     batch.submit();
     pool.destroy();
     expect(buffer.destroy).not.toHaveBeenCalled();
-    completion.resolve();
-    await result;
+    await expect(result).rejects.toThrow('pool destroyed');
     expect(buffer.destroy).toHaveBeenCalledOnce();
+    expect(device.gl.deleteSync).toHaveBeenCalledOnce();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(['WAIT_FAILED', 'context loss event', 'context loss without an event', 'poll exception'])(
+    'stops polling and rejects every read on %s',
+    async (failure) => {
+      vi.useFakeTimers();
+      const device = makeDevice();
+      device.gl.clientWaitSync.mockReturnValue(GL.TIMEOUT_EXPIRED);
+      const removeListener = vi.spyOn(device.gl.canvas, 'removeEventListener');
+      const pool = new RasterReadbackPool();
+      const batch = pool.createBatch();
+      const results = Promise.allSettled([
+        batch.readPixel(makeTexture(device), region),
+        batch.readPixel(makeTexture(device), region),
+      ]);
+      batch.submit();
+      expect(vi.getTimerCount()).toBe(1);
+
+      if (failure === 'WAIT_FAILED') {
+        device.gl.clientWaitSync.mockReturnValue(GL.WAIT_FAILED);
+      } else if (failure === 'poll exception') {
+        device.gl.clientWaitSync.mockImplementationOnce(() => {
+          throw new Error('poll failed');
+        });
+      } else {
+        device.gl.isContextLost.mockReturnValue(true);
+        if (failure === 'context loss event') {
+          device.gl.canvas.dispatchEvent(new Event('webglcontextlost'));
+        }
+      }
+      if (failure !== 'context loss event') await vi.advanceTimersByTimeAsync(1);
+      const settled = await results;
+      expect(settled.map((result) => result.status)).toEqual(['rejected', 'rejected']);
+      for (const result of settled) {
+        if (result.status === 'rejected') {
+          expect(result.reason.message).toMatch(/wait failed|context lost|poll failed/);
+        }
+      }
+      expect(device.gl.deleteSync).toHaveBeenCalledOnce();
+      expect(removeListener).toHaveBeenCalledWith('webglcontextlost', expect.any(Function));
+      expect(vi.getTimerCount()).toBe(0);
+      device.createBuffer.mock.results.forEach(({ value }) => {
+        expect(value.readAsync).not.toHaveBeenCalled();
+        expect(value.destroy).toHaveBeenCalledOnce();
+      });
+      const polls = device.gl.clientWaitSync.mock.calls.length;
+      await vi.advanceTimersByTimeAsync(10);
+      expect(device.gl.clientWaitSync).toHaveBeenCalledTimes(polls);
+
+      // A later batch can proceed after the error or context restoration.
+      device.gl.isContextLost.mockReturnValue(false);
+      device.gl.clientWaitSync.mockReturnValue(GL.ALREADY_SIGNALED);
+      const nextBatch = pool.createBatch();
+      const nextRead = nextBatch.readPixel(makeTexture(device), region);
+      nextBatch.submit();
+      await expect(nextRead).resolves.toEqual(new Uint8Array([1, 2, 3, 255]));
+      expect(device.createBuffer).toHaveBeenCalledTimes(3);
+      pool.destroy();
+    },
+  );
+
+  it('rejects an already lost context and discards its idle buffers', async () => {
+    const device = makeDevice();
+    const pool = new RasterReadbackPool();
+    const batch = pool.createBatch();
+    const first = batch.readPixel(makeTexture(device), region);
+    batch.submit();
+    await first;
+    device.gl.isContextLost.mockReturnValue(true);
+    const lostBatch = pool.createBatch();
+    const lostRead = lostBatch.readPixel(makeTexture(device), region);
+    lostBatch.submit();
+    await expect(lostRead).rejects.toThrow('context lost');
+    expect(device.createBuffer.mock.results[0].value.destroy).toHaveBeenCalledOnce();
+    expect(device.gl.fenceSync).toHaveBeenCalledOnce();
+    pool.destroy();
+  });
+
+  it('cleans up the sync if flushing fails', async () => {
+    const device = makeDevice();
+    device.gl.flush.mockImplementationOnce(() => {
+      throw new Error('flush failed');
+    });
+    const pool = new RasterReadbackPool();
+    const batch = pool.createBatch();
+    const result = batch.readPixel(makeTexture(device), region);
+    batch.submit();
+    await expect(result).rejects.toThrow('flush failed');
+    expect(device.gl.deleteSync).toHaveBeenCalledOnce();
+    expect(device.createBuffer.mock.results[0].value.destroy).toHaveBeenCalledOnce();
+    pool.destroy();
   });
 
   it('reuses WebGPU buffers without inserting WebGL fences or flushes', async () => {
@@ -279,7 +354,7 @@ describe('raster readback batches', () => {
       await result;
     }
     expect(device.createBuffer).toHaveBeenCalledOnce();
-    expect(device.createFence).not.toHaveBeenCalled();
+    expect(device.gl.fenceSync).not.toHaveBeenCalled();
     expect(device.gl.flush).not.toHaveBeenCalled();
     expect(device.gl.bufferData).not.toHaveBeenCalled();
     pool.destroy();

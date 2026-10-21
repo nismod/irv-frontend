@@ -1,16 +1,15 @@
-import {
-  Buffer,
-  type Device,
-  type Fence,
-  type Texture,
-  type TextureReadOptions,
-} from '@luma.gl/core';
+import { Buffer, type Device, type Texture, type TextureReadOptions } from '@luma.gl/core';
 import type { WebGLDevice } from '@luma.gl/webgl';
 
 /** Readback buffers owned by one map, reused only after their CPU reads finish. */
 export class RasterReadbackPool {
   private idle = new Map<Device, Buffer[]>();
   private destroyed = false;
+  private abortController = new AbortController();
+
+  get signal() {
+    return this.abortController.signal;
+  }
 
   createBatch() {
     return new RasterReadbackBatch(this);
@@ -19,6 +18,10 @@ export class RasterReadbackPool {
   acquire(device: Device, byteLength: number): Buffer {
     if (this.destroyed) {
       throw new Error('Raster readback pool is destroyed');
+    }
+    if (device.type === 'webgl' && (device as WebGLDevice).gl.isContextLost()) {
+      this.discardDevice(device);
+      throw new Error('WebGL context lost during raster readback');
     }
     const buffers = this.idle.get(device);
     const index = buffers?.findIndex((buffer) => buffer.byteLength >= byteLength) ?? -1;
@@ -58,11 +61,16 @@ export class RasterReadbackPool {
 
   destroy() {
     this.destroyed = true;
-    for (const buffers of this.idle.values()) {
-      buffers.forEach((buffer) => buffer.destroy());
+    this.abortController.abort();
+    for (const device of this.idle.keys()) {
+      this.discardDevice(device);
     }
-    this.idle.clear();
     // Active buffers are destroyed by release() once their reads finish.
+  }
+
+  discardDevice(device: Device) {
+    this.idle.get(device)?.forEach((buffer) => buffer.destroy());
+    this.idle.delete(device);
   }
 }
 
@@ -101,6 +109,9 @@ export class RasterReadbackBatch {
         this.completions.set(device, completion);
       }
       await completion.promise;
+      if (this.pool.signal.aborted) {
+        throw new Error('Raster readback pool destroyed');
+      }
       const pixels = await buffer.readAsync(0, byteLength);
       reusable = true;
       return pixels;
@@ -125,13 +136,76 @@ export class RasterReadbackBatch {
     if (device.type !== 'webgl') {
       return;
     }
-    let fence: Fence;
+    const { gl } = device as WebGLDevice;
     try {
-      fence = device.createFence();
-      (device as WebGLDevice).gl.flush();
-      await fence.signaled;
+      await waitForWebGLCopies(gl, this.pool.signal);
     } finally {
-      fence?.destroy();
+      if (gl.isContextLost()) {
+        this.pool.discardDevice(device);
+      }
     }
   }
+}
+
+/** Own the sync and timer so failure, context loss and teardown all stop polling. */
+function waitForWebGLCopies(gl: WebGL2RenderingContext, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let sync: WebGLSync | null = null;
+    let timer: ReturnType<typeof setTimeout>;
+    let settled = false;
+
+    const finish = (error?: unknown) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      signal.removeEventListener('abort', onAbort);
+      gl.canvas.removeEventListener('webglcontextlost', onContextLost);
+      if (sync) gl.deleteSync(sync);
+      if (error) reject(error);
+      else resolve();
+    };
+    const onAbort = () => finish(new Error('Raster readback pool destroyed'));
+    const onContextLost = () => finish(new Error('WebGL context lost during raster readback'));
+    const poll = () => {
+      try {
+        if (signal.aborted) {
+          onAbort();
+          return;
+        }
+        if (gl.isContextLost()) {
+          onContextLost();
+          return;
+        }
+        const status = gl.clientWaitSync(sync, 0, 0);
+        if (status === gl.ALREADY_SIGNALED || status === gl.CONDITION_SATISFIED) {
+          finish();
+        } else if (status === gl.TIMEOUT_EXPIRED) {
+          timer = setTimeout(poll, 1);
+        } else {
+          finish(new Error('WebGL fence wait failed during raster readback'));
+        }
+      } catch (error) {
+        finish(error);
+      }
+    };
+
+    signal.addEventListener('abort', onAbort, { once: true });
+    gl.canvas.addEventListener('webglcontextlost', onContextLost, { once: true });
+    try {
+      if (signal.aborted) {
+        onAbort();
+        return;
+      }
+      if (gl.isContextLost()) {
+        onContextLost();
+        return;
+      }
+      sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+      if (!sync) throw new Error('Failed to create WebGL readback fence');
+      gl.flush();
+      poll();
+    } catch (error) {
+      finish(error);
+    }
+  });
 }
