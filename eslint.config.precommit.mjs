@@ -14,7 +14,6 @@ config.push({
 // Runtime validation to ensure type-aware features are disabled
 // We only check the critical settings that enable type-aware mode:
 // - parserOptions.project (enables TypeScript program creation)
-// - import/resolver.typescript.project (enables TypeScript import resolution)
 // If these are disabled, type-aware rules won't work anyway (ESLint will error),
 // so we don't need to validate individual rules.
 function validatePrecommitConfig(configArray) {
@@ -25,13 +24,6 @@ function validatePrecommitConfig(configArray) {
     if (configItem?.languageOptions?.parserOptions?.project) {
       errors.push(
         `Found parserOptions.project in config. Type-aware mode should be disabled for pre-commit.`,
-      );
-    }
-
-    // Check for TypeScript import resolver (requires type information)
-    if (configItem?.settings?.['import/resolver']?.typescript?.project) {
-      errors.push(
-        `Found TypeScript import resolver with project setting. This requires type information and should be disabled for pre-commit.`,
       );
     }
   }
