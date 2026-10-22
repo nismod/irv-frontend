@@ -1,4 +1,4 @@
-import { ViewLayer } from '../view-layers';
+import { ViewLayer } from '@/lib/data-map/view-layers';
 
 export type InteractionStyle = 'vector' | 'raster';
 

@@ -1,5 +1,6 @@
-import { featureFilter } from '../props/feature-filter';
-import { fillColor, GetColor, strokeColor } from '../props/style';
+import { featureFilter } from '@/lib/deck/props/feature-filter';
+import { fillColor, GetColor, strokeColor } from '@/lib/deck/props/style';
+
 import { geoJsonLayer } from './base';
 
 export interface TileSelectionLayerOptions {

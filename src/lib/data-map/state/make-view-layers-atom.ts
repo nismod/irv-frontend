@@ -1,9 +1,8 @@
 import { atom, Atom } from 'jotai';
 
+import { ViewLayer } from '@/lib/data-map/view-layers';
 import { ConfigTree } from '@/lib/nested-config/config-tree';
 import { flattenConfig } from '@/lib/nested-config/flatten-config';
-
-import { ViewLayer } from '../view-layers';
 
 type ViewLayerSlot = ConfigTree<ViewLayer>[number];
 

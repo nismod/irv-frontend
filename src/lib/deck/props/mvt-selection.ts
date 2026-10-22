@@ -1,6 +1,9 @@
 import { MVTLayerProps } from 'deck.gl';
 
-import { tileSelectionLayer, TileSelectionLayerOptions } from '../layers/tile-selection-layer';
+import {
+  tileSelectionLayer,
+  TileSelectionLayerOptions,
+} from '@/lib/deck/layers/tile-selection-layer';
 
 /**
  * Deck.gl props factory to display a vector selection outline

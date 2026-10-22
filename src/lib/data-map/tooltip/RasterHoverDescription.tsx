@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react';
 
+import { ColorValue, formatRangeTruncation } from '@/lib/data-map/legend/GradientLegend';
 import { RasterCategoricalColorMap } from '@/lib/data-map/legend/RasterCategoricalLegend';
 import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
 import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
@@ -9,7 +10,6 @@ import {
 } from '@/lib/data-map/legend/use-raster-color-map-values';
 import { FormatFunction, nullFormat } from '@/lib/formats';
 
-import { ColorValue, formatRangeTruncation } from '../legend/GradientLegend';
 import { RasterBaseHover } from './RasterBaseHover';
 
 interface RasterHoverSharedProps {

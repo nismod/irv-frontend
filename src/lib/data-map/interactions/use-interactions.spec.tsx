@@ -6,7 +6,8 @@ import { act, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { ViewLayer } from '../view-layers';
+import type { ViewLayer } from '@/lib/data-map/view-layers';
+
 import { hoverAtomFamily, hoverPositionAtom, selectionAtomFamily } from './interaction-state';
 import { processPicked } from './process-picked';
 import { RasterReadbackBatch } from './raster-readback';

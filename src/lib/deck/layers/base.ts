@@ -9,6 +9,7 @@ import {
   TileLayerProps,
 } from 'deck.gl';
 
+import { evaluateTriggers } from '@/lib/deck/props/getters';
 import { ConfigTree } from '@/lib/nested-config/config-tree';
 import { flattenConfig } from '@/lib/nested-config/flatten-config';
 import {
@@ -16,8 +17,6 @@ import {
   composeAppendValue,
   makeObjectsMerger,
 } from '@/lib/nested-config/merge-objects';
-
-import { evaluateTriggers } from '../props/getters';
 
 /**
  * Special strategies for merging some of the properties inside deck.gl `updateTriggers`

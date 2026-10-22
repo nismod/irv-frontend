@@ -1,7 +1,8 @@
 import type { PickingInfo } from 'deck.gl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { ViewLayer } from '../view-layers';
+import type { ViewLayer } from '@/lib/data-map/view-layers';
+
 import { processPicked } from './process-picked';
 import { makeReadbackDevice } from './raster-readback-test-utils';
 

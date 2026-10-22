@@ -1,8 +1,7 @@
 import { GeoJSONFeature } from 'maplibre-gl';
 
 import { DataLoader } from '@/lib/data-loader/data-loader';
-
-import { getFeatureId } from '../utils/get-feature-id';
+import { getFeatureId } from '@/lib/deck/utils/get-feature-id';
 
 export interface DataLoaderOptions {
   dataLoader: DataLoader;

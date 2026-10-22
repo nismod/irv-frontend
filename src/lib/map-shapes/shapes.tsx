@@ -1,5 +1,3 @@
-/* eslint import/no-duplicates: 0 */
-
 import CircleShapeSrc from './shapes/circle.svg';
 import CircleShape from './shapes/circle.svg?react';
 import DiamondShapeSrc from './shapes/diamond.svg';

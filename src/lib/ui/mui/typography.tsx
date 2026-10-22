@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 
-import { withProps } from '../../react/with-props';
+import { withProps } from '@/lib/react/with-props';
 
 export const H1 = withProps(Typography, { variant: 'h1' }, 'H1');
 export const H2 = withProps(Typography, { variant: 'h2' }, 'H2');

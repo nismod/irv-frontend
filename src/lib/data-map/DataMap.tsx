@@ -2,8 +2,9 @@ import type { MapLibreOverlay } from '@deck.gl/maplibre';
 import { FC, useCallback, useMemo, useRef } from 'react';
 import { useMap } from 'react-map-gl/maplibre';
 
-import { useTriggerMemo } from '../hooks/use-trigger-memo';
-import { DeckGLOverlay } from '../map/DeckGLOverlay';
+import { useTriggerMemo } from '@/lib/hooks/use-trigger-memo';
+import { DeckGLOverlay } from '@/lib/map/DeckGLOverlay';
+
 import { InteractionGroupConfig } from './interactions/types';
 import { useInteractions } from './interactions/use-interactions';
 import { useDataLoadTrigger } from './use-data-load-trigger';

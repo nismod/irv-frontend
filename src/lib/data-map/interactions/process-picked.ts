@@ -1,7 +1,8 @@
 import type { Texture } from '@luma.gl/core';
 import { BitmapLayer, PickingInfo } from 'deck.gl';
 
-import { ViewLayer } from '../view-layers';
+import { ViewLayer } from '@/lib/data-map/view-layers';
+
 import { RasterReadbackPool, type RasterReadbackBatch } from './raster-readback';
 import { InteractionStyle, RasterTarget, VectorTarget } from './types';
 

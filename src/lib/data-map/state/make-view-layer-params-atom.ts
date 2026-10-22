@@ -3,7 +3,7 @@ import { atom } from 'jotai';
 import { atomFamily } from 'jotai-family';
 import _ from 'lodash';
 
-import { ViewLayer } from '../view-layers';
+import { ViewLayer } from '@/lib/data-map/view-layers';
 
 /** State factory function to create compound Jotai state for view layer params.
  *

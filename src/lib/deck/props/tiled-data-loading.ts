@@ -1,4 +1,4 @@
-import { dataLoaderLayer, DataLoaderOptions } from '../layers/data-loader-layer';
+import { dataLoaderLayer, DataLoaderOptions } from '@/lib/deck/layers/data-loader-layer';
 
 /**
  * Deck.gl props factory to run tiled data loader layer for every tile of a TileLayer
