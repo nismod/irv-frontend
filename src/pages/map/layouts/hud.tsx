@@ -26,7 +26,7 @@ export const AppPlaceSearch = () => {
 };
 
 export const AppNavigationControl = withProps(MapHudNavigationControl, {
-  showCompass: false,
+  showCompass: true,
 });
 
 export const AppScaleControl = withProps(MapHudScaleControl, {
