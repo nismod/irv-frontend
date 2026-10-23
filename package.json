@@ -54,6 +54,7 @@
     "vega-lite": "^6.5.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@mdx-js/rollup": "^3.1.1",
     "@types/d3-array": "^3.2.2",
@@ -74,7 +75,7 @@
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitejs/plugin-react": "^6.1.2",
     "baseline-browser-mapping": "^2.11.30",
-    "eslint": "^9.37.0",
+    "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
