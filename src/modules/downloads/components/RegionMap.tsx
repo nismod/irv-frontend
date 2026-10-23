@@ -5,7 +5,6 @@ import type { SystemCssProperties } from '@mui/system';
 import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import { MultiPolygon, Polygon } from 'geojson';
 import { Suspense, useCallback, useState } from 'react';
-import { Map } from 'react-map-gl/maplibre';
 import { useResizeDetector } from 'react-resize-detector';
 
 import { extendBbox, geoJsonToAppBoundingBox } from '@/lib/bounding-box';
@@ -14,6 +13,7 @@ import { MapHudAttributionControl } from '@/lib/map/hud/mapbox-controls';
 import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudButton } from '@/lib/map/hud/MapHudButton';
 import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
+import { Map } from '@/lib/map/Map';
 import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 
 import { useBackgroundAttribution, useBasemapStyle } from '@/map/use-basemap-style';

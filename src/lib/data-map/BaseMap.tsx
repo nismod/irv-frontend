@@ -1,6 +1,8 @@
 import { MapViewState } from 'deck.gl';
 import { ComponentProps, FC, ReactNode, useCallback } from 'react';
-import { Map, MapMouseEvent } from 'react-map-gl/maplibre';
+import type { MapMouseEvent } from 'react-map-gl/maplibre';
+
+import { Map } from '@/lib/map/Map';
 
 export interface BaseMapProps {
   /** Map style configuration. Same as `mapStyle` of the rect-map-gl component. */

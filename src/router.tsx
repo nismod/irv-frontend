@@ -9,7 +9,6 @@ import { loader as articleSlugLoader, ArticleSlugPage } from './pages/articles/A
 import { DataSourcesPage } from './pages/DataSourcesPage';
 import { GuidePage } from './pages/GuidePage';
 import { IntroPage } from './pages/IntroPage';
-import { MapPage } from './pages/map/MapPage';
 import { RootErrorRoute, RootRoute } from './pages/root';
 import { TermsPage } from './pages/TermsPage';
 
@@ -29,7 +28,10 @@ export const router = createBrowserRouter(
             { index: true, loader: () => redirect('/view/hazard') },
             {
               path: ':view',
-              element: <MapPage />,
+              lazy: async () => {
+                const { MapPage } = await import('./pages/map/MapPage');
+                return { Component: MapPage };
+              },
             },
           ],
         },

@@ -1,8 +1,6 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { setWorkerUrl } from 'maplibre-gl';
-import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { RouterProvider } from 'react-router-dom';
 
 import { RasterColorMapSourceProvider } from '@/lib/data-map/legend/use-raster-color-map-values';
@@ -13,10 +11,7 @@ import { queryClient } from './query-client';
 import { router } from './router';
 import { theme } from './theme';
 
-import 'maplibre-gl/dist/maplibre-gl.css';
 import './index.css';
-
-setWorkerUrl(workerUrl);
 
 export const App = () => {
   return (

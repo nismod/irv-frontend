@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 
-import { MapMarker } from '@/lib/map/marker/MapMarker';
+import type { MapMarkerProps } from '@/lib/map/marker/MapMarker';
 import { AppLink } from '@/lib/nav';
 import { H1, H2, H3, H4, H5, H6 } from '@/lib/ui/mui/typography';
 
@@ -8,11 +8,19 @@ import { ArticleParagraph } from '@/pages/ui/ArticleContainer';
 
 import type { ArticleChartProps } from './ArticleChart';
 import { ArticleFigure } from './ArticleFigure';
-import { ArticleMap } from './ArticleMap';
+import type { ArticleMapProps } from './ArticleMap';
 import { Callout } from './Callout';
 
 const ArticleChart = lazy(() =>
   import('./ArticleChart').then((module) => ({ default: module.ArticleChart })),
+);
+
+const ArticleMap = lazy(() =>
+  import('./ArticleMap').then((module) => ({ default: module.ArticleMap })),
+);
+
+const MapMarker = lazy(() =>
+  import('@/lib/map/marker/MapMarker').then((module) => ({ default: module.MapMarker })),
 );
 
 /**
@@ -73,7 +81,21 @@ export const articleMdxComponents = {
     </Suspense>
   ),
   ArticleFigure,
-  ArticleMap,
-  MapMarker,
+  ArticleMap: (props: ArticleMapProps) => (
+    <Suspense
+      fallback={
+        <div role="status" style={{ height: props.height ?? 400, width: '100%' }}>
+          Loading map…
+        </div>
+      }
+    >
+      <ArticleMap {...props} />
+    </Suspense>
+  ),
+  MapMarker: (props: MapMarkerProps) => (
+    <Suspense fallback={null}>
+      <MapMarker {...props} />
+    </Suspense>
+  ),
   MdLink,
 };

@@ -7,7 +7,6 @@ import { Polygon } from '@nismod/irv-autopkg-client';
 import { GeoJsonLayer, MapViewState } from 'deck.gl';
 import type { Feature } from 'geojson';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import { Map } from 'react-map-gl/maplibre';
 import { useResizeDetector } from 'react-resize-detector';
 
 import { extendBbox, geoJsonToAppBoundingBox } from '@/lib/bounding-box';
@@ -16,6 +15,7 @@ import { DeckGLOverlay } from '@/lib/map/DeckGLOverlay';
 import { MapHud } from '@/lib/map/hud/MapHud';
 import { MapHudButton } from '@/lib/map/hud/MapHudButton';
 import { MapHudRegion } from '@/lib/map/hud/MapHudRegion';
+import { Map } from '@/lib/map/Map';
 import { getBoundingBoxViewState } from '@/lib/map/MapBoundsFitter';
 
 import { useBasemapStyle } from '@/map/use-basemap-style';
