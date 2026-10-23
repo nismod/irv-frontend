@@ -32,7 +32,7 @@ export const InteractionGroupTooltip = ({
 
   if (hoveredObjects.length === 0) return null;
 
-  let contents: ReactNode = null;
+  let contents: ReactNode;
   if (MergeComponent != null) {
     contents = <MergeComponent hoveredObjects={hoveredObjects} />;
   } else {
