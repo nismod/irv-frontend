@@ -13,6 +13,7 @@ import { apiFeatureQueryAtomFamily } from '@/state/queries';
 
 import { DetailsComponentType } from './detail-components';
 import { ButtonPlacement, DownloadButton } from './DownloadButton';
+import { ZoomToFeatureButton, type ZoomableFeature } from './ZoomToFeatureButton';
 
 type FeatureApiDetails = FeatureOut;
 
@@ -25,7 +26,7 @@ const LoadDetails: FC<{
   return children(featureDetails);
 };
 
-interface SimpleFeature {
+interface SimpleFeature extends ZoomableFeature {
   id: number;
   properties?: Record<string, any>;
 }
@@ -48,7 +49,7 @@ const AssetDetailsWrapper: FC<{ children?: ReactNode }> = ({ children }) => {
 
 const AssetDetailsHeader: FC<{ label: string; color: string }> = ({ label, color }) => {
   return (
-    <Box>
+    <Box sx={{ pr: '110px', minHeight: 40 }}>
       <Typography variant="caption">
         <ColorBox color={color} />
         {label}
@@ -109,6 +110,7 @@ export const SimpleAssetDetails: FC<SimpleAssetDetailsProps> = ({
       <ButtonPlacement
         right={30} //hack: larger right margin to allow space for close button
       >
+        <ZoomToFeatureButton feature={feature} />
         <AssetDetailsDownloadButton feature={feature} />
       </ButtonPlacement>
     </AssetDetailsWrapper>
@@ -145,6 +147,10 @@ export const ExtendedAssetDetails: FC<ExtendedAssetDetailsProps> = ({
               <ButtonPlacement
                 right={30} // hack: larger right margin to allow space for close button
               >
+                <ZoomToFeatureButton
+                  feature={feature}
+                  bboxWkt={featureDetails.properties.bbox_wkt}
+                />
                 <AssetDetailsDownloadButton feature={featureDetails} />
               </ButtonPlacement>
               <DetailsComponent f={featureDetails.properties} />
