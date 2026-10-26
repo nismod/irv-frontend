@@ -97,7 +97,7 @@ const ArticleMapAttributionControl = withProps(MapHudAttributionControl, {
 });
 
 const ArticleMapNavigationControl = withProps(MapHudNavigationControl, {
-  showCompass: false,
+  showCompass: true,
 });
 
 const ArticleMapInner: FC<ArticleMapProps> = ({

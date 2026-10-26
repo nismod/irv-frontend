@@ -3,6 +3,13 @@ import { MVTLayerProps } from 'deck.gl';
 import { geoJsonLayer, MultiProps, mvtLayer } from './base';
 import { Tileset2DCentered } from './tileset-2d-centered';
 
+// Draw flat vector overlays in style order without competing with the
+// basemap's globe depth buffer. Individual layers can override these defaults.
+const vectorOverlayParameters: MVTLayerProps['parameters'] = {
+  depthCompare: 'always',
+  depthWriteEnabled: false,
+};
+
 /**
  * An MVT layer with some sensible default props.
  *
@@ -18,6 +25,8 @@ export function basicMvtLayer<ExtraPropsT extends {} = {}>(
     {
       // override tileset to load tiles from viewport center
       TilesetClass: Tileset2DCentered,
+
+      parameters: vectorOverlayParameters,
 
       // default auto-highlight
       autoHighlight: true,
