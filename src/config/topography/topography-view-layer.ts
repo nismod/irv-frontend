@@ -7,6 +7,7 @@ import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
+import { makeValueFormat, nullFormat, type FormatFunction } from '@/lib/formats';
 import { toLabelLookup } from '@/lib/helpers';
 
 import { SOURCES } from '../sources';
@@ -16,7 +17,7 @@ const DEM_RASTER_FORMATS: Record<
   TopographyType,
   {
     colorMap: RasterContinuousColorMap;
-    formatValue: (x: number) => string;
+    formatValue: FormatFunction<number>;
     transparentColor?: Color;
   }
 > = {
@@ -27,8 +28,11 @@ const DEM_RASTER_FORMATS: Record<
       range: [0, 6000],
       rangeTruncated: [false, true],
     },
-    formatValue: (x) =>
-      `${(Math.round(x / 10) * 10).toLocaleString(undefined, { maximumFractionDigits: 0 })}m`,
+    formatValue: Object.assign(
+      (x: number) =>
+        `${(Math.round(x / 10) * 10).toLocaleString(undefined, { maximumFractionDigits: 0 })}m`,
+      { formatRange: makeValueFormat('_m').formatRange },
+    ),
   },
   slope: {
     colorMap: {
@@ -36,7 +40,7 @@ const DEM_RASTER_FORMATS: Record<
       scheme: 'bupu',
       range: [0, 90],
     },
-    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 0 })}°`,
+    formatValue: makeValueFormat('_°', { maximumFractionDigits: 0 }),
     transparentColor: [255, 255, 255, 0],
   },
 };
@@ -47,7 +51,7 @@ export function topographyViewLayer(type: TopographyType): ViewLayer {
   const { colorMap, formatValue, transparentColor = [255, 255, 255, 0] } = DEM_RASTER_FORMATS[type];
   const label = `${valueLabelLookup[type]}`;
 
-  const formatFn = (x: number) => (x != null ? formatValue(x) : '-');
+  const formatFn = nullFormat(formatValue);
 
   return {
     id: `topography_${type}`,
