@@ -7,7 +7,8 @@ import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
-import { numFormat, toLabelLookup } from '@/lib/helpers';
+import { makeValueFormat, nullFormat, type FormatFunction } from '@/lib/formats';
+import { toLabelLookup } from '@/lib/helpers';
 
 import { SOURCES } from '../sources';
 import { CDDType, METRIC_VALUE_LABELS } from './metadata';
@@ -16,7 +17,7 @@ const METRIC_FORMATS: Record<
   CDDType,
   {
     colorMap: RasterContinuousColorMap;
-    formatValue: (x: number) => string;
+    formatValue: FormatFunction<number>;
     transparentColor?: Color;
   }
 > = {
@@ -26,7 +27,7 @@ const METRIC_FORMATS: Record<
       scheme: 'magma',
       range: [0, 1],
     },
-    formatValue: (x: number) => `${numFormat(x * 100, 2)}%`,
+    formatValue: makeValueFormat('_', { style: 'percent', maximumSignificantDigits: 2 }),
   },
   absolute: {
     colorMap: {
@@ -34,7 +35,7 @@ const METRIC_FORMATS: Record<
       scheme: 'magma',
       range: [0, 360],
     },
-    formatValue: numFormat,
+    formatValue: makeValueFormat('_', { maximumSignificantDigits: 3 }),
     transparentColor: [255, 255, 255, 0],
   },
 };
@@ -45,7 +46,7 @@ export function cddViewLayer(type: CDDType): ViewLayer {
   const { colorMap, formatValue, transparentColor = [255, 255, 255, 0] } = METRIC_FORMATS[type];
   const label = `${valueLabelLookup[type]}`;
 
-  const formatFn = (x: number) => (x != null ? formatValue(x) : '-');
+  const formatFn = nullFormat(formatValue);
 
   return {
     id: `cdd_${type}`,

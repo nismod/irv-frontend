@@ -7,6 +7,7 @@ import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
+import { makeValueFormat, nullFormat, type FormatFunction } from '@/lib/formats';
 import { toLabelLookup } from '@/lib/helpers';
 
 import { SOURCES } from '../sources';
@@ -16,7 +17,7 @@ export const NATURE_RASTER_FORMATS: Record<
   NatureRasterType,
   {
     colorMap: RasterContinuousColorMap;
-    formatValue: (x: number) => string;
+    formatValue: FormatFunction<number>;
     transparentColor?: Color;
   }
 > = {
@@ -27,7 +28,7 @@ export const NATURE_RASTER_FORMATS: Record<
       range: [0.6, 1],
       rangeTruncated: [true, false],
     },
-    formatValue: (x) => `${(x * 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}%`,
+    formatValue: makeValueFormat('_', { style: 'percent', maximumFractionDigits: 1 }),
   },
   forest_landscape_integrity: {
     colorMap: {
@@ -35,7 +36,7 @@ export const NATURE_RASTER_FORMATS: Record<
       scheme: 'ylgn', //TODO - original dataset colormap is more like gold-yellow-green
       range: [0, 10],
     },
-    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 1 })}`,
+    formatValue: makeValueFormat('_', { maximumFractionDigits: 1 }),
     transparentColor: [255, 255, 255, 0],
   },
   organic_carbon: {
@@ -45,7 +46,7 @@ export const NATURE_RASTER_FORMATS: Record<
       range: [0, 150],
       rangeTruncated: [false, true],
     },
-    formatValue: (x) => `${x.toLocaleString(undefined, { maximumFractionDigits: 1 })} t/ha`,
+    formatValue: makeValueFormat('_ t/ha', { maximumFractionDigits: 1 }),
   },
 };
 
@@ -55,7 +56,7 @@ export function natureRasterViewLayer(type: NatureRasterType): ViewLayer {
   const { colorMap, formatValue, transparentColor = [0, 0, 0, 0] } = NATURE_RASTER_FORMATS[type];
   const label = `${valueLabelLookup[type]}`;
 
-  const formatFn = (x: number) => (x != null ? formatValue(x) : '-');
+  const formatFn = nullFormat(formatValue);
 
   return {
     id: `nature_${type}`,

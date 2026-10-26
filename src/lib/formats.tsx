@@ -1,6 +1,20 @@
 import { ReactNode } from 'react';
 
-export type FormatFunction<T = any> = (x: T) => ReactNode | string;
+import { roundValueRange, type ValueRange } from './value-range';
+
+export type FormatFunction<T = any> = {
+  (x: T): ReactNode | string;
+  formatRange?: (range: ValueRange) => ReactNode | string;
+};
+
+export function numFormatWhole(nearest: number): FormatFunction<number> {
+  nearest = nearest ? nearest : 1;
+  return Object.assign(
+    (value: number) =>
+      `${(Math.round(value / nearest) * nearest).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+    { formatRange: makeValueFormat('_').formatRange },
+  );
+}
 
 /**
  * Helper function to format numerical values in legends, tooltips etc.
@@ -15,7 +29,40 @@ export function makeValueFormat(
 ): FormatFunction<number> {
   const formatFn =
     typeof format === 'string' ? (x) => <>{format.replace('_', x)}</> : (x) => format(x);
-  return (value: number) => formatFn(value.toLocaleString(undefined, numberFormatOptions));
+  const formatter: FormatFunction<number> = (value) =>
+    formatFn(value.toLocaleString(undefined, numberFormatOptions));
+
+  formatter.formatRange = (range) => {
+    if (range.min === range.max && !range.lowerUnbounded && !range.upperUnbounded) {
+      return formatter(range.min);
+    }
+    const { min, max, fractionDigits } = roundValueRange(range);
+    const options = { ...numberFormatOptions };
+    // A range needs enough digits to distinguish its endpoints, even when the
+    // single-value formatter rounds more coarsely. Percentages scale by 100.
+    delete options.maximumSignificantDigits;
+    delete options.minimumSignificantDigits;
+    options.maximumFractionDigits = Math.max(
+      0,
+      fractionDigits - (options.style === 'percent' ? 2 : 0),
+    );
+    options.minimumFractionDigits = Math.min(
+      options.minimumFractionDigits ?? 0,
+      options.maximumFractionDigits,
+    );
+    const lower = min.toLocaleString(undefined, options);
+    const upper = max.toLocaleString(undefined, options);
+    const text = range.lowerUnbounded
+      ? `≤${upper}`
+      : range.upperUnbounded
+        ? `≥${lower}`
+        : min === max
+          ? lower
+          : `${lower}–${upper}`;
+    return formatFn(text);
+  };
+
+  return formatter;
 }
 
 /**
@@ -26,7 +73,9 @@ export function nullFormat<T>(
   formatFn: FormatFunction<T>,
   nullReplacement: string = '-',
 ): FormatFunction<T> {
-  return (x: any) => (x != null ? formatFn(x) : nullReplacement);
+  const formatter: FormatFunction<T> = (x) => (x != null ? formatFn(x) : nullReplacement);
+  formatter.formatRange = formatFn.formatRange;
+  return formatter;
 }
 
 /**

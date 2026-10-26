@@ -6,6 +6,7 @@ import { RasterLegend } from '@/lib/data-map/legend/RasterLegend';
 import { RasterHoverDescription } from '@/lib/data-map/tooltip/RasterHoverDescription';
 import { ViewLayer } from '@/lib/data-map/view-layers';
 import { rasterTileLayer } from '@/lib/deck/layers/raster-tile-layer';
+import { numFormatWhole } from '@/lib/formats';
 import { Subset } from '@/lib/helpers';
 
 import { HAZARDS_METADATA, HazardType } from '../metadata';
@@ -27,12 +28,6 @@ export const EXPOSURE_COLOR_MAPS: Record<ExposureSource, RasterContinuousColorMa
     rangeTruncated: [true, true],
   },
 };
-
-function numFormatWhole(nearest: number) {
-  nearest = nearest ? nearest : 1;
-  return (value) =>
-    `${(Math.round(value / nearest) * nearest).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-}
 
 export function exposureViewLayer(hazardType: ExposureSource, hazardParams: any): ViewLayer {
   const id = `${hazardType}_exposure`;

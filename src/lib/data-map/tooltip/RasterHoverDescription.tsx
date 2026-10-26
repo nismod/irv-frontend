@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react';
 
-import { ColorValue, formatRangeTruncation } from '@/lib/data-map/legend/GradientLegend';
+import { ColorValue } from '@/lib/data-map/legend/GradientLegend';
 import { RasterCategoricalColorMap } from '@/lib/data-map/legend/RasterCategoricalLegend';
 import { RasterContinuousColorMap } from '@/lib/data-map/legend/RasterContinuousLegend';
 import { RasterColorMap } from '@/lib/data-map/legend/RasterLegend';
@@ -9,7 +9,9 @@ import {
   useRasterContinuousColorMapValues,
 } from '@/lib/data-map/legend/use-raster-color-map-values';
 import { FormatFunction, nullFormat } from '@/lib/formats';
+import { roundValueRange, type ValueRange } from '@/lib/value-range';
 
+import { makeRasterValueRangeLookup } from './raster-value-range';
 import { RasterBaseHover } from './RasterBaseHover';
 
 interface RasterHoverSharedProps {
@@ -37,10 +39,6 @@ export const RasterHoverDescription: FC<RasterHoverDescriptionProps> = ({
 
 function getColorValueLookup(colorValues: ColorValue[]) {
   return Object.fromEntries(colorValues.map(({ color, value }, i) => [color, value]));
-}
-
-function getValueIndexLookup(colorValues: ColorValue[]) {
-  return Object.fromEntries(colorValues.map(({ value }, i) => [value, i]));
 }
 
 function makeValueGetter(colorValueLookup: Record<string, any>) {
@@ -74,26 +72,36 @@ const RasterContinuousHoverDescription: FC<
   const { scheme, range, rangeTruncated = [false, false] } = colorMap;
 
   const colorValues = useRasterContinuousColorMapValues(scheme, range);
-  const colorValueLookup = useMemo(
-    () => colorValues && getColorValueLookup(colorValues),
-    [colorValues],
-  );
-  const valueIndexLookup = useMemo(
-    () => colorValues && getValueIndexLookup(colorValues),
-    [colorValues],
+  const rangeLookup = useMemo(
+    () => makeRasterValueRangeLookup(colorValues ?? [], rangeTruncated),
+    [colorValues, rangeTruncated],
   );
 
-  const getValueForColor = makeValueGetter(colorValueLookup);
-
-  const formatValueWithRangeTruncation = nullFormat((value: any) => {
-    const i = valueIndexLookup?.[value];
-    return formatRangeTruncation(formatValue(value), i, rangeTruncated);
+  const formatRange = nullFormat((range: ValueRange) => {
+    if (range.lowerUnbounded && range.upperUnbounded) return 'Value unavailable';
+    const rounded = roundValueRange(range);
+    return (
+      <span title="Approximate range estimated from the map color">
+        ≈{' '}
+        {formatValue.formatRange ? (
+          formatValue.formatRange(range)
+        ) : range.lowerUnbounded ? (
+          <>≤{formatValue(rounded.max)}</>
+        ) : range.upperUnbounded ? (
+          <>≥{formatValue(rounded.min)}</>
+        ) : (
+          <>
+            {formatValue(rounded.min)}–{formatValue(rounded.max)}
+          </>
+        )}
+      </span>
+    );
   });
 
   return (
     <RasterBaseHover
-      getValueForColor={getValueForColor}
-      formatValue={formatValueWithRangeTruncation}
+      getValueForColor={(color) => rangeLookup.get(color)}
+      formatValue={formatRange}
       {...otherProps}
     />
   );
