@@ -16,7 +16,12 @@ export function mvtSelection(selectionOptions: TileSelectionLayerOptions) {
     renderSubLayers: (tileProps) => tileSelectionLayer(tileProps, selectionOptions),
     updateTriggers: {
       // trick: add `mvtSelection` string to update triggers so that the triggers change when mvtSelection is added / removed
-      renderSubLayers: ['mvtSelection', selectionOptions.selectedFeatureId],
+      renderSubLayers: [
+        'mvtSelection',
+        selectionOptions.selectedFeatureId,
+        selectionOptions.uniqueIdProperty,
+        selectionOptions.id,
+      ],
     },
   } satisfies Partial<MVTLayerProps>;
 }
