@@ -4,6 +4,7 @@ import { colorMap } from '@/lib/color-map';
 import { StyleParams, ViewLayerDataAccessFunction } from '@/lib/data-map/view-layers';
 import { basicMvtLayer } from '@/lib/deck/layers/basic-mvt-layer';
 import { makeDataColorAccessor } from '@/lib/deck/props/data-color';
+import { mvtHover } from '@/lib/deck/props/mvt-hover';
 import { mvtSelection } from '@/lib/deck/props/mvt-selection';
 import { GetColor } from '@/lib/deck/props/style';
 import { tiledDataLoading } from '@/lib/deck/props/tiled-data-loading';
@@ -46,19 +47,22 @@ export function makeAssetLayerFn({
       }
     : undefined;
 
-  return ({ deckProps, zoom, selection }) =>
-    basicMvtLayer(
+  return ({ deckProps, zoom, selection, hoveredFeatureId = undefined }) => {
+    // Current tiles keep native IDs on feature.id. Share this identity between
+    // selection and hover, and avoid redrawing a selected feature on hover.
+    const selectedFeatureId = getFeatureId(selection?.target.feature);
+    return basicMvtLayer(
       deckProps,
       {
         data: SOURCES.vector.getUrl(assetId),
       },
       mvtSelection({
-        // Current MVT tiles keep IDs on feature.id, not properties.id. Use the
-        // same native ID for selection filtering and MVT's automatic highlight.
-        selectedFeatureId: getFeatureId(selection?.target.feature),
+        selectedFeatureId,
         polygonOffset: selectionPolygonOffset,
       }),
       dataLoader && tiledDataLoading({ dataLoader }),
       ...(customLayerPropsFn?.({ zoom, dataStyle }) ?? []),
+      mvtHover(hoveredFeatureId === selectedFeatureId ? undefined : hoveredFeatureId),
     );
+  };
 }

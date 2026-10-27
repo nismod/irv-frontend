@@ -11,6 +11,7 @@ import { AccessorFunction } from '@/lib/deck/props/getters';
  */
 export interface IrvViewLayerParams {
   selection?: InteractionTarget;
+  hoveredFeatureId?: string | number;
 }
 
 /**
