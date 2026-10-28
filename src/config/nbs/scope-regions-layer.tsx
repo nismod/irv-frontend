@@ -14,6 +14,7 @@ import { NBS_REGION_SCOPE_LEVEL_METADATA, NbsRegionScopeLevel } from './metadata
 
 const LIGHT_TEXT: Color = [240, 240, 240, 255];
 const DARK_TEXT: Color = [90, 90, 90, 255];
+const TRANSPARENT_WHITE: Color = [255, 255, 255, 0];
 
 export function scopeRegionsLayer(
   scopeRegionLevel: NbsRegionScopeLevel,
@@ -23,7 +24,10 @@ export function scopeRegionsLayer(
   const { idProperty, nameProperty, labelMinZoom } =
     NBS_REGION_SCOPE_LEVEL_METADATA[scopeRegionLevel];
 
-  const color = background === 'satellite' ? LIGHT_TEXT : DARK_TEXT;
+  const darkMode = background === 'satellite';
+  const color = darkMode ? LIGHT_TEXT : DARK_TEXT;
+  const hoverColor = darkMode ? [255, 255, 255, 100] : [0, 0, 0, 10];
+  const regionLineColor: Color = darkMode ? [200, 200, 200, 255] : [170, 170, 170, 255];
 
   return {
     id: 'scope_regions',
@@ -36,17 +40,17 @@ export function scopeRegionsLayer(
           id: `scope_regions@${scopeRegionLevel}`,
           data: SOURCES.vector.getUrl(scopeRegionLevel),
           autoHighlight: true,
-          highlightColor: [0, 0, 0, 10],
+          highlightColor: hoverColor,
           TilesetClass: Tileset2DCentered,
           binary: false,
           uniqueIdProperty: idProperty,
 
           filled: true,
-          getFillColor: css2rgba$M('#ffffff00'),
+          getFillColor: TRANSPARENT_WHITE,
           opacity: 0.3,
 
           stroked: true,
-          getLineColor: css2rgba$M('#aaaaaa'),
+          getLineColor: regionLineColor,
           lineWidthMinPixels: 1,
 
           renderSubLayers: (tileProps) => [
@@ -59,8 +63,7 @@ export function scopeRegionsLayer(
         mvtSelection({
           selectedFeatureId: selection?.target.feature.properties[idProperty],
           uniqueIdProperty: idProperty,
-          selectionFillColor: [255, 255, 255, 0],
-          selectionLineColor: [40, 40, 40, 255],
+          selectionFillColor: TRANSPARENT_WHITE,
         }),
       ),
       showLabels &&

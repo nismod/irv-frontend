@@ -114,7 +114,7 @@ export function tileSelectionLayer(
   const halo = foreground.clone({
     id: id + '-halo',
     filled: true,
-    stroked: false,
+    stroked: true,
     getLineColor: selectionLineColor,
     getFillColor: selectionFillColor,
     lineWidthScale: foreground.props.lineWidthScale * scaleFactor,
