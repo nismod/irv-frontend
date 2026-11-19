@@ -11,10 +11,8 @@ import { Tileset2DCentered } from './tileset-2d-centered';
  *
  * @param props multiple prop objects to add to layer
  */
-export function basicMvtLayer<ExtraPropsT extends {} = {}>(
-  ...props: MultiProps<MVTLayerProps | ExtraPropsT>
-) {
-  return mvtLayer(
+export function basicMvtLayer(...props: MultiProps<MVTLayerProps>) {
+  return mvtLayer<{}>(
     {
       // override tileset to load tiles from viewport center
       TilesetClass: Tileset2DCentered,
