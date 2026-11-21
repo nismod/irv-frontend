@@ -6,6 +6,14 @@ import { ConfigTree } from '@/lib/nested-config/config-tree';
 import { bitmapLayer, tileLayer } from './base';
 import { Tileset2DCentered } from './tileset-2d-centered';
 
+// Flat raster overlays follow style order. Testing against the basemap's
+// globe depth buffer makes coplanar tiles flicker or disappear.
+// Keep the globe view's back-face culling to hide the far hemisphere.
+const rasterOverlayParameters: BitmapLayerProps['parameters'] = {
+  depthCompare: 'always',
+  depthWriteEnabled: false,
+};
+
 function getBoundsForTile(tileProps): BitmapBoundingBox {
   const {
     bbox: { west, south, east, north },
@@ -31,6 +39,7 @@ export function rasterTileLayer<DataT = any>(
         {
           image: tileProps.data,
           bounds: getBoundsForTile(tileProps.tile),
+          parameters: rasterOverlayParameters,
         },
         bitmapProps,
       );

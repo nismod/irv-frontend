@@ -26,6 +26,10 @@ function makeBasemapStyle(
 
   const style = _.cloneDeep(baseStyle);
 
+  // Globe at low zoom, smoothly transitioning to Mercator as the user zooms in.
+  // MapLibreOverlay reads this projection to select deck.gl's matching view.
+  style.projection = { type: 'globe' };
+
   for (const layer of style.layers) {
     const { id } = layer;
 
