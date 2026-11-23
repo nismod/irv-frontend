@@ -13,7 +13,7 @@
     "@loaders.gl/wkt": "^4.5.5",
     "@math.gl/core": "^4.1.1",
     "@mui/icons-material": "^9.5.0",
-    "@mui/lab": "^9.0.0-beta.10",
+    "@mui/lab": "^10.0.0-alpha.0",
     "@mui/material": "^9.5.0",
     "@mui/x-tree-view": "^9.18.0",
     "@nismod/irv-api-client": "^0.9.0",
